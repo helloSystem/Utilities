@@ -1,0 +1,18 @@
+{
+    ApplicationDescription = "Browse the network with Zeroconf";
+    ApplicationName = "Zeroconf";
+    ApplicationRelease = "0.1";
+    Authors = (
+	"Simon Peter"
+    );
+    CFBundleIdentifier = "com.github.probonopd.Zeroconf";
+    Copyright = "Copyright (C) 2020 Simon Peter";
+    CopyrightDescription = "Released under BSD 2-clause License";
+    FullVersionID = "0.1";
+    GSMainMarkupFile = "";
+    NSExecutable = Zeroconf;
+    NSIcon = "Resources/Zeroconf.png";
+    NSMainNibFile = "";
+    NSPrincipalClass = NSApplication;
+    NSRole = Application;
+}
