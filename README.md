@@ -1,6 +1,14 @@
 # Utilities
 
-Utilities written for FreeBSD in PyQt5, meant for use with GNUstep (but possibly eventually also [hello](https://github.com/probonopd/hello/))
+Utilities written for FreeBSD in PyQt5, meant for use with GNUstep (but possibly eventually also [hello](https://github.com/probonopd/hello/)).
+
+This is a work in progress.
+
+* One Python source code file per app
+* Tested on FreeBSD in GWorkspace.app
+* To the user, at least(!) as simple as the Mac counterpart
+
+Pull requests welcome.
 
 ## Keyboard.app
 
