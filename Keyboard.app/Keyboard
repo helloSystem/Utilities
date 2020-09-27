@@ -1,0 +1,112 @@
+#!/usr/bin/env python3.7
+
+
+# Simple Keyboard Layout switcher for FreeBSD in PyQt5
+
+
+# Copyright (c) 2020, Simon Peter <probono@puredarwin.org>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+import os, sys, subprocess
+
+try:
+    from PyQt5 import QtWidgets, QtGui, QtCore
+except:
+    print("Could not import PyQt5. On FreeBSD, sudo pkg install py37-qt5-widgets")
+
+
+class KeyboardSwitcher(object):
+
+    def __init__(self):
+        self.supported_layouts = self.getSupportedLayouts()
+        self.basicWindow()
+
+    def getSupportedLayouts(self):
+        candidates = os.listdir("/usr/local/share/X11/xkb/symbols/")
+        supported_layouts = []
+        for candidate in candidates:
+            if len(candidate) < 4:
+                supported_layouts.append(candidate)
+        supported_layouts.sort()
+        supported_layouts.insert(0, "en")
+        return supported_layouts
+
+    def basicWindow(self):
+        app = QtWidgets.QApplication(sys.argv)
+        window = QtWidgets.QWidget()
+
+        window.setWindowTitle('Keyboard Layout')
+
+        layout = QtWidgets.QVBoxLayout()
+
+        self.list_widget = QtWidgets.QListWidget()
+        print(self.supported_layouts)
+        for supported_layout in self.supported_layouts:
+            self.list_widget.addItem(supported_layout)
+        self.list_widget.itemSelectionChanged.connect(self.onSelectionChanged)
+        layout.addWidget(self.list_widget)
+
+        self.checkbox_keyswap = QtWidgets.QCheckBox()
+        self.checkbox_keyswap.setText("Swap Ctrl and Alt keys")
+        self.checkbox_keyswap.setChecked(True)
+        self.checkbox_keyswap.clicked.connect(self.onSelectionChanged)
+        layout.addWidget(self.checkbox_keyswap)
+
+        self.checkbox_disablecapslock = QtWidgets.QCheckBox()
+        self.checkbox_disablecapslock.setText("Disable Caps Lock key")
+        self.checkbox_disablecapslock.setChecked(True)
+        layout.addWidget(self.checkbox_disablecapslock)
+
+        # Label
+        self.label = QtWidgets.QLabel()
+        self.label.setText("This application is written in PyQt5. It is very easy to extend. Look inside the .app in GWorkspace with 'Open as Folder' to see its source code.")
+        self.label.setWordWrap(True)
+        layout.addWidget(self.label)
+
+        window.setLayout(layout)
+        window.show()
+        sys.exit(app.exec_())
+
+    def onSelectionChanged(self):
+        print("Selection changed")
+        print(self.list_widget.selectedItems()[0].text())
+        args = ["setxkbmap", '-layout', self.list_widget.selectedItems()[0].text(), "-variant", "nodeadkeys"]
+        if self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == False:
+            args.append("-option", "ctrl:swap_lalt_lctl")
+        elif self.checkbox_keyswap.isChecked() == False and self.checkbox_disablecapslock == True:
+            args.append("-option", "caps:none")
+        elif self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == True:
+            args.append("-option", "ctrl:swap_lalt_lctl,caps:none")
+        out = subprocess.call(args)
+        if out == 0:
+            print("Changed keyboard layout successfully")
+        else:
+            print("Error setting keyboard layout")
+
+
+if __name__ == "__main__":
+    ks = KeyboardSwitcher()
+
+
