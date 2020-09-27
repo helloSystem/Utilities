@@ -113,16 +113,27 @@ class ZeroconfBrowser(object):
     def __init__(self):
 
         self.app = QtWidgets.QApplication(sys.argv)
+
+        # Window
         self.window = QtWidgets.QWidget()
         self.window.setWindowTitle('Connnect to Server')
         self.window.setMinimumWidth(500)
         self.window.setMinimumHeight(350)
         self.window.closeEvent = self.quit
         self.layout = QtWidgets.QVBoxLayout()
+
+        # List
         self.list_widget = QtWidgets.QListWidget()
         self.list_widget.setAlternatingRowColors(True)
         self.list_widget.itemDoubleClicked.connect(self.onDoubleClicked)
         self.layout.addWidget(self.list_widget)
+
+        # Label
+        self.label = QtWidgets.QLabel()
+        self.label.setText("This application is written in PyQt5. It is very easy to extend. Open the .app to see its source code.")
+        self.label.setWordWrap(True)
+        self.layout.addWidget(self.label)
+
         self.window.setLayout(self.layout)
         self.window.show()
 
