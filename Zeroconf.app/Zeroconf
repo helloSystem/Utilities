@@ -149,20 +149,20 @@ class ZeroconfBrowser(object):
             # Then no one knows where that file actually is, nor what it Exec= line contains. xdg is so convoluted!
             # user@FreeBSD$ LANG=C x-www-browser
             # bash: x-www-browser: command not found
-            # NOTE: We are intentionally not using xdg-open here. We could probably do better here by re-implementing what xdg-open does more fully...
-            browser_candidates = [os.environ.get("BROWSER"), "x-www-browser", "chrome", "chromium-browser", "google-chrome", "firefox", "iceweasel", "seamonkey", "mozilla", "epiphany", "konqueror"]
-            for browser_candidate in browser_candidates:
-                if browser_candidate != None:
-                    if which(browser_candidate) != None:
-                        browser = browser_candidate
-                        print("Using as browser: %s" % browser)
-                        break
+            #
+            # browser_candidates = [os.environ.get("BROWSER"), "x-www-browser", "chrome", "chromium-browser", "google-chrome", "firefox", "iceweasel", "seamonkey", "mozilla", "epiphany", "konqueror"]
+            # for browser_candidate in browser_candidates:
+            #     if browser_candidate != None:
+            #         if which(browser_candidate) != None:
+            #             browser = browser_candidate
+            #             print("Using as browser: %s" % browser)
+            #             break
 
             # Launch the browser
             proc = QtCore.QProcess()
             args = [self.services.services[row].url]
             try:
-                proc.startDetached(browser, args)
+                proc.startDetached("xdg-open", args)
             except:
                 print("Cannot launch browser")
                 return
