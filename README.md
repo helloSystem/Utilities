@@ -4,9 +4,11 @@ Utilities written for FreeBSD in PyQt5, meant for use with GNUstep (but possibly
 
 This is a work in progress.
 
+* No compilation needed, since PyQt5
+* Focus on simplicity for the user
+* Focus on simplicity in source code
 * One Python source code file per app
 * Tested on FreeBSD in GWorkspace.app
-* To the user, at least(!) as simple as the Mac counterpart
 
 Pull requests welcome.
 
