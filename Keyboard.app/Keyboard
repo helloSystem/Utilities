@@ -62,6 +62,7 @@ class KeyboardSwitcher(object):
         layout = QtWidgets.QVBoxLayout()
 
         self.list_widget = QtWidgets.QListWidget()
+        self.list_widget.setAlternatingRowColors(True)
         print(self.supported_layouts)
         for supported_layout in self.supported_layouts:
             self.list_widget.addItem(supported_layout)
