@@ -12,6 +12,12 @@ This is a work in progress.
 
 Pull requests welcome.
 
+## Boot Environments.app
+
+Simple settings for ZFS Boot Environments.
+
+![image](https://user-images.githubusercontent.com/2480569/97612525-d2e93180-1a17-11eb-90c4-5dd90ad67d7f.png)
+
 ## Keyboard.app
 
 Simple Keyboard Layout chooser
