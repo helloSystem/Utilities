@@ -2,8 +2,8 @@
 
 
 # Simple ZFS configuration tool written for FreeBSD in PyQt5
-# for beadm(1) by Slawomir Wojciech Wojtczak (vermaden) <vermaden@interia.pl>
-# https://www.freebsd.org/cgi/man.cgi?beadm
+# for bectl(1)
+# https://www.freebsd.org/cgi/man.cgi?bectl
 
 # Copyright (c) 2020, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
@@ -146,10 +146,10 @@ Note that Boot Environments by default may not cover all locations, such as /hom
 
         self.ext_process = QtCore.QProcess()
 
-        self.refresh_list_with_beadm()
+        self.refresh_list_with_bectl()
         self.timer = QtCore.QTimer()
         self.timer.setSingleShot(False)
-        self.timer.timeout.connect(self.refresh_list_with_beadm)
+        self.timer.timeout.connect(self.refresh_list_with_bectl)
         self.timer.start(3000)
 
         sys.exit(self.app.exec_())
@@ -158,16 +158,16 @@ Note that Boot Environments by default may not cover all locations, such as /hom
     def quit(self, event):
         sys.exit(0)
 
-    def refresh_list_with_beadm(self):
+    def refresh_list_with_bectl(self):
         # self.ext_process.finished.connect(self.onProcessFinished)
-        self.ext_process.setProgram("beadm")
+        self.ext_process.setProgram("bectl")
         self.ext_process.setArguments(["list", "-H"])
 
         try:
             pid = self.ext_process.start()
-            print("beadm list started")
+            print("bectl list started")
         except:
-            print("beadm list cannot be launched.")
+            print("bectl list cannot be launched.")
             return  # Stop doing anything here
 
         i = 0
@@ -227,7 +227,7 @@ Note that Boot Environments by default may not cover all locations, such as /hom
                 elif self.selection_index == i-1:
                     self.list_widget.setCurrentIndex(self.be_model.index(rows_so_far, 0))
 
-        print("populate_list_with_beadm done")
+        print("populate_list_with_bectl done")
 
     def reboot(self):
         print("Reboot clicked")
@@ -290,14 +290,14 @@ Note that Boot Environments by default may not cover all locations, such as /hom
         print("Activating: %s" % boot_environment)
 
         p = QtCore.QProcess()
-        p.setProgram("beadm")
+        p.setProgram("bectl")
         p.setArguments(["activate", boot_environment])
 
         try:
             pid = p.start() # p.startDetached()
-            print("beadm activate started")
+            print("bectl activate started")
         except:
-            error_string = "beadm activate cannot be launched"
+            error_string = "bectl activate cannot be launched"
             print(error_string)
             QtWidgets.QMessageBox.critical(
                 self.window,
@@ -323,7 +323,7 @@ Note that Boot Environments by default may not cover all locations, such as /hom
                 QtWidgets.QMessageBox.Cancel
             )
 
-        self.refresh_list_with_beadm()
+        self.refresh_list_with_bectl()
         self.app.setOverrideCursor(
             QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.timer.start()
@@ -346,14 +346,14 @@ Note that Boot Environments by default may not cover all locations, such as /hom
             self.timer.stop()
 
             p2 = QtCore.QProcess()
-            p2.setProgram("beadm")
+            p2.setProgram("bectl")
             p2.setArguments(["create", text])
 
             try:
                 pid = p2.start() # p.startDetached()
-                print("beadm create started")
+                print("bectl create started")
             except:
-                error_string = "beadm create cannot be launched"
+                error_string = "bectl create cannot be launched"
                 print(error_string)
                 QtWidgets.QMessageBox.critical(
                     self.window,
@@ -379,7 +379,7 @@ Note that Boot Environments by default may not cover all locations, such as /hom
                     QtWidgets.QMessageBox.Cancel
                 )
 
-            self.refresh_list_with_beadm()
+            self.refresh_list_with_bectl()
             self.app.setOverrideCursor(
                 QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
@@ -408,14 +408,14 @@ Note that Boot Environments by default may not cover all locations, such as /hom
             self.timer.stop()
 
             p3 = QtCore.QProcess()
-            p3.setProgram("beadm")
-            p3.setArguments(["destroy", "-F", boot_environment])
+            p3.setProgram("bectl")
+            p3.setArguments(["destroy", "-Fo", boot_environment])
 
             try:
                 pid = p3.start() # p.startDetached()
-                print("beadm destroy started")
+                print("bectl destroy started")
             except:
-                error_string = "beadm destroy cannot be launched"
+                error_string = "bectl destroy cannot be launched"
                 print(error_string)
                 QtWidgets.QMessageBox.critical(
                     self.window,
@@ -441,7 +441,7 @@ Note that Boot Environments by default may not cover all locations, such as /hom
                     QtWidgets.QMessageBox.Cancel
                 )
 
-            self.refresh_list_with_beadm()
+            self.refresh_list_with_bectl()
             self.app.setOverrideCursor(
                 QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
@@ -456,23 +456,31 @@ Note that Boot Environments by default may not cover all locations, such as /hom
         boot_environment = self.boot_environments[self.selection_index]
         mountpoint = self.be_model.itemData(self.be_model.index(self.selection_index,3))[0]
         print(mountpoint)
-        self.update_mount_button()
 
-        print("beadm %s %s" % (command, mountpoint))
+        self.update_mount_button(self.selection_index)
+        
+        if mountpoint == "-":
+            # Is not mounted yet, so we want to mount
+            command = "mount"
+        else:
+            # Is already mounted, so we want to unmount
+            command = "unmount"
+
+        print("bectl %s %s" % (command, mountpoint))
 
         self.app.setOverrideCursor(
             QtGui.QCursor(QtCore.Qt.WaitCursor))
         self.timer.stop()
 
         p4 = QtCore.QProcess()
-        p4.setProgram("beadm")
+        p4.setProgram("bectl")
         p4.setArguments([command, boot_environment])
 
         try:
             pid = p4.start()  # p.startDetached()
-            print("beadm %s started" % command)
+            print("bectl %s started" % command)
         except:
-            error_string = "beadm %s cannot be launched" % command
+            error_string = "bectl %s cannot be launched" % command
             print(error_string)
             QtWidgets.QMessageBox.critical(
                 self.window,
@@ -498,7 +506,7 @@ Note that Boot Environments by default may not cover all locations, such as /hom
                 QtWidgets.QMessageBox.Cancel
             )
 
-        self.refresh_list_with_beadm()
+        self.refresh_list_with_bectl()
 
         # If we have mounted the Boot Environment, then open it in the file manager
         if command == "mount":
@@ -515,6 +523,8 @@ Note that Boot Environments by default may not cover all locations, such as /hom
             QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
         self.timer.start()
+
+        self.update_mount_button(self.selection_index)
 
 if __name__ == "__main__":
 
