@@ -100,9 +100,13 @@ class ZeroconfServices():
         self.services = []
 
     def add(self, service):
-        print("Appending " + str(service))
-        self.services.append(service)
-        service.handle()
+        if service.ip_version == "IPv4":
+            print("Appending " + str(service))
+            self.services.append(service)
+            service.handle()
+        else:
+            print("service.ip_version: %s" % service.ip_version)
+            print("Not appending since IPv6; TODO: Show those as well but check for duplicates")
 
     def remove(self, avahi_browse_line):
         print("TODO: To be implemented: Remove the service from the list if certain criteria match")
@@ -110,6 +114,28 @@ class ZeroconfServices():
             print(service.service_type)
             print(service.hostname_with_domain)
 
+class sshLogin(QtWidgets.QDialog):
+    def __init__(self, host=None, parent=None):
+        super(sshLogin, self).__init__(parent)
+        self.host = host
+        self.setWindowTitle("Username")
+        self.textName = QtWidgets.QLineEdit(self)
+        self.buttonLogin = QtWidgets.QPushButton('Connect', self)
+        self.buttonLogin.clicked.connect(self.handleLogin)
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.addWidget(self.textName)
+        layout.addWidget(self.buttonLogin)
+
+    def handleLogin(self):
+        self.accept() # Close dialog
+        # Launch ssh in QTerminal
+        proc = QtCore.QProcess()
+        args = ["QTerminal", "-e", "ssh", self.host, "-l", self.textName.text()]
+        try:
+            proc.startDetached("launch", args)
+        except:
+            print("Cannot launch browser")
+            return
 
 class ZeroconfBrowser(object):
 
@@ -132,10 +158,10 @@ class ZeroconfBrowser(object):
         self.layout.addWidget(self.list_widget)
 
         # Label
-        self.label = QtWidgets.QLabel()
-        self.label.setText("This application is written in PyQt5. It is very easy to extend. Look inside the .app in GWorkspace with 'Open as Folder' to see its source code.")
-        self.label.setWordWrap(True)
-        self.layout.addWidget(self.label)
+        # self.label = QtWidgets.QLabel()
+        # self.label.setText("This application is written in PyQt5. It is very easy to extend. Look inside the .app to see its source code.")
+        # self.label.setWordWrap(True)
+        # self.layout.addWidget(self.label)
 
         self.window.setLayout(self.layout)
         self.window.show()
@@ -181,16 +207,11 @@ class ZeroconfBrowser(object):
                 print("Cannot launch browser")
                 return
 
-
-        elif self.services.services[row].url.startswith("sftp") or self.services.services[row].url.startswith("ntp"):
-            # https://github.com/xvlvx0/AutoMounter
-            reply = QtWidgets.QMessageBox.information(
-                self.window,
-                "To be implemented",
-                "%s\nshould be mounted using sshfs.\nSee https://github.com/xvlvx0/AutoMounter for inspiration.\nPull requests welcome!" % self.services.services[row].url,
-                QtWidgets.QMessageBox.Yes
-            )
-
+        elif self.services.services[row].url.startswith("ssh"):
+            # Launch the browser
+            sshL = sshLogin(host=self.services.services[row].url)
+            if sshL.exec_() == QtWidgets.QDialog.Accepted:
+                print("Do something")
         else:
             reply = QtWidgets.QMessageBox.information(
                 self.window,
