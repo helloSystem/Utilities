@@ -1,6 +1,6 @@
 # Utilities
 
-Utilities written for FreeBSD in PyQt5, meant for use with GNUstep (but possibly eventually also [hello](https://github.com/probonopd/hello/)).
+Utilities written in PyQt5, meant for use with [hello](https://github.com/probonopd/hello/).
 
 This is a work in progress.
 
@@ -8,7 +8,7 @@ This is a work in progress.
 * Focus on simplicity for the user
 * Focus on simplicity in source code
 * One Python source code file per app
-* Tested on FreeBSD in GWorkspace.app
+* Tested on FreeBSD in [hello](https://github.com/probonopd/hello/)
 
 Pull requests welcome.
 
@@ -17,6 +17,14 @@ Pull requests welcome.
 Simple settings for ZFS Boot Environments.
 
 ![image](https://user-images.githubusercontent.com/2480569/97612525-d2e93180-1a17-11eb-90c4-5dd90ad67d7f.png)
+
+## Create Live Medium.app
+
+Simple tool to download a Live ISO and write it to a device (e.g., USB stick) in one go.
+
+## Install FreeBSD.app
+
+Simple installer to install the Live ISO to disk.
 
 ## Keyboard.app
 
