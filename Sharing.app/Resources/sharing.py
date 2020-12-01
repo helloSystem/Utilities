@@ -121,7 +121,20 @@ class Window(QtWidgets.QWidget):
         if self.ssh_cb.isChecked() is True:
             # Note: we get called before the checkbox has been toggled, hence this is correct
             action = "start"
+
         proc = QtCore.QProcess()
+
+        # First, enable/disable
+        command = 'sysrc'
+        if action == "start":
+            yn = "YES"
+        else:
+            yn = "NO"
+        args = ["sshd_enable=" + yn]
+        proc.start(command, args)
+        proc.waitForFinished()
+
+        # Second, start/stop
         command = 'service'
         args = ["sshd", action]
         try:
