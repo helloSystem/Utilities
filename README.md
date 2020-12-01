@@ -30,6 +30,10 @@ Simple installer to install the Live ISO to disk.
 
 Simple Keyboard Layout chooser
 
+## Sharing.app
+
+Simple tool to set the hostname, enable/disable sshd, enable/disable x11vnc server
+
 ## Zeroconf.app
 
 Simple Zeroconf browser
