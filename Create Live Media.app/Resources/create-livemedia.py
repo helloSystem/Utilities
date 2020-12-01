@@ -225,6 +225,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
                 # print(data)
                 for release in data:
                     if len(release["assets"]) > 1:
+                        # print(asset)
                         for asset in release["assets"]:
                             if asset["browser_download_url"].endswith(".iso"):
                                 display_name = "%s (%s)" % (asset["name"], release["tag_name"])
