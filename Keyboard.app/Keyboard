@@ -80,12 +80,6 @@ class KeyboardSwitcher(object):
         self.checkbox_disablecapslock.setChecked(True)
         layout.addWidget(self.checkbox_disablecapslock)
 
-        # Label
-        self.label = QtWidgets.QLabel()
-        self.label.setText("This application is written in PyQt5. It is very easy to extend. Look inside the .app in GWorkspace with 'Open as Folder' to see its source code.")
-        self.label.setWordWrap(True)
-        layout.addWidget(self.label)
-
         window.setLayout(layout)
         window.show()
         sys.exit(app.exec_())
