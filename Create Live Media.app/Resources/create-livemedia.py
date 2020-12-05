@@ -406,10 +406,6 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         self.progress = QtWidgets.QProgressBar(self)
         self.layout.addWidget(self.progress, True)
 
-        self.pushButton = QtWidgets.QPushButton()
-        self.pushButton.clicked.connect(self.download)
-
-        self.layout.addWidget(self.pushButton, True)
 
     def initializePage(self):
         print("Displaying InstallationPage")
@@ -417,9 +413,11 @@ class InstallationPage(QtWidgets.QWizardPage, object):
             [QtWidgets.QWizard.Stretch])
 
         # If we immediately call self.download(), then the window contents don't get drawn.
-        # Hence we use this extraneous button. FIXME: Find a way to do away with it.
+        # Hence we use a timer.
         self.save_loc = '/dev/' + wizard.selected_disk_device
-        self.pushButton.setText("Write %s to %s" % (os.path.basename(wizard.selected_iso_url), self.save_loc))
+        workaroundtimer = QtCore.QTimer()
+        workaroundtimer.singleShot(200, self.download)
+
 
     def handleProgress(self, blocknum, blocksize, totalsize):
 
@@ -433,7 +431,6 @@ class InstallationPage(QtWidgets.QWizardPage, object):
 
     def download(self):
         print("Download started")
-        self.pushButton.setVisible(False)
 
         import glob
         partitions = glob.glob(self.save_loc + "*")
