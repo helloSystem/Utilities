@@ -279,9 +279,9 @@ class DiskPage(QtWidgets.QWizardPage, object):
         self.setTitle('Select Destination Disk')
         self.setSubTitle('All data on the selected disk will be erased.')
         self.disk_listwidget = QtWidgets.QListWidget()
-        self.disk_listwidget.setViewMode(QtWidgets.QListView.IconMode)
+        # self.disk_listwidget.setViewMode(QtWidgets.QListView.IconMode)
         self.disk_listwidget.setIconSize(QtCore.QSize(48, 48))
-        self.disk_listwidget.setSpacing(24)
+        # self.disk_listwidget.setSpacing(24)
         self.disk_listwidget.itemSelectionChanged.connect(self.onSelectionChanged)
         disk_vlayout = QtWidgets.QVBoxLayout(self)
         disk_vlayout.addWidget(self.disk_listwidget)
@@ -450,7 +450,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         try:
             urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
         except:
-            wizard.showErrorPage("An error occured while trying to write the image. Were all partitions unmounted? Do you have write permissions there?")
+            wizard.showErrorPage("An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?")
 
         wizard.next()
 
