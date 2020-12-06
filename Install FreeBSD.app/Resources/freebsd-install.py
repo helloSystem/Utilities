@@ -989,7 +989,7 @@ class UserPage(QtWidgets.QWizardPage, object):
     def isComplete(self):
         # This runs whenever the user types or clicks something in one of the registered fields
         self.no_password_is_ok = False
-        
+
         # https://github.com/helloSystem/ISO/issues/12
         # if "" == self.field('username') and self.username_lineEdit:
         #     self.populateUsername()
