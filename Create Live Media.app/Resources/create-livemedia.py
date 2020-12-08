@@ -219,20 +219,25 @@ class IntroPage(QtWidgets.QWizardPage, object):
         url = self.available_repos[self.repo_menu.currentIndex()]
         print("Getting releases from", url)
 
-        try:
-            with urllib.request.urlopen(url) as url:
-                data = json.loads(url.read().decode())
-                # print(data)
-                for release in data:
-                    if len(release["assets"]) > 1:
-                        # print(asset)
-                        for asset in release["assets"]:
-                            if asset["browser_download_url"].endswith(".iso"):
-                                display_name = "%s (%s)" % (asset["name"], release["tag_name"])
-                                self.available_isos.append(asset)
-                                self.release_listwidget.addItem(display_name)
-        except:
-            pass
+        #try:
+        with urllib.request.urlopen(url) as url:
+            data = json.loads(url.read().decode())
+            # print(data)
+            for release in data:
+                if len(release["assets"]) > 1:
+                    # print(asset)
+                    for asset in release["assets"]:
+                        if asset["browser_download_url"].endswith(".iso"):
+                            display_name = "%s (%s)" % (asset["name"], release["tag_name"])
+                            self.available_isos.append(asset)
+                            item = QtWidgets.QListWidgetItem(display_name)
+                            item.__setattr__("browser_download_url", asset["browser_download_url"]) # __setattr__() is the equivalent to setProperty() in Qt
+                            item.__setattr__("updated_at", asset["updated_at"])
+                            item.__setattr__("size", asset["size"])
+                            self.release_listwidget.addItem(item)
+
+        #except:
+            #pass
             # wizard.showErrorPage("The list of available images could not be retrieved. GitHub rate limit exceeded?")
             # self.label.hide()  # FIXME: Why is this needed? Can we do without?
             # self.repo_menu.hide()  # FIXME: Why is this needed? Can we do without?
@@ -244,18 +249,14 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("onSelectionChanged")
         # print("selectedIndexes", self.release_listwidget.selectedIndexes())
         items = self.release_listwidget.selectedItems()
-        # print(items[0].text())
-        for available_iso in self.available_isos:
-            # print(available_iso["browser_download_url"].split("/")[8])
-            if items[0].text().startswith(available_iso["name"]):
-                wizard.selected_iso_url = available_iso["browser_download_url"]
-                print("Selected ISO:", available_iso)
-                date = QtCore.QDateTime.fromString(available_iso["updated_at"], "yyyy-MM-ddThh:mm:ssZ")
-                self.date_label.setText(date.toLocalTime().toString(QtCore.Qt.SystemLocaleLongDate))
-                self.date_label.show()
-                wizard.required_mib_on_disk = round(int(available_iso["size"])/1000/1000, 1)
-                # self.isComplete()  # Calling it like this does not make its result get used
-                self.completeChanged.emit()  # But like this isComplete() gets called and its result gets used
+        print("browser_download_url attribute:" + items[0].__getattribute__("browser_download_url")) # __getattribute__() is the equivalent to property() in Qt
+        wizard.selected_iso_url = items[0].__getattribute__("browser_download_url")
+        date = QtCore.QDateTime.fromString(items[0].__getattribute__("updated_at"), "yyyy-MM-ddThh:mm:ssZ")
+        self.date_label.setText(date.toLocalTime().toString(QtCore.Qt.SystemLocaleLongDate))
+        self.date_label.show()
+        wizard.required_mib_on_disk = round(items[0].__getattribute__("size")/1000/1000, 1)
+        # self.isComplete()  # Calling it like this does not make its result get used
+        self.completeChanged.emit()  # But like this isComplete() gets called and its result gets used
 
 
     def isComplete(self):
@@ -370,6 +371,7 @@ class DiskPage(QtWidgets.QWizardPage, object):
         if wizard.user_agreed_to_erase == True:
             ds = disks.get_disks()
             # Given a clear text label, get back the rdX
+            # TODO: Use __setattr__() and __getattribute__() instead; see above for an example on how to use those
             for d in self.old_ds:
                 di = disks.get_disk(d)
                 searchstring = " on " + str(di.get("geomname")) + " "
