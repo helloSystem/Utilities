@@ -33,7 +33,7 @@
 
 """PyCalc is a simple calculator built using Python and PyQt5."""
 
-import sys
+import os, sys
 
 from functools import partial
 
@@ -46,8 +46,12 @@ from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QPushButton
 from PyQt5.QtWidgets import QVBoxLayout
 from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QAction
+from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import qApp
+from PyQt5.QtGui import QPixmap
 
-__version__ = "0.1"
+__version__ = "0.1-mod1"
 __author__ = "Leodanis Pozo Ramos"
 
 ERROR_MSG = "ERROR"
@@ -71,6 +75,7 @@ class PyCalcUi(QMainWindow):
         # Create the display and the buttons
         self._createDisplay()
         self._createButtons()
+        self._showMenu()
 
     def _createDisplay(self):
         """Create the display."""
@@ -131,6 +136,34 @@ class PyCalcUi(QMainWindow):
         """Clear the display."""
         self.setDisplayText("")
 
+    def _showMenu(self):
+        exitAct = QAction('&Exit', self)
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(qApp.quit)
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAct)
+        aboutAct = QAction('&About', self)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(aboutAct)
+        
+    def _showAbout(self):
+        print("showDialog")
+        msg = QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QPixmap(os.path.dirname(__file__) + "/Calculator.png"))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Calculator</h3>")
+        msg.setInformativeText("A simple calculator application written in PyQt5<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
 
 # Create a Model to handle the calculator's operation
 def evaluateExpression(expression):
