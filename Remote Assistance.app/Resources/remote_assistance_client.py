@@ -116,7 +116,6 @@ class Window(QtWidgets.QWidget):
         self.x11vnc_process.readyReadStandardOutput.connect(self.onVncReadyReadStandardOutput)
         self.x11vnc_process.readyReadStandardError.connect(self.onVncReadyReadStandardError)
         self.x11vnc_process.start(command, args)
-        self.onTimer() # Make sure the new state is immediately reflected
         self.timer.start(1000)
 
     def stopVncClient(self):
@@ -155,7 +154,6 @@ class Window(QtWidgets.QWidget):
             self.tray_icon.setIcon(self.style().standardIcon(
                 QtWidgets.QStyle.SP_DriveNetIcon))  # TODO: Replace by blinking or red binoculars icon
 
-
     def onReadyReadStandardOutput(self):
         print("onReadyReadStandardOutput")
         data = self.tuntox_process.readAllStandardOutput().data().decode()
@@ -179,7 +177,7 @@ class Window(QtWidgets.QWidget):
 
     def onTimer(self):
         # print("Timer")
-        if (checkIfProcessRunning("x11vnc") == True) and (checkIfProcessRunning("tuntox") == True):
+        if (checkIfProcessRunning("vncviewer") == True) and (checkIfProcessRunning("tuntox") == True):
             self.tuntox_infolabel.setVisible(True)
             self.vnc_infolabel.setVisible(True)
         else:
