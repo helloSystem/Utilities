@@ -47,12 +47,13 @@ def checkIfProcessRunning(processName):
             pass
     return False
 
-class Window(QtWidgets.QWidget):
+class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
 
         self.closeEvent = self.closeEvent
+        self._showMenu()
 
         # Init QSystemTrayIcon
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
@@ -73,7 +74,9 @@ class Window(QtWidgets.QWidget):
         self.vnc_infolabel.setVisible(False)
         vbox.addWidget(self.vnc_infolabel)
 
-        self.setLayout(vbox)
+        widget = QtWidgets.QWidget()
+        widget.setLayout(vbox)
+        self.setCentralWidget(widget)
 
         self.setWindowTitle(self.tr("Remote Assistance"))
         self.show()
@@ -88,7 +91,7 @@ class Window(QtWidgets.QWidget):
 
     def startSharing(self):
         self.timer.stop()
-        self.tuntox_infolabel.setText(self.tr(self.tr("Starting x11vnc")))
+        self.tuntox_infolabel.setText(self.tr("Starting x11vnc"))
         command = 'x11vnc'
         args = ["-noxdamage", "-ncache", "10", "-ncache_cr", "-display", os.getenv("DISPLAY")] # "-localhost", "-no6"
         self.x11vnc_process = QtCore.QProcess()
@@ -100,7 +103,7 @@ class Window(QtWidgets.QWidget):
         self.onTimer() # Make sure the new state is immediately reflected
 
     def startTuntox(self):
-        self.tuntox_infolabel.setText(self.tr(self.tr("Starting tuntox")))
+        self.tuntox_infolabel.setText(self.tr("Starting tuntox"))
         command = "tuntox"
         args = [] # "-f", "localhost:" + str(self.x11vnc_port)]
         self.tuntox_process = QtCore.QProcess()
@@ -194,7 +197,7 @@ class Window(QtWidgets.QWidget):
         x = re.findall("Using Tox ID: (.*)", data)
         if len(x) > 0:
             self.tox_id = x[0]
-            self.tuntox_infolabel.setText(self.tr(self.tr("A peer on the internet can now connect to:")))
+            self.tuntox_infolabel.setText(self.tr("A peer on the internet can now connect to:"))
             self.vnc_infolabel.setText("tuntox -i " + self.tox_id + " -L " + "59000:127.0.0.1:" + str(self.x11vnc_port))
 
         # Accepted friend request from ... as 0
@@ -219,6 +222,48 @@ class Window(QtWidgets.QWidget):
         self.stopSharing()
         event.accept()
 
+    def _showMenu(self):
+        giveAct = QtWidgets.QAction('&Give Assistance', self)
+        giveAct.setShortcut('Ctrl+G')
+        giveAct.setStatusTip('Give Assistance')
+        giveAct.triggered.connect(self.giveAssistance)
+        exitAct = QtWidgets.QAction('&Quit', self)
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(QtWidgets.QApplication.quit)
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(giveAct)
+        fileMenu.addAction(exitAct)
+        aboutAct = QtWidgets.QAction('&About', self)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(aboutAct)
+        
+    def _showAbout(self):
+        print("showDialog")
+        msg = QtWidgets.QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QtGui.QPixmap(os.path.dirname(__file__) + "/Remote Assistance.png"))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Remote Assistance</h3>")
+        msg.setInformativeText("A simple peer-to-peer Remote Assistance application<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
+
+    def giveAssistance(self):
+        self.tuntox_process = QtCore.QProcess()
+        command = os.path.dirname(__file__) + "/remote_assistance_client.py"
+        args = []
+        print("Starting " + command + " " + " ".join(args))
+        self.tuntox_process.startDetached(command, args)
+        QtWidgets.QApplication.quit()
+    
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     ex = Window()

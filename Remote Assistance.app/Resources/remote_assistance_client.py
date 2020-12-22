@@ -47,12 +47,13 @@ def checkIfProcessRunning(processName):
             pass
     return False
 
-class Window(QtWidgets.QWidget):
+class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
 
         self.closeEvent = self.closeEvent
+        self._showMenu()
 
         # Init QSystemTrayIcon
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
@@ -81,7 +82,9 @@ class Window(QtWidgets.QWidget):
         self.vnc_infolabel.setVisible(False)
         vbox.addWidget(self.vnc_infolabel)
 
-        self.setLayout(vbox)
+        widget = QtWidgets.QWidget()
+        widget.setLayout(vbox)
+        self.setCentralWidget(widget)
 
         self.setWindowTitle(self.tr("Remote Assistance Client"))
         self.show()
@@ -183,6 +186,12 @@ class Window(QtWidgets.QWidget):
             self.startVncClient()
             # self.tray_icon.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DriveNetIcon)) # TODO: Replace by blinking or red binoculars icon
 
+        x = re.findall("Invalid Tox ID", data)
+        if len(x) > 0:
+            self.tox_btn.setEnabled(True)
+            self.tox_id_lineedit.clear()
+            self.tox_id_lineedit.setEnabled(True)
+        
     def onTimer(self):
         # print("Timer")
         if (checkIfProcessRunning("vncviewer") == True) and (checkIfProcessRunning("tuntox") == True):
@@ -197,6 +206,35 @@ class Window(QtWidgets.QWidget):
         self.stopVncClient()
         event.accept()
 
+    def _showMenu(self):
+        exitAct = QtWidgets.QAction('&Quit', self)
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(QtWidgets.QApplication.quit)
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAct)
+        aboutAct = QtWidgets.QAction('&About', self)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(aboutAct)
+        
+    def _showAbout(self):
+        print("showDialog")
+        msg = QtWidgets.QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QtGui.QPixmap(os.path.dirname(__file__) + "/Remote Assistance.png"))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Remote Assistance Client</h3>")
+        msg.setInformativeText("A simple peer-to-peer Remote Assistance application<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
+        
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     ex = Window()
