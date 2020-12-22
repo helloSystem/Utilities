@@ -113,7 +113,7 @@ class Window(QtWidgets.QWidget):
         sleep(3) # FIXME: Needed?
         self.tuntox_infolabel.setText(self.tr(self.tr("Starting vncviewer")))
         command = 'vncviewer' # TightVNC
-        args = ["-noraiseonbeep", "-encodings", "copyrect tight zlib hextile", "localhost", "-p", "59000"]
+        args = ["-noraiseonbeep", "-encodings", "copyrect tight zlib hextile", "localhost::59000"]
         self.x11vnc_process = QtCore.QProcess()
         # proc.startDetached(command, args)
         self.x11vnc_process.readyReadStandardOutput.connect(self.onVncReadyReadStandardOutput)

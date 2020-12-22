@@ -202,7 +202,7 @@ class Window(QtWidgets.QWidget):
         if len(x) > 0:
             remote_tox_id = x[0]
             self.tuntox_infolabel.setText(self.tr(self.tr("Once they see the 'Accepted friend request' message, your peer can run TightVNC Viewer:")))
-            self.vnc_infolabel.setText("vncviewer -noraiseonbeep -encodings 'copyrect tight zlib hextile' localhost -p 59000")
+            self.vnc_infolabel.setText("vncviewer -noraiseonbeep -encodings 'copyrect tight zlib hextile' localhost::59000")
             # self.tray_icon.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DriveNetIcon)) # TODO: Replace by blinking or red binoculars icon
 
     def onTimer(self):
