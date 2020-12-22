@@ -113,7 +113,7 @@ class Window(QtWidgets.QWidget):
 
     def stopSharing(self):
         self.timer.stop()
-
+        print("stopSharing")
         try:
             self.x11vnc_process.kill()
         except:
@@ -217,6 +217,7 @@ class Window(QtWidgets.QWidget):
         "This gets called automatically when the window is closed"
         print("closeEvent")
         self.stopSharing()
+        event.accept()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)

@@ -195,6 +195,7 @@ class Window(QtWidgets.QWidget):
         "This gets called automatically when the window is closed"
         print("closeEvent")
         self.stopVncClient()
+        event.accept()
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
