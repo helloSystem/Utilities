@@ -99,34 +99,42 @@ class Window(QtWidgets.QWidget):
         self.tox_btn.setEnabled(False)
         self.tox_id_lineedit.setEnabled(False)
         command = "tuntox"
-        args = ["-i", self.tox_id_lineedit.text(), "-L 5900:127.0.0.1:5909"]
+        # -L localport:127.0.0.1:dest_port
+        args = ["-i", self.tox_id_lineedit.text(), "-L", "59000:127.0.0.1:5900"]
         self.tuntox_process = QtCore.QProcess()
         self.tuntox_process.readyReadStandardOutput.connect(self.onReadyReadStandardOutput)
         self.tuntox_process.readyReadStandardError.connect(self.onReadyReadStandardError)
+        print("Starting " + command + " " + " ".join(args))
         self.tuntox_process.start(command, args)
 
     def startVncClient(self):
         self.timer.stop()
         print("startVncClient")
+        sleep(3) # FIXME: Needed?
         self.tuntox_infolabel.setText(self.tr(self.tr("Starting vncviewer")))
-        command = 'vncviewer'
-        args = ["127.0.0.1", "-p", "5909"]
+        command = 'vncviewer' # TightVNC
+        args = ["-noraiseonbeep", "-encodings", "copyrect tight zlib hextile", "localhost", "-p", "59000"]
         self.x11vnc_process = QtCore.QProcess()
         # proc.startDetached(command, args)
         self.x11vnc_process.readyReadStandardOutput.connect(self.onVncReadyReadStandardOutput)
         self.x11vnc_process.readyReadStandardError.connect(self.onVncReadyReadStandardError)
+        print("Starting " + command + " " + " ".join(args))
         self.x11vnc_process.start(command, args)
         self.timer.start(1000)
 
     def stopVncClient(self):
         self.timer.stop()
         print("stopVncClient")
-        command = 'killall' # FIXME: Kill only the instances we have launched, using PIDs
-        args = ["vncviewer"]
-        proc = QtCore.QProcess()
-        proc.startDetached(command, args)
-        args = ["tuntox"]
-        proc.startDetached(command, args)
+
+        try:
+            self.x11vnc_process.kill()
+        except:
+            pass
+        try:
+            self.tuntox_process.kill()
+        except:
+            pass
+
         self.onTimer() # Make sure the new state is immediately reflected
         self.timer.start()
 
@@ -147,8 +155,8 @@ class Window(QtWidgets.QWidget):
 
         # Desktop name = We are connected, now we can hide this window
         x = re.findall("Desktop name \"(.*)\"", data)
-        print("Connected to %s" % x)
         if len(x) > 0:
+            print("Connected to %s" % x)
             self.tuntox_infolabel.setText(self.tr(self.tr("Remote control in action")))
             self.hide()  # Hide this window to tray
             self.tray_icon.setIcon(self.style().standardIcon(

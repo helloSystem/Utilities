@@ -88,37 +88,41 @@ class Window(QtWidgets.QWidget):
 
     def startSharing(self):
         self.timer.stop()
-        print("startSharing")
         self.tuntox_infolabel.setText(self.tr(self.tr("Starting x11vnc")))
         command = 'x11vnc'
-        args = ["-localhost", "-avahi", "-ncache", "10", "-ncache_cr", "-display", os.getenv("DISPLAY")]
+        args = ["-noxdamage", "-ncache", "10", "-ncache_cr", "-display", os.getenv("DISPLAY")] # "-localhost", "-no6"
         self.x11vnc_process = QtCore.QProcess()
         # proc.startDetached(command, args)
         self.x11vnc_process.readyReadStandardOutput.connect(self.onVncReadyReadStandardOutput)
         self.x11vnc_process.readyReadStandardError.connect(self.onVncReadyReadStandardError)
+        print("Starting " + command + " " + " ".join(args))
         self.x11vnc_process.start(command, args)
         self.onTimer() # Make sure the new state is immediately reflected
 
     def startTuntox(self):
         self.tuntox_infolabel.setText(self.tr(self.tr("Starting tuntox")))
         command = "tuntox"
-        args = ["-f", "127.0.0.1:" + str(self.x11vnc_port)]
+        args = [] # "-f", "localhost:" + str(self.x11vnc_port)]
         self.tuntox_process = QtCore.QProcess()
         self.tuntox_process.readyReadStandardOutput.connect(self.onReadyReadStandardOutput)
         self.tuntox_process.readyReadStandardError.connect(self.onReadyReadStandardError)
+        print("Starting " + command + " " + " ".join(args))
         self.tuntox_process.start(command, args)
         self.onTimer() # Make sure the new state is immediately reflected
         self.timer.start()
 
     def stopSharing(self):
         self.timer.stop()
-        print("setVnc")
-        command = 'killall' # FIXME: Kill only the instances we have launched, using PIDs
-        args = ["x11vnc"]
-        proc = QtCore.QProcess()
-        proc.startDetached(command, args)
-        args = ["tuntox"]
-        proc.startDetached(command, args)
+
+        try:
+            self.x11vnc_process.kill()
+        except:
+            pass
+        try:
+            self.tuntox_process.kill()
+        except:
+            pass
+
         self.onTimer() # Make sure the new state is immediately reflected
         self.timer.start()
 
@@ -135,7 +139,11 @@ class Window(QtWidgets.QWidget):
     def onVncReadyReadStandardError(self):
         print("onVncReadyReadStandardError")
         data = self.x11vnc_process.readAllStandardError().data().decode()
-        print(data)
+        if "\n" in data:
+            lines = data.split("\n")
+            for line in lines:
+                if not line.startswith("#"): # Those might confuse users
+                    print(line)
 
         # "Got connection from client" = A VNC client has connected
         x = re.findall(self.tr("Got connection from client"), data)
@@ -145,6 +153,30 @@ class Window(QtWidgets.QWidget):
             self.tray_icon.setIcon(self.style().standardIcon(
                 QtWidgets.QStyle.SP_DriveNetIcon))  # TODO: Replace by blinking or red binoculars icon
 
+#        # Address already in use = Another instance of x11vnc is already running on this port
+#        x = re.findall(self.tr("Address already in use"), data)
+#        if len(x) > 0:
+#            msg = QtWidgets.QMessageBox()
+#            msg.setIcon(QtWidgets.QMessageBox.Critical)
+#            msg.setWindowTitle(" ")
+#            msg.setText(self.tr("Could not start Remote Assistance because another instance is already running."))
+#            msg.setInformativeText(self.tr("Quit the other instance and try again."))
+#            msg.setDetailedText(data) # Text that appears when user clicks the "Show Details..." button
+#            msg.exec_()
+#            QtWidgets.QApplication.quit()
+
+        # failed = catch-all for x11vnc errors (hopefully)
+        x = re.findall(self.tr("failed"), data)
+        if len(x) > 0:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle(" ")
+            msg.setText(self.tr("Could not start Remote Assistance."))
+           #  msg.setInformativeText(self.tr("Quit the other instance and try again."))
+            msg.setDetailedText(data) # Text that appears when user clicks the "Show Details..." button
+            msg.exec_()
+            QtWidgets.QApplication.quit()
+            
     def onReadyReadStandardOutput(self):
         print("onReadyReadStandardOutput")
         data = self.tuntox_process.readAllStandardOutput().data().decode()
@@ -153,20 +185,24 @@ class Window(QtWidgets.QWidget):
     def onReadyReadStandardError(self):
         print("onReadyReadStandardError")
         data = self.tuntox_process.readAllStandardError().data().decode()
-        print(data)
+        if "\n" in data:
+            lines = data.split("\n")
+            for line in lines:
+                if not "[WARNING]" in line: # Those might confuse users
+                    print(line)
 
         x = re.findall("Using Tox ID: (.*)", data)
         if len(x) > 0:
             self.tox_id = x[0]
             self.tuntox_infolabel.setText(self.tr(self.tr("A peer on the internet can now connect to:")))
-            self.vnc_infolabel.setText("tuntox -i " + self.tox_id + " -L " + str(self.x11vnc_port) + ":127.0.0.1:5909")
+            self.vnc_infolabel.setText("tuntox -i " + self.tox_id + " -L " + "59000:127.0.0.1:" + str(self.x11vnc_port))
 
         # Accepted friend request from ... as 0
         x = re.findall(self.tr("Accepted friend request from (.*) as"), data)
         if len(x) > 0:
             remote_tox_id = x[0]
-            self.tuntox_infolabel.setText(self.tr(self.tr("Your peer can now run:")))
-            self.vnc_infolabel.setText("vncviewer 127.0.0.1 -p 5909")
+            self.tuntox_infolabel.setText(self.tr(self.tr("Once they see the 'Accepted friend request' message, your peer can run TightVNC Viewer:")))
+            self.vnc_infolabel.setText("vncviewer -noraiseonbeep -encodings 'copyrect tight zlib hextile' localhost -p 59000")
             # self.tray_icon.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DriveNetIcon)) # TODO: Replace by blinking or red binoculars icon
 
     def onTimer(self):
