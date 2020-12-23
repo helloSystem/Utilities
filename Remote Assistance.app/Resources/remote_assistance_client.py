@@ -26,34 +26,38 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 import os, sys, time
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtNetwork import QHostInfo
 import psutil
 import re
-from time import sleep
+import shutil
 
-def checkIfProcessRunning(processName):
-    '''
-    Check if there is any running process that contains the given name processName.
-    '''
-    #Iterate over the all the running process
-    for proc in psutil.process_iter():
-        try:
-            # Check if process name contains the given name string.
-            if processName.lower() in proc.name().lower():
-                return True
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-    return False
 
+# TODO: Reimplement tuntox in Python using https://github.com/TokTok/py-toxcore-c
+# According to https://github.com/gjedeer/tuntox/issues/33#issuecomment-439614638
+# the protocol is very simple and the tuntox author would be happy
+# to help anyone who wants to reimplement it.
+# Especially with Python and its robust data types, the reimplementation
+# shouldn't take more than 500 lines of code.
+
+
+def cmd_exists(cmd):
+    return shutil.which(cmd) is not None
+    
 class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
+        
+        self.checkPrerequisites(["/usr/local/lib/ssvnc/vncviewer", "tuntox"])
 
         self.closeEvent = self.closeEvent
         self._showMenu()
+        
+        self.tuntox_process = None
+        self.vncviewer_process = None
 
         # Init QSystemTrayIcon
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
@@ -66,13 +70,16 @@ class Window(QtWidgets.QMainWindow):
         vbox.addWidget(self.tuntox_infolabel)
         self.tuntox_infolabel.setText(self.tr(self.tr("Enter ID of the computer asking for support:")))
 
-        self.tox_id_lineedit = QtWidgets.QLineEdit()
-        vbox.addWidget(self.tox_id_lineedit)
-
         self.tox_btn = QtWidgets.QPushButton()
         self.tox_btn.setText(self.tr("Connect"))
-        vbox.addWidget(self.tox_btn)
+        
         self.tox_btn.clicked.connect(self.startTuntox)
+        self.tox_btn.setEnabled(False)
+        self.tox_id_lineedit = QtWidgets.QLineEdit()
+        vbox.addWidget(self.tox_id_lineedit)
+        vbox.addWidget(self.tox_btn)
+        self.tox_id_lineedit.returnPressed.connect(self.tox_btn.click)
+        self.tox_id_lineedit.textChanged.connect(lambda: self.tox_btn.setEnabled(True))
 
         self.vnc_infolabel = QtWidgets.QLabel()
         self.tox_id = ""
@@ -92,11 +99,19 @@ class Window(QtWidgets.QMainWindow):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.onTimer)
 
-
         self.x11vnc_port = 0
 
-        # self.startTuntox()
-
+    def checkPrerequisites(self, prerequisites):
+        for prerequisite in prerequisites:
+            if not cmd_exists(prerequisite):
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setWindowTitle(" ")
+                msg.setText(self.tr("Could not start Remote Assistance because %s is missing." ) % prerequisite)
+                msg.setInformativeText(self.tr("Please install it and try again."))
+                msg.exec_()
+                sys.exit(0)
+                
     def startTuntox(self):
         self.tuntox_infolabel.setText(self.tr(self.tr("Starting tuntox client mode")))
         self.tox_btn.setEnabled(False)
@@ -110,19 +125,17 @@ class Window(QtWidgets.QMainWindow):
         print("Starting " + command + " " + " ".join(args))
         self.tuntox_process.start(command, args)
 
-    def startVncClient(self):
+    def startVncClient(self, use_alternate_syntax=False):
         self.timer.stop()
         print("startVncClient")
-        sleep(3) # FIXME: Needed?
         self.tuntox_infolabel.setText(self.tr(self.tr("Starting vncviewer")))
-        command = 'vncviewer' # TightVNC
-        args = ["-noraiseonbeep", "-encodings", "copyrect tight zlib hextile", "localhost::59000"]
-        self.x11vnc_process = QtCore.QProcess()
-        # proc.startDetached(command, args)
-        self.x11vnc_process.readyReadStandardOutput.connect(self.onVncReadyReadStandardOutput)
-        self.x11vnc_process.readyReadStandardError.connect(self.onVncReadyReadStandardError)
+        command = '/usr/local/lib/ssvnc/vncviewer' # SSVNC Viewer (based on TightVNC viewer); normal TightVNC viewer refuses connection
+        args  = ["-noraiseonbeep", "-encodings", "tight", "127.0.0.1::59000"] #xxxxxxx localhost???
+        self.vncviewer_process = QtCore.QProcess()
+        self.vncviewer_process.readyReadStandardOutput.connect(self.onVncReadyReadStandardOutput)
+        self.vncviewer_process.readyReadStandardError.connect(self.onVncReadyReadStandardError)
         print("Starting " + command + " " + " ".join(args))
-        self.x11vnc_process.start(command, args)
+        self.vncviewer_process.start(command, args)
         self.timer.start(1000)
 
     def stopVncClient(self):
@@ -130,7 +143,7 @@ class Window(QtWidgets.QMainWindow):
         print("stopVncClient")
 
         try:
-            self.x11vnc_process.kill()
+            self.vncviewer_process.kill()
         except:
             pass
         try:
@@ -138,12 +151,11 @@ class Window(QtWidgets.QMainWindow):
         except:
             pass
 
-        self.onTimer() # Make sure the new state is immediately reflected
         self.timer.start()
 
     def onVncReadyReadStandardOutput(self):
         print("onVncReadyReadStandardOutput")
-        data = self.x11vnc_process.readAllStandardOutput().data().decode()
+        data = self.vncviewer_process.readAllStandardOutput().data().decode()
         print(data)
 
         x = re.findall("PORT=(.*)", data)
@@ -153,7 +165,7 @@ class Window(QtWidgets.QMainWindow):
 
     def onVncReadyReadStandardError(self):
         print("onVncReadyReadStandardError")
-        data = self.x11vnc_process.readAllStandardError().data().decode()
+        data = self.vncviewer_process.readAllStandardError().data().decode()
         print(data)
 
         # Desktop name = We are connected, now we can hide this window
@@ -164,7 +176,7 @@ class Window(QtWidgets.QMainWindow):
             self.hide()  # Hide this window to tray
             self.tray_icon.setIcon(self.style().standardIcon(
                 QtWidgets.QStyle.SP_DriveNetIcon))  # TODO: Replace by blinking or red binoculars icon
-
+            
     def onReadyReadStandardOutput(self):
         print("onReadyReadStandardOutput")
         data = self.tuntox_process.readAllStandardOutput().data().decode()
@@ -191,10 +203,16 @@ class Window(QtWidgets.QMainWindow):
             self.tox_btn.setEnabled(True)
             self.tox_id_lineedit.clear()
             self.tox_id_lineedit.setEnabled(True)
-        
+            self.tox_id_lineedit.setFocus()
+            self.tox_btn.setEnabled(False)
+
     def onTimer(self):
         # print("Timer")
-        if (checkIfProcessRunning("vncviewer") == True) and (checkIfProcessRunning("tuntox") == True):
+        if (self.tuntox_process == None):
+            print("tuntox process has not yet been started")
+        elif (self.tuntox_process.processId() != 0) and (self.vncviewer_process == None):
+            print("tuntox process is running but x11vnc process has not yet been started")
+        elif (self.tuntox_process.processId() != 0) and (self.vncviewer_process.processId() != 0):
             self.tuntox_infolabel.setVisible(True)
             self.vnc_infolabel.setVisible(True)
         else:
@@ -232,7 +250,7 @@ class Window(QtWidgets.QMainWindow):
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Remote Assistance Client</h3>")
-        msg.setInformativeText("A simple peer-to-peer Remote Assistance application<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.setInformativeText("A simple Remote Assistance application using the encrypted peer-to-peer Tox protocol<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
         
 if __name__ == '__main__':

@@ -26,34 +26,39 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 import os, sys, time
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtNetwork import QHostInfo
 import psutil
 import re
 from time import sleep
+import shutil
 
-def checkIfProcessRunning(processName):
-    '''
-    Check if there is any running process that contains the given name processName.
-    '''
-    #Iterate over the all the running process
-    for proc in psutil.process_iter():
-        try:
-            # Check if process name contains the given name string.
-            if processName.lower() in proc.name().lower():
-                return True
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-    return False
 
+# TODO: Reimplement tuntox in Python using https://github.com/TokTok/py-toxcore-c
+# According to https://github.com/gjedeer/tuntox/issues/33#issuecomment-439614638
+# the protocol is very simple and the tuntox author would be happy
+# to help anyone who wants to reimplement it.
+# Especially with Python and its robust data types, the reimplementation
+# shouldn't take more than 500 lines of code.
+
+
+def cmd_exists(cmd):
+    return shutil.which(cmd) is not None
+    
 class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
+        
+        self.checkPrerequisites(["x11vnc", "tuntox"])
 
         self.closeEvent = self.closeEvent
         self._showMenu()
+        
+        self.tuntox_process = None
+        self.x11vnc_process = None
 
         # Init QSystemTrayIcon
         self.tray_icon = QtWidgets.QSystemTrayIcon(self)
@@ -89,11 +94,23 @@ class Window(QtWidgets.QMainWindow):
 
         self.startSharing()
 
+    def checkPrerequisites(self, prerequisites):
+        for prerequisite in prerequisites:
+            if not cmd_exists(prerequisite):
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setWindowTitle(" ")
+                msg.setText(self.tr("Could not start Remote Assistance because %s is missing." ) % prerequisite)
+                msg.setInformativeText(self.tr("Please install it and try again."))
+                msg.exec_()
+                sys.exit(0)
+
     def startSharing(self):
         self.timer.stop()
-        self.tuntox_infolabel.setText(self.tr("Starting x11vnc"))
+        self.tuntox_infolabel.setText(self.tr("Starting remote control..."))
+        self.tuntox_infolabel.setVisible(True)
         command = 'x11vnc'
-        args = ["-noxdamage", "-ncache", "10", "-ncache_cr", "-display", os.getenv("DISPLAY")] # "-localhost", "-no6"
+        args = ["-no6", "-noshm", "-listen", "localhost", "-localhost", "-noxdamage", "-ncache", "10", "-ncache_cr", "-display", os.getenv("DISPLAY")]
         self.x11vnc_process = QtCore.QProcess()
         # proc.startDetached(command, args)
         self.x11vnc_process.readyReadStandardOutput.connect(self.onVncReadyReadStandardOutput)
@@ -103,9 +120,10 @@ class Window(QtWidgets.QMainWindow):
         self.onTimer() # Make sure the new state is immediately reflected
 
     def startTuntox(self):
-        self.tuntox_infolabel.setText(self.tr("Starting tuntox"))
+        self.tuntox_infolabel.setText(self.tr("Starting encrypted tunnel..."))
         command = "tuntox"
-        args = [] # "-f", "localhost:" + str(self.x11vnc_port)]
+        # FIXME: Restrict sharing to only the port needed for x11vnc
+        args = [] # "-f", "127.0.0.1:" + str(self.x11vnc_port) # -f is an undocumented switch that limits sharing to the selected host and port
         self.tuntox_process = QtCore.QProcess()
         self.tuntox_process.readyReadStandardOutput.connect(self.onReadyReadStandardOutput)
         self.tuntox_process.readyReadStandardError.connect(self.onReadyReadStandardError)
@@ -156,17 +174,17 @@ class Window(QtWidgets.QMainWindow):
             self.tray_icon.setIcon(self.style().standardIcon(
                 QtWidgets.QStyle.SP_DriveNetIcon))  # TODO: Replace by blinking or red binoculars icon
 
-#        # Address already in use = Another instance of x11vnc is already running on this port
-#        x = re.findall(self.tr("Address already in use"), data)
-#        if len(x) > 0:
-#            msg = QtWidgets.QMessageBox()
-#            msg.setIcon(QtWidgets.QMessageBox.Critical)
-#            msg.setWindowTitle(" ")
-#            msg.setText(self.tr("Could not start Remote Assistance because another instance is already running."))
-#            msg.setInformativeText(self.tr("Quit the other instance and try again."))
-#            msg.setDetailedText(data) # Text that appears when user clicks the "Show Details..." button
-#            msg.exec_()
-#            QtWidgets.QApplication.quit()
+        # Address already in use = Another instance of x11vnc is already running on this port
+        x = re.findall(self.tr("Address already in use"), data)
+        if len(x) > 0:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle(" ")
+            msg.setText(self.tr("Could not start Remote Assistance because another instance is already running."))
+            msg.setInformativeText(self.tr("Quit the other instance and try again."))
+            msg.setDetailedText(data) # Text that appears when user clicks the "Show Details..." button
+            msg.exec_()
+            QtWidgets.QApplication.quit()
 
         # failed = catch-all for x11vnc errors (hopefully)
         x = re.findall(self.tr("failed"), data)
@@ -197,22 +215,33 @@ class Window(QtWidgets.QMainWindow):
         x = re.findall("Using Tox ID: (.*)", data)
         if len(x) > 0:
             self.tox_id = x[0]
-            self.tuntox_infolabel.setText(self.tr("A peer on the internet can now connect to:"))
+            cb = QtWidgets.QApplication.clipboard()
+            cb.clear(mode=cb.Clipboard )
+            cb.setText(self.tox_id, mode=cb.Clipboard)
+    
+        x = re.findall("been established", data)
+        if len(x) > 0:
+            self.tuntox_infolabel.setText(self.tr("A peer on the internet can access all ports on the local machine. For example:"))
             self.vnc_infolabel.setText("tuntox -i " + self.tox_id + " -L " + "59000:127.0.0.1:" + str(self.x11vnc_port))
-
+            self.vnc_infolabel.setVisible(True)
+            
         # Accepted friend request from ... as 0
         x = re.findall(self.tr("Accepted friend request from (.*) as"), data)
         if len(x) > 0:
             remote_tox_id = x[0]
             self.tuntox_infolabel.setText(self.tr(self.tr("Once they see the 'Accepted friend request' message, your peer can run TightVNC Viewer:")))
-            self.vnc_infolabel.setText("vncviewer -noraiseonbeep -encodings 'copyrect tight zlib hextile' localhost::59000")
+            self.vnc_infolabel.setText("vncviewer -noraiseonbeep -encodings 'tight' 127.0.0.1::59000") #xxxxxxx localhost???
+            self.vnc_infolabel.setVisible(True)
             # self.tray_icon.setIcon(self.style().standardIcon(QtWidgets.QStyle.SP_DriveNetIcon)) # TODO: Replace by blinking or red binoculars icon
 
     def onTimer(self):
         # print("Timer")
-        if (checkIfProcessRunning("x11vnc") == True) and (checkIfProcessRunning("tuntox") == True):
-            self.tuntox_infolabel.setVisible(True)
-            self.vnc_infolabel.setVisible(True)
+        if (self.tuntox_process == None):
+            print("tuntox process has not yet been started")
+        elif (self.tuntox_process.processId() != 0) and (self.x11vnc_process == None):
+            print("tuntox process is running but x11vnc process has not yet been started")
+        elif (self.tuntox_process.processId() != 0) and (self.x11vnc_process.processId() != 0):
+            pass
         else:
             QtWidgets.QApplication.quit()
 
@@ -253,15 +282,15 @@ class Window(QtWidgets.QMainWindow):
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Remote Assistance</h3>")
-        msg.setInformativeText("A simple peer-to-peer Remote Assistance application<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.setInformativeText("A simple Remote Assistance application using the encrypted peer-to-peer Tox protocol<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
     def giveAssistance(self):
-        self.tuntox_process = QtCore.QProcess()
+        self.assistance_process = QtCore.QProcess()
         command = os.path.dirname(__file__) + "/remote_assistance_client.py"
         args = []
         print("Starting " + command + " " + " ".join(args))
-        self.tuntox_process.startDetached(command, args)
+        self.assistance_process.startDetached(command, args)
         QtWidgets.QApplication.quit()
     
 if __name__ == '__main__':
