@@ -45,60 +45,120 @@ class KeyboardSwitcher(object):
 
     def getSupportedLayouts(self):
         candidates = os.listdir("/usr/local/share/X11/xkb/symbols/")
-        supported_layouts = []
-        for candidate in candidates:
-            if len(candidate) < 4:
-                supported_layouts.append(candidate)
-        supported_layouts.sort()
-        supported_layouts.insert(0, "en")
+        # supported_layouts = []
+        # for candidate in candidates:
+        #     if len(candidate) < 4:
+        #         supported_layouts.append(candidate)
+        # supported_layouts.sort()
+        # supported_layouts.insert(0, "en")
+        # return supported_layouts
+
+        # Only show the main ones in order to keep the list short and tidy, let's see how long
+        # it takes for the first person to complain that exotic ones are missing...
+        # Let's not end up like https://www.youtube.com/watch?v=4nR4HP2x1iU
+        supported_layouts = ["us", "gb", "fr", "es", "de", "it", "jp", "pt", "no", "se", "fi", "ru", "tr", "il"]
+
         return supported_layouts
 
     def basicWindow(self):
         app = QtWidgets.QApplication(sys.argv)
-        window = QtWidgets.QWidget()
+        self.window = QtWidgets.QMainWindow()
+        self.window.setFixedSize(250, 350)
+        self._showMenu()
 
-        window.setWindowTitle('Keyboard Layout')
+        self.window.setWindowTitle('Keyboard Layout')
 
         layout = QtWidgets.QVBoxLayout()
 
         self.list_widget = QtWidgets.QListWidget()
         self.list_widget.setAlternatingRowColors(True)
         print(self.supported_layouts)
+        cleartext = ["English (United States)", "English (United Kingdom)", "Français", "Español",
+                     "Deutsch", "Italiano", "日本人", "Português", "Norsk",
+                     "Svenska", "Suomalainen", "Pусский", "Türk", "עִברִית"]
+        i = 0
         for supported_layout in self.supported_layouts:
-            self.list_widget.addItem(supported_layout)
+            item = QtWidgets.QListWidgetItem(cleartext[i])
+            i = i+1
+            setattr(item, "layout", supported_layout)
+            print("%s = %s" % (supported_layout, cleartext[i-1]))
+            self.list_widget.addItem(item)
         self.list_widget.itemSelectionChanged.connect(self.onSelectionChanged)
         layout.addWidget(self.list_widget)
 
-        self.checkbox_keyswap = QtWidgets.QCheckBox()
-        self.checkbox_keyswap.setText("Swap Ctrl and Alt keys")
-        self.checkbox_keyswap.setChecked(True)
-        self.checkbox_keyswap.clicked.connect(self.onSelectionChanged)
-        layout.addWidget(self.checkbox_keyswap)
+        # self.checkbox_keyswap = QtWidgets.QCheckBox()
+        # self.checkbox_keyswap.setText("Swap Ctrl and Alt keys")
+        # self.checkbox_keyswap.setChecked(True)
+        # self.checkbox_keyswap.clicked.connect(self.onSelectionChanged)
+        # layout.addWidget(self.checkbox_keyswap)
 
-        self.checkbox_disablecapslock = QtWidgets.QCheckBox()
-        self.checkbox_disablecapslock.setText("Disable Caps Lock key")
-        self.checkbox_disablecapslock.setChecked(True)
-        layout.addWidget(self.checkbox_disablecapslock)
+        # self.checkbox_disablecapslock = QtWidgets.QCheckBox()
+        # self.checkbox_disablecapslock.setText("Disable Caps Lock key")
+        # self.checkbox_disablecapslock.setChecked(True)
+        # layout.addWidget(self.checkbox_disablecapslock)
 
-        window.setLayout(layout)
-        window.show()
+        widget = QtWidgets.QWidget()
+        widget.setLayout(layout)
+        self.window.setCentralWidget(widget)
+        self.window.show()
         sys.exit(app.exec_())
 
     def onSelectionChanged(self):
         print("Selection changed")
         print(self.list_widget.selectedItems()[0].text())
-        args = ["setxkbmap", '-layout', self.list_widget.selectedItems()[0].text(), "-variant", "nodeadkeys"]
-        if self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == False:
-            args.append("-option", "ctrl:swap_lalt_lctl")
-        elif self.checkbox_keyswap.isChecked() == False and self.checkbox_disablecapslock == True:
-            args.append("-option", "caps:none")
-        elif self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == True:
-            args.append("-option", "ctrl:swap_lalt_lctl,caps:none")
+        print(getattr(self.list_widget.selectedItems()[0], "layout"))
+
+        # For now, we swap left Ctrl and left Alt no matter what. This may get handled better in the future
+        args = ["setxkbmap", '-layout', getattr(self.list_widget.selectedItems()[0], "layout"), "-option", "ctrl:swap_lalt_lctl", "-option", "ctrl:swap_lalt_lctl,caps:none", "-variant", "nodeadkeys"]
+
+        # if self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == False:
+        #     args.append("-option", "ctrl:swap_lalt_lctl")
+        # elif self.checkbox_keyswap.isChecked() == False and self.checkbox_disablecapslock == True:
+        #     args.append("-option", "caps:none")
+        # elif self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == True:
+        #     args.append("-option", "ctrl:swap_lalt_lctl,caps:none")
         out = subprocess.call(args)
         if out == 0:
             print("Changed keyboard layout successfully")
         else:
-            print("Error setting keyboard layout")
+            print("Error setting keyboard layout, retrying without nodeadkeys")
+            args = ["setxkbmap", '-layout', getattr(self.list_widget.selectedItems()[0], "layout"), "-option", "ctrl:swap_lalt_lctl", "-option", "ctrl:swap_lalt_lctl,caps:none"]
+            out = subprocess.call(args)
+            if out == 0:
+                print("Changed keyboard layout successfully")
+            else:
+                print("Error setting keyboard layout, giving up")
+
+    def _showMenu(self):
+        exitAct = QtWidgets.QAction('&Quit', self.window)
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(QtWidgets.QApplication.quit)
+        menubar = self.window.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAct)
+        aboutAct = QtWidgets.QAction('&About', self.window)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(aboutAct)
+
+
+    def _showAbout(self):
+        print("showDialog")
+        msg = QtWidgets.QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QtGui.QPixmap(os.path.dirname(__file__) + "/Resources/Keyboard.png"))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Keyboard</h3>")
+        msg.setInformativeText(
+            "A simple preferences application to set the keyboard layout<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
 
 
 if __name__ == "__main__":
