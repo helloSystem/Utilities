@@ -144,7 +144,7 @@ class ZeroconfBrowser(object):
         self.app = QtWidgets.QApplication(sys.argv)
 
         # Window
-        self.window = QtWidgets.QWidget()
+        self.window = QtWidgets.QMainWindow()
         self.window.setWindowTitle('Connnect to Server')
         self.window.setMinimumWidth(500)
         self.window.setMinimumHeight(350)
@@ -163,7 +163,11 @@ class ZeroconfBrowser(object):
         # self.label.setWordWrap(True)
         # self.layout.addWidget(self.label)
 
-        self.window.setLayout(self.layout)
+        self._showMenu()
+
+        widget = QtWidgets.QWidget()
+        widget.setLayout(self.layout)
+        self.window.setCentralWidget(widget)
         self.window.show()
 
         self.services = ZeroconfServices()
@@ -256,6 +260,36 @@ class ZeroconfBrowser(object):
             s = ZeroconfService(line, self)
             self.services.remove(line)
 
+    def _showMenu(self):
+        exitAct = QtWidgets.QAction('&Quit', self.window)
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(sys.exit, 0)
+        menubar = self.window.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAct)
+        aboutAct = QtWidgets.QAction('&About', self.window)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(aboutAct)
+
+
+    def _showAbout(self):
+        print("showDialog")
+        msg = QtWidgets.QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QtGui.QPixmap(os.path.dirname(__file__) + "/Resources/Zeroconf.png"))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Zeroconf</h3>")
+        msg.setInformativeText(
+            "A simple utility to browse services on the network announced with Zeroconf<br><br>Grateful acknowledgement is made to <a href='https://en.wikipedia.org/wiki/Stuart_Cheshire'>Stuart Cheshire</a> who pioneered this incredibly useful technology<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
 
 if __name__ == "__main__":
 
