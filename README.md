@@ -30,6 +30,8 @@ Simple installer to install the Live ISO to disk.
 
 Simple Keyboard Layout chooser
 
+![](https://miro.medium.com/max/318/1*AoZTtzHCKAItIeJbOjxpsA.png)
+
 ## Sharing.app
 
 Simple tool to set the hostname, enable/disable sshd, enable/disable x11vnc server
