@@ -730,12 +730,13 @@ class DiskPage(QtWidgets.QWizardPage, object):
                 if (available_bytes >= wizard.required_mib_on_disk) and di.get("geomname").startswith("cd") is False:
                     # item.setTextAlignment()
                     title = "%s on %s (%s GiB)" % (di.get("descr"), di.get("geomname"), f"{(available_bytes // (2 ** 30)):,}")
-                    if di.get("geomname").startswith("cd") is True:
+                    if di.get("geomname").startswith("cd") == True:
                         # TODO: Add burning powers
                         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-optical'), title)
+                    elif di.get("geomname").startswith("da") == True:
+                        item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-removable-media'), title)
                     else:
                         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-harddisk'), title)
-                        # TODO: drive-removable-media for removable drives; how to detect these?
                     self.disk_listwidget.addItem(item)
             self.old_ds = ds
 

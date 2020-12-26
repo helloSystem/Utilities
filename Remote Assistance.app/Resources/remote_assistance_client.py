@@ -54,6 +54,7 @@ class Window(QtWidgets.QMainWindow):
         self.checkPrerequisites(["/usr/local/lib/ssvnc/vncviewer", "tuntox"])
 
         self.closeEvent = self.closeEvent
+        
         self._showMenu()
         
         self.tuntox_process = None

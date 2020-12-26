@@ -336,9 +336,16 @@ class DiskPage(QtWidgets.QWizardPage, object):
                     if di.get("geomname").startswith("cd") == True:
                         # TODO: Add burning powers
                         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-optical'), title)
+                    elif di.get("geomname").startswith("da") == True:
+                        item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-removable-media'), title)
                     else:
                         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-harddisk'), title)
-                        # TODO: drive-removable-media for removable drives; how to detect these?
+                        # Prevent from selecting non-removable drives; TODO: Maybe allow selecing them with an extra warning?
+                        item.setFlags(QtCore.Qt.ItemIsSelectable)
+
+                    if available_bytes < wizard.required_mib_on_disk*1024*1024:
+                        # Disk is too small
+                        item.setFlags(QtCore.Qt.ItemIsSelectable)
                     self.disk_listwidget.addItem(item)
             self.old_ds = ds
 
