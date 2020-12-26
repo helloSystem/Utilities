@@ -63,7 +63,7 @@ class KeyboardSwitcher(object):
     def basicWindow(self):
         app = QtWidgets.QApplication(sys.argv)
         self.window = QtWidgets.QMainWindow()
-        self.window.setFixedSize(250, 350)
+        self.window.setFixedSize(250, 380)
         self._showMenu()
 
         self.window.setWindowTitle('Keyboard Layout')
@@ -84,6 +84,8 @@ class KeyboardSwitcher(object):
             print("%s = %s" % (supported_layout, cleartext[i-1]))
             self.list_widget.addItem(item)
         self.list_widget.itemSelectionChanged.connect(self.onSelectionChanged)
+        self.list_widget.setUniformItemSizes(True)
+        self.list_widget.setItemAlignment(QtCore.Qt.AlignVCenter)
         layout.addWidget(self.list_widget)
 
         # self.checkbox_keyswap = QtWidgets.QCheckBox()
