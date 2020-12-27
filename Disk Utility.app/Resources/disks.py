@@ -93,6 +93,37 @@ def get_disk(diskname):
     disk = geom_disk_parser(geom_block)
     return disk
 
+def get_partitions(diskname):
+    """
+    Captures information about partitions from 'gpart show'.
+
+    Returns a dictionary, with all the 'gpart show' fields as keys.
+    """
+    command = ['/sbin/gpart', 'show', '-lp', re.sub('/dev/', '', diskname)]
+    out, err, rc = call(command)
+    partitions = []
+    for line in out:
+        line = line.replace("=>", "").replace("- free -", "free")
+        line.strip()
+        fields = line.split()
+        if len(fields) < 2:
+            continue
+        if fields[2] == "free":
+            fields.insert(2, "")
+        partition = {}
+        logical_starting_block = fields[0]
+        partition_size_in_blocks = fields[1]
+        name = fields[2]
+        partition_type_or_label = fields[3]
+        human_readable_partition_size = fields[4]
+        partition["name"] = name
+        partition["logical_starting_block"] = logical_starting_block
+        partition["partition_size_in_blocks"] = partition_size_in_blocks
+        partition["partition_type_or_label"] = partition_type_or_label
+        partition["human_readable_partition_size"] = human_readable_partition_size
+        partitions.append(partition)
+    return(partitions)
+
 def get_disks():
     command = ['/sbin/geom', 'disk', 'status', '-s']
     out, err, rc = call(command)

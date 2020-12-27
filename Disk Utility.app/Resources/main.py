@@ -1,12 +1,12 @@
-#!/usr/bin/env python3.7
+#!/usr/local/bin/env python3.7
 
 # This Python file uses the following encoding: utf-8
 import sys
 import os
 
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QTreeWidgetItem, QMessageBox
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QTreeWidgetItem, QListWidgetItem
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QFile, QSize
 from PyQt5.uic import loadUi
 from PyQt5.QtCore import pyqtSlot, pyqtSignal
@@ -19,10 +19,6 @@ class Disks(QMainWindow):
     def __init__(self):
         super(Disks, self).__init__()
         self.load_ui()
-        
-        # self._showMenu() # FIXME: Make the global menu work for applications that are running as root
-        # https://bugs.launchpad.net/indicator-appmenu/+bug/592842
-        
         self._createToolBars()
         self.geomTreeWidget.setIconSize(QSize(16, 16))
         self.populate_geom_tree()
@@ -44,6 +40,16 @@ class Disks(QMainWindow):
                 item.setIcon(0, QIcon.fromTheme('drive-harddisk'))
             self.geomTreeWidget.addTopLevelItem(item)
             # TODO: Add the partitions as children?
+            partitions = disks.get_partitions(di["name"])
+            if len(partitions) > 0:
+                partitions.pop(0)
+                for partition in partitions:
+                    if partition["name"] == "":
+                        continue
+                    child = QTreeWidgetItem()
+                    child.setText(0, (partition["name"] + " " + partition["partition_type_or_label"]))
+                    item.addChild(child)
+
 
     def load_ui(self):
         path = os.path.join(os.path.dirname(__file__), "form.ui")
@@ -95,37 +101,26 @@ class Disks(QMainWindow):
     def geomTreeWidgetChanged(self):
         print("geomTreeWidgetChanged")
         pp = pprint.PrettyPrinter(width=41)
-        self.detailsPlainTextEdit.setPlainText(pp.pformat(getattr(self.geomTreeWidget.selectedItems()[0], "di")))
 
-    def _showMenu(self):
-        exitAct = QAction('&Quit', self)
-        exitAct.setShortcut('Ctrl+Q')
-        exitAct.setStatusTip('Exit application')
-        exitAct.triggered.connect(QApplication.quit)
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(exitAct)
-        aboutAct = QAction('&About', self)
-        aboutAct.setStatusTip('About this application')
-        aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menubar.addMenu('&Help')
-        helpMenu.addAction(aboutAct)
-        
-    def _showAbout(self):
-        print("showDialog")
-        msg = QMessageBox()
-        msg.setWindowTitle("About")
-        msg.setIconPixmap(QPixmap(os.path.dirname(__file__) + "/Disk Utility.png"))
-        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
-        for candidate in candidates:
-            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
-                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
-                    data = file.read()
-                msg.setDetailedText(data)
-        msg.setText("<h3>Disk Utility</h3>")
-        msg.setInformativeText("A simple utility to format and image disks<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
-        msg.exec()
-        
+        if not hasattr(self.geomTreeWidget.selectedItems()[0], "di"):
+            return
+
+        di = getattr(self.geomTreeWidget.selectedItems()[0], "di")
+
+        self.partitionsListWidget.clear()
+
+        self.partitionsListWidget.setStyleSheet("QListWidget::item { text-align: center; margin-left: 2px; margin-right: 2px; margin-top: 2px; border: 2px solid grey }")
+
+        partitions = disks.get_partitions(di["name"])
+        self.detailsPlainTextEdit.setPlainText(pp.pformat(di) + "\n\n" + pp.pformat(partitions))
+        if len(partitions) > 0:
+            partitions.pop(0)
+            for partition in partitions:
+                if partition["name"] == "":
+                    continue
+                item = QListWidgetItem(partition["name"] + "\n" + partition["partition_type_or_label"] + " " + partition["human_readable_partition_size"])
+                self.partitionsListWidget.addItem(item)
+
 
 if __name__ == "__main__":
     app = QApplication([])
