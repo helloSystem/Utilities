@@ -93,6 +93,37 @@ def get_disk(diskname):
     disk = geom_disk_parser(geom_block)
     return disk
 
+def get_zpools():
+    """
+    Captures information about partitions from 'zpool list'.
+
+    Returns a dictionary, with all the 'gpart show' fields as keys.
+    """
+    command = ['/sbin/zpool', 'list', '-Hp']
+    out, err, rc = call(command)
+    zpools = []
+    for line in out:
+        fields = line.split()
+        print(fields)
+        zp = Zpool(fields[0])
+        zp.size = fields[1]
+        zp.alloc = fields[2]
+        zp.free = fields[3]
+        zp.ckpoint = fields[4]
+        zp.expandsz = fields[5]
+        zp.frag = fields[6]
+        zp.cap = fields[7]
+        zp.dedup = fields[8]
+        zp.health = fields[9]
+        zp.altroot = fields[10]
+        zpools.append(zp)
+    return(zpools)
+
+def get_datasets(zpool):
+    command = ['zfs', 'list', '-H', '-o', 'name',  '-r', zpool]
+    out, err, rc = call(command)
+    return(out)
+
 def get_partitions(diskname):
     """
     Captures information about partitions from 'gpart show'.
@@ -114,14 +145,18 @@ def get_partitions(diskname):
         logical_starting_block = fields[0]
         partition_size_in_blocks = fields[1]
         name = fields[2]
+        if name == "":
+            name = None
         partition_type_or_label = fields[3]
+        partition_type_or_label = partition_type_or_label.replace("(null)", "Partition")
         human_readable_partition_size = fields[4]
-        partition["name"] = name
-        partition["logical_starting_block"] = logical_starting_block
-        partition["partition_size_in_blocks"] = partition_size_in_blocks
-        partition["partition_type_or_label"] = partition_type_or_label
-        partition["human_readable_partition_size"] = human_readable_partition_size
-        partitions.append(partition)
+        p = Partition()
+        p.name = name
+        p.logical_starting_block = logical_starting_block
+        p.size_in_blocks = partition_size_in_blocks
+        p.type_or_label = partition_type_or_label
+        p.human_readable_size = human_readable_partition_size
+        partitions.append(p)
     return(partitions)
 
 def get_disks():
@@ -147,6 +182,35 @@ class Disk(object):
         self.path = path
         self.reject_reasons = []
         self.available = True
+
+
+class Partition(object):
+
+    def __init__(self):
+        self.name = None
+        self.logical_starting_block = None
+        self.size_in_blocks = None
+        self.type_or_label = None
+        self.human_readable_size = None
+
+    def __repr__(self):
+        return("{'name': '%s', 'logical_starting_block': %s, 'size_in_blocks': %s, 'type_or_label': '%s', 'human_readable_size': '%s'}" % (self.name, self.logical_starting_block, self.size_in_blocks, self.type_or_label, self.human_readable_size))
+
+
+class Zpool(object):
+
+    def __init__(self, name):
+        self.name = name
+        self.size = None
+        self.alloc = None
+        self.free = None
+        self.ckpoint = None
+        self.expandsz = None
+        self.frag = None
+        self.cap = None
+        self.dedup = None
+        self.health = None
+        self.altroot = None
 
 
 if __name__ == "__main__":

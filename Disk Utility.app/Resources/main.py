@@ -39,17 +39,37 @@ class Disks(QMainWindow):
             else:
                 item.setIcon(0, QIcon.fromTheme('drive-harddisk'))
             self.geomTreeWidget.addTopLevelItem(item)
-            # TODO: Add the partitions as children?
+            # Add the partitions that are on the hardware devices as children
             partitions = disks.get_partitions(di["name"])
             if len(partitions) > 0:
                 partitions.pop(0)
-                for partition in partitions:
-                    if partition["name"] == "":
+                for p in partitions:
+                    if p.name == None:
                         continue
                     child = QTreeWidgetItem()
-                    child.setText(0, (partition["name"] + " " + partition["partition_type_or_label"]))
+                    child.setText(0, (p.name + " " + p.type_or_label))
+                    child.setFlags(Qt.ItemIsSelectable) # Make it greyed out here for now
                     item.addChild(child)
-
+        # In addition to hardware devices, also show ZFS zpools
+        # Not entirely sure if this is the best place to do this in the UI,#
+        # but zpools are neither strictly a child nor a parent of hardware devices...
+        zpools = disks.get_zpools()
+        if len(zpools) > 0:
+            for zp in zpools:
+                item = QTreeWidgetItem()
+                item.setText(0, zp.name)
+                if zp.health == "ONLINE":
+                    item.setIcon(0, QIcon.fromTheme('emblem-colors-green'))
+                else:
+                    item.setIcon(0, QIcon.fromTheme('emblem-colors-white'))
+                self.geomTreeWidget.addTopLevelItem(item)
+                # Show the datasets (volumes, snapshots, file systems) on the zpool
+                datasets = disks.get_datasets(zp.name)
+                for dataset in datasets:
+                    child = QTreeWidgetItem()
+                    child.setText(0, (dataset))
+                    child.setFlags(Qt.ItemIsSelectable) # Make it greyed out here for now
+                    item.addChild(child)
 
     def load_ui(self):
         path = os.path.join(os.path.dirname(__file__), "form.ui")
@@ -65,18 +85,22 @@ class Disks(QMainWindow):
         self.newAction = QAction(self)
         self.newAction.setText("&New Image")
         self.newAction.setIcon(QIcon.fromTheme('document')) # TODO: Add proper icon
+        self.newAction.setEnabled(False)
 
         self.mountAction = QAction(self)
         self.mountAction.setText("&Mount")
         self.mountAction.setIcon(QIcon.fromTheme('drive-harddisk')) # TODO: Add proper icon
+        self.mountAction.setEnabled(False)
 
         self.unmountAction = QAction(self)
         self.unmountAction.setText("&Unmount")
         self.unmountAction.setIcon(QIcon.fromTheme('drive-harddisk')) # TODO: Add proper icon
+        self.unmountAction.setEnabled(False)
 
         self.burnAction = QAction(self)
         self.burnAction.setText("&Burn")
         self.burnAction.setIcon(QIcon.fromTheme('drive-optical')) # TODO: Add proper icon
+        self.burnAction.setEnabled(False)
 
         fileToolBar.addAction(self.newAction)
         fileToolBar.addAction(self.mountAction)
@@ -98,28 +122,40 @@ class Disks(QMainWindow):
         print("Options button clicked")
 
     @pyqtSlot()
+    def partitionsListWidgetItemClicked(self):
+        print("partitionsListWidgetChanged")
+
+        self.mountAction.setEnabled(True)
+        self.unmountAction.setEnabled(True)
+
+        self.detailsPlainTextEdit.setPlainText(getattr(self.partitionsListWidget.currentItem(), "partition").__repr__())
+
+
+    @pyqtSlot()
     def geomTreeWidgetChanged(self):
         print("geomTreeWidgetChanged")
-        pp = pprint.PrettyPrinter(width=41)
-
-        if not hasattr(self.geomTreeWidget.selectedItems()[0], "di"):
-            return
-
-        di = getattr(self.geomTreeWidget.selectedItems()[0], "di")
 
         self.partitionsListWidget.clear()
 
-        self.partitionsListWidget.setStyleSheet("QListWidget::item { text-align: center; margin-left: 2px; margin-right: 2px; margin-top: 2px; border: 2px solid grey }")
+        self.mountAction.setEnabled(False)
+        self.unmountAction.setEnabled(False)
 
-        partitions = disks.get_partitions(di["name"])
-        self.detailsPlainTextEdit.setPlainText(pp.pformat(di) + "\n\n" + pp.pformat(partitions))
-        if len(partitions) > 0:
-            partitions.pop(0)
-            for partition in partitions:
-                if partition["name"] == "":
-                    continue
-                item = QListWidgetItem(partition["name"] + "\n" + partition["partition_type_or_label"] + " " + partition["human_readable_partition_size"])
-                self.partitionsListWidget.addItem(item)
+        pp = pprint.PrettyPrinter(width=41)
+
+        # If a physical device was selected
+        if hasattr(self.geomTreeWidget.selectedItems()[0], "di"):
+            di = getattr(self.geomTreeWidget.selectedItems()[0], "di")
+            self.partitionsListWidget.setStyleSheet("QListWidget::item { text-align: center; margin-left: 2px; margin-right: 2px; margin-top: 2px; border: 2px solid grey }")
+            partitions = disks.get_partitions(di["name"])
+            self.detailsPlainTextEdit.setPlainText(pp.pformat(di) + "\n\n" + pp.pformat(partitions))
+            if len(partitions) > 0:
+                partitions.pop(0)
+                for p in partitions:
+                    if p.name == None:
+                        continue
+                    item = QListWidgetItem(p.name + "\n" + p.type_or_label + " " + p.human_readable_size)
+                    item.__setattr__("partition", p)
+                    self.partitionsListWidget.addItem(item)
 
 
 if __name__ == "__main__":

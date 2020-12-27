@@ -234,6 +234,11 @@
      <height>331</height>
     </rect>
    </property>
+   <column>
+    <property name="text">
+     <string notr="true">1</string>
+    </property>
+   </column>
   </widget>
   <widget class="QPlainTextEdit" name="detailsPlainTextEdit">
    <property name="geometry">
@@ -261,8 +266,8 @@
    <slot>plusButtonClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>212</x>
-     <y>320</y>
+     <x>214</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>368</x>
@@ -277,8 +282,8 @@
    <slot>minusButtonClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>232</x>
-     <y>320</y>
+     <x>234</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>368</x>
@@ -293,8 +298,8 @@
    <slot>optionsButtonClicked()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>320</y>
+     <x>314</x>
+     <y>380</y>
     </hint>
     <hint type="destinationlabel">
      <x>368</x>
@@ -318,11 +323,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>partitionsListWidget</sender>
+   <signal>itemClicked(QListWidgetItem*)</signal>
+   <receiver>DiskUtility</receiver>
+   <slot>partitionsListWidgetItemClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>282</x>
+     <y>275</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>368</x>
+     <y>289</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>plusButtonClicked()</slot>
   <slot>minusButtonClicked()</slot>
   <slot>optionsButtonClicked()</slot>
   <slot>geomTreeWidgetChanged()</slot>
+  <slot>partitionsListWidgetItemClicked()</slot>
  </slots>
 </ui>

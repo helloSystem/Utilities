@@ -131,3 +131,6 @@ dmypy.json
 .gwdir
 
 .idea
+
+# Qt Creator
+*.user
