@@ -1,4 +1,4 @@
-#!/usr/local/bin/env python3.7
+#!/usr/bin/env python3.7
 
 # This Python file uses the following encoding: utf-8
 import sys
