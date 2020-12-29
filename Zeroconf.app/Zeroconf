@@ -90,7 +90,7 @@ class ZeroconfService():
         if self.url.startswith("pulse"):
             # PulseAudio
             icon = "audio-card"
-        if self.url.startswith("scanner"):
+        if self.url.startswith("scanner") or self.url.startswith("uscan"):
             icon = "scanner"
         if self.url.startswith("http"):
             icon = "applications-internet"
@@ -216,7 +216,7 @@ class ZeroconfBrowser(object):
             except:
                 print("Cannot launch browser")
                 return
-        elif self.services.services[row].url.startswith("scanner"):
+        elif self.services.services[row].url.startswith("scanner") or self.services.services[row].url.startswith("uscan"):
             # Launch Xsane in the hope that it can do something with it
             os.system("xsane")
         if self.services.services[row].url.startswith("ipp") or self.services.services[row].url.startswith("print") or self.services.services[row].url.startswith("pdl"):
