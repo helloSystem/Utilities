@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import os, sys, time
+import os, sys, time, socket
 from PyQt5 import QtWidgets, QtCore, QtGui
 from PyQt5.QtNetwork import QHostInfo
 import psutil
@@ -44,6 +44,20 @@ import shutil
 # shouldn't take more than 500 lines of code.
 
 
+def internetCheckConnected(host="8.8.8.8", port=53, timeout=3):
+    """
+    Host: 8.8.8.8 (google-public-dns-a.google.com)
+    OpenPort: 53/tcp
+    Service: domain (DNS/TCP)
+    """
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error as ex:
+        print(ex)
+        return False
+
 def cmd_exists(cmd):
     return shutil.which(cmd) is not None
     
@@ -53,6 +67,15 @@ class Window(QtWidgets.QMainWindow):
         super().__init__()
         
         self.checkPrerequisites(["x11vnc", "tuntox"])
+
+        if internetCheckConnected() == False:
+            print("Offline?")
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle(" ")
+            msg.setText(self.tr("You need an active internet connection in order to use Remote Assistance."))
+            msg.exec_()
+            sys.exit(0)
 
         self.closeEvent = self.closeEvent
         self._showMenu()
