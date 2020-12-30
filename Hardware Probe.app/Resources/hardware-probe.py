@@ -72,8 +72,10 @@ def internetCheckConnected(host="8.8.8.8", port=53, timeout=3):
 
 app = QtWidgets.QApplication(sys.argv)
 
-class InstallWizard(QtWidgets.QWizard, object):
+class Wizard(QtWidgets.QWizard, object):
     def __init__(self):
+
+        app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.WaitCursor)) # It can take some time before we show the initial page, because hw-probe runs there
 
         print("Preparing wizard")
         super().__init__()
@@ -123,13 +125,13 @@ class InstallWizard(QtWidgets.QWizard, object):
             pass
 
 
-wizard = InstallWizard()
+wizard = Wizard()
 
 #############################################################################
-# License
+# Privacy Information
 #############################################################################
 
-class LicensePage(QtWidgets.QWizardPage, object):
+class PrivacyPage(QtWidgets.QWizardPage, object):
     def __init__(self):
 
         print("Privacy Information")
@@ -172,6 +174,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
         wizard.showHardwareProbeButton = QtWidgets.QPushButton('Preview Hardware Probe', self)
         wizard.showHardwareProbeButton.clicked.connect(self.showHardwareProbeButtonClicked)
+        wizard.showHardwareProbeButton.setDisabled(True)
         layout.addWidget(wizard.showHardwareProbeButton)
 
     def showHardwareProbeButtonClicked(self):
@@ -179,7 +182,6 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("self.local_probe_path: %s" % self.local_probe_path)
         proc = QtCore.QProcess()
         command = 'sudo'
-        print(os.environ)
         args = ["-E", "-u", os.getenv("SUDO_USER"), "launch", "Filer", self.local_probe_path]
         try:
             print("Starting %s %s" % (command, args))
@@ -191,6 +193,11 @@ class IntroPage(QtWidgets.QWizardPage, object):
     def initializePage(self):
         print("Displaying IntroPage")
 
+        # Without this, the window does not get shown before run_probe_locally is done; why?
+        workaroundtimer = QtCore.QTimer()
+        workaroundtimer.singleShot(200, self.run_probe_locally)
+
+    def run_probe_locally(self):
         proc = QtCore.QProcess()
         command = wizard.hw_probe_tool # From FreeBSD pkg
         args = ["-all"]
@@ -201,6 +208,10 @@ class IntroPage(QtWidgets.QWizardPage, object):
             wizard.showErrorPage(self.tr("Failed to run the %s tool." % wizard.hw_probe_tool)) # This does not catch most cases of errors; hence see below
             return
         proc.waitForFinished()
+
+        wizard.showHardwareProbeButton.setDisabled(False)
+        app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+
         output_lines = proc.readAllStandardOutput().split("\n")
         err_lines = proc.readAllStandardError().split("\n")
         if err_lines[0] != "":
@@ -217,7 +228,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
 # Installation page
 #############################################################################
 
-class InstallationPage(QtWidgets.QWizardPage, object):
+class UploadPage(QtWidgets.QWizardPage, object):
     def __init__(self):
 
         print("Preparing InstallationPage")
@@ -244,6 +255,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
             wizard.showErrorPage(self.tr("You need an active internet connection in order to upload."))
             return
 
+        # Without this, the progress bar does not get shown at all; why?
         workaroundtimer = QtCore.QTimer()
         workaroundtimer.singleShot(200, self.upload)
 
@@ -297,7 +309,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
 
         # wizard.playSound()
 
-        self.setTitle('Harware Probe Uploaded')
+        self.setTitle('Hardware Probe Uploaded')
         self.setSubTitle('Thank you for uploading your Hardware Probe.')
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
@@ -367,21 +379,12 @@ class ErrorPage(QtWidgets.QWizardPage, object):
 # Pages flow in the wizard
 #############################################################################
 
-# TODO: Go straight to error page if we are not able to run
-# the installer shell script as root (e.g., using sudo).
-# We do not want to run this GUI as root, only the installer shell script.
-
-# TODO: Check prerequisites and inspect /mnt, go straight to error page if needed
-
 intro_page = IntroPage()
 wizard.addPage(intro_page)
 
-license_page = LicensePage()
+license_page = PrivacyPage()
 wizard.addPage(license_page)
-
-#disk_page = DiskPage()
-#wizard.addPage(disk_page)
-installation_page = InstallationPage()
+installation_page = UploadPage()
 wizard.addPage(installation_page)
 success_page = SuccessPage()
 wizard.addPage(success_page)
