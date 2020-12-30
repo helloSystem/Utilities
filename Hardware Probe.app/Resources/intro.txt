@@ -1,0 +1,9 @@
+This will upload the hardware probe to the hardware database. The probe will be published publicly under a permanent URL to view the probe.
+           
+Private information (including the username, machine's hostname, IP addresses, MAC addresses, UUIDs and serial numbers) is NOT uploaded to the database.
+
+The tool uploads 32-byte prefix of salted SHA512 hash of MAC addresses/UUIDs and serial numbers to properly identify unique computers and hard drives. All the data is uploaded securely via HTTPS.
+
+DISCLAIMER: BY USING THIS UTILITY, YOU AGREE THAT INFORMATION ABOUT YOUR HARDWARE WILL BE UPLOADED TO A PUBLICLY VISIBLE DATABASE. DO NOT USE THIS UTILITY IF YOU DO NOT AGREE WITH THIS.  By use of this option you confirm uploading of 32-byte prefix of salted SHA512 hash of MAC addresses and serial numbers to prevent duplication of computers in the database.
+
+The web service and the database are operated by https://linux-hardware.org. The authors of the graphical Hardware Probe utility are not associated with the operator of the web service. Please contact https://linux-hardware.org/index.php?view=contacts in case of questions and in case you wish accidentally submitted probes to be removed from the database.
