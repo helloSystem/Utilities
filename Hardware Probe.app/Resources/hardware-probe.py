@@ -165,14 +165,14 @@ class IntroPage(QtWidgets.QWizardPage, object):
         super().__init__()
 
         self.setTitle('Hardware Probe')
-        self.setSubTitle("""<p>This utility collects hardware details of your computer and can anonymously submit them to a public database.</p>
+        self.setSubTitle("""<p>This utility collects hardware details of your computer and can anonymously upload them to a public database.</p>
         <p>This can help users and operating system developers to collaboratively debug hardware related issues, check for operating system compatibility and find drivers.</p>
         <p>You will get a permanent probe URL to view and share collected information.</p><br><br><br>""")
 
         layout = QtWidgets.QVBoxLayout(self)
         # layout.addWidget(center_widget, True) # True = add stretch vertically
 
-        wizard.showHardwareProbeButton = QtWidgets.QPushButton('Preview Hardware Probe', self)
+        wizard.showHardwareProbeButton = QtWidgets.QPushButton('Show Hardware Probe', self)
         wizard.showHardwareProbeButton.clicked.connect(self.showHardwareProbeButtonClicked)
         wizard.showHardwareProbeButton.setDisabled(True)
         layout.addWidget(wizard.showHardwareProbeButton)
