@@ -197,16 +197,12 @@ class IntroPage(QtWidgets.QWizardPage, object):
             if okPressed and text != '':
                 print(text)
 
-            available_iso = {
-                "name": os.path.basename(text),
-                "browser_download_url": text,
-                "updated_at": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "size": str(2*1000*1000*1000) # FIXME: Can we at least attempt to get the real size from the URL?
-            }
-
-            self.available_isos.append(available_iso)
-            self.release_listwidget.addItem(available_iso["name"])
-
+            item = QtWidgets.QListWidgetItem(os.path.basename(text))
+            item.__setattr__("browser_download_url",
+                             text)  # __setattr__() is the equivalent to setProperty() in Qt
+            item.__setattr__("updated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            item.__setattr__("size", 2*1000*1000*1000)
+            self.release_listwidget.addItem(item) # FIXME: Can we at least attempt to get the real size from the URL?
             return
 
         if internetCheckConnected() == False:
