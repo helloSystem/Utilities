@@ -213,6 +213,7 @@ class ZeroconfBrowser(object):
             args = [self.services.services[row].url]
             try:
                 proc.startDetached("xdg-open", args)
+                return
             except:
                 print("Cannot launch browser")
                 return
