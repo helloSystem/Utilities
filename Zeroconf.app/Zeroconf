@@ -60,6 +60,8 @@ class ZeroconfService():
     def __init__(self, avahi_browse_line, browser):
         self.browser = browser
         parts = avahi_browse_line.split(";")
+        if len(parts) < 10:
+            return
         self.interface = parts[1]
         self.ip_version = parts[2]
         self.name = parts[3] # .decode("utf-8", "strict")
