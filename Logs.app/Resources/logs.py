@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 
 # Based on https://stackoverflow.com/a/41751956
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 # Unfortunately python3 does not seem to work on FreeBSD
 
 # Sharing

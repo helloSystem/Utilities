@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 
 # Calculator Construction Set
 # for a fun story, see
