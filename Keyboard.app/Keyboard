@@ -30,12 +30,14 @@
 
 
 import os, sys, subprocess, io
+import configparser
 
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
 except:
     print("Could not import PyQt5. On FreeBSD, sudo pkg install py37-qt5-widgets")
 
+config_file = os.path.expanduser('~/.config/hello/keyboard.conf')
 
 class Xkbmap(object):
 
@@ -146,11 +148,23 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
 
     def __init__(self):
         super().__init__()
+        self.config = configparser.RawConfigParser()
+        self.config.optionxform = str
+        self.config.read(config_file)
         self.supported_layouts = self.getSupportedLayouts()
         self.has_apple_keyboard = self.checkHasAppleKeyboard()
         print("self.has_apple_keyboard: %s" % self.has_apple_keyboard)
         self.xkbmap = Xkbmap() # The xkbmap currently active in the system. No root needed to change this.
         self.basicWindow()
+        self._readConfig()
+
+    def saveConfig(self):
+        directory = os.path.dirname(config_file)
+        print(directory)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(config_file, 'w') as configfile:
+            self.config.write(configfile, space_around_delimiters=False)
 
     def checkHasAppleKeyboard(self):
         """
@@ -271,16 +285,24 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         except:
             pass
 
+        if not self.config.has_section("Keyboard"):
+            self.config.add_section("Keyboard")
         option = getattr(self.checkbox_keyswap, "setxkbmap_option")
         if(self.checkbox_keyswap.isChecked()):
             self.xkbmap.setOption(option)
+            self.config.remove_option("Keyboard", "DoNotSwapCommandKey")
         else:
             self.xkbmap.removeOption("ctrl:swap_lwin_lctl,ctrl:swap_rwin_rctl,ctrl:swap_lalt_lctl")
-
+            self.config.set("Keyboard", "DoNotSwapCommandKey", "true")
+            
         if self.checkbox_disablecapslock.isChecked():
             self.xkbmap.setOption("caps:none")
+            self.config.remove_option("Keyboard", "DoNotDisableCapslockKey")
         else:
             self.xkbmap.removeOption("caps:none")
+            self.config.set("Keyboard", "DoNotDisableCapslockKey", "true")
+
+        self.saveConfig()
 
     def _showMenu(self):
         exitAct = QtWidgets.QAction('&Quit', self.window)
