@@ -29,7 +29,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import os, sys, subprocess
+import os, sys, subprocess, io
 
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
@@ -37,11 +37,133 @@ except:
     print("Could not import PyQt5. On FreeBSD, sudo pkg install py37-qt5-widgets")
 
 
-class KeyboardSwitcher(object):
+class Xkbmap(object):
 
     def __init__(self):
+        self.rules = []
+        self.model = ""
+        self.layout = ""
+        self.variant = ""
+        self.options = []
+        self.update()
+
+    def update(self):
+        """
+        Parse currently set xkbmap and fill some variables based on this information..
+        """
+
+        proc = subprocess.Popen(["setxkbmap", "-query"], stdout=subprocess.PIPE)
+        for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
+            subjects = ["rules", "model", "layout", "variant", "options"]
+            for subject in subjects:
+                if line.startswith(subject + ":"):
+                    line = line.replace(subject + ":", "").replace("\n", "").strip()
+                    if "," in line:
+                       contents = line.split(",")
+                       for i in range(0, len(contents)):
+                           contents[i] = contents[i].strip()
+                    else:
+                        contents = line
+
+                    # print(contents)
+                    if subject == "rules":
+                        self.rules = contents
+                        print("xkbmap rules:", self.rules)
+                    elif subject == "model":
+                        self.model = contents
+                        print("xkbmap model:", self.model)
+                    if subject == "layout":
+                        self.layout = contents
+                        print("xkbmap layout:", self.layout)
+                    if subject == "variant":
+                        self.variant = contents
+                        print("xkbmap variant:", self.variant)
+                    if subject == "options":
+                        if contents.__class__ == str:
+                            self.options = [contents]
+                        else:
+                            self.options = contents
+                        print("xkbmap options:", self.options)
+
+    def setKeyToValue(self, key, value):
+        args = ["setxkbmap", '-' + key, value]
+        out = subprocess.call(args)
+        if out == 0:
+            print("Changed xkbmap successfully")
+        else:
+            print("Error changing xkbmap")
+        self.update()
+
+    def clearOptions(self):
+        print ("Clearing xkbmap options")
+        args = ["setxkbmap", '-option'] # This is needed for resetting Options
+        # To replace all previously specified options, set the 'option' key with no value
+        out = subprocess.call(args)
+        if out == 0:
+            print("Cleared xkbmap options successfully")
+        else:
+            print("Error clearing xkbmap options")
+        self.update()
+
+    def removeOption(self, option_to_be_removed):
+        print("option_to_be_removed:", option_to_be_removed)
+        if self.options == None or option_to_be_removed == None:
+            # Nothing to do. Return now in order not to crash later
+            return
+        new_options = []
+        options_to_be_removed = []
+        if "," in option_to_be_removed:
+            options_to_be_removed = option_to_be_removed.split(",")
+        else:
+            options_to_be_removed = [option_to_be_removed]
+        # print("options_to_be_removed:", options_to_be_removed)
+        if options_to_be_removed == None:
+            return
+        for old_option in self.options:
+            if old_option not in options_to_be_removed:
+                new_options.append(old_option)
+        self.clearOptions() # Clear existing options
+        self.setKeyToValue("option", ",".join(new_options)) # Set the new options in which option is removed
+
+    def setOption(self, option_to_be_set):
+        if "," in option_to_be_set:
+            options_to_be_set = option_to_be_set.split(",")
+        else:
+            options_to_be_set = [option_to_be_set]
+        # print("options_to_be_set:", options_to_be_set)
+        for option in options_to_be_set:
+            if option not in self.options:
+                print("Setting option", option)
+                self.setKeyToValue("option", option) # In fact, this just adds the option in setxkbmap by default
+
+    def exportToXkbcomp(self):
+        # Currently used for information only. This output can be piped directly to the xkbcomp input
+        proc = subprocess.Popen(["setxkbmap", "-print"], stdout=subprocess.PIPE)
+        for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
+            print(line)
+
+class KeyboardSwitcher(QtWidgets.QMainWindow):
+
+    def __init__(self):
+        super().__init__()
         self.supported_layouts = self.getSupportedLayouts()
+        self.has_apple_keyboard = self.checkHasAppleKeyboard()
+        print("self.has_apple_keyboard: %s" % self.has_apple_keyboard)
+        self.xkbmap = Xkbmap() # The xkbmap currently active in the system. No root needed to change this.
         self.basicWindow()
+
+    def checkHasAppleKeyboard(self):
+        """
+        Check whether this machine has an Apple keyboard.
+        TODO: Do this per keyboard, if there are multiple ones connected.
+
+        Return True or False.
+        """
+        proc = subprocess.Popen(["sysctl", "kern.evdev.input"], stdout=subprocess.PIPE)
+        for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
+            if "Apple" in line and "Keyboard" in line:
+                return True
+        return False
 
     def getSupportedLayouts(self):
         candidates = os.listdir("/usr/local/share/X11/xkb/symbols/")
@@ -63,7 +185,7 @@ class KeyboardSwitcher(object):
     def basicWindow(self):
         app = QtWidgets.QApplication(sys.argv)
         self.window = QtWidgets.QMainWindow()
-        self.window.setFixedSize(250, 380)
+        self.window.setFixedSize(300, 450)
         self._showMenu()
 
         self.window.setWindowTitle('Keyboard Layout')
@@ -77,27 +199,49 @@ class KeyboardSwitcher(object):
                      "Deutsch", "Italiano", "日本人", "Português", "Norsk",
                      "Svenska", "Suomalainen", "Pусский", "Türk", "עִברִית"]
         i = 0
+        selected_index = -1
         for supported_layout in self.supported_layouts:
             item = QtWidgets.QListWidgetItem(cleartext[i])
             i = i+1
             setattr(item, "layout", supported_layout)
             print("%s = %s" % (supported_layout, cleartext[i-1]))
             self.list_widget.addItem(item)
-        self.list_widget.itemSelectionChanged.connect(self.onSelectionChanged)
+            if self.xkbmap.layout == supported_layout:
+                print( "Layout in xkbmap matches this layout")
+                item.setSelected(True)
+                selected_index = i
+        if selected_index > -1:
+            print("selected_index, %i" % selected_index)
+            self.list_widget.setFocus()
+
+        self.list_widget.itemSelectionChanged.connect(self.onSomethingChanged)
         self.list_widget.setUniformItemSizes(True)
         self.list_widget.setItemAlignment(QtCore.Qt.AlignVCenter)
         layout.addWidget(self.list_widget)
 
-        # self.checkbox_keyswap = QtWidgets.QCheckBox()
-        # self.checkbox_keyswap.setText("Swap Ctrl and Alt keys")
-        # self.checkbox_keyswap.setChecked(True)
-        # self.checkbox_keyswap.clicked.connect(self.onSelectionChanged)
-        # layout.addWidget(self.checkbox_keyswap)
+        self.checkbox_keyswap = QtWidgets.QCheckBox()
+        if self.has_apple_keyboard == True:
+            # For Apple keyboards
+            self.checkbox_keyswap.setText(self.tr("Use the ⌘ key for menu shortcuts") + "\n" + self.tr("(this swaps alt and cmd)"))
+            self.checkbox_keyswap.__setattr__("setxkbmap_option", "ctrl:swap_lwin_lctl,ctrl:swap_rwin_rctl")
+            if "ctrl:swap_lalt_lctl" in self.xkbmap.rules:
+                self.checkbox_keyswap.setChecked()
+        else:
+            # For PC keyboards
+            self.checkbox_keyswap.setText(self.tr("Use the Alt key as ⌘") + "\n" + self.tr("(this swaps Ctrl and Alt)"))
+            self.checkbox_keyswap.__setattr__("setxkbmap_option", "ctrl:swap_lalt_lctl")
+            if "ctrl:swap_lwin_lctl,ctrl:swap_rwin_rctl" in self.xkbmap.rules:
+                self.checkbox_keyswap.setChecked()
+        self.checkbox_keyswap.setChecked(True)
+        self.checkbox_keyswap.clicked.connect(self.onSomethingChanged)
+        layout.addWidget(self.checkbox_keyswap)
 
-        # self.checkbox_disablecapslock = QtWidgets.QCheckBox()
-        # self.checkbox_disablecapslock.setText("Disable Caps Lock key")
-        # self.checkbox_disablecapslock.setChecked(True)
-        # layout.addWidget(self.checkbox_disablecapslock)
+        self.checkbox_disablecapslock = QtWidgets.QCheckBox()
+        self.checkbox_disablecapslock.setText("Disable the Caps Lock key")
+        if "caps:none" in self.xkbmap.options:
+            self.checkbox_disablecapslock.setChecked(True)
+        self.checkbox_disablecapslock.clicked.connect(self.onSomethingChanged)
+        layout.addWidget(self.checkbox_disablecapslock)
 
         widget = QtWidgets.QWidget()
         widget.setLayout(layout)
@@ -105,13 +249,14 @@ class KeyboardSwitcher(object):
         self.window.show()
         sys.exit(app.exec_())
 
-    def onSelectionChanged(self):
-        print("Selection changed")
+    def onSomethingChanged(self):
+        print("Selected layout changed")
         print(self.list_widget.selectedItems()[0].text())
-        print(getattr(self.list_widget.selectedItems()[0], "layout"))
+        selected_layout = getattr(self.list_widget.selectedItems()[0], "layout")
+        print("selected_layout", selected_layout)
 
         # For now, we swap left Ctrl and left Alt no matter what. This may get handled better in the future
-        args = ["setxkbmap", '-layout', getattr(self.list_widget.selectedItems()[0], "layout"), "-option", "ctrl:swap_lalt_lctl", "-option", "ctrl:swap_lalt_lctl,caps:none", "-variant", "nodeadkeys"]
+        # args = ["setxkbmap", '-layout', getattr(self.list_widget.selectedItems()[0], "layout"), "-option", "ctrl:swap_lalt_lctl", "-option", "ctrl:swap_lalt_lctl,caps:none", "-variant", "nodeadkeys"]
 
         # if self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == False:
         #     args.append("-option", "ctrl:swap_lalt_lctl")
@@ -119,17 +264,23 @@ class KeyboardSwitcher(object):
         #     args.append("-option", "caps:none")
         # elif self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == True:
         #     args.append("-option", "ctrl:swap_lalt_lctl,caps:none")
-        out = subprocess.call(args)
-        if out == 0:
-            print("Changed keyboard layout successfully")
+
+        self.xkbmap.setKeyToValue("layout", selected_layout)
+        try:
+            self.xkbmap.setKeyToValue("variant", "nodeadkeys")
+        except:
+            pass
+
+        option = getattr(self.checkbox_keyswap, "setxkbmap_option")
+        if(self.checkbox_keyswap.isChecked()):
+            self.xkbmap.setOption(option)
         else:
-            print("Error setting keyboard layout, retrying without nodeadkeys")
-            args = ["setxkbmap", '-layout', getattr(self.list_widget.selectedItems()[0], "layout"), "-option", "ctrl:swap_lalt_lctl", "-option", "ctrl:swap_lalt_lctl,caps:none"]
-            out = subprocess.call(args)
-            if out == 0:
-                print("Changed keyboard layout successfully")
-            else:
-                print("Error setting keyboard layout, giving up")
+            self.xkbmap.removeOption("ctrl:swap_lwin_lctl,ctrl:swap_rwin_rctl,ctrl:swap_lalt_lctl")
+
+        if self.checkbox_disablecapslock.isChecked():
+            self.xkbmap.setOption("caps:none")
+        else:
+            self.xkbmap.removeOption("caps:none")
 
     def _showMenu(self):
         exitAct = QtWidgets.QAction('&Quit', self.window)
@@ -164,6 +315,7 @@ class KeyboardSwitcher(object):
 
 
 if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
     ks = KeyboardSwitcher()
 
 
