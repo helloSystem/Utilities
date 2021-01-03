@@ -146,8 +146,9 @@ class Xkbmap(object):
 
 class KeyboardSwitcher(QtWidgets.QMainWindow):
 
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
+        self.app = app
         self.config = configparser.RawConfigParser()
         self.config.optionxform = str
         self.config.read(config_file)
@@ -238,15 +239,14 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
             # For Apple keyboards
             self.checkbox_keyswap.setText(self.tr("Use the ⌘ key for menu shortcuts") + "\n" + self.tr("(this swaps alt and cmd)"))
             self.checkbox_keyswap.__setattr__("setxkbmap_option", "ctrl:swap_lwin_lctl,ctrl:swap_rwin_rctl")
-            if "ctrl:swap_lalt_lctl" in self.xkbmap.rules:
-                self.checkbox_keyswap.setChecked()
         else:
             # For PC keyboards
             self.checkbox_keyswap.setText(self.tr("Use the Alt key as ⌘") + "\n" + self.tr("(this swaps Ctrl and Alt)"))
             self.checkbox_keyswap.__setattr__("setxkbmap_option", "ctrl:swap_lalt_lctl")
-            if "ctrl:swap_lwin_lctl,ctrl:swap_rwin_rctl" in self.xkbmap.rules:
-                self.checkbox_keyswap.setChecked()
-        self.checkbox_keyswap.setChecked(True)
+        if "ctrl:swap_lwin_lctl" in self.xkbmap.options \
+                or "ctrl:swap_rwin_rctl" in self.xkbmap.options \
+                or "ctrl:swap_lalt_lctl" in self.xkbmap.options:
+                self.checkbox_keyswap.setChecked(True)
         self.checkbox_keyswap.clicked.connect(self.onSomethingChanged)
         layout.addWidget(self.checkbox_keyswap)
 
@@ -264,20 +264,13 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         sys.exit(app.exec_())
 
     def onSomethingChanged(self):
+        self.app.setOverrideCursor(
+            QtGui.QCursor(QtCore.Qt.WaitCursor))
+
         print("Selected layout changed")
         print(self.list_widget.selectedItems()[0].text())
         selected_layout = getattr(self.list_widget.selectedItems()[0], "layout")
         print("selected_layout", selected_layout)
-
-        # For now, we swap left Ctrl and left Alt no matter what. This may get handled better in the future
-        # args = ["setxkbmap", '-layout', getattr(self.list_widget.selectedItems()[0], "layout"), "-option", "ctrl:swap_lalt_lctl", "-option", "ctrl:swap_lalt_lctl,caps:none", "-variant", "nodeadkeys"]
-
-        # if self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == False:
-        #     args.append("-option", "ctrl:swap_lalt_lctl")
-        # elif self.checkbox_keyswap.isChecked() == False and self.checkbox_disablecapslock == True:
-        #     args.append("-option", "caps:none")
-        # elif self.checkbox_keyswap.isChecked() == True and self.checkbox_disablecapslock == True:
-        #     args.append("-option", "ctrl:swap_lalt_lctl,caps:none")
 
         self.xkbmap.setKeyToValue("layout", selected_layout)
         try:
@@ -289,12 +282,13 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
             self.config.add_section("Keyboard")
         option = getattr(self.checkbox_keyswap, "setxkbmap_option")
         if(self.checkbox_keyswap.isChecked()):
+            self.xkbmap.removeOption("ctrl:swap_lwin_lctl,ctrl:swap_rwin_rctl,ctrl:swap_lalt_lctl")
             self.xkbmap.setOption(option)
             self.config.remove_option("Keyboard", "DoNotSwapCommandKey")
         else:
             self.xkbmap.removeOption("ctrl:swap_lwin_lctl,ctrl:swap_rwin_rctl,ctrl:swap_lalt_lctl")
             self.config.set("Keyboard", "DoNotSwapCommandKey", "true")
-            
+
         if self.checkbox_disablecapslock.isChecked():
             self.xkbmap.setOption("caps:none")
             self.config.remove_option("Keyboard", "DoNotDisableCapslockKey")
@@ -303,6 +297,8 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
             self.config.set("Keyboard", "DoNotDisableCapslockKey", "true")
 
         self.saveConfig()
+        self.app.setOverrideCursor(
+            QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
     def _showMenu(self):
         exitAct = QtWidgets.QAction('&Quit', self.window)
@@ -338,6 +334,4 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
-    ks = KeyboardSwitcher()
-
-
+    ks = KeyboardSwitcher(app)
