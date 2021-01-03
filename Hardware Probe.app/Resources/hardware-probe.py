@@ -326,13 +326,30 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(center_widget, True) # True = add stretch vertically
 
-        label = QtWidgets.QLabel()
-        label.setText("You can view it at <a href='%s'>%s</a>" % (wizard.server_probe_url, wizard.server_probe_url))
-        label.setWordWrap(True)
-        layout.addWidget(label)
+        # label = QtWidgets.QLabel()
+        # label.setText("You can view it at <a href='%s'>%s</a>" % (wizard.server_probe_url, wizard.server_probe_url))
+        # label.setWordWrap(True)
+        # layout.addWidget(label)
+
+        wizard.showUploadedProbeButton = QtWidgets.QPushButton('Show uploaded Hardware Probe', self)
+        wizard.showUploadedProbeButton.clicked.connect(self.showUploadedProbeButtonClicked)
+        layout.addWidget(wizard.showUploadedProbeButton)
+
         self.setButtonText(wizard.CancelButton, "Quit")
         wizard.setButtonLayout([QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
 
+    def showUploadedProbeButtonClicked(self):
+        print("showHardwareProbeButtonClicked")
+        print("wizard.server_probe_url: %s" % wizard.server_probe_url)
+        proc = QtCore.QProcess()
+        command = 'sudo'
+        args = ["-E", "-u", os.getenv("SUDO_USER"), "launch", "Falkon", wizard.server_probe_url]
+        try:
+            print("Starting %s %s" % (command, args))
+            proc.startDetached(command, args)
+        except:
+            wizard.showErrorPage(self.tr("Failed to open the uploaded hardware probe."))
+            return
 
 #############################################################################
 # Error page
