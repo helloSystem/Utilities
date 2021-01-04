@@ -64,23 +64,23 @@ class LiteInstaller(object):
             if reply == QtWidgets.QMessageBox.No:
                 sys.exit(0)
 
-        print("Proceeding to install %s from the %s packages" %(self.filename, self.packages))
-        self.show_install()
+            print("Proceeding to install %s from the %s packages" %(self.filename, self.packages))
+            self.show_install()
 
 
     def show_message(self):
-        msgBox = QtWidgets.QMessageBox()
+        self.msgBox = QtWidgets.QMessageBox()
 
         if self.iconfile:
-            msgBox.setIconPixmap(QtGui.QPixmap(self.iconfile).scaledToWidth(64, QtCore.Qt.SmoothTransformation))
-        msgBox.setWindowTitle(" ")
-        msgBox.setText("%s needs to be downloaded before it can be used." % os.path.basename(__file__))
-        msgBox.setInformativeText("Do you want to download it now?")
-        # msgBox.setDetailedText("The following packages and their dependencies be installed:\n" + str(self.packages))
+            self.msgBox.setIconPixmap(QtGui.QPixmap(self.iconfile).scaledToWidth(64, QtCore.Qt.SmoothTransformation))
+        self.msgBox.setWindowTitle(" ")
+        self.msgBox.setText("%s needs to be downloaded before it can be used." % os.path.basename(__file__))
+        self.msgBox.setInformativeText("Do you want to download it now?")
+        # self.msgBox.setDetailedText("The following packages and their dependencies be installed:\n" + str(self.packages))
         print("The following packages and their dependencies be installed:\n" + str(self.packages))
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Yes)
-        msgBox.setDefaultButton(QtWidgets.QMessageBox.Yes)
-        return(msgBox.exec())
+        self.msgBox.setStandardButtons(QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Yes)
+        self.msgBox.setDefaultButton(QtWidgets.QMessageBox.Yes)
+        return(self.msgBox.exec())
 
 
     def startInstallProcess(self):
@@ -168,6 +168,7 @@ class LiteInstaller(object):
 
 
     def onProcessFinished(self):
+        self.progress.setValue(100)
         print("Installer script process finished")
         # cursor = self.output.textCursor()
         # cursor.movePosition(cursor.End)
@@ -178,19 +179,21 @@ class LiteInstaller(object):
         executable = os.access(self.filename, os.X_OK)
         if exit_code == 0  and executable == True:
             # os.execve(self.filename, sys.argv, os.environ) # What sh exec also uses. Leads to issues when files are referenced in relation to the main binary path
+            self.msgBox.close()
             subprocess.call([self.filename] + sys.argv)
+            sys.exit(0)
 
 
     def show_install(self):
-        msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, " ", ("Downloading %s..." % (os.path.basename(__file__))), QtWidgets.QMessageBox.NoButton)
-        # msgBox.setWindowFlags(QtCore.Qt.CustomizeWindowHint) # Needed for the next line
-        msgBox.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False) # Remove the Close button frim the window decoration; FIXME: Why does this remove the window decorations altogether?
-        # msgBox.setStyleSheet("QTextEdit{min-width: 500px;}")
-        msgBox.setStyleSheet("QDialogButtonBox,QTextEdit{min-width: 500px; } QLabel{min-height: 50px;} QProgressBar{min-width: 410px;}") # FIXME: Do this without hardcoding 410px
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.NoButton)
-        # msgBox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
-        msgBox.setDetailedText(" ") # Brings it into existence?
-        self.details_textedit = msgBox.findChild(QtWidgets.QTextEdit)
+        self.msgBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, " ", ("Downloading %s..." % (os.path.basename(__file__))), QtWidgets.QMessageBox.NoButton)
+        # self.msgBox.setWindowFlags(QtCore.Qt.CustomizeWindowHint) # Needed for the next line
+        self.msgBox.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False) # Remove the Close button frim the window decoration; FIXME: Why does this remove the window decorations altogether?
+        # self.msgBox.setStyleSheet("QTextEdit{min-width: 500px;}")
+        self.msgBox.setStyleSheet("QDialogButtonBox,QTextEdit{min-width: 500px; } QLabel{min-height: 50px;} QProgressBar{min-width: 410px;}") # FIXME: Do this without hardcoding 410px
+        self.msgBox.setStandardButtons(QtWidgets.QMessageBox.NoButton)
+        # self.msgBox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+        self.msgBox.setDetailedText(" ") # Brings it into existence?
+        self.details_textedit = self.msgBox.findChild(QtWidgets.QTextEdit)
 
         if self.details_textedit is not None:
             print("Found QTextEdit for the details")
@@ -199,9 +202,9 @@ class LiteInstaller(object):
 
 
         if self.iconfile:
-            msgBox.setIconPixmap(QtGui.QPixmap(self.iconfile).scaledToWidth(64, QtCore.Qt.SmoothTransformation))
+            self.msgBox.setIconPixmap(QtGui.QPixmap(self.iconfile).scaledToWidth(64, QtCore.Qt.SmoothTransformation))
 
-        msgBox.layout().setAlignment(QtCore.Qt.AlignTop)
+        self.msgBox.layout().setAlignment(QtCore.Qt.AlignTop)
 
 
         self.progress = QtWidgets.QProgressBar()
@@ -213,14 +216,14 @@ class LiteInstaller(object):
         self.progress.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
         # Add the progress bar at the bottom (last row + 1) and first column with column span
-        # msgBox.layout().addWidget(self.progress, msgBox.layout().rowCount(), 0, 1, msgBox.layout().columnCount(), QtCore.Qt.AlignCenter)
-        msgBox.layout().addWidget(self.progress, 1, 1, 1, msgBox.layout().columnCount(),
+        # self.msgBox.layout().addWidget(self.progress, self.msgBox.layout().rowCount(), 0, 1, self.msgBox.layout().columnCount(), QtCore.Qt.AlignCenter)
+        self.msgBox.layout().addWidget(self.progress, 1, 1, 1, self.msgBox.layout().columnCount(),
                                   QtCore.Qt.AlignCenter)
 
-        msgBox.layout().addWidget(QtWidgets.QLabel(), 1, 1, 1, msgBox.layout().columnCount(),
+        self.msgBox.layout().addWidget(QtWidgets.QLabel(), 1, 1, 1, self.msgBox.layout().columnCount(),
                                   QtCore.Qt.AlignCenter)
         self.startInstallProcess()
-        msgBox.exec()
+        self.msgBox.exec()
 
 
     def read_file_contents(self, filename):
