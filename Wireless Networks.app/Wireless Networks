@@ -1,0 +1,4 @@
+#!/bin/sh
+HERE="$(dirname "$(readlink -f "${0}")")"
+SUDO_ASKPASS="${HERE}/Resources/askpass.py" exec sudo -E "${HERE}/Resources/wireless-networks" "$@"
+    
