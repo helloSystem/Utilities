@@ -1,2 +1,3 @@
 qtcreator # IDE
 qt5 # Cross-platform application and UI framework (metaport)
+cmake # Many Qt projects written in C++ require cmake for building
