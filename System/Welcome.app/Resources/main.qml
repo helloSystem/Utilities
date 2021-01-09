@@ -9,26 +9,13 @@ ApplicationWindow {
 
     // Instantiate a Python object;
     // see 'qmlRegisterType' in the Python file that is using this qml
+    function preloadDesktop() {
+        return Qt.createQmlObject("import Service 1.0; Desktop {}",
+                                  window, "Desktop");
+    }
     function showWizard() {
         return Qt.createQmlObject("import Service 1.0; Wizard {}",
                                   window, "Wizard");
-    }
-
-    // Convoluted replacement for "sleep" function; https://stackoverflow.com/a/34770228
-    Component {
-        id: delayCallerComponent
-        Timer {
-        }
-    }
-
-    // Convoluted replacement for "sleep" function; https://stackoverflow.com/a/34770228
-    function delayCall( interval, callback ) {
-        var delayCaller = delayCallerComponent.createObject( null, { "interval": interval } );
-        delayCaller.triggered.connect( function () {
-            callback();
-            delayCaller.destroy();
-        } );
-        delayCaller.start();
     }
 
     function smoothDisappear() {
@@ -36,17 +23,15 @@ ApplicationWindow {
         welcome.shallContinue = false;
         window.color = "#00000000"; // ARGB fully transparent
 
-        music.volume = 0.3;
+        music.volume = 0.0;
 
         wallpaper.width = window.width;
         wallpaper.height = window.height;
         wallpaper.x = 0;
         wallpaper.y = 0;
+        preloadDesktop(); // For a smooth transition
         wallpaper.opacity = 1;
 
-        // Convoluted replacement for "sleep" function; https://stackoverflow.com/a/34770228
-        delayCall( 15000, function () { music.volume = 0.0; } );
-        delayCall( 20000, function () { Qt.quit() } );
     }
 
     function reset() {
@@ -77,6 +62,7 @@ ApplicationWindow {
     visible: true
     visibility: "FullScreen"
     color: "black"
+    modality: Qt.WindowStaysOnTopHint
 
     // NumberAnimation on opacity { to: 1; duration: 1000 }
 
@@ -107,6 +93,7 @@ ApplicationWindow {
                                       console.log("Wallpaper has faded out");
                                       window.visibility = "Hidden";
                                       showWizard();
+                                      window.close();
                                   }
             }
         }
@@ -140,7 +127,7 @@ ApplicationWindow {
         source: "pamgaea-by-kevin-macleod-from-filmmusic-io.mp3"
         volume: 1.0
         Behavior on volume {
-            NumberAnimation {  duration: 5000; easing.type: Easing.OutCubic }
+            NumberAnimation {  duration: 15000; easing.type: Easing.OutCubic }
         }
     }
 

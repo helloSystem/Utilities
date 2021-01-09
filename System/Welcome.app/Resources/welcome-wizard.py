@@ -27,7 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import sys, os, re, socket
+import sys, os, re, socket, subprocess
 import shutil
 from datetime import datetime
 
@@ -81,7 +81,8 @@ class IntroPage(QtWidgets.QWizardPage):
     def initializePage(self):
         print("Displaying Page")
         if self.isFinalPage():
-            done_file = "/var/run/user/" + str(os.getuid()) + "/.helloSetupDone"
+            # Write a file that start-hello can check to not start this again for this user
+            done_file = os.path.expanduser("~/.config/hello/.helloSetupDone")
             print(done_file)
             if os.path.exists(done_file):
                 os.utime(done_file, None)
@@ -89,6 +90,8 @@ class IntroPage(QtWidgets.QWizardPage):
                 open(done_file, 'a').close()
 
 if __name__ == "__main__":
+    subprocess.Popen(["/System/Filer.AppDir/AppRun", "--desktop"], start_new_session=True) # FIXME Remove the need for this
+    subprocess.Popen(["/System/Dock.AppDir/usr/bin/cyber-dock"], start_new_session=True) # FIXME Remove the need for this
     wizard = Wizard()
     wizard.show()
     sys.exit(app.exec_())
