@@ -41,3 +41,14 @@ Simple tool to set the hostname, enable/disable sshd, enable/disable x11vnc serv
 Simple Zeroconf browser
 
 ![image](https://user-images.githubusercontent.com/2480569/94365262-a025e380-00cf-11eb-81e0-495f2ee8242b.png)
+
+## Managing redundancy
+
+Some files are intentionally redundant in each application bundle, so that each application bundle is standalone. The redundant files can be converted to hardlinks using
+
+```
+hardlink . -v -t -n # Dry run (change nothing, only explain)
+hardlink . -v -t
+```
+
+This can be useful for making a change in all of the redundant copies at once.
