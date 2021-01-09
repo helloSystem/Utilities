@@ -59,7 +59,7 @@ class Wizard(QtWidgets.QWizard, object):
             self.addPage(IntroPage(section))
 
 
-class IntroPage(QtWidgets.QWizardPage, object):
+class IntroPage(QtWidgets.QWizardPage):
     def __init__(self, section):
 
         print("Preparing IntroPage")
@@ -74,16 +74,19 @@ class IntroPage(QtWidgets.QWizardPage, object):
                 lines.append(line)
 
         self.setTitle(lines[0])
-
-        content = str(lines[1:])
-        print(content)
         self.setSubTitle("\n\n".join(lines[1:]))
 
         layout = QtWidgets.QVBoxLayout(self)
 
     def initializePage(self):
-        print("Displaying IntroPage")
-
+        print("Displaying Page")
+        if self.isFinalPage():
+            done_file = "/var/run/user/" + str(os.getuid()) + "/.helloSetupDone"
+            print(done_file)
+            if os.path.exists(done_file):
+                os.utime(done_file, None)
+            else:
+                open(done_file, 'a').close()
 
 if __name__ == "__main__":
     wizard = Wizard()
