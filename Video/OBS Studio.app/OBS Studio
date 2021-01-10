@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, sys, socket, subprocess
+import os, sys, socket, subprocess, time
 
 from PyQt5 import QtWidgets, QtGui, QtCore
 
@@ -175,6 +175,7 @@ class LiteInstaller(object):
         # self.output.ensureCursorVisible()
         exit_code = self.ext_process.exitCode()
         print("Installer script exit code: %s" % exit_code)
+        time.sleep(1)
         executable = os.access(self.filename, os.X_OK)
         if executable == True:
             # os.execve(self.filename, sys.argv, os.environ) # What sh exec also uses. Leads to issues when files are referenced in relation to the main binary path
