@@ -82,6 +82,7 @@ class IntroPage(QtWidgets.QWizardPage):
         print("Displaying Page")
         if self.isFinalPage():
             # Write a file that start-hello can check to not start this again for this user
+            os.makedirs(os.path.expanduser("~/.config/hello/"))
             done_file = os.path.expanduser("~/.config/hello/.helloSetupDone")
             print(done_file)
             if os.path.exists(done_file):
