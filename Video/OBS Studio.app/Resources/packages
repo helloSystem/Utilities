@@ -1,0 +1,10 @@
+obs-studio # Open source streaming/recording software
+obs-audio-spectralizer # OBS Studio Plugin: Audio visualizer
+obs-ndi # OBS Studio Plugin: Network Device Interface
+obs-qtwebkit # Browser source plugin for obs-studio
+obs-scrab # OBS Studio Plugin: Screenshot plugin
+obs-streamfx # OBS Studio Plugin: Modern effects
+obs-transition-matrix # OBS Studio Plugin: OBS Transition Matrix
+obs-v4l2sink # OBS Studio Plugin: Output as Video4Linux2 device
+obs-websocket # OBS Studio Plugin: WebSockets API
+libndi # Cross-platform, open-source library done to interact with NDI streams
