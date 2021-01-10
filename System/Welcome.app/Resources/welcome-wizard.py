@@ -90,8 +90,11 @@ class IntroPage(QtWidgets.QWizardPage):
                 open(done_file, 'a').close()
 
 if __name__ == "__main__":
-    subprocess.Popen(["/System/Filer.AppDir/AppRun", "--desktop"], start_new_session=True) # FIXME Remove the need for this
-    subprocess.Popen(["/System/Dock.AppDir/usr/bin/cyber-dock"], start_new_session=True) # FIXME Remove the need for this
+    # The following are needed here so that these thingss get loaded while the Intro is running, and provide for a smooth transition out
+    subprocess.Popen(["/System/Menu.AppDir/usr/bin/menubar"], start_new_session=True) # FIXME: Remove the need for this
+    subprocess.Popen(["/usr/local/bin/gmenudbusmenuproxy"], start_new_session=True) # FIXME: Remove the need for this
+    subprocess.Popen(["/System/Filer.AppDir/AppRun", "--desktop"], start_new_session=True) # FIXME: Remove the need for this
+    subprocess.Popen(["/System/Dock.AppDir/usr/bin/cyber-dock"], start_new_session=True) # FIXME: Remove the need for this
     wizard = Wizard()
     wizard.show()
     sys.exit(app.exec_())

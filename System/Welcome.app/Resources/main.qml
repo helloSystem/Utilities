@@ -61,13 +61,13 @@ ApplicationWindow {
     id: window
     visible: true
     visibility: "FullScreen"
-    color: "black"
+    color: "grey"
     modality: Qt.WindowStaysOnTopHint
 
     // NumberAnimation on opacity { to: 1; duration: 1000 }
 
     SequentialAnimation on color {
-        ColorAnimation { to: "grey"; duration: 1000 }
+        ColorAnimation { to: "white"; duration: 1000 }
         ColorAnimation { to: "black"; duration: 1000 }
     }
 
