@@ -136,3 +136,4 @@ dmypy.json
 *.user
 
 *.mp3
+*.core
