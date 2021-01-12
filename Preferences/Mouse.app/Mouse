@@ -1,0 +1,180 @@
+#!/usr/bin/env python3.7
+
+
+# Simple Mouse preferences application for FreeBSD in PyQt5
+
+
+# Copyright (c) 2020-2021, Simon Peter <probono@puredarwin.org>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+import os, sys, subprocess, io
+import configparser
+
+try:
+    from PyQt5 import QtWidgets, QtGui, QtCore
+except:
+    print("Could not import PyQt5. On FreeBSD, sudo pkg install py37-qt5-widgets")
+
+class groupBox(QtWidgets.QGroupBox):
+
+    def __init__(self, devicename):
+
+        super().__init__()
+
+        self.devicename = devicename
+
+        layout = QtWidgets.QVBoxLayout()
+
+        self.label = QtWidgets.QLabel()
+        self.label.setText(("Mouse/Trackpad Speed"))
+        layout.addWidget(self.label)
+
+        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
+        self.slider.setRange(0, 100)
+        self.slider.setFocusPolicy(QtCore.Qt.NoFocus)
+        self.slider.setSingleStep(10) # Can only do int, hence we have to multiply everything by 100
+        self.slider.valueChanged.connect(self.onSomethingChanged)
+        layout.addWidget(self.slider)
+
+        # TODO: Tapping and other properties
+        # self.checkbox_tapping = QtWidgets.QCheckBox()
+        # self.checkbox_tapping.setText("Enable tapping")
+        # self.checkbox_tapping.clicked.connect(self.onSomethingChanged)
+        # layout.addWidget(self.checkbox_tapping)
+
+        self.setLayout(layout)
+        self.setTitle(self.devicename)
+        self.updateUI()
+
+    def onSomethingChanged(self):
+        print("Something changed")
+
+        # TODO: Saving. Where are these settings supposed to get saved by xinput?
+        # Or do we have to save them in a file we invent, and re-apply them at boot time manually?
+        # self.config.set("Mouse", "Speed", "0")
+        # self.saveConfig()
+        # self.app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
+
+        p = QtCore.QProcess()
+        p.setProgram("xinput")
+        args = ["set-prop", self.devicename, "libinput Accel Speed", str(self.slider.value() / 100)]
+        print(p.program() + " " + " " .join(args))
+        p.setArguments(args)
+        p.start()
+        p.waitForFinished()
+
+    def updateUI(self):
+        # TODO: give it abilities to read xinput properties and set the
+        # controls accordingly
+        p = QtCore.QProcess()
+        p.setProgram("xinput")
+        p.setArguments(["list-props", self.devicename])
+        p.start()
+        p.waitForFinished()
+        lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
+        for line in lines:
+            line = line.strip()
+            # print(line)
+            if line.startswith('libinput Accel Speed ('):
+                self.accel_speed = float(line.split(":")[1].strip())
+                self.slider.setValue(self.accel_speed * 100)
+
+class MouseWindow(QtWidgets.QMainWindow):
+
+    def __init__(self, app):
+        super().__init__()
+
+        self.window = QtWidgets.QMainWindow()
+        self.window.setFixedWidth(450) # FIXME Why does this not work?
+        self._showMenu() # FIXME Why does this not work?
+        self.window.setWindowTitle('Mouse')
+        vbox = QtWidgets.QVBoxLayout()
+
+        p = QtCore.QProcess()
+        p.setProgram("xinput")
+        p.setArguments(["list"])
+        p.start()
+        p.waitForFinished()
+        devices = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
+
+        for device in devices:
+                # Note two blannks in "slave  pointer"
+                if "slave  pointer" in device and "System mouse" not in device and "XTEST" not in device:
+                    if "\t" in device and "↳" in device:
+                        devicename = device.split("\t")[0].split("↳")[1].strip()
+                        print(devicename)
+                    vbox.addWidget(groupBox(devicename))
+        # https://stackoverflow.com/a/37306238
+        # You can't set a QLayout directly on the QMainWindow. You need to create a QWidget and set it
+        # as the central widget on the QMainWindow and assign the QLayout to that.
+        wid = QtWidgets.QWidget(self)
+        self.setCentralWidget(wid)
+        wid.setLayout(vbox)
+
+    def saveConfig(self):
+        directory = os.path.dirname(config_file)
+        print(directory)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        with open(config_file, 'w') as configfile:
+            self.config.write(configfile, space_around_delimiters=False)
+
+    def _showMenu(self):
+        exitAct = QtWidgets.QAction('&Quit', self.window)
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(QtWidgets.QApplication.quit)
+        menubar = self.window.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAct)
+        aboutAct = QtWidgets.QAction('&About', self.window)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(aboutAct)
+
+
+    def _showAbout(self):
+        print("showDialog")
+        msg = QtWidgets.QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QtGui.QPixmap(os.path.dirname(__file__) + "/Resources/Mouse.png"))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Mouse</h3>")
+        msg.setInformativeText(
+            "A simple preferences application to set the mouse speed and options<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    mw = MouseWindow(app)
+    mw.show()
+    sys.exit(app.exec_())
