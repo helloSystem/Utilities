@@ -48,7 +48,7 @@ class groupBox(QtWidgets.QGroupBox):
         layout = QtWidgets.QVBoxLayout()
 
         self.label = QtWidgets.QLabel()
-        self.label.setText(("Mouse/Trackpad Speed"))
+        self.label.setText(("Acceleration Speed"))
         layout.addWidget(self.label)
 
         self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
