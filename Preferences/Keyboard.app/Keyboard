@@ -67,8 +67,8 @@ class Xkbmap(object):
                     else:
                         contents = line
 
-                    print("subject:", subject)
-                    print("contents:", contents)
+                    # print("subject:", subject)
+                    # print("contents:", contents)
                     if subject == "rules":
                         self.rules = contents
                         print("xkbmap rules:", self.rules)
