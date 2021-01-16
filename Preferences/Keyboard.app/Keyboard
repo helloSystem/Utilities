@@ -264,6 +264,10 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         sys.exit(app.exec_())
 
     def onSomethingChanged(self):
+        # Need to ensure that users can't do another action before this one has been completed
+        self.checkbox_keyswap.setEnabled(False)
+        self.checkbox_disablecapslock.setEnabled(False)
+        self.list_widget.setEnabled(False)
         self.app.setOverrideCursor(
             QtGui.QCursor(QtCore.Qt.WaitCursor))
 
@@ -299,6 +303,9 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         self.saveConfig()
         self.app.setOverrideCursor(
             QtGui.QCursor(QtCore.Qt.ArrowCursor))
+        self.checkbox_keyswap.setEnabled(True)
+        self.checkbox_disablecapslock.setEnabled(True)
+        self.list_widget.setEnabled(True)
 
     def _showMenu(self):
         exitAct = QtWidgets.QAction('&Quit', self.window)
