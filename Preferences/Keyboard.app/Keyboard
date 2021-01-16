@@ -67,20 +67,21 @@ class Xkbmap(object):
                     else:
                         contents = line
 
-                    # print(contents)
+                    print("subject:", subject)
+                    print("contents:", contents)
                     if subject == "rules":
                         self.rules = contents
                         print("xkbmap rules:", self.rules)
                     elif subject == "model":
                         self.model = contents
                         print("xkbmap model:", self.model)
-                    if subject == "layout":
+                    elif subject == "layout":
                         self.layout = contents
                         print("xkbmap layout:", self.layout)
-                    if subject == "variant":
+                    elif subject == "variant":
                         self.variant = contents
                         print("xkbmap variant:", self.variant)
-                    if subject == "options":
+                    elif subject == "options":
                         if contents.__class__ == str:
                             self.options = [contents]
                         else:
@@ -118,14 +119,16 @@ class Xkbmap(object):
             options_to_be_removed = option_to_be_removed.split(",")
         else:
             options_to_be_removed = [option_to_be_removed]
-        # print("options_to_be_removed:", options_to_be_removed)
+        print("options_to_be_removed:", options_to_be_removed)
         if options_to_be_removed == None:
             return
         for old_option in self.options:
             if old_option not in options_to_be_removed:
                 new_options.append(old_option)
+        print("new_options:", new_options)
         self.clearOptions() # Clear existing options
         self.setKeyToValue("option", ",".join(new_options)) # Set the new options in which option is removed
+        self.options = new_options
 
     def setOption(self, option_to_be_set):
         if "," in option_to_be_set:
@@ -243,9 +246,9 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
             # For PC keyboards
             self.checkbox_keyswap.setText(self.tr("Use the Alt key as ⌘") + "\n" + self.tr("(this swaps Ctrl and Alt)"))
             self.checkbox_keyswap.__setattr__("setxkbmap_option", "ctrl:swap_lalt_lctl")
-        if "ctrl:swap_lwin_lctl" in self.xkbmap.options \
+        if("ctrl:swap_lwin_lctl" in self.xkbmap.options \
                 or "ctrl:swap_rwin_rctl" in self.xkbmap.options \
-                or "ctrl:swap_lalt_lctl" in self.xkbmap.options:
+                or "ctrl:swap_lalt_lctl" in self.xkbmap.options):
                 self.checkbox_keyswap.setChecked(True)
         self.checkbox_keyswap.clicked.connect(self.onSomethingChanged)
         layout.addWidget(self.checkbox_keyswap)
