@@ -338,7 +338,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
                 msg.setDetailedText(data)
         msg.setText("<h3>Keyboard</h3>")
         msg.setInformativeText(
-            "A simple preferences application to set the keyboard layout<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+            "A simple preferences application to set the keyboard layout using <a href='https://www.freebsd.org/cgi/man.cgi?setxkbmap'>setxkbmap</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
 
