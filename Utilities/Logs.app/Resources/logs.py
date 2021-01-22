@@ -6,7 +6,7 @@ import os, sys
 
 from PyQt5.QtCore import pyqtSignal, pyqtSlot, QProcess, QTextCodec
 from PyQt5.QtGui import QTextCursor, QPixmap, QIcon
-from PyQt5.QtWidgets import QApplication, QPlainTextEdit, QAction, QMessageBox, QMainWindow
+from PyQt5.QtWidgets import QApplication, QTextEdit, QAction, QMessageBox, QMainWindow
 
 
 class ProcessOutputReader(QProcess):
@@ -35,34 +35,55 @@ class MyConsole(QMainWindow):
 
         self._showMenu()
 
-        self.setFixedWidth(1024)
-        self.setFixedHeight(600)
+        self.setMinimumWidth(1024)
+        self.setMinimumHeight(600)
 
-        self.plainTextEdit = QPlainTextEdit()
+        self.textEdit = QTextEdit()
 
         font = self.font()
         font.setPointSize(9)
         # font.setFamily("monospace")
-        self.plainTextEdit.setFont(font)
+        self.textEdit.setFont(font)
 
-        self.plainTextEdit.setReadOnly(True)
-        self.plainTextEdit.setMaximumBlockCount(10000)  # limit console to 10000 lines
+        self.textEdit.setReadOnly(True)
 
-        self._cursor_output = self.plainTextEdit.textCursor()
+        self._cursor_output = self.textEdit.textCursor()
 
-        self.setCentralWidget(self.plainTextEdit)
+        self.setCentralWidget(self.textEdit)
 
     @pyqtSlot(str)
     def append_output(self, text):
-        self._cursor_output.insertText(text)
+        lines = text.split("\n")
+        for line in lines:
+            if line == "":
+                continue
+            if line.startswith("==>"):
+                line = "<br><b>" + line + "</b>"
+            red_words = ["error", "fail", "kill", "slow"]
+            red = False
+            for red_word in red_words:
+                if red_word in line.lower():
+                    red = True
+            if red == True:
+                self._cursor_output.insertHtml("<span style='color:red'>" + line + "</span><br>")
+                # Also send a notification on red lines
+                try:
+                    p = QProcess()
+                    p.setProgram("notify-send")
+                    p.setArguments([line])
+                    p.startDetached()
+                except:
+                    continue
+            else:
+                self._cursor_output.insertHtml(line + "<br>")
         self.scroll_to_last_line()
 
     def scroll_to_last_line(self):
-        cursor = self.plainTextEdit.textCursor()
+        cursor = self.textEdit.textCursor()
         cursor.movePosition(QTextCursor.End)
         cursor.movePosition(QTextCursor.Up if cursor.atBlockStart() else
                             QTextCursor.StartOfLine)
-        self.plainTextEdit.setTextCursor(cursor)
+        self.textEdit.setTextCursor(cursor)
 
     def _showMenu(self):
         exitAct = QAction('&Quit', self)
@@ -100,7 +121,7 @@ app = QApplication(sys.argv)
 reader = ProcessOutputReader()
 console = MyConsole()
 reader.produce_output.connect(console.append_output)
-reader.start('sh', ['-c', "tail -n 5 -f /var/log/*.log"])
+reader.start('sh', ['-c', "tail -n 10 -f /var/log/*.log"])
 
 console.show()
 app.exec_()
