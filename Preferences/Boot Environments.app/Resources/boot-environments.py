@@ -70,7 +70,7 @@ class BootEnvironmentsManager(object):
         self.window = QtWidgets.QWidget()
         self.window.setWindowTitle('Boot Environments')
         self.window.setMinimumWidth(650)
-        self.window.setMinimumHeight(550)
+        self.window.setMinimumHeight(400)
         self.window.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                                         QtWidgets.QSizePolicy.MinimumExpanding))
         self.window.closeEvent = self.quit
