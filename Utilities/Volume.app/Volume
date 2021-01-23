@@ -8,8 +8,6 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBox
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer
 import sys, os
-# sys.path.insert(0, os.path.dirname(__file__) + "/Resources/"); from qtsingleapplication import QtSingleApplication # Privately bundled
-# import hashlib
 
 # Show the slider UI when QSystemTrayIcon is left-clicked
 class Ui_Slider(QWidget):
@@ -283,16 +281,17 @@ class VolumeMenu(QObject):
 
 if __name__ == "__main__":
 
-    # m = hashlib.md5()
-    # m.update(__file__.encode("utf-8"))
-    # print(m.hexdigest())
-    # appGuid = m.hexdigest()
-    # app = QtSingleApplication(appGuid, sys.argv)
+    # Simple singleton:
+    # Ensure that only one instance of this application is running by trying to kill the other ones
+    p = QProcess()
+    p.setProgram("pkill")
+    p.setArguments(["-f", os.path.abspath(__file__)])
+    cmd = p.program() + " " + " ".join(p.arguments())
+    print(cmd)
+    p.start()
+    p.waitForFinished()
+    
     app = QApplication(sys.argv)
-    # print(app.isRunning())
-    # if app.isRunning(): sys.exit(0)
-
     app.setQuitOnLastWindowClosed(False)
     VM = VolumeMenu()
-    # app.setActivationWindow(...) # We don't really have a window that we could bring to the front
     sys.exit(app.exec_())
