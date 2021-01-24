@@ -1,0 +1,92 @@
+#!/usr/bin/env python3
+
+# TODO: Make it possible to select and record just a portion of the screen, similar to a screenshot tool
+# TODO: Make it possible to record with and without sound, or with background music
+# TODO: Make it possible to select/unselect screenkey
+
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QMessageBox
+from PyQt5.QtGui import QIcon
+from PyQt5.QtCore import QProcess
+import os, sys, time
+
+class ScreencastApplication(object):
+
+    def __init__(self):
+    
+        self.app = QApplication([])
+        self.app.setQuitOnLastWindowClosed(False)
+            
+        self.showTODO()
+
+        self.screencast_file = "/tmp/screencast.mp4"
+
+        self.dsp = "/dev/dsp1" # FIXME: Do not hardcode
+
+        self.ffmpeg_process = QProcess()
+        self.ffmpeg_process.setProgram("ffmpeg")
+        self.ffmpeg_process.setArguments(["-y", "-thread_queue_size", "1024", "-f", "oss", "-i", self.dsp, "-framerate", "30",
+                        "-video_size", "1920x1080", "-f", "x11grab", "-i", ":0", "-c:v", "libx264",
+                        "-b:v", "2000k", "-maxrate", "2000k", "-bufsize", "5000k", "-g", "50",
+                        "-flags", "+global_header", "-vf", "format=yuv420p", "-filter:a", "volume=10",
+                        "-c:a", "aac", "-b:a", "128k", self.screencast_file])
+
+        self.screenkey_process = QProcess()
+        self.screenkey_process.setProgram("screenkey")
+        self.screenkey_process.setArguments([])
+
+        self.notify_process = QProcess()
+        self.notify_process.setProgram("notify-send")
+        self.notify_process.setArguments(["Stopped because " + self.screencast_file + " exists"])
+
+        icon = QIcon.fromTheme("camera-video-symbolic") # TODO: Find darker icon
+        tray = QSystemTrayIcon()
+        tray.setIcon(icon)
+
+        tray.setVisible(True)
+
+        menu = QMenu()
+
+        self.start_stop_action = QAction("Start")
+        menu.addAction(self.start_stop_action)
+        self.start_stop_action.triggered.connect(self.startStop)
+
+        menu.addSeparator()
+
+        self.quit_action = QAction("Quit")
+        menu.addAction(self.quit_action)
+        self.quit_action.triggered.connect(self.app.quit)
+
+        tray.setContextMenu(menu)
+
+        self.app.exec_()
+
+    def startStop(self):
+
+        if self.ffmpeg_process.state() != QProcess.Running:
+            print("Starting ffmpeg...")
+            # The process was stopped, so we are starting it
+            self.ffmpeg_process.setProcessChannelMode(QProcess.ForwardedChannels) # Pass through output to console
+            self.ffmpeg_process.start()
+            self.ffmpeg_process.waitForStarted()
+
+            # TODO: Error handling
+            # How can we find out whether we are really recording now?
+
+            if self.ffmpeg_process.pid():
+                self.start_stop_action.setText("Stop")
+        else:
+            print("Stopping ffmpeg...")
+            self.ffmpeg_process.kill()
+            self.start_stop_action.setText("Start")
+            self.notify_process.startDetached()
+
+    def showTODO(self, detailed_text=""):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Developer Preview")
+        msg.setText("This application is a preview for developers.<br>It is not fully functional yet.")
+        msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
+        msg.exec()    
+
+if __name__ == "__main__":
+    SA = ScreencastApplication()

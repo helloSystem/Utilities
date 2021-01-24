@@ -116,6 +116,16 @@ class MyConsole(QMainWindow):
             "A simple utility to view log files<br>in <code>/var/log</code><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
+# Simple singleton:
+# Ensure that only one instance of this application is running by trying to kill the other ones
+p = QProcess()
+p.setProgram("pkill")
+p.setArguments(["-f", os.path.abspath(__file__)])
+cmd = p.program() + " " + " ".join(p.arguments())
+print(cmd)
+p.start()
+p.waitForFinished()
+    
 app = QApplication(sys.argv)
 
 reader = ProcessOutputReader()

@@ -168,6 +168,7 @@ class NetworkMenu(QObject):
  
         # Ask for password and set it
         # TODO: Ask for password and set it only if needed 
+        # if "-PSK-" in ...
         
         password, ok = QInputDialog.getText(None, " ", "Password", QLineEdit.Password) # TODO: Make OK only clickable when we have >= 8 characters
         if ok:
@@ -211,7 +212,7 @@ class NetworkMenu(QObject):
     def showTODO(self, detailed_text=""):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
-        msg.setWindowTitle(" ")
+        msg.setWindowTitle("Developer Preview")
         msg.setText("This application is a preview for developers.<br>It is not fully functional yet.")
         msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
         msg.exec()       
