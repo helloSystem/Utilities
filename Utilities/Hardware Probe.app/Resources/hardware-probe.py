@@ -181,8 +181,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("showHardwareProbeButtonClicked")
         print("self.local_probe_path: %s" % self.local_probe_path)
         proc = QtCore.QProcess()
-        command = 'sudo'
-        args = ["-E", "-u", os.getenv("SUDO_USER"), "launch", "Filer", self.local_probe_path]
+        command = 'launch'
+        args = ["Filer", self.local_probe_path]
         try:
             print("Starting %s %s" % (command, args))
             proc.startDetached(command, args)
@@ -199,8 +199,10 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
     def run_probe_locally(self):
         proc = QtCore.QProcess()
-        command = wizard.hw_probe_tool # From FreeBSD pkg
-        args = ["-all"]
+
+        command = 'sudo'
+        args = ["-A", "-E", self.wizard().hw_probe_tool, "-all"]
+
         try:
             print("Starting %s %s" % (command, args))
             proc.start(command, args)
@@ -209,20 +211,31 @@ class IntroPage(QtWidgets.QWizardPage, object):
             return
         proc.waitForFinished()
 
-        wizard.showHardwareProbeButton.setDisabled(False)
-        app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
-
         output_lines = proc.readAllStandardOutput().split("\n")
         err_lines = proc.readAllStandardError().split("\n")
-        if err_lines[0] != "":
-            wizard.showErrorPage(str(err_lines[0], encoding='utf-8'))
-            return
-        elif len(output_lines) > 2:
+        if len(output_lines) > 2:
             self.local_probe_path = str(output_lines[len(output_lines)-2], encoding='utf-8').split(":")[1].strip() # /root/HW_PROBE/LATEST/hw.info
             print("self.local_probe_path: %s" % self.local_probe_path)
         else:
             wizard.showErrorPage(self.tr("Failed to run the %s tool." % wizard.hw_probe_tool)) # This catches most cases if something goes wrong
             return
+
+        # Make the Hardware Probe owned by user for easy access by the user
+
+        command = 'sudo'
+        args = ["-A", "-E", "chown", "-R", os.environ.get('USER'), self.local_probe_path]
+
+        try:
+            print("Starting %s %s" % (command, args))
+            proc.start(command, args)
+        except:
+            wizard.showErrorPage(self.tr(
+                "Failed to set the owner to %x.") % os.environ.get('USER'))  # This does not catch most cases of errors; hence see below
+            return
+        proc.waitForFinished()
+
+        wizard.showHardwareProbeButton.setDisabled(False)
+        app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
 
 #############################################################################
 # Installation page
@@ -263,8 +276,8 @@ class UploadPage(QtWidgets.QWizardPage, object):
         print("Starting Upload")
 
         proc = QtCore.QProcess()
-        command = wizard.hw_probe_tool # From FreeBSD pkg
-        args = ["-all", "-upload"]
+        command =  "sudo"
+        args = ["-A", "-E", wizard.hw_probe_tool, "-all", "-upload"]
         try:
             print("Starting %s %s" % (command, args))
             proc.start(command, args)
@@ -342,8 +355,8 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         print("showHardwareProbeButtonClicked")
         print("wizard.server_probe_url: %s" % wizard.server_probe_url)
         proc = QtCore.QProcess()
-        command = 'sudo'
-        args = ["-E", "-u", os.getenv("SUDO_USER"), "launch", "Falkon", wizard.server_probe_url]
+        command = 'launch'
+        args = ["Falkon", wizard.server_probe_url]
         try:
             print("Starting %s %s" % (command, args))
             proc.startDetached(command, args)
@@ -383,6 +396,7 @@ class ErrorPage(QtWidgets.QWizardPage, object):
 
     def initializePage(self):
         print("Displaying ErrorPage")
+        app.setOverrideCursor(QtGui.QCursor(QtCore.Qt.ArrowCursor))
         wizard.showHardwareProbeButton.hide() # FIXME: Why is this needed?
         wizard.progress.hide()  # FIXME: Why is this needed?
         # wizard.playSound()
