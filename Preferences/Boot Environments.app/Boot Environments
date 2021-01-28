@@ -1,3 +1,4 @@
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
-SUDO_ASKPASS="${HERE}/Resources/askpass.py" exec sudo -A -E "${HERE}/Resources/boot-environments.py" "$@"
+# SUDO_ASKPASS="${HERE}/Resources/askpass.py" exec sudo -A -E "${HERE}/Resources/boot-environments.py" "$@"
+SUDO_ASKPASS="${HERE}/Resources/askpass.py" exec "${HERE}/Resources/boot-environments.py" "$@"

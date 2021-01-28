@@ -67,14 +67,17 @@ class BootEnvironmentsManager(object):
         self.selection_index = -1
 
         # Window
-        self.window = QtWidgets.QWidget()
+        self.window = QtWidgets.QMainWindow()
         self.window.setWindowTitle('Boot Environments')
         self.window.setMinimumWidth(650)
-        self.window.setMinimumHeight(400)
+        self.window.setMinimumHeight(350)
         self.window.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                                         QtWidgets.QSizePolicy.MinimumExpanding))
         self.window.closeEvent = self.quit
         self.layout = QtWidgets.QVBoxLayout()
+        
+        # Menu
+        self._showMenu()
 
         # Label
         self.label = QtWidgets.QLabel()
@@ -93,8 +96,6 @@ class BootEnvironmentsManager(object):
         self.list_widget.setSelectionMode(
             QtWidgets.QAbstractItemView.SingleSelection)  # Only one row at a time can be selected
         self.list_widget.setAlternatingRowColors(True)
-        if os.geteuid() != 0:
-            self.list_widget.setEnabled(False)
         self.layout.addWidget(self.list_widget)
         self.be_model.itemChanged.connect(lambda idx: self.activate(idx))
         self.list_widget.clicked.connect(lambda idx: self.select(idx))
@@ -118,20 +119,13 @@ Note that Boot Environments by default may not cover all locations, such as /hom
         new_button = self.buttonbox.addButton(QtWidgets.QDialogButtonBox.Ok)
         new_button.setText("New...")
         new_button.clicked.connect(self.new)
-        if os.geteuid() != 0:
-            new_button.setEnabled(False)
         remove_button = self.buttonbox.addButton(QtWidgets.QDialogButtonBox.Ok)
         remove_button.setText("Remove")
         remove_button.clicked.connect(self.remove)
-        if os.geteuid() != 0:
-            remove_button.setEnabled(False)
         self.mount_button = self.buttonbox.addButton(QtWidgets.QDialogButtonBox.Ok)
         self.mount_button.setText("Unmount")
         self.mount_button.setEnabled(False)
         self.mount_button.clicked.connect(self.mount)
-        if os.geteuid() != 0:
-            self.mount_button.setEnabled(False)
-
         self.layout.addWidget(self.buttonbox)
 
         # Set window icon if one exists in Resources/ with the same name as the main PyQt file plus the png extension
@@ -140,7 +134,10 @@ Note that Boot Environments by default may not cover all locations, such as /hom
             print(candidate)
             self.window.setWindowIcon(QtGui.QIcon(candidate))
 
-        self.window.setLayout(self.layout)
+        widget = QtWidgets.QWidget()
+        widget.setLayout(self.layout)
+        self.window.setCentralWidget(widget)
+        
         self.window.show()
 
         self.ext_process = QtCore.QProcess()
@@ -289,8 +286,8 @@ Note that Boot Environments by default may not cover all locations, such as /hom
         print("Activating: %s" % boot_environment)
 
         p = QtCore.QProcess()
-        p.setProgram("bectl")
-        p.setArguments(["activate", boot_environment])
+        p.setProgram("sudo")
+        p.setArguments(["-A", "-E", "bectl", "activate", boot_environment])
 
         try:
             pid = p.start()  # p.startDetached()
@@ -345,8 +342,8 @@ Note that Boot Environments by default may not cover all locations, such as /hom
             self.timer.stop()
 
             p2 = QtCore.QProcess()
-            p2.setProgram("bectl")
-            p2.setArguments(["create", text])
+            p2.setProgram("sudo")
+            p2.setArguments(["-A", "-E", "bectl", "create", text])
 
             try:
                 pid = p2.start()  # p.startDetached()
@@ -407,8 +404,8 @@ Note that Boot Environments by default may not cover all locations, such as /hom
             self.timer.stop()
 
             p3 = QtCore.QProcess()
-            p3.setProgram("bectl")
-            p3.setArguments(["destroy", "-Fo", boot_environment])
+            p3.setProgram("sudo")
+            p3.setArguments(["-A", "-E", "bectl", "destroy", "-Fo", boot_environment])
 
             try:
                 pid = p3.start()  # p.startDetached()
@@ -465,15 +462,14 @@ Note that Boot Environments by default may not cover all locations, such as /hom
             # Is already mounted, so we want to unmount
             command = "unmount"
 
-        print("bectl %s %s" % (command, mountpoint))
-
         self.app.setOverrideCursor(
             QtGui.QCursor(QtCore.Qt.WaitCursor))
         self.timer.stop()
 
         p4 = QtCore.QProcess()
-        p4.setProgram("bectl")
-        p4.setArguments([command, boot_environment])
+        p4.setProgram("sudo")
+        p4.setArguments(["-A", "-E", "bectl", command, boot_environment])
+        print(p4.program() + " " + " " .join(p4.arguments()))
 
         try:
             pid = p4.start()  # p.startDetached()
@@ -510,9 +506,9 @@ Note that Boot Environments by default may not cover all locations, such as /hom
         # If we have mounted the Boot Environment, then open it in the file manager
         if command == "mount":
             p5 = QtCore.QProcess()
-            p5.setProgram("xdg-open")  # TODO: Replace by 'launch' command?
+            p5.setProgram("launch")
             mountpoint = self.be_model.itemData(self.be_model.index(self.selection_index, 3))[0]
-            p5.setArguments([mountpoint])
+            p5.setArguments(["Filer", mountpoint])
             try:
                 pid = p5.startDetached()
             except:
@@ -524,6 +520,36 @@ Note that Boot Environments by default may not cover all locations, such as /hom
         self.timer.start()
 
         self.update_mount_button(self.selection_index)
+
+    def _showMenu(self):
+        exitAct = QtWidgets.QAction('&Quit', self.window)
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(QtWidgets.QApplication.quit)
+        menubar = self.window.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAct)
+        aboutAct = QtWidgets.QAction('&About', self.window)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(aboutAct)
+
+    def _showAbout(self):
+        print("showDialog")
+        msg = QtWidgets.QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QtGui.QPixmap(os.path.dirname(__file__) + "/Boot Environments.png").scaledToWidth(64, QtCore.Qt.SmoothTransformation))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Boot Environments</h3>")
+        msg.setInformativeText(
+            "A simple preferences application to modify <a href='https://bsd-pl.org/assets/talks/2018-07-30_1_S%C5%82awomir-Wojciech-Wojtczak_ZFS-Boot-Environments.pdf'>ZFS Boot Environments</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
 
 
 if __name__ == "__main__":
