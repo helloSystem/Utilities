@@ -238,8 +238,8 @@ Note that Boot Environments by default may not cover all locations, such as /hom
 
         if reply == QtWidgets.QMessageBox.Ok:
             p4 = QtCore.QProcess()
-            p4.setProgram("shutdown")
-            p4.setArguments(["-r", "now"])
+            p4.setProgram("sudo")
+            p4.setArguments(["shutdown", "-r", "now"])
             p4.startDetached()
 
     def select(self, idx):
