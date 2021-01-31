@@ -43,6 +43,24 @@ class EnergySavingsManager(object):
         
         self.showTODO()
 
+        # Red current settings
+        p = QtCore.QProcess()
+        p.setProgram("xset")
+        p.setArguments(["q"])
+        print(p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
+        for line in lines:
+            if "timeout" in line:
+                print(line) #   timeout:  0    cycle:  0
+                line = line.replace(" ", "")
+                print(line)
+                value = re.findall('timeout:[0-9]*', line)
+                print(value)
+                value = int(value[0].split(":")[1])
+                print(value)
+
         # Window
         self.window = QtWidgets.QMainWindow()
         self.window.setWindowTitle('Energy Saving')
@@ -70,6 +88,9 @@ class EnergySavingsManager(object):
         self.slider.setPageStep(1)
         self.slider.setTickInterval(1)
         self.slider.setTickPosition(2) # Ticks Below
+        self.slider.setValue(value / 10 / 60)
+        if value == 0:
+            self.slider.setValue(7)
         self.slider.setToolTip(str(self.slider.value() * 10))
         if self.slider.value() == 7:
             self.slider.setToolTip("Never")
