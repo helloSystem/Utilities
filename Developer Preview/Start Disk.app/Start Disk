@@ -1,0 +1,216 @@
+#!/usr/bin/env python3.7
+
+
+# Simple Start Disk switcher for FreeBSD in PyQt5
+
+
+# Copyright (c) 2020-2021, Simon Peter <probono@puredarwin.org>
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+import os, sys, subprocess, io
+import configparser
+
+try:
+    from PyQt5 import QtWidgets, QtGui, QtCore
+except:
+    print("Could not import PyQt5. On FreeBSD, sudo pkg install py37-qt5-widgets")
+
+class KeyboardSwitcher(QtWidgets.QMainWindow):
+
+    def __init__(self, app):
+        super().__init__()
+        self.app = app
+        self.checkEFI()
+        self.basicWindow()
+
+    def checkEFI(self):
+        p = QtCore.QProcess()
+        p.setProgram("sysctl")
+        p.setArguments(["-n", "machdep.bootmethod"])
+        print("Starting " + p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        lines = str(p.readAll(), 'utf-8').strip().split("\n")
+        check_passed = False
+        for line in lines:
+            line = line.strip()
+            print(line)
+            if line == "UEFI":
+                check_passed = True
+        if not check_passed:
+            QtWidgets.QMessageBox.critical(self, "Error", "This application can only be used on UEFI-based systems.")
+            exit(0)
+
+    def populateEntries(self):
+        self.list_widget.clear()
+        p = QtCore.QProcess()
+        env = QtCore.QProcessEnvironment.systemEnvironment()
+        env.insert("SUDO_ASKPASS", os.path.dirname(__file__) + "/Resources/askpass.py")
+        p.setProcessEnvironment(env)
+        p.setProgram("sudo")
+        p.setArguments(["-A", "-E", "efibootmgr", "-v"])
+        print("Starting " + p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        lines = str(p.readAll(), 'utf-8').strip().split("\n")
+        print(lines)
+        for line in lines:
+            line = line.strip()
+            if line.startswith("Boot") or line.startswith("+Boot") and "(" in line:
+                if not line.startswith("BootCurrent") and not line.startswith("BootOrder") and not "MISSING!" in line:
+                    print(line)
+                    parts = line.split(" ")
+                    label = " ".join(parts[1:len(parts)-1]).strip()
+                    # print(label)
+                    dev = parts[0].replace("*", "").replace("+", "").strip() # Boot0000,...
+                    # print(dev)
+                    done = [] # Only add each device once to the GUI
+                    if dev not in done:
+                        item = QtWidgets.QListWidgetItem(label)
+                        if parts[0].strip().startswith("+"):
+                            print(parts[0] + " is selected")
+                            item.setSelected(True) # FIXME: Why does this not work?
+                        setattr(item, "dev", dev)
+                        self.list_widget.addItem(item)
+                        done.append(label)
+
+    def basicWindow(self):
+        app = QtWidgets.QApplication(sys.argv)
+        self.window = QtWidgets.QMainWindow()
+        self.window.setFixedSize(450, 300)
+        self._showMenu()
+
+        self.window.setWindowTitle('Start Disk')
+
+        layout = QtWidgets.QVBoxLayout()
+
+        self.list_widget = QtWidgets.QListWidget()
+        self.list_widget.setAlternatingRowColors(True)
+
+        disks = self.populateEntries()
+
+        self.list_widget.itemSelectionChanged.connect(self.onSomethingChanged)
+        self.list_widget.setUniformItemSizes(True)
+        layout.addWidget(self.list_widget)
+        
+        self.buttonbox = QtWidgets.QDialogButtonBox()
+        reboot_button = self.buttonbox.addButton(QtWidgets.QDialogButtonBox.Ok)
+        reboot_button.setText("Restart...")
+        reboot_button.setDefault(True)
+        reboot_button.clicked.connect(self.reboot)
+        layout.addWidget(self.buttonbox)
+
+        widget = QtWidgets.QWidget()
+        widget.setLayout(layout)
+        self.window.setCentralWidget(widget)
+        self.window.show()
+        sys.exit(app.exec_())
+
+    def reboot(self):
+        print("Reboot clicked")
+
+        reply = QtWidgets.QMessageBox.question(
+            self.window,
+            "Restart",
+            "Are you sure you want to restart your computer now?\nAll unsaved work will be lost.",
+            QtWidgets.QMessageBox.Cancel,
+            QtWidgets.QMessageBox.Ok
+        )
+
+        if reply == QtWidgets.QMessageBox.Ok:
+            p = QtCore.QProcess()
+            p.setProgram("sudo")
+            p.setArguments(["shutdown", "-r", "now"])
+            p.startDetached()
+            
+    def onSomethingChanged(self):
+
+        self.list_widget.itemSelectionChanged.disconnect()
+
+        self.app.setOverrideCursor(
+            QtGui.QCursor(QtCore.Qt.WaitCursor))
+
+        print("Selected entry changed")
+        print(self.list_widget.selectedItems()[0].text())
+        selected_entry = getattr(self.list_widget.selectedItems()[0], "dev")
+        print("selected_entry", selected_entry)
+
+        p = QtCore.QProcess()
+        env = QtCore.QProcessEnvironment.systemEnvironment()
+        env.insert("SUDO_ASKPASS", os.path.dirname(__file__) + "/Resources/askpass.py")
+        p.setProcessEnvironment(env)
+        p.setProgram("sudo")
+        p.setArguments(["-A", "-E", "efibootmgr", "-o", selected_entry.replace("Boot", "")])
+        print("Starting " + p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        lines = str(p.readAll(), 'utf-8').strip().split("\n")
+        for line in lines:
+            line = line.strip()
+            print(line)
+
+        self.populateEntries()
+
+        self.app.setOverrideCursor(
+            QtGui.QCursor(QtCore.Qt.ArrowCursor))
+
+        self.list_widget.itemSelectionChanged.connect(self.onSomethingChanged)
+
+
+    def _showMenu(self):
+        exitAct = QtWidgets.QAction('&Quit', self.window)
+        exitAct.setShortcut('Ctrl+Q')
+        exitAct.setStatusTip('Exit application')
+        exitAct.triggered.connect(QtWidgets.QApplication.quit)
+        menubar = self.window.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        fileMenu.addAction(exitAct)
+        aboutAct = QtWidgets.QAction('&About', self.window)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menubar.addMenu('&Help')
+        helpMenu.addAction(aboutAct)
+
+
+    def _showAbout(self):
+        print("showDialog")
+        msg = QtWidgets.QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QtGui.QPixmap(os.path.dirname(__file__) + "/Resources/Start Disk.png").scaledToWidth(64, QtCore.Qt.SmoothTransformation))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Start Disk</h3>")
+        msg.setInformativeText(
+            "A simple preferences application to set the Start Disk using <a href='https://www.freebsd.org/cgi/man.cgi?efibootmgr'>efibootmgr</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
+
+
+if __name__ == "__main__":
+    app = QtWidgets.QApplication(sys.argv)
+    ks = KeyboardSwitcher(app)
