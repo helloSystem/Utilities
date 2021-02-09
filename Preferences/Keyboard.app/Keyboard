@@ -215,7 +215,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         print(self.supported_layouts)
         cleartext = ["English (United States)", "English (United Kingdom)", "Français", "Español",
                      "Deutsch", "Italiano", "日本人", "Português", "Norsk",
-                     "Svenska", "Suomalainen", "Pусский", "Türk", "עִברִית"]
+                     "Svenska", "Suomalainen", "Pусский", "Türkçe", "עִברִית"]
         i = 0
         selected_index = -1
         for supported_layout in self.supported_layouts:
