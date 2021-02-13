@@ -48,6 +48,8 @@ class Wizard(QtWidgets.QWizard, object):
         self.setWindowTitle("Welcome")
         self.setFixedSize(600, 400)
 
+        self.setOption(QtWidgets.QWizard.NoCancelButton, True)
+
         self.setSubTitleFormat(QtCore.Qt.PlainText)
         # Qt 5.14+ also have an option for Markdown
         # AttributeError: type object 'Qt' has no attribute 'MarkdownText'
