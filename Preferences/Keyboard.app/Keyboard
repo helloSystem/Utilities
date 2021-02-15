@@ -196,7 +196,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         # Only show the main ones in order to keep the list short and tidy, let's see how long
         # it takes for the first person to complain that exotic ones are missing...
         # Let's not end up like https://www.youtube.com/watch?v=4nR4HP2x1iU
-        supported_layouts = ["us", "gb", "fr", "es", "de", "it", "jp", "pt", "no", "se", "fi", "ru", "tr", "il"]
+        supported_layouts = ["us", "gb", "fr", "es", "de", "de_CH", "de_AT", "it", "jp", "pt", "no", "se", "fi", "ru", "tr", "il"]
 
         return supported_layouts
 
