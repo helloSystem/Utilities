@@ -125,7 +125,7 @@ ApplicationWindow {
         autoPlay: true
         // loops: Audio.Infinite;
         source: "pamgaea-by-kevin-macleod-from-filmmusic-io.ogg"
-        volume: 1.0
+        volume: 0.8
         Behavior on volume {
             NumberAnimation {  duration: 15000; easing.type: Easing.OutCubic }
         }
