@@ -214,7 +214,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         self.list_widget.setAlternatingRowColors(True)
         print(self.supported_layouts)
         cleartext = ["English (United States)", "English (United Kingdom)", "Français", "Español",
-                     "Deutsch", "Italiano", "日本人", "Português", "Norsk",
+                     "Deutsch", "Italiano", "日本語", "Português", "Norsk",
                      "Svenska", "Suomalainen", "Pусский", "Türkçe", "עִברִית"]
         i = 0
         selected_index = -1
