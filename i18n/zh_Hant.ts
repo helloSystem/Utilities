@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation>分割布局:</translation>
+        <translation>分割區佈局:</translation>
     </message>
     <message>
         <source>Restore</source>
@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>The passwords do not match.</source>
-        <translation>密碼不符</translation>
+        <translation>密碼不符。</translation>
     </message>
 </context>
 <context>
