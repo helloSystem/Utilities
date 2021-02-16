@@ -228,6 +228,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
                 print( "Layout in xkbmap matches this layout")
                 item.setSelected(True)
                 selected_index = i
+                self.updateVariantsMenu(self.xkbmap.layout)
         if selected_index > -1:
             print("selected_index, %i" % selected_index)
             self.list_widget.setFocus()
@@ -279,6 +280,8 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         selected_layout = getattr(self.list_widget.selectedItems()[0], "layout")
         print("selected_layout", selected_layout)
 
+        self.updateVariantsMenu(selected_layout)
+
         self.xkbmap.setKeyToValue("layout", selected_layout)
         try:
             self.xkbmap.setKeyToValue("variant", "nodeadkeys")
@@ -304,12 +307,41 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
             self.config.set("Keyboard", "DoNotDisableCapslockKey", "true")
 
         self.saveConfig()
+        self.updateVariantsMenu(self.xkbmap.layout)
         self.app.setOverrideCursor(
             QtGui.QCursor(QtCore.Qt.ArrowCursor))
         self.checkbox_keyswap.setEnabled(True)
         self.checkbox_disablecapslock.setEnabled(True)
         self.list_widget.setEnabled(True)
 
+    def updateVariantsMenu(self, layout):
+        self.variantsMenu.clear()
+        file1 = open('/usr/local/share/X11/xkb/symbols/' + layout, 'r')
+        lines = file1.readlines()
+        file1.close()
+        self.variantsGroup = QtWidgets.QActionGroup(self.variantsMenu) # Only one of the actions added to this group can be active
+        for line in lines:
+            if "xkb_symbols" in line and ('"' in line or "'" in line):
+                variant = line.replace("'", '"').split('"')[1].strip()
+                # print(variant)
+                varAct = QtWidgets.QAction(variant, self.window)
+                varAct.triggered.connect(self.applyVariant)
+                varAct.setCheckable(True)
+                if self.xkbmap.variant == variant:
+                    varAct.setChecked(True)
+                varAct.__setattr__("variant", variant)
+                self.variantsGroup.addAction(varAct)
+                self.variantsMenu.addAction(varAct)
+
+    def applyVariant(self):
+        print("applyVariant called")
+        variant = getattr(self.variantsGroup.checkedAction(), "variant")
+        # print(variant)
+        try:
+            self.xkbmap.setKeyToValue("variant", variant)
+        except:
+            pass
+ 
     def _showMenu(self):
         exitAct = QtWidgets.QAction('&Quit', self.window)
         exitAct.setShortcut('Ctrl+Q')
@@ -318,6 +350,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         menubar = self.window.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAct)
+        self.variantsMenu = menubar.addMenu('&Variants')
         aboutAct = QtWidgets.QAction('&About', self.window)
         aboutAct.setStatusTip('About this application')
         aboutAct.triggered.connect(self._showAbout)
