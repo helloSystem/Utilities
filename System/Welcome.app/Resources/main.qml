@@ -39,7 +39,7 @@ ApplicationWindow {
             return;
         }
         var welcomeTexts = [
-           'Welcome', 'Willkommen', '欢迎', 'Bienvenue', 'Benvenuto', 'Bienvenido', 'ようこそ', 'Mabuhay', 'Välkommen', 'Добро пожаловать', 'Merhaba', 'Bonvenon', '歡迎光臨'
+           'Welcome', 'Willkommen', 'Bienvenue', 'Benvenuto', 'Bienvenido', 'ようこそ', 'Mabuhay', 'Välkommen', 'Добро пожаловать', 'Merhaba', 'Bonvenon', '歡迎'
         ];
         var welcomeText = welcomeTexts[Math.floor(Math.random() * welcomeTexts.length)];
         welcome.nextText = welcome.nextText + 1;
