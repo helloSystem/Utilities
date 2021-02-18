@@ -5,102 +5,102 @@
     <name>DiskUtility</name>
     <message>
         <source>Disk Utility</source>
-        <translation type="unfinished"></translation>
+        <translation>磁盘工具</translation>
     </message>
     <message>
         <source>Partition</source>
-        <translation type="unfinished"></translation>
+        <translation>分区</translation>
     </message>
     <message>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>选项</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>名称：</translation>
     </message>
     <message>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>格式：</translation>
     </message>
     <message>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>大小：</translation>
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation type="unfinished"></translation>
+        <translation>卷宗信息：</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>分区布局：</translation>
     </message>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>恢复</translation>
     </message>
     <message>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>删除</translation>
     </message>
 </context>
 <context>
     <name>Users</name>
     <message>
         <source>Add User</source>
-        <translation type="unfinished"></translation>
+        <translation>添加用户</translation>
     </message>
     <message>
         <source>Account Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>账户类型：</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>账户名称：</translation>
     </message>
     <message>
         <source>Remove Users</source>
-        <translation type="unfinished"></translation>
+        <translation>删除用户</translation>
     </message>
     <message>
         <source>Administrator</source>
         <comment>wheel</comment>
-        <translation type="unfinished"></translation>
+        <translation>管理员</translation>
     </message>
     <message>
         <source>Full Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>全名：</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>密码：</translation>
     </message>
     <message>
         <source>Verify:</source>
-        <translation type="unfinished"></translation>
+        <translation>验证：</translation>
     </message>
     <message>
         <source>The passwords do not match.</source>
-        <translation type="unfinished"></translation>
+        <translation>密码不一致。</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>你好 世界</translation>
     </message>
     <message>
         <source>Text Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>文本编辑</translation>
     </message>
 </context>
 </TS>
