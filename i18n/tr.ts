@@ -5,102 +5,102 @@
     <name>DiskUtility</name>
     <message>
         <source>Disk Utility</source>
-        <translation type="unfinished"></translation>
+        <translation>Disk İzlencesi</translation>
     </message>
     <message>
         <source>Partition</source>
-        <translation type="unfinished"></translation>
+        <translation>Bölüm</translation>
     </message>
     <message>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Seçenekler</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ad:</translation>
     </message>
     <message>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Biçim:</translation>
     </message>
     <message>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Boyut:</translation>
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation type="unfinished"></translation>
+        <translation>Disk Bölümü Bilgisi:</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bölümlendirme Şeması:</translation>
     </message>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Eski Haline Döndür</translation>
     </message>
     <message>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>Sil</translation>
     </message>
 </context>
 <context>
     <name>Users</name>
     <message>
         <source>Add User</source>
-        <translation type="unfinished"></translation>
+        <translation>Kullanıcı Ekle</translation>
     </message>
     <message>
         <source>Account Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hesap Türü:</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Hesap Adı:</translation>
     </message>
     <message>
         <source>Remove Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Kullanıcıları Kaldır</translation>
     </message>
     <message>
         <source>Administrator</source>
         <comment>wheel</comment>
-        <translation type="unfinished"></translation>
+        <translation>Yönetici</translation>
     </message>
     <message>
         <source>Full Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tam Ad:</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Parola:</translation>
     </message>
     <message>
         <source>Verify:</source>
-        <translation type="unfinished"></translation>
+        <translation>Doğrula:</translation>
     </message>
     <message>
         <source>The passwords do not match.</source>
-        <translation type="unfinished"></translation>
+        <translation>Parolalar eşleşmiyor.</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Merhaba Dünya</translation>
     </message>
     <message>
         <source>Text Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Metin Düzenleme</translation>
     </message>
 </context>
 </TS>
