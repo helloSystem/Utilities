@@ -343,19 +343,60 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
             pass
  
     def _showMenu(self):
+        menubar = self.window.menuBar()
+        fileMenu = menubar.addMenu('&File')
+        
+        saveAct = QtWidgets.QAction('&Save', self.window)
+        saveAct.setShortcut('Ctrl+S')
+        saveAct.setStatusTip('Save settings to persist reboots')
+        saveAct.triggered.connect(self.save)
+        fileMenu.addAction(saveAct)
+        
+        fileMenu.addSeparator()
+
         exitAct = QtWidgets.QAction('&Quit', self.window)
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(QtWidgets.QApplication.quit)
-        menubar = self.window.menuBar()
-        fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAct)
+        
         self.variantsMenu = menubar.addMenu('&Variants')
+        
+        helpMenu = menubar.addMenu('&Help')
+        
         aboutAct = QtWidgets.QAction('&About', self.window)
         aboutAct.setStatusTip('About this application')
         aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menubar.addMenu('&Help')
+        
         helpMenu.addAction(aboutAct)
+
+
+    def save(self):
+        print("save called")
+        print("TODO: To be implemented")
+        conf_file_path = "/tmp/00-keyboard.conf"
+        conf_file_template = """Section "InputClass"
+        Identifier "system-keyboard"
+        MatchIsKeyboard "on"
+        Option "XkbLayout" "@layout@"
+        Option "XkbModel" "@model@"
+        Option "XkbVariant" ",@variant@"
+        Option "XkbOptions" "@options@"
+EndSection"""
+        conf_file_content = conf_file_template.replace("@layout@", self.xkbmap.layout).replace("@model@", self.xkbmap.model).replace("@variant@", self.xkbmap.variant).replace("@options@", ",".join(self.xkbmap.options))
+        print("conf_file_content:")
+        print(conf_file_content)
+        
+        f = open(conf_file_path, "w")
+        f.write(conf_file_content)
+        f.close()
+
+        # Run a helper tool as root that puts the config file into the system-wide Xorg configuration and/or writes the information to EFI
+        os.environ["SUDO_ASKPASS"] = os.path.dirname(__file__) + "/Resources/askpass.py"
+        # TODO: Implement error handling with an error dialog
+        proc = subprocess.Popen(["/usr/local/bin/sudo", "-A", "-E", os.path.dirname(__file__) + "/Resources/save.py"], stdout=subprocess.PIPE, env=os.environ)
+        for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
+            print(line)
 
 
     def _showAbout(self):
