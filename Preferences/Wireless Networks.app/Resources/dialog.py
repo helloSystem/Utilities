@@ -23,7 +23,7 @@ class Dialog(QtWidgets.QInputDialog):
         items = str(subprocess.check_output(["sysctl", "-b", "net.wlan.devices"]), "utf-8").split(" ")
 
         if(len(items) == 0):
-            show_message("No wireless devices found.")
+            show_message("No wireless devices found. You might want to consider using a USB dongle with the Realtek RTL8188CUS chipset.")
             exit(0)
         elif(len(items) == 1):
             print(items[0])
@@ -42,7 +42,7 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
 
     if sys.argv.pop() == "warning":
-        show_message("No wireless devices found.")
+        show_message("No wireless devices found. You might want to consider using a USB dongle with the Realtek RTL8188CUS chipset.")
     else:
         Dialog()
 

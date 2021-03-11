@@ -82,7 +82,7 @@ fi
 #
 
 warning() {
-  "${HERE}/dialog.py" warning "$1"
+  "${HERE}/dialog.py" warning
 }
 
 ask_wifi_list() {
