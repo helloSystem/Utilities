@@ -132,10 +132,10 @@ class VolumeMenu(QObject):
     def __init__(self):
 
         super().__init__()
-        
-        self.showTODO()
 
-        icon = QIcon.fromTheme("audio-volume-high-symbolic") # FIXME: How to get dark rather than bright icon?
+        # icon = QIcon.fromTheme("audio-volume-high-symbolic") # FIXME: How to get dark rather than bright icon?
+        icon = QIcon(os.path.dirname(__file__) + '/Resources/audio-volume-high-symbolic.png')
+
         self.tray = QSystemTrayIcon()
         self.tray.setIcon(icon)
         self.tray.setVisible(True)
@@ -281,14 +281,6 @@ class VolumeMenu(QObject):
         msg.setInformativeText("A simple QSystemTrayIcon application to select the audio device using <a href='https://www.freebsd.org/cgi/man.cgi?sysctl'>sysctl hw.snd.default_unit</a> and to set the volume using using <a href='https://www.freebsd.org/cgi/man.cgi?mixer'>mixer</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
-    def showTODO(self, detailed_text=""):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setWindowTitle("Developer Preview")
-        msg.setText("This application is a preview for developers.<br>It is not fully functional yet.")
-        msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
-        msg.exec()       
-
 
 if __name__ == "__main__":
 
@@ -301,8 +293,9 @@ if __name__ == "__main__":
     print(cmd)
     p.start()
     p.waitForFinished()
-    
+
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
     VM = VolumeMenu()
     sys.exit(app.exec_())
