@@ -131,9 +131,9 @@ class InstallWizard(QtWidgets.QWizard, object):
 
         # Detect if our installer script is executable
         if not os.access(self.installer_script, os.X_OK):
-            # make the file executable
-            st = os.stat(self.installer_script)
-            os.chmod(self.installer_script, st.st_mode | stat.S_IEXEC)
+            # print message to stderr and exit installer
+            print("Failed to execute install script: install script is not executable.", file=sys.stderr)
+            exit(1)
 
         self.should_show_last_page = False
         self.error_message_nice = "An unknown error occured."
