@@ -36,6 +36,7 @@ from datetime import datetime
 import urllib.request
 import urllib.error
 import json
+import stat
 from PyQt5 import QtWidgets, QtGui, QtCore  # pkg install py37-qt5-widgets
 # PySide2 wants to install 1 GB whereas PyQt5 only needs 40 MB installed on FuryBSD XFCE
 # from PyQt5 import QtMultimedia # pkg install  py37-qt5-multimedia
@@ -128,7 +129,11 @@ class InstallWizard(QtWidgets.QWizard, object):
         if os.path.exists(os.path.dirname(__file__) + "/" + self.installer_script):
             self.installer_script = os.path.dirname(__file__) + "/" + self.installer_script
 
-        # TODO: Make sure it is actually executable
+        # Detect if our installer script is executable
+        if not os.access(self.installer_script, os.X_OK):
+            # make the file executable
+            st = os.stat(self.installer_script)
+            os.chmod(self.installer_script, st.st_mode | stat.S_IEXEC)
 
         self.should_show_last_page = False
         self.error_message_nice = "An unknown error occured."
