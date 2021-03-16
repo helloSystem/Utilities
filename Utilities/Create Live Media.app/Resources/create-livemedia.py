@@ -182,6 +182,13 @@ class IntroPage(QtWidgets.QWizardPage, object):
         self.date_label.hide()
         self.disk_vlayout.addWidget(self.date_label)
 
+        # Checkbox for Pre-release and Experimental builds
+        self.prerelease_checkbox = QtWidgets.QCheckBox()
+        self.prerelease_checkbox.setText("Show Pre-release builds")
+        self.prerelease_checkbox.setChecked(False)
+        self.disk_vlayout.addWidget(self.prerelease_checkbox)
+        self.prerelease_checkbox.clicked.connect(self.populateImageList)
+
     def initializePage(self):
         print("Displaying IntroPage")
         self.populateImageList()
@@ -202,6 +209,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
                              text)  # __setattr__() is the equivalent to setProperty() in Qt
             item.__setattr__("updated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
             item.__setattr__("size", 2*1000*1000*1000)
+            item.__setattr__("prerelease", False)
             self.release_listwidget.addItem(item) # FIXME: Can we at least attempt to get the real size from the URL?
             return
 
@@ -224,14 +232,19 @@ class IntroPage(QtWidgets.QWizardPage, object):
                     # print(asset)
                     for asset in release["assets"]:
                         if asset["browser_download_url"].endswith(".iso"):
-                            display_name = "%s (%s)" % (asset["name"], release["tag_name"])
+                            # display_name = "%s (%s)" % (asset["name"], release["tag_name"])
+                            display_name = "%s %s" % (release["tag_name"], asset["name"])
                             self.available_isos.append(asset)
                             item = QtWidgets.QListWidgetItem(display_name)
                             item.__setattr__("browser_download_url", asset["browser_download_url"]) # __setattr__() is the equivalent to setProperty() in Qt
                             item.__setattr__("updated_at", asset["updated_at"])
                             item.__setattr__("size", asset["size"])
-                            self.release_listwidget.addItem(item)
-
+                            item.__setattr__("prerelease", release["prerelease"])
+                            if self.prerelease_checkbox.isChecked() == False:
+                                if release["prerelease"] == False:
+                                    self.release_listwidget.addItem(item)
+                            else:
+                                self.release_listwidget.addItem(item)
         #except:
             #pass
             # wizard.showErrorPage("The list of available images could not be retrieved. GitHub rate limit exceeded?")
@@ -240,11 +253,16 @@ class IntroPage(QtWidgets.QWizardPage, object):
             # self.release_listwidget.hide()  # FIXME: Why is this needed? Can we do without?
             # return
 
+        # Invalidate that the user already has selected something and we can proceed
+        self.completeChanged.emit()
+
 
     def onSelectionChanged(self):
         print("onSelectionChanged")
         # print("selectedIndexes", self.release_listwidget.selectedIndexes())
         items = self.release_listwidget.selectedItems()
+        if len(items)<1:
+            return
         print("browser_download_url attribute:" + items[0].__getattribute__("browser_download_url")) # __getattribute__() is the equivalent to property() in Qt
         wizard.selected_iso_url = items[0].__getattribute__("browser_download_url")
         date = QtCore.QDateTime.fromString(items[0].__getattribute__("updated_at"), "yyyy-MM-ddThh:mm:ssZ")
@@ -256,7 +274,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
 
     def isComplete(self):
-        if wizard.selected_iso_url != None:
+        if wizard.selected_iso_url != None and len(self.release_listwidget.selectedItems()) == 1:
             return True
         else:
             return False
