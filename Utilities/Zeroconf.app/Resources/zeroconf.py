@@ -56,50 +56,21 @@ def which(program):
 
 
 class ZeroconfService():
+    """
 
-    def __init__(self, avahi_browse_line, browser):
-        self.browser = browser
-        parts = avahi_browse_line.split(";")
-        if len(parts) < 10:
-            return
-        self.interface = parts[1]
-        self.ip_version = parts[2]
-        self.name = parts[3] # .decode("utf-8", "strict")
-        self.service_type = parts[4]
-        self.domain = parts[5]
-        self.hostname_with_domain = parts[6]
-        self.address = parts[7]
-        self.port = parts[8]
-        self.txt = parts[9]
+    Represents one service.
+
+    """
+
+    def __init__(self, name, service_type, hostname_with_domain, port):
+        self.name = name
+        self.service_type = service_type
+        self.hostname_with_domain = hostname_with_domain
+        self.port = port
         self.url = "%s://%s:%s" % (self.service_type.split("_")[1].split("-")[0].replace(".", ""), self.hostname_with_domain, self.port)
 
     def __repr__(self):
         return "%s on %s:%s" % (self.service_type, self.hostname_with_domain, self.port)
-
-    # Define here what we should do with detected services. This gets run whenever a service is added
-    def handle(self):
-        print("Handling %s", str(self))
-        icon = "unknown"
-        if self.url.startswith("device"):
-            icon = "computer"
-        if self.url.startswith("ssh"):
-            icon = "terminal"
-        if self.url.startswith("sftp") or self.url.startswith("smb"):
-            icon = "folder"
-        if self.url.startswith("raop"):
-            # AirPlay
-            icon = "network-wireless"
-        if self.url.startswith("pulse"):
-            # PulseAudio
-            icon = "audio-card"
-        if self.url.startswith("scanner") or self.url.startswith("uscan"):
-            icon = "scanner"
-        if self.url.startswith("http"):
-            icon = "applications-internet"
-        if self.url.startswith("ipp") or self.url.startswith("print") or self.url.startswith("pdl"):
-            icon = "printer"
-        item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme(icon), self.url)
-        self.browser.list_widget.addItem(item)
 
 
 class ZeroconfServices():
