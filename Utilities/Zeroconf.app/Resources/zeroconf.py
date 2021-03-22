@@ -221,23 +221,45 @@ class ZeroconfDiscoverer(QThread):
 
 class ZeroconfServices():
 
-    def __init__(self):
+    def __init__(self, browser):
         self.services = []
+        self.browser = browser
 
     def add(self, service):
-        if service.ip_version == "IPv4":
-            print("Appending " + str(service))
-            self.services.append(service)
-            service.handle()
-        else:
-            print("service.ip_version: %s" % service.ip_version)
-            print("Not appending since IPv6; TODO: Show those as well but check for duplicates")
+        print("Appending " + str(service))
+        self.services.append(service)
+        self.handle(service)
 
     def remove(self, avahi_browse_line):
         print("TODO: To be implemented: Remove the service from the list if certain criteria match")
         for service in self.services:
             print(service.service_type)
             print(service.hostname_with_domain)
+
+    # Define here what we should do with detected services. This gets run whenever a service is added
+    def handle(self, service):
+        print("Handling %s", str(service))
+        icon = "unknown"
+        if service.url.startswith("device"):
+            icon = "computer"
+        if service.url.startswith("ssh"):
+            icon = "terminal"
+        if service.url.startswith("sftp") or service.url.startswith("smb"):
+            icon = "folder"
+        if service.url.startswith("raop"):
+            # AirPlay
+            icon = "network-wireless"
+        if service.url.startswith("pulse"):
+            # PulseAudio
+            icon = "audio-card"
+        if service.url.startswith("scanner") or service.url.startswith("uscan"):
+            icon = "scanner"
+        if service.url.startswith("http"):
+            icon = "applications-internet"
+        if service.url.startswith("ipp") or service.url.startswith("print") or service.url.startswith("pdl"):
+            icon = "printer"
+        item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme(icon), service.url)
+        self.browser.list_widget.addItem(item)
 
 class sshLogin(QtWidgets.QDialog):
     def __init__(self, host=None, parent=None):
@@ -295,9 +317,8 @@ class ZeroconfBrowser:
         self.window.setCentralWidget(widget)
         self.window.show()
 
-        self.services = ZeroconfServices()
-        self.ext_process = QtCore.QProcess()
-        self.long_running_function()
+        self.services = ZeroconfServices(self)
+        self.start_worker()
 
         sys.exit(self.app.exec_())
 
@@ -354,42 +375,17 @@ class ZeroconfBrowser:
                 QtWidgets.QMessageBox.Yes
             )
 
-    def long_running_function(self):
-        self.ext_process.finished.connect(self.onProcessFinished)
-        self.ext_process.setProgram("avahi-browse")
-        self.ext_process.setArguments(["-arlp"])
+    def start_worker(self):
+        self.worker = ZeroconfDiscoverer(None)
+        self.worker.service_added.connect(self.add_handler)
+        self.worker.service_removed.connect(self.remove_handler)
+        self.worker.start()
 
-        try:
-            pid = self.ext_process.start()
-            print("avahi-browse started")
-        except:
-            self.showErrorPage("avahi-browse cannot be launched.")
-            return  # Stop doing anything here
+    def add_handler(self, service):
+        self.services.add(service)
 
-
-        if self.ext_process.waitForStarted(-1):
-            while True:
-                QtWidgets.QApplication.processEvents()  # Important trick so that the app stays responsive without the need for threading!
-                time.sleep(0.1)
-                while self.ext_process.canReadLine():
-                    # This is a really crude attempt to read line-wise. FIXME: Do better
-                    line = str(self.ext_process.readLine())
-                    self.processLine(line)
-
-        print("ERROR: We should never reach this!")
-
-    def onProcessFinished(self):
-        print("onProcessFinished called")
-
-    def processLine(self, line):
-        line = str(line).replace("b'", "").replace("\\n'", "")
-        print(line)
-        if line.startswith("="):
-            s = ZeroconfService(line, self)
-            self.services.add(s)
-        if line.startswith("-"):
-            s = ZeroconfService(line, self)
-            self.services.remove(line)
+    def remove_handler(self, service):
+        self.services.remove(service)
 
     def _showMenu(self):
         exitAct = QtWidgets.QAction('&Quit', self.window)
