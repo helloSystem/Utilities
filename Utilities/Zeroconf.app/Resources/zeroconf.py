@@ -29,10 +29,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import os, sys, time
+import os, sys, time, io
 
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
+    from PyQt5.QtCore import QObject, QProcess, pyqtSignal
 except:
     print("Could not import PyQt5. On FreeBSD, sudo pkg install py37-qt5-widgets")
 
@@ -74,6 +75,47 @@ class ZeroconfService():
 
     def __eq__(self, other):
         return self.url == other.url
+
+
+class CommandReader(QObject):
+    """
+
+    Runs a program via QProcess, and passes each line of STDOUT to the `lines`
+    signal.
+
+    """
+
+    lines = pyqtSignal(bytes)
+
+    def __init__(self, parent, command, arguments):
+        super().__init__(parent)
+        self.command = command
+        self.arguments = arguments
+
+    def kill(self):
+        self.process.kill()
+
+    def start(self):
+        self.process = QProcess(self)
+
+        self.buffer = io.BytesIO(b"")
+        self.process.readyReadStandardOutput.connect(self.handler)
+        self.process.start(self.command, self.arguments)
+
+    def wait(self):
+        self.process.waitForFinished()
+
+    def handler(self):
+        position = self.buffer.tell()
+        self.buffer.write(bytes(self.process.readAllStandardOutput()))
+        self.buffer.seek(position)
+
+        for line in self.buffer.readlines():
+            if line == b"":
+                if self.process.state() == QProcess.ProcessState.NotRunning:
+                    self.kill()
+                break
+            self.lines.emit(line)
 
 
 class ZeroconfServices():
