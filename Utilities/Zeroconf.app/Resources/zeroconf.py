@@ -33,7 +33,7 @@ import os, sys, time, io
 
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
-    from PyQt5.QtCore import QObject, QProcess, pyqtSignal
+    from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QThread
 except:
     print("Could not import PyQt5. On FreeBSD, sudo pkg install py37-qt5-widgets")
 
@@ -116,6 +116,99 @@ class CommandReader(QObject):
                     self.kill()
                 break
             self.lines.emit(line)
+
+
+class ZeroconfDiscoverer(QThread):
+    """
+
+    Runs the `dns-sd` tool, creates a ZeroconfService for each service
+    discovered, and passes those services to a signal: service_added and
+    service_removed.
+
+    It works like so:
+
+    1. `dns-sd -B _services._dns-sd._udp` is run to enumerate all service types
+    available on the local network.
+
+    2. `dns-sd -B $SERVICE_TYPE` is run to enumerate all services of the
+    specified type.
+
+    3. `dns-sd -L $NAME $SERVICE_TYPE $DOMAIN` is run to get more details on a
+    particular service.
+
+    """
+
+    service_added = pyqtSignal(ZeroconfService)
+    service_removed = pyqtSignal(ZeroconfService)
+
+
+    def start(self):
+        # List all service types
+        cmd = CommandReader(self, "dns-sd", ["-B", "_services._dns-sd._udp"])
+        cmd.lines.connect(self.type_line_handler)
+        cmd.start()
+
+    def type_line_handler(self, line):
+        line = line.decode()
+        # Parse line
+        data = line.split()
+        if len(data) < 7:
+            return
+        if data[1] != "Add":
+            return
+        service_type = data[6]
+
+        # List all services of this type
+        cmd = CommandReader(self, "dns-sd", ["-B", service_type])
+        cmd.lines.connect(self.service_line_handler)
+        cmd.start()
+
+    def service_line_handler(self, line):
+        line = line.decode()
+        # Parse line
+        data = line.split()
+        if len(data) < 7:
+            return
+        if data[1] == "A/R":
+            # Header line
+            return
+        adding = data[1] == "Add"
+
+        name = " ".join(data[6:])
+        service_type = data[5].strip(".")
+        domain = data[4].strip(".")
+
+        # We need a closure here so that we can pass on name, service_type, and domain
+        def handler(line):
+            line = line.decode()
+            data = line.split()
+
+            if len(data) < 7:
+                return False
+            if data[2] != "can" or data[3] != "be" or data[4] != "reached" or data[5] != "at":
+                return False
+
+            hostname_with_domain, port = data[6].split(":")
+            hostname_with_domain = hostname_with_domain.strip(".")
+
+            # Create a service
+            service = ZeroconfService(name, service_type, hostname_with_domain, port)
+
+            # Pass the service to the appropriate handler
+            if adding:
+                self.service_added.emit(service)
+            else:
+                self.service_removed.emit(service)
+
+            return True
+
+        cmd = CommandReader(self, "dns-sd", ["-L", name, service_type, domain])
+        def f(line):
+            ok = handler(line)
+            if ok:
+                cmd.kill()
+        cmd.lines.connect(f)
+        cmd.start()
 
 
 class ZeroconfServices():
