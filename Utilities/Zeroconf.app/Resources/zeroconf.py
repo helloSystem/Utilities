@@ -227,8 +227,9 @@ class ZeroconfServices():
 
     def add(self, service):
         print("Appending " + str(service))
-        self.services.append(service)
-        self.handle(service)
+        if service not in self.services:
+            self.services.append(service)
+            self.handle(service)
 
     def remove(self, avahi_browse_line):
         print("TODO: To be implemented: Remove the service from the list if certain criteria match")
