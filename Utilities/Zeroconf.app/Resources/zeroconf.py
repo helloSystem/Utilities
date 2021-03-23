@@ -72,6 +72,9 @@ class ZeroconfService():
     def __repr__(self):
         return "%s on %s:%s" % (self.service_type, self.hostname_with_domain, self.port)
 
+    def __eq__(self, other):
+        return self.url == other.url
+
 
 class ZeroconfServices():
 

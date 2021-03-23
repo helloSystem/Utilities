@@ -12,5 +12,10 @@ class TestCommandReader(unittest.TestCase):
         self.assertEqual(service.url, "http://foo.local:80")
         self.assertEqual(service.__repr__(), "_http._tcp on foo.local:80")
 
+    def test_equality(self):
+        service1 = ZeroconfService("foo server", "_http._tcp", "foo.local", "80")
+        service2 = ZeroconfService("foo server2", "_http._tcp2", "foo.local", "80")
+        self.assertEqual(service1, service2)
+
 if __name__ == "__main__":
     unittest.main()
