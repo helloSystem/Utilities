@@ -225,21 +225,25 @@ class ZeroconfServices():
         self.services = []
         self.browser = browser
 
-    def add(self, service):
-        print("Appending " + str(service))
-        if service not in self.services:
-            self.services.append(service)
-            self.handle(service)
+    def remove(self, service):
+        print("Removing " + str(service))
 
-    def remove(self, avahi_browse_line):
-        print("TODO: To be implemented: Remove the service from the list if certain criteria match")
-        for service in self.services:
-            print(service.service_type)
-            print(service.hostname_with_domain)
+        for i in range(len(self.services)):
+            s = self.services[i]
+            if s[0] == service:
+                s[1].setHidden(True)
+                self.services.pop(i)
+                break
 
     # Define here what we should do with detected services. This gets run whenever a service is added
-    def handle(self, service):
-        print("Handling %s", str(service))
+    def add(self, service):
+        print("Appending " + str(service))
+
+        # Check for services already in the list
+        for s in self.services:
+            if s[0] == service:
+                return
+
         icon = "unknown"
         if service.url.startswith("device"):
             icon = "computer"
@@ -260,6 +264,7 @@ class ZeroconfServices():
         if service.url.startswith("ipp") or service.url.startswith("print") or service.url.startswith("pdl"):
             icon = "printer"
         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme(icon), service.url)
+        self.services.append((service, item))
         self.browser.list_widget.addItem(item)
 
 class sshLogin(QtWidgets.QDialog):
