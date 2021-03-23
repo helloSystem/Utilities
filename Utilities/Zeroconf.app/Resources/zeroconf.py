@@ -145,7 +145,7 @@ class sshLogin(QtWidgets.QDialog):
             print("Cannot launch browser")
             return
 
-class ZeroconfBrowser(object):
+class ZeroconfBrowser:
 
     def __init__(self):
 
