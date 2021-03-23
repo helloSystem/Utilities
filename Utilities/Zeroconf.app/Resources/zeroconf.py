@@ -33,7 +33,7 @@ import os, sys, time, io
 
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
-    from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QThread
+    from PyQt5.QtCore import QObject, QProcess, pyqtSignal, QThread, QCoreApplication
 except:
     print("Could not import PyQt5. On FreeBSD, sudo pkg install py37-qt5-widgets")
 
@@ -141,11 +141,17 @@ class ZeroconfDiscoverer(QThread):
     service_added = pyqtSignal(ZeroconfService)
     service_removed = pyqtSignal(ZeroconfService)
 
+    def cleanUpOnQuit(self, cmd):
+        # Kill the command
+        QCoreApplication.instance().aboutToQuit.connect(cmd.kill)
+        # Then wait for it - the main loop won't exit until all commands have finished
+        QCoreApplication.instance().aboutToQuit.connect(cmd.wait)
 
     def start(self):
         # List all service types
         cmd = CommandReader(self, "dns-sd", ["-B", "_services._dns-sd._udp"])
         cmd.lines.connect(self.type_line_handler)
+        self.cleanUpOnQuit(cmd)
         cmd.start()
 
     def type_line_handler(self, line):
@@ -161,6 +167,7 @@ class ZeroconfDiscoverer(QThread):
         # List all services of this type
         cmd = CommandReader(self, "dns-sd", ["-B", service_type])
         cmd.lines.connect(self.service_line_handler)
+        self.cleanUpOnQuit(cmd)
         cmd.start()
 
     def service_line_handler(self, line):
@@ -208,6 +215,7 @@ class ZeroconfDiscoverer(QThread):
             if ok:
                 cmd.kill()
         cmd.lines.connect(f)
+        self.cleanUpOnQuit(cmd)
         cmd.start()
 
 
