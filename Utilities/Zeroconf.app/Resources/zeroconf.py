@@ -334,9 +334,9 @@ class ZeroconfBrowser:
     def onDoubleClicked(self):
         print("Double clicked")
         row = self.list_widget.selectedIndexes()[0].row()
-        print(self.services.services[row].url)
+        service = self.services.services[row][0]
 
-        if self.services.services[row].url.startswith("http"):
+        if service.url.startswith("http"):
 
             # Find out the browser
             # TODO: Give preference to the default browser the user may have set in the system.
@@ -356,28 +356,28 @@ class ZeroconfBrowser:
 
             # Launch the browser
             proc = QtCore.QProcess()
-            args = [self.services.services[row].url]
+            args = [service.url]
             try:
                 proc.startDetached("xdg-open", args)
                 return
             except:
                 print("Cannot launch browser")
                 return
-        elif self.services.services[row].url.startswith("scanner") or self.services.services[row].url.startswith("uscan"):
+        elif service.url.startswith("scanner") or service.url.startswith("uscan"):
             # Launch Xsane in the hope that it can do something with it
             os.system("xsane")
-        if self.services.services[row].url.startswith("ipp") or self.services.services[row].url.startswith("print") or self.services.services[row].url.startswith("pdl"):
+        if service.url.startswith("ipp") or service.url.startswith("print") or service.url.startswith("pdl"):
             os.system("launch 'Print Settings'")
-        elif self.services.services[row].url.startswith("ssh"):
+        elif service.url.startswith("ssh"):
             # Launch the browser
-            sshL = sshLogin(host=self.services.services[row].url)
+            sshL = sshLogin(host=service.url)
             if sshL.exec_() == QtWidgets.QDialog.Accepted:
                 print("Do something")
         else:
             reply = QtWidgets.QMessageBox.information(
                 self.window,
                 "To be implemented",
-                "Something needs to be done here with\n%s\nPull requests welcome!" % self.services.services[row].url,
+                "Something needs to be done here with\n%s\nPull requests welcome!" % service.url,
                 QtWidgets.QMessageBox.Yes
             )
 
