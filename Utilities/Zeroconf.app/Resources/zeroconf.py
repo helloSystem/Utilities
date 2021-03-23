@@ -185,7 +185,7 @@ class ZeroconfBrowser:
         sys.exit(self.app.exec_())
 
     def quit(self, event):
-        sys.exit(0)
+        self.app.quit()
 
     def onDoubleClicked(self):
         print("Double clicked")
