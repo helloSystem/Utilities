@@ -220,6 +220,11 @@ class ZeroconfDiscoverer(QThread):
 
 
 class ZeroconfServices():
+    """
+
+    Adds and removes services from a QListWidget.
+
+    """
 
     def __init__(self, browser):
         self.services = []
