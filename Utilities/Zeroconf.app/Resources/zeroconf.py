@@ -273,6 +273,12 @@ class ZeroconfServices():
         self.browser.list_widget.addItem(item)
 
 class sshLogin(QtWidgets.QDialog):
+    """
+
+    Requests a username before launching `ssh` inside `QTerminal`.
+
+    """
+
     def __init__(self, host=None, parent=None):
         super(sshLogin, self).__init__(parent)
         self.host = host
