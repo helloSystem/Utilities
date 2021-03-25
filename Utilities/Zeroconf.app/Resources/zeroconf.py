@@ -302,6 +302,11 @@ class sshLogin(QtWidgets.QDialog):
             return
 
 class ZeroconfBrowser:
+    """
+
+    A Qt application for browsing local services.
+
+    """
 
     def __init__(self):
 
