@@ -186,8 +186,8 @@ class InstallWizard(QtWidgets.QWizard, object):
         proc = QtCore.QProcess()
         # command = 'xterm'
         # args = ['-T', 'Installer Log', '-n', 'Installer Log', '+sb', '-geometry', '200x20', '-e', 'tail', '-f', self.logfile, self.errorslogfile]
-        command = 'qterminal'
-        args = ['-e', 'tail', '-f', self.logfile, self.errorslogfile]
+        command = 'launch'
+        args = ['QTerminal', '-e', 'tail', '-f', self.logfile, self.errorslogfile]
         print(args)
         try:
             proc.startDetached(command, args)
