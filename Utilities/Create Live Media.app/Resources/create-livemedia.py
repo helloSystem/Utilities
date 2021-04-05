@@ -36,7 +36,7 @@ import sys, os, re, socket
 import shutil
 from datetime import datetime
 import urllib.request, json
-from PyQt5 import QtWidgets, QtGui, QtCore # pkg install py37-qt5-widgets
+from PyQt5 import QtWidgets, QtGui, QtCore, QtMultimedia # pkg install py37-qt5-widgets
 import disks # Privately bundled file
 
 import ssl
@@ -122,14 +122,17 @@ class InstallWizard(QtWidgets.QWizard, object):
 
     def playSound(self):
         print("Playing sound")
-        soundfile = os.path.dirname(__file__) + '/success.ogg' # https://freesound.org/people/Leszek_Szary/sounds/171670/, licensed under CC0
-
-        proc = QtCore.QProcess()
-        command = 'ogg123'
-        args = ['-q', soundfile]
-        print(command, args)
+        # https://freesound.org/people/Leszek_Szary/sounds/171670/, licensed under CC0
+        soundfile = os.path.dirname(__file__) + '/success.ogg'
+        # or
+        # soundfile = "/usr/local/share/sounds/freedesktop/stereo/complete.oga" 
+        # pkg install freedesktop-sound-theme
         try:
-            proc.startDetached(command, args)
+            url = QtCore.QUrl.fromLocalFile(soundfile)
+            content = QtMultimedia.QMediaContent(url)
+            player = QtMultimedia.QMediaPlayer()
+            player.setMedia(content)
+            player.play()
         except:
             pass
 

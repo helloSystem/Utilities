@@ -218,13 +218,13 @@ class InstallWizard(QtWidgets.QWizard, object):
         # soundfile = "/usr/local/share/sounds/freedesktop/stereo/complete.oga" 
         # pkg install freedesktop-sound-theme
         try:
-    		url = QtCore.QUrl.fromLocalFile(soundfile)
-    		content = QtMultimedia.QMediaContent(url)
-    		player = QtMultimedia.QMediaPlayer()
-    		player.setMedia(content)
-    		player.play()
-		except:
-			pass
+            url = QtCore.QUrl.fromLocalFile(soundfile)
+            content = QtMultimedia.QMediaContent(url)
+            player = QtMultimedia.QMediaPlayer()
+            player.setMedia(content)
+            player.play()
+        except:
+            pass
 
     def _geolocate(self):
         if self.geolocation is not None:
