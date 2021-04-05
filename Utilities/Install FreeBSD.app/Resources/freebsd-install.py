@@ -36,7 +36,7 @@ from datetime import datetime
 import urllib.request
 import urllib.error
 import json
-from PyQt5 import QtWidgets, QtGui, QtCore  # pkg install py37-qt5-widgets
+from PyQt5 import QtWidgets, QtGui, QtCore, QtMultimedia # pkg install py37-qt5-widgets
 # PySide2 wants to install 1 GB whereas PyQt5 only needs 40 MB installed on FuryBSD XFCE
 # from PyQt5 import QtMultimedia # pkg install  py37-qt5-multimedia
 # QtMultimedia is used for playing the success sound; using mpg123 for now instead
@@ -212,16 +212,19 @@ class InstallWizard(QtWidgets.QWizard, object):
 
     def playSound(self):
         print("Playing sound")
-        # soundfile = os.path.dirname(__file__) + '/success.ogg' # https://freesound.org/people/Leszek_Szary/sounds/171670/, licensed under CC0
-        soundfile = "/usr/local/share/sounds/freedesktop/stereo/complete.oga"  # pkg install freedesktop-sound-theme
-        proc = QtCore.QProcess()
-        command = 'ogg123'
-        args = ['-q', soundfile]
-        print(command, args)
+        # https://freesound.org/people/Leszek_Szary/sounds/171670/, licensed under CC0
+        soundfile = os.path.dirname(__file__) + '/success.ogg'
+        # or
+        # soundfile = "/usr/local/share/sounds/freedesktop/stereo/complete.oga" 
+        # pkg install freedesktop-sound-theme
         try:
-            proc.startDetached(command, args)
-        except:  # FIXME: do not use bare 'except'
-            pass
+    		url = QtCore.QUrl.fromLocalFile(soundfile)
+    		content = QtMultimedia.QMediaContent(url)
+    		player = QtMultimedia.QMediaPlayer()
+    		player.setMedia(content)
+    		player.play()
+		except:
+			pass
 
     def _geolocate(self):
         if self.geolocation is not None:
