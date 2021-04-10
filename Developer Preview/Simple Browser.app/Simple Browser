@@ -61,6 +61,7 @@ class AboutDialog(QDialog):
 
         layout.addWidget(QLabel("Based on <a href='https://github.com/learnpyqt/15-minute-apps/tree/master/browser_tabbed'>Mozzarella Ashbadger</a>"))
         layout.addWidget(QLabel("Copyright 2017 Martin Fitzpatrick"))
+        layout.addWidget(QLabel("Copyright 2021 Simon Peter"))
 
         for i in range(0, layout.count()):
             layout.itemAt(i).setAlignment(Qt.AlignHCenter)
@@ -74,12 +75,15 @@ class MainWindow(QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
+        self.resize(1024, 768)
+
         self.tabs = QTabWidget()
         self.tabs.setDocumentMode(True)
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
         self.tabs.currentChanged.connect(self.current_tab_changed)
         self.tabs.setTabsClosable(True)
         self.tabs.tabCloseRequested.connect(self.close_current_tab)
+        self.current_tab = 0
 
         self.setCentralWidget(self.tabs)
 
@@ -133,17 +137,26 @@ class MainWindow(QMainWindow):
         new_tab_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'ui-tab--plus.png')), "New Tab", self)
         new_tab_action.setStatusTip("Open a new tab")
         new_tab_action.triggered.connect(lambda _: self.add_new_tab())
+        new_tab_action.setShortcut(QKeySequence("Ctrl+T"))
         file_menu.addAction(new_tab_action)
+
+        close_tab_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'ui-tab--minus.png')), "Close Tab", self)
+        close_tab_action.setStatusTip("Close the current tab")
+        close_tab_action.triggered.connect(lambda _: self.close_current_tab(self.current_tab))
+        close_tab_action.setShortcut(QKeySequence("Ctrl+W"))
+        file_menu.addAction(close_tab_action)
         
         file_menu.addSeparator()
 
         open_file_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'disk--arrow.png')), "Open file...", self)
         open_file_action.setStatusTip("Open from file")
         open_file_action.triggered.connect(self.open_file)
+        open_file_action.setShortcut(QKeySequence("Ctrl+O"))
         file_menu.addAction(open_file_action)
 
         save_file_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'disk--pencil.png')), "Save Page As...", self)
         save_file_action.setStatusTip("Save current page to file")
+        save_file_action.setShortcut(QKeySequence("Ctrl+S"))
         save_file_action.triggered.connect(self.save_file)
         file_menu.addAction(save_file_action)
         
@@ -158,6 +171,7 @@ class MainWindow(QMainWindow):
 
         quit_action = QAction("Quit", self)
         quit_action.setStatusTip("Quit this application")
+        quit_action.setShortcut(QKeySequence("Ctrl+Q"))
         quit_action.triggered.connect(app.exit)
         file_menu.addAction(quit_action)
 
@@ -183,31 +197,50 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Simple Browser")
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'ma-icon-64.png')))
+        
+    def onCookieAdded(self, cookie):
+        print("Cookie added:", cookie.toRawForm())
 
     def add_new_tab(self, qurl=None, label="Blank"):
 
         if qurl is None:
             qurl = QUrl('')
 
-        browser = QWebEngineView()
-        browser.setUrl(qurl)
-        i = self.tabs.addTab(browser, label)
+        webview = QWebEngineView()
+        profile = QWebEngineProfile(None, webview) # "Private"
+        # https://doc.qt.io/qt-5/qwebengineprofile.html#isOffTheRecord
+        # Off-the-record profile that leaves no record on the computer
+        webpage = QWebEnginePage(profile, webview)
+        webview.setPage(webpage)
+        if profile.isOffTheRecord() == True:
+            print("Private browsing mode")
+        
+        # Define a callback to do something whenever a cookie is added
+        profile.cookieStore().cookieAdded.connect(self.onCookieAdded)
+        
+        # Block third-party cookies
+        profile.cookieStore().setCookieFilter(lambda _info: True)
+        
+        webview.setUrl(qurl)       
+        i = self.tabs.addTab(webview, label)
 
         self.tabs.setCurrentIndex(i)
 
         # More difficult! We only want to update the url when it's from the
         # correct tab
-        browser.urlChanged.connect(lambda qurl, browser=browser:
-                                   self.update_urlbar(qurl, browser))
+        webview.urlChanged.connect(lambda qurl, webview=webview:
+                                   self.update_urlbar(qurl, webview))
 
-        browser.loadFinished.connect(lambda _, i=i, browser=browser:
-                                     self.tabs.setTabText(i, browser.page().title()))
+        webview.loadFinished.connect(lambda _, i=i, webview=webview:
+                                     self.tabs.setTabText(i, webview.page().title()))
 
     def tab_open_doubleclick(self, i):
         if i == -1:  # No tab under the click
             self.add_new_tab()
 
     def current_tab_changed(self, i):
+        print("Tab %i" % i)
+        self.current_tab = i
         qurl = self.tabs.currentWidget().url()
         self.update_urlbar(qurl, self.tabs.currentWidget())
         self.update_title(self.tabs.currentWidget())
@@ -218,13 +251,13 @@ class MainWindow(QMainWindow):
 
         self.tabs.removeTab(i)
 
-    def update_title(self, browser):
-        if browser != self.tabs.currentWidget():
+    def update_title(self, webview):
+        if webview != self.tabs.currentWidget():
             # If this signal is not from the current tab, ignore
             return
 
         title = self.tabs.currentWidget().page().title()
-        self.setWindowTitle("%s - Simple Browser" % title)
+        self.setWindowTitle("%s" % title)
 
     def navigate_mozarella(self):
         self.tabs.currentWidget().setUrl(QUrl("https://www.udemy.com/522076"))
@@ -257,7 +290,7 @@ class MainWindow(QMainWindow):
 
     def print_page(self):
         dlg = QPrintPreviewDialog()
-        dlg.paintRequested.connect(self.browser.print_)
+        dlg.paintRequested.connect(self.webview.print_)
         dlg.exec_()
 
     def navigate_home(self):
@@ -270,9 +303,9 @@ class MainWindow(QMainWindow):
 
         self.tabs.currentWidget().setUrl(q)
 
-    def update_urlbar(self, q, browser=None):
+    def update_urlbar(self, q, webview=None):
 
-        if browser != self.tabs.currentWidget():
+        if webview != self.tabs.currentWidget():
             # If this signal is not from the current tab, ignore
             return
 
