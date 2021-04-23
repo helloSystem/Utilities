@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>Format:</source>
-        <translation>Formato:</translation>
+        <translation>Formatar:</translation>
     </message>
     <message>
         <source>Size:</source>
