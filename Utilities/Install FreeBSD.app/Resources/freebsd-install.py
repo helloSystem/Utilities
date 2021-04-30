@@ -240,7 +240,7 @@ class InstallWizard(QtWidgets.QWizard, object):
                 if os.path.exists("/usr/share/zoneinfo/" + data["timezone"]):
                     self.timezone = data["timezone"]
                 print(data)
-        except urllib.error as e:
+        except urllib.error.URLError as e:
             print("%s could not be reached due to %s" % (e.url, e.reason))
             pass
 
