@@ -7,15 +7,16 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBox
     QActionGroup, QDesktopWidget, QMessageBox, QInputDialog, QLineEdit
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer
-import sys, os, re
+from subprocess import Popen, check_output
+import sys, os, re, subprocess
 
-     
+
 class NetworkMenu(QObject):
 
     def __init__(self):
 
         super().__init__()
-        
+
         self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
 
         icon = QIcon.fromTheme("network-wireless-symbolic") # FIXME: How to get dark rather than bright icon?
@@ -26,13 +27,13 @@ class NetworkMenu(QObject):
         self.menu = QMenu()
 
         self.tray.setContextMenu(self.menu)
-        
+
         # NOTE:
         # https://forum.learnpyqt.com/t/qsystemtrayicon-example/689
         # Sneaky PyQt quirk! A reference to the actions must be kept around or the actions will be destroyed
         self.actions = []
         self.sliderWindow = None
-        
+
         self.refreshMenu() # Initially populate the menu
         self.tray.installEventFilter(self) # FIXME: This never seems to get called, why?
         self.installEventFilter(self)  # FIXME: This never seems to get called, why?
@@ -54,21 +55,21 @@ class NetworkMenu(QObject):
         # cat /dev/sndstat
         p = QProcess()
         p.setProgram("wpa_cli")
-        
+
         # First, scan
         p.setArguments(["scan"])
         print(p.program() + " " + " ".join(p.arguments()))
         p.start()
         p.waitForFinished()
-        
+
         # Second, show
         p.setArguments(["scan_results"])
         print(p.program() + " " + " ".join(p.arguments()))
         p.start()
         p.waitForFinished()
-        
+
         lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
-        
+
         self.wirelessGroup = QActionGroup(self.menu) # Only one of the actions added to this group can be active
 
         action = QAction("Wireless")
@@ -77,9 +78,9 @@ class NetworkMenu(QObject):
         self.menu.addAction(action)
         # TODO: List the different wireless interfaces with `wpa_cli interface` if there is more than one
         # TODO: Allow to open a hotspot
-        
+
         if len(lines) > 1:
-        
+
             for line in lines:
                 if line.startswith("Selected") or line.startswith("bssid"):
                     continue
@@ -106,9 +107,9 @@ class NetworkMenu(QObject):
                 self.actions.append(action)
                 self.wirelessGroup.addAction(action)
                 self.menu.addAction(action)
-                
+
         self.menu.addSeparator()
-        
+
         action = QAction("Rescan Networks")
         # action.setDisabled(True)
         action.triggered.connect(self.refreshMenu)
@@ -119,71 +120,108 @@ class NetworkMenu(QObject):
         action.setDisabled(True)
         self.actions.append(action)
         self.menu.addAction(action)
-                
+
         action = QAction("Switch Off") # TODO: To be implemented
         action.setDisabled(True)
         self.actions.append(action)
         self.menu.addAction(action)
-        
+
         self.menu.addSeparator()
-        
+
         action = QAction("About")
         action.triggered.connect(self._showAbout)
         self.actions.append(action)
         self.menu.addAction(action)
-        
+
     def switchNetwork(self, line):
         # sysctl hw.snd.default_unit=1 switches to pcm1
         ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
         bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
 
-        p = QProcess()
-        p.setProgram("wpa_cli")
-        
-        # Enable network 0
-        p.setArguments(["enable_network", "0"])
-        cmd = p.program() + " " + " ".join(p.arguments())
-        print(cmd)
-        p.start()
-        p.waitForFinished()
-        lines = str(p.readAll(), 'utf-8').strip().split("\n")
-        print(lines)
-        if not "OK" in lines:
-            self.showError("Could not enable network", cmd + "\n\n" + "\n".join(lines))
-            
-        # Set the network
-        # NOTE: https://forum.qt.io/topic/84396/weird-behavior-of-qprocess-and-multiple-qoutes/9
-        if ssid != "":
-            p.setArguments(["set_network", "0", "ssid", "\"" + ssid + "\""])
+        password, ok = QInputDialog.getText(None, "WiFi password", "Please enter\
+ the password for the %s WiFi network:" % ssid if ssid else bssid,
+            QLineEdit.Password) # TODO: Make OK only clickable when we have >= 8 characters
+        if not ok:
+            print("DEBUG:: psk cancelled")
+            return # Don't try to connect to a network if it has been cancelled.
+
+        # TODO:
+        # I'm using Python's default process system, QProcess makes no sense to
+        # me at all. It's good for when you want to start a process in C++, but
+        # Python can do better. If anyone who can get QProcess to work is
+        # reading this, please feel free to change this code.
+        # -- linuxkettle.github.io
+
+        # Get a byte string with wpa_cli's output and decode it
+        print('wpa_cli list_networks')
+        output = check_output(['wpa_cli', 'list_networks']).decode('utf-8')
+        l = output.strip().splitlines() # Split that output into lines, ignoring the
+        if len(l) < 2:             # useless ones.
+            # If this is called, something is wrong with wpa_cli.
+            self.showError("Couldn't connect to the network", """For some reaso\
+n wpa_cli doesn't seem to be working.
+
+Information for debuggers:
+""" + o.strip())
+            return
+        isUsed = 0
+        for line in l[2:]: # Ignore 'selected interface' message and column labels
+            parts = line.split()
+            if parts[1] in [ssid, bssid]:
+                isUsed = 1
+                n = parts[0]
+
+        if isUsed: # TODO: We know we've already connected -- check why we are re-connecting
+            print(" ".join(["wpa_cli", "set_network", str(n), "psk", '"' + password, '"']))
+            out = subprocess.check_output(["wpa_cli", "set_network", n, "psk", '"' + password, '"'])
+            if b"OK" in out:
+                return # good
+            else:
+                self.showError("Couldn't connect to the network. Try checking the password?",
+                               """Information for debuggers:
+""" + out.decode('utf-8'))
+                return # bad
         else:
-            p.setArguments(["set_network", "0", "bssid", "\"" + bssid + "\""])
-        cmd = p.program() + " " + " ".join(p.arguments())
-        print(cmd)
-        p.start()
-        p.waitForFinished()
-        lines = str(p.readAll(), 'utf-8').strip().split("\n")
-        print(lines)
-        if not "OK" in lines:
-            self.showError("Could not set network", cmd + "\n\n" + "\n".join(lines))
- 
-        # Ask for password and set it
-        # TODO: Ask for password and set it only if needed 
-        # if "-PSK-" in ...
-        
-        password, ok = QInputDialog.getText(None, " ", "Password", QLineEdit.Password) # TODO: Make OK only clickable when we have >= 8 characters
-        if ok:
-            p.setArguments(["set_network", "0", "psk", "\"" + password + "\""])
-            cmd = p.program() + " " + " ".join(p.arguments()).replace(password, "***") # Don't show the password in UI
-            print(cmd)
-            p.start()
-            p.waitForFinished()
-            lines = str(p.readAll(), 'utf-8').strip().split("\n")
-            print(lines)
-            if not "OK" in lines:
-                self.showError("Could not set password", cmd + "\n\n" + "\n".join(lines))
-                   
-        # TODO: Connect to the network
-        # FIXME: How?
+            print(" ".join(["wpa_cli", "add_network"]))
+            p = subprocess.check_output(["wpa_cli", "add_network"])
+            e = p.decode("utf-8").strip().splitlines()[-1]
+            if not e.isnumeric():
+                self.showError("Couldn't connect to the network.", "'%s' is not a number." % e)
+                print("'%s' is not a number." % e)
+                return # bad
+            try:
+                n = int(e)
+            except:
+                self.showError("Couldn't connect to the network.", "\
+We don't know why this happened.")
+                print("returned non-zero exit code")
+                return # bad
+            print(" ".join(["wpa_cli", "set_network", str(n),
+                "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"']))
+            out = subprocess.check_output(["wpa_cli", "set_network", str(n),
+                "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"'])
+            if b"OK" not in out:
+                self.showError("Couldn't connect to the network.",
+                               """Information for debuggers:
+""" + out.decode('utf-8'))
+                return # bad
+            print(" ".join(["wpa_cli", "set_network", str(n), "psk", '"' + password + '"']))
+            otherout = subprocess.check_output(["wpa_cli", "set_network", str(n), "psk", '"' + password + '"'])
+            if b"OK" not in otherout:
+                self.showError("Couldn't connect to the network. Try checking the password?",
+                               """Information for debuggers:
+""" + otherout.decode('utf-8'))
+                return # not good
+            print(" ".join(["wpa_cli", "enable_network", str(n)]))
+            lastout = subprocess.check_output(["wpa_cli", "enable_network", str(n)])
+            if b"OK" in lastout:
+                subprocess.run(["wpa_cli", "save_config"])
+                return # good
+            else:
+                self.showError("Couldn't connect to the network. Try checking the password?",
+                               """Information for debuggers:
+""" + lastout.decode('utf-8'))
+                return # not good
 
     def _showAbout(self):
         print("showDialog")
@@ -208,14 +246,14 @@ class NetworkMenu(QObject):
         if detailed_text != "":
             msg.setDetailedText(detailed_text)
         msg.exec()
- 
+
     def showTODO(self, detailed_text=""):
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Information)
         msg.setWindowTitle("Developer Preview")
         msg.setText("This application is a preview for developers.<br>It is not fully functional yet.")
         msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
-        msg.exec()       
+        msg.exec()
 
 if __name__ == "__main__":
 
