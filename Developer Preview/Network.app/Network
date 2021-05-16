@@ -19,7 +19,7 @@ class NetworkMenu(QObject):
 
         self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
 
-        icon = QIcon.fromTheme("network-wireless-symbolic") # FIXME: How to get dark rather than bright icon?
+        icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/Network.png") # FIXME: How to get dark rather than bright icon?
         # TODO: Change the icon depending on signal strength; see /usr/local/share/icons/elementary-xfce/status/symbolic/network-wireless-*
         self.tray = QSystemTrayIcon()
         self.tray.setIcon(icon)
