@@ -145,14 +145,7 @@ class NetworkMenu(QObject):
             print("DEBUG:: psk cancelled")
             return # Don't try to connect to a network if it has been cancelled.
 
-        # TODO:
-        # I'm using Python's default process system, QProcess makes no sense to
-        # me at all. It's good for when you want to start a process in C++, but
-        # Python can do better. If anyone who can get QProcess to work is
-        # reading this, please feel free to change this code.
-        # -- linuxkettle.github.io
-
-        # Get a byte string with wpa_cli's output and decode it        
+        # Get a byte string with wpa_cli's output and decode it
         p = QProcess()
         p.setProgram("wpa_cli")
 
@@ -163,7 +156,7 @@ class NetworkMenu(QObject):
         p.waitForFinished()
         output = str(p.readAllStandardOutput(), 'utf-8')
         l = output.strip().splitlines() # Split that output into lines, ignoring the
-        if len(l) < 2:             # useless ones.
+        if len(l) < 2:                  # useless ones.
             # If this is called, something is wrong with wpa_cli.
             self.showError("Couldn't connect to the network", """For some reaso\
 n wpa_cli doesn't seem to be working.
@@ -195,7 +188,7 @@ Information for debuggers:
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
-            e = p.readAllStandardOutput().decode("utf-8").strip().splitlines()[-1]
+            e = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()[-1]
             if not e.isnumeric():
                 self.showError("Couldn't connect to the network.", "'%s' is not a number." % e)
                 print("'%s' is not a number." % e)
@@ -211,28 +204,28 @@ We don't know why this happened.")
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
-            out = p.readAllStandardOutput()
-            if b"OK" not in out:
+            out = str(p.readAllStandardOutput(), 'utf-8')
+            if "OK" not in out:
                 self.showError("Couldn't connect to the network.",
                                """Information for debuggers:
-""" + out.decode('utf-8'))
+""" + out)
                 return # bad
             p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
-            out = p.readAllStandardOutput()
-            if b"OK" not in out:
+            out = str(p.readAllStandardOutput(), 'utf-8')
+            if "OK" not in out:
                 self.showError("Couldn't connect to the network. Try checking the password?",
                                """Information for debuggers:
-""" + out.decode('utf-8'))
+""" + out)
                 return # not good
             p.setArguments(["enable_network", str(n)])
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
-            lastout = p.readAllStandardOutput()
-            if b"OK" in lastout:
+            lastout = str(p.readAllStandardOutput(), 'utf-8')
+            if "OK" in lastout:
                 p.setArguments(["save_config"])
                 print(p.program() + " " + " ".join(p.arguments()))
                 p.start()
@@ -241,7 +234,7 @@ We don't know why this happened.")
             else:
                 self.showError("Couldn't connect to the network. Try checking the password?",
                                """Information for debuggers:
-""" + lastout.decode('utf-8'))
+""" + lastout)
                 return # not good
 
     def _showAbout(self):
