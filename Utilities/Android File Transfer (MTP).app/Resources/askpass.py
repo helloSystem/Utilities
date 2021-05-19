@@ -21,7 +21,7 @@
 import os
 from PyQt5 import QtWidgets
 
-text = "Password"
+text = "Password:"
 
 # SUDO_ASKPASS_TEXT is a non-standard environment variable.
 # If it is set, we show its value in the dialog as a way for the program
