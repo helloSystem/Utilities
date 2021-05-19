@@ -152,9 +152,16 @@ class NetworkMenu(QObject):
         # reading this, please feel free to change this code.
         # -- linuxkettle.github.io
 
-        # Get a byte string with wpa_cli's output and decode it
-        print('wpa_cli list_networks')
-        output = check_output(['wpa_cli', 'list_networks']).decode('utf-8')
+        # Get a byte string with wpa_cli's output and decode it        
+        p = QProcess()
+        p.setProgram("wpa_cli")
+
+        # First, scan
+        p.setArguments(["list_networks"])
+        print(p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        output = str(p.readAllStandardOutput(), 'utf-8')
         l = output.strip().splitlines() # Split that output into lines, ignoring the
         if len(l) < 2:             # useless ones.
             # If this is called, something is wrong with wpa_cli.
@@ -172,9 +179,11 @@ Information for debuggers:
                 n = parts[0]
 
         if isUsed: # TODO: We know we've already connected -- check why we are re-connecting
-            print(" ".join(["wpa_cli", "set_network", str(n), "psk", '"' + password, '"']))
-            out = subprocess.check_output(["wpa_cli", "set_network", n, "psk", '"' + password, '"'])
-            if b"OK" in out:
+            p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
+            print(p.program() + " " + " ".join(p.arguments()))
+            p.start()
+            p.waitForFinished()
+            if b"OK" in str(p.readAllStandardOutput(), 'utf-8'):
                 return # good
             else:
                 self.showError("Couldn't connect to the network. Try checking the password?",
@@ -182,9 +191,11 @@ Information for debuggers:
 """ + out.decode('utf-8'))
                 return # bad
         else:
-            print(" ".join(["wpa_cli", "add_network"]))
-            p = subprocess.check_output(["wpa_cli", "add_network"])
-            e = p.decode("utf-8").strip().splitlines()[-1]
+            p.setArguments(["add_network"])
+            print(p.program() + " " + " ".join(p.arguments()))
+            p.start()
+            p.waitForFinished()
+            e = p.readAllStandardOutput().decode("utf-8").strip().splitlines()[-1]
             if not e.isnumeric():
                 self.showError("Couldn't connect to the network.", "'%s' is not a number." % e)
                 print("'%s' is not a number." % e)
@@ -196,26 +207,36 @@ Information for debuggers:
 We don't know why this happened.")
                 print("returned non-zero exit code")
                 return # bad
-            print(" ".join(["wpa_cli", "set_network", str(n),
-                "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"']))
-            out = subprocess.check_output(["wpa_cli", "set_network", str(n),
-                "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"'])
+            p.setArguments(["set_network", str(n), "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"'])
+            print(p.program() + " " + " ".join(p.arguments()))
+            p.start()
+            p.waitForFinished()
+            out = p.readAllStandardOutput()
             if b"OK" not in out:
                 self.showError("Couldn't connect to the network.",
                                """Information for debuggers:
 """ + out.decode('utf-8'))
                 return # bad
-            print(" ".join(["wpa_cli", "set_network", str(n), "psk", '"' + password + '"']))
-            otherout = subprocess.check_output(["wpa_cli", "set_network", str(n), "psk", '"' + password + '"'])
-            if b"OK" not in otherout:
+            p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
+            print(p.program() + " " + " ".join(p.arguments()))
+            p.start()
+            p.waitForFinished()
+            out = p.readAllStandardOutput()
+            if b"OK" not in out:
                 self.showError("Couldn't connect to the network. Try checking the password?",
                                """Information for debuggers:
-""" + otherout.decode('utf-8'))
+""" + out.decode('utf-8'))
                 return # not good
-            print(" ".join(["wpa_cli", "enable_network", str(n)]))
-            lastout = subprocess.check_output(["wpa_cli", "enable_network", str(n)])
+            p.setArguments(["enable_network", str(n)])
+            print(p.program() + " " + " ".join(p.arguments()))
+            p.start()
+            p.waitForFinished()
+            lastout = p.readAllStandardOutput()
             if b"OK" in lastout:
-                subprocess.run(["wpa_cli", "save_config"])
+                p.setArguments(["save_config"])
+                print(p.program() + " " + " ".join(p.arguments()))
+                p.start()
+                p.waitForFinished()
                 return # good
             else:
                 self.showError("Couldn't connect to the network. Try checking the password?",
