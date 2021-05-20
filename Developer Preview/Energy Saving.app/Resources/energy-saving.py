@@ -171,14 +171,14 @@ class EnergySavingsManager(object):
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(QtWidgets.QApplication.quit)
-        menubar = self.window.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(exitAct)
+
         aboutAct = QtWidgets.QAction('&About', self.window)
         aboutAct.setStatusTip('About this application')
         aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menubar.addMenu('&Help')
-        helpMenu.addAction(aboutAct)
+
+        fileMenu = menubar.addMenu('&Energy Saving')
+        fileMenu.addAction(aboutAct)
+        fileMenu.addAction(exitAct)
 
     def _showAbout(self):
         print("showDialog")

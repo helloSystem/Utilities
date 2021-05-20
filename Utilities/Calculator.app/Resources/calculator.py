@@ -141,15 +141,16 @@ class PyCalcUi(QMainWindow):
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(qApp.quit)
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(exitAct)
+
         aboutAct = QAction('&About', self)
         aboutAct.setStatusTip('About this application')
         aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menubar.addMenu('&Help')
-        helpMenu.addAction(aboutAct)
-        
+
+        menubar = self.menuBar()
+        mainMenu = menubar.addMenu('&Calculator')
+        mainMenu.addAction(aboutAct)
+        mainMenu.addAction(exitAct)
+
     def _showAbout(self):
         print("showDialog")
         msg = QMessageBox()

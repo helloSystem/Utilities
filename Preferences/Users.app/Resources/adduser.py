@@ -144,14 +144,15 @@ class Users(QMainWindow):
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(QApplication.quit)
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(exitAct)
+
         aboutAct = QAction('&About', self)
         aboutAct.setStatusTip('About this application')
         aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menubar.addMenu('&Help')
-        helpMenu.addAction(aboutAct)
+
+        menubar = self.menuBar()
+        fileMenu = menubar.addMenu('&Users')
+        fileMenu.addAction(aboutAct)
+        fileMenu.addAction(exitAct)
 
     def _showAbout(self):
         print("showDialog")

@@ -344,32 +344,27 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
  
     def _showMenu(self):
         menubar = self.window.menuBar()
-        fileMenu = menubar.addMenu('&File')
+        fileMenu = menubar.addMenu('&Keyboard')
         
         saveAct = QtWidgets.QAction('&Save', self.window)
         saveAct.setShortcut('Ctrl+S')
         saveAct.setStatusTip('Save settings to persist reboots')
         saveAct.triggered.connect(self.save)
         fileMenu.addAction(saveAct)
-        
         fileMenu.addSeparator()
+
+        aboutAct = QtWidgets.QAction('&About', self.window)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        fileMenu.addAction(aboutAct)
 
         exitAct = QtWidgets.QAction('&Quit', self.window)
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(QtWidgets.QApplication.quit)
         fileMenu.addAction(exitAct)
-        
-        self.variantsMenu = menubar.addMenu('&Variants')
-        
-        helpMenu = menubar.addMenu('&Help')
-        
-        aboutAct = QtWidgets.QAction('&About', self.window)
-        aboutAct.setStatusTip('About this application')
-        aboutAct.triggered.connect(self._showAbout)
-        
-        helpMenu.addAction(aboutAct)
 
+        self.variantsMenu = menubar.addMenu('&Variants')
 
     def save(self):
         print("save called")

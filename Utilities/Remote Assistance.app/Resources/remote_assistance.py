@@ -279,20 +279,23 @@ class Window(QtWidgets.QMainWindow):
         giveAct.setShortcut('Ctrl+G')
         giveAct.setStatusTip('Give Assistance')
         giveAct.triggered.connect(self.giveAssistance)
+
         exitAct = QtWidgets.QAction('&Quit', self)
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(QtWidgets.QApplication.quit)
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(giveAct)
-        fileMenu.addAction(exitAct)
+
         aboutAct = QtWidgets.QAction('&About', self)
         aboutAct.setStatusTip('About this application')
         aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menubar.addMenu('&Help')
+
+        menubar = self.menuBar()
+        helpMenu = menubar.addMenu('&Remote Assistance')
+        helpMenu.addAction(giveAct)
+        helpMenu.addSeparator()
         helpMenu.addAction(aboutAct)
-        
+        helpMenu.addAction(exitAct)
+
     def _showAbout(self):
         print("showDialog")
         msg = QtWidgets.QMessageBox()
