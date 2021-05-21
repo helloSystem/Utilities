@@ -1,3 +1,3 @@
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
-SUDO_ASKPASS="${HERE}/Resources/askpass.py" exec sudo -A -E "${HERE}/Resources/freebsd-install.py" "$@"
+SUDO_ASKPASS="/usr/local/bin/askpass" exec sudo -A -E "${HERE}/Resources/freebsd-install.py" "$@"

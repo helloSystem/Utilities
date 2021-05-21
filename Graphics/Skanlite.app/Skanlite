@@ -98,7 +98,7 @@ class LiteInstaller(object):
 
         self.ext_process.finished.connect(self.onProcessFinished)
         env = QtCore.QProcessEnvironment.systemEnvironment()
-        env.insert("SUDO_ASKPASS", os.path.dirname(self.file_symlink_resolved) + "/Resources/askpass.py")
+        env.insert("SUDO_ASKPASS", "/usr/local/bin/askpass")
         self.ext_process.setProcessEnvironment(env)
         self.ext_process.setProgram("sudo")
         args = ["-A", "-E", "pkg", "install", "-y"] + self.packages

@@ -1,4 +1,4 @@
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
 # SUDO_ASKPASS="${HERE}/Resources/askpass.py" exec sudo -A -E "${HERE}/Resources/adduser.py" "$@"
-exec "${HERE}/Resources/adduser.py" "$@"
+exec "/usr/local/bin/askpass" "$@"
