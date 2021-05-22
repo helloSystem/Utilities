@@ -21,7 +21,7 @@ class NetworkMenu(QObject):
 
         # The only monochromatic wireless icon in the elementary-xfce theme is very hard to see.
         #icon = QIcon.fromTheme("network-wireless-signal-excellent-symbolic")
-        icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/wireless.png")
+        icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/wireless.svg")
         # TODO: Change the icon depending on signal strength; see /usr/local/share/icons/elementary-xfce/status/symbolic/network-wireless-*
         self.tray = QSystemTrayIcon()
         self.tray.setIcon(icon)
