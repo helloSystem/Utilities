@@ -29,6 +29,7 @@ class NetworkMenu(QObject):
         self.menu = QMenu()
 
         self.tray.setContextMenu(self.menu)
+        self.tray.activated.connect(self.menu.show)
 
         # NOTE:
         # https://forum.learnpyqt.com/t/qsystemtrayicon-example/689
