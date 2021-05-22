@@ -19,7 +19,9 @@ class NetworkMenu(QObject):
 
         self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
 
-        icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/Network.png") # FIXME: How to get dark rather than bright icon?
+        # The only monochromatic wireless icon in the elementary-xfce theme is very hard to see.
+        #icon = QIcon.fromTheme("network-wireless-signal-excellent-symbolic")
+        icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/wireless.png")
         # TODO: Change the icon depending on signal strength; see /usr/local/share/icons/elementary-xfce/status/symbolic/network-wireless-*
         self.tray = QSystemTrayIcon()
         self.tray.setIcon(icon)
@@ -138,8 +140,8 @@ class NetworkMenu(QObject):
         ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
         bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
 
-        password, ok = QInputDialog.getText(None, "WiFi password", "Please enter\
- the password for the %s WiFi network:" % ssid if ssid else bssid,
+        password, ok = QInputDialog.getText(None, "Wireless network password", "Please enter\
+ the password for the %s network:" % ssid if ssid else bssid,
             QLineEdit.Password) # TODO: Make OK only clickable when we have >= 8 characters
         if not ok:
             print("DEBUG:: psk cancelled")
