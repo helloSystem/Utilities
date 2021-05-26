@@ -5,7 +5,7 @@
 
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QGroupBox, QSlider, QWidget, \
     QActionGroup, QDesktopWidget, QMessageBox
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtGui import QIcon, QPixmap, QCursor
 from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer
 import sys, os
 
@@ -25,8 +25,6 @@ class Ui_Slider(QWidget):
 
         screen = QDesktopWidget().screenGeometry()
         widget = self.geometry()
-        x = screen.width() - widget.width()
-        y = 21 # Set this to the height of the global menu bar
 
         # self.setWindowFlag(Qt.WindowStaysOnTopHint)
         self.setWindowFlag(Qt.FramelessWindowHint)
@@ -35,8 +33,7 @@ class Ui_Slider(QWidget):
         # KWindowSystem::setType(actionCompleter->popup()->winId(), NET::DropdownMenu);
         # self.setWindowFlag("NET::DropdownMenu") # Does not work
         self.setWindowFlag(Qt.WindowSystemMenuHint) # Does not seem to do the job
-        y = 15 # FIXME Remove the need for this by getting the above to work
-        self.move(x, y)
+        self.move(QCursor.pos())
 
         self.horizontalLayout = QHBoxLayout(self)
         self.horizontalLayout.setContentsMargins(15, 15, 15, 15)
@@ -167,6 +164,7 @@ class VolumeMenu(QObject):
         # We need to refresh the contents of the right-click menu somehow when the user right-clicks...
 
     def onClicked(self, reason):
+        # TODO: Is using customContextMenuRequested the proper way to do this? How?
         self.refreshMenu()
         S = Ui_Slider()
         self.sliderWindow = S # Need to keep a reference around so that it does not get destroyed
