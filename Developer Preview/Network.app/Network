@@ -5,8 +5,8 @@
 
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QGroupBox, QSlider, QWidget, \
     QActionGroup, QDesktopWidget, QMessageBox, QInputDialog, QLineEdit
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer
+from PyQt5.QtGui import QIcon, QPixmap, QCursor
+from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer, QPoint
 from subprocess import Popen, check_output
 import sys, os, re, subprocess
 
@@ -20,8 +20,8 @@ class NetworkMenu(QObject):
         self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
 
         # The only monochromatic wireless icon in the elementary-xfce theme is very hard to see.
-        #icon = QIcon.fromTheme("network-wireless-signal-excellent-symbolic")
-        icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/wireless.svg")
+        icon = QIcon.fromTheme("network-wireless-signal-excellent-symbolic")
+        # icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/wireless.svg") # Does not seem to work
         # TODO: Change the icon depending on signal strength; see /usr/local/share/icons/elementary-xfce/status/symbolic/network-wireless-*
         self.tray = QSystemTrayIcon()
         self.tray.setIcon(icon)
@@ -29,7 +29,7 @@ class NetworkMenu(QObject):
         self.menu = QMenu()
 
         self.tray.setContextMenu(self.menu)
-        self.tray.activated.connect(self.menu.show)
+        self.tray.activated.connect(self.show_menu)
 
         # NOTE:
         # https://forum.learnpyqt.com/t/qsystemtrayicon-example/689
@@ -45,17 +45,24 @@ class NetworkMenu(QObject):
         print("eventFilter function running") # FIXME: Why is this never called when the icon is right-clicked?
         # We need to refresh the contents of the right-click menu somehow when the user right-clicks...
 
-    def onClicked(self, reason):
-        self.refreshMenu()
-        S = Ui_Slider()
-        self.sliderWindow = S # Need to keep a reference around so that it does not get destroyed
-        S.show()
+    def show_menu(self, reason):
+        self.updateMenu()
+        if reason == QSystemTrayIcon.Trigger:
+            # Ideally we would just tell it when it gets left-clicked
+            # to just do whatever it does when it gets right-clicked, but:
+            # self.tray.activated(QSystemTrayIcon.Context) # TypeError: native Qt signal is not callable
+            print(self.tray.geometry().getRect()) # Always returns (0, 0, 0, 0); why?
+            # self.menu.popup(QPoint(self.tray.geometry().x(), self.tray.geometry().y())) # Does not work for the same reason
+            # self.menu.move(QCursor.pos())
+            # self.menu.show() # When called like this, it appears as a context menu over the menu bar, which is not desired
+            # self.menu.activateWindow() # Needed on some systems to make the menu go away when clicked anywhere else but in the menu?
+            self.menu.popup(QCursor.pos()) # When called like this, it appears almost at the correct location but with the wrong font size, 
+            # as if it was a context menu rather than a real menu; probably because somehow its parent now is not the global menu bar main window?
+
 
     def refreshMenu(self):
         self.actions = []
-        self.menu.clear()
-        # Get the sound devices from
-        # cat /dev/sndstat
+        # Get the networks from wpa_cli
         p = QProcess()
         p.setProgram("wpa_cli")
 
@@ -65,7 +72,27 @@ class NetworkMenu(QObject):
         p.start()
         p.waitForFinished()
 
+    def updateStatus(self):
+        p = QProcess()
+        p.setProgram("wpa_cli")
+        p.setArguments(["status"])
+        print(p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+
+        self.status_lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
+        
+        print(self.status_lines)
+        
+    def updateMenu(self):
+    
+        # Find out whether we are connected to one of the networks
+        self.updateStatus()
+    
+        self.menu.clear()
         # Second, show
+        p = QProcess()
+        p.setProgram("wpa_cli")
         p.setArguments(["scan_results"])
         print(p.program() + " " + " ".join(p.arguments()))
         p.start()
@@ -102,8 +129,9 @@ class NetworkMenu(QObject):
                 action.__setattr__("bssid", bssid)
                 action.triggered.connect(self.switchNetwork)  # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
                 action.setText(label)
-                action.setIcon(QIcon.fromTheme("network-wireless-symbolic"))
-                # TODO: Set different icons based on signal_level
+                if "ssid=" + ssid in self.status_lines:
+                    action.setIcon(QIcon.fromTheme("network-wireless-symbolic"))
+                    # TODO: Set different icons based on signal_level
                 action.setCheckable(True)
                 if "default" in line:
                     action.setChecked(True)
@@ -124,8 +152,12 @@ class NetworkMenu(QObject):
         self.actions.append(action)
         self.menu.addAction(action)
 
-        action = QAction("Switch Off") # TODO: To be implemented
-        action.setDisabled(True)
+        action = QAction("Disconnect") # TODO: To be implemented
+        if "wpa_state=COMPLETED" in self.status_lines:
+            action.setDisabled(False)
+        else:
+            action.setDisabled(True)
+        action.triggered.connect(self.disconnect)
         self.actions.append(action)
         self.menu.addAction(action)
 
@@ -136,8 +168,29 @@ class NetworkMenu(QObject):
         self.actions.append(action)
         self.menu.addAction(action)
 
+    def reconnect(self):
+        p = QProcess()
+        p.setProgram("wpa_cli")
+        p.setArguments(["reconnect"])
+        print(p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        output = str(p.readAllStandardOutput(), 'utf-8')
+        print(output)
+
+    def disconnect(self):
+        p = QProcess()
+        p.setProgram("wpa_cli")
+        p.setArguments(["disconnect"])
+        print(p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        output = str(p.readAllStandardOutput(), 'utf-8')
+        print(output)
+        
     def switchNetwork(self, line):
-        # sysctl hw.snd.default_unit=1 switches to pcm1
+        self.updateStatus()
+    
         ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
         bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
 
@@ -145,9 +198,11 @@ class NetworkMenu(QObject):
  the password for the %s network:" % ssid if ssid else bssid,
             QLineEdit.Password) # TODO: Make OK only clickable when we have >= 8 characters
         if not ok:
-            print("DEBUG:: psk cancelled")
+            print("User did not click OK in password dialog")
             return # Don't try to connect to a network if it has been cancelled.
 
+        self.reconnect()
+            
         # Get a byte string with wpa_cli's output and decode it
         p = QProcess()
         p.setProgram("wpa_cli")
@@ -161,7 +216,7 @@ class NetworkMenu(QObject):
         l = output.strip().splitlines() # Split that output into lines, ignoring the
         if len(l) < 2:                  # useless ones.
             # If this is called, something is wrong with wpa_cli.
-            self.showError("Couldn't connect to the network", """For some reaso\
+            self.showError("Could not connect to the network", """For some reaso\
 n wpa_cli doesn't seem to be working.
 
 Information for debuggers:
@@ -179,12 +234,10 @@ Information for debuggers:
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
-            if b"OK" in str(p.readAllStandardOutput(), 'utf-8'):
+            if "OK" in str(p.readAllStandardOutput(), 'utf-8'):
                 return # good
             else:
-                self.showError("Couldn't connect to the network. Try checking the password?",
-                               """Information for debuggers:
-""" + out.decode('utf-8'))
+                self.showError("Could not connect to the network. Please check the password.")
                 return # bad
         else:
             p.setArguments(["add_network"])
@@ -193,13 +246,13 @@ Information for debuggers:
             p.waitForFinished()
             e = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()[-1]
             if not e.isnumeric():
-                self.showError("Couldn't connect to the network.", "'%s' is not a number." % e)
+                self.showError("Could not connect to the network.", "'%s' is not a number." % e)
                 print("'%s' is not a number." % e)
                 return # bad
             try:
                 n = int(e)
             except:
-                self.showError("Couldn't connect to the network.", "\
+                self.showError("Could not connect to the network.", "\
 We don't know why this happened.")
                 print("returned non-zero exit code")
                 return # bad
@@ -209,9 +262,8 @@ We don't know why this happened.")
             p.waitForFinished()
             out = str(p.readAllStandardOutput(), 'utf-8')
             if "OK" not in out:
-                self.showError("Couldn't connect to the network.",
-                               """Information for debuggers:
-""" + out)
+                self.showError("Could not connect to the network.",
+                               """Information for debuggers: """ + out)
                 return # bad
             p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
             print(p.program() + " " + " ".join(p.arguments()))
@@ -219,9 +271,8 @@ We don't know why this happened.")
             p.waitForFinished()
             out = str(p.readAllStandardOutput(), 'utf-8')
             if "OK" not in out:
-                self.showError("Couldn't connect to the network. Try checking the password?",
-                               """Information for debuggers:
-""" + out)
+                self.showError("Could not connect to the network. Please check the password.",
+                               """Information for debuggers: """ + out)
                 return # not good
             p.setArguments(["enable_network", str(n)])
             print(p.program() + " " + " ".join(p.arguments()))
@@ -235,9 +286,8 @@ We don't know why this happened.")
                 p.waitForFinished()
                 return # good
             else:
-                self.showError("Couldn't connect to the network. Try checking the password?",
-                               """Information for debuggers:
-""" + lastout)
+                self.showError("Could not connect to the network. Please check the password.",
+                               """Information for debuggers: """ + lastout)
                 return # not good
 
     def _showAbout(self):
