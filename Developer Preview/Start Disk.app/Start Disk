@@ -67,7 +67,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         self.list_widget.clear()
         p = QtCore.QProcess()
         env = QtCore.QProcessEnvironment.systemEnvironment()
-        env.insert("SUDO_ASKPASS", os.path.dirname(__file__) + "/Resources/askpass.py")
+        env.insert("SUDO_ASKPASS", "/usr/local/bin/askpass")
         p.setProcessEnvironment(env)
         p.setProgram("sudo")
         p.setArguments(["-A", "-E", "efibootmgr", "-v"])
@@ -159,7 +159,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
 
         p = QtCore.QProcess()
         env = QtCore.QProcessEnvironment.systemEnvironment()
-        env.insert("SUDO_ASKPASS", os.path.dirname(__file__) + "/Resources/askpass.py")
+        env.insert("SUDO_ASKPASS", "/usr/local/bin/askpass")
         p.setProcessEnvironment(env)
         p.setProgram("sudo")
         p.setArguments(["-A", "-E", "efibootmgr", "-o", selected_entry.replace("Boot", "")])

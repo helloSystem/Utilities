@@ -392,7 +392,7 @@ EndSection"""
         f.close()
 
         # Run a helper tool as root that puts the config file into the system-wide Xorg configuration and/or writes the information to EFI
-        os.environ["SUDO_ASKPASS"] = os.path.dirname(__file__) + "/Resources/askpass.py"
+        os.environ["SUDO_ASKPASS"] = "/usr/local/bin/askpass"
         # TODO: Implement error handling with an error dialog
         proc = subprocess.Popen(["/usr/local/bin/sudo", "-A", "-E", os.path.dirname(__file__) + "/Resources/save.py"], stdout=subprocess.PIPE, env=os.environ)
         for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
