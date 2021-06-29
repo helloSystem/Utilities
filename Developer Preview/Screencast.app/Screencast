@@ -7,12 +7,14 @@
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QMessageBox
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QProcess
-import os, sys, time
+import os, sys, time, atexit
 
 class ScreencastApplication(object):
 
     def __init__(self):
-    
+
+        atexit.register(self.stopFfmpeg)
+        
         self.app = QApplication([])
         self.app.setQuitOnLastWindowClosed(False)
             
@@ -20,15 +22,9 @@ class ScreencastApplication(object):
 
         self.screencast_file = "/tmp/screencast.mp4"
 
-        self.dsp = "/dev/dsp1" # FIXME: Do not hardcode
+        self.dsp = "" # Will be determined when recording is triggered
 
         self.ffmpeg_process = QProcess()
-        self.ffmpeg_process.setProgram("ffmpeg")
-        self.ffmpeg_process.setArguments(["-y", "-thread_queue_size", "1024", "-f", "oss", "-i", self.dsp, "-framerate", "30",
-                        "-video_size", "1920x1080", "-f", "x11grab", "-i", ":0", "-c:v", "libx264",
-                        "-b:v", "2000k", "-maxrate", "2000k", "-bufsize", "5000k", "-g", "50",
-                        "-flags", "+global_header", "-vf", "format=yuv420p", "-filter:a", "volume=10",
-                        "-c:a", "aac", "-b:a", "128k", self.screencast_file])
 
         self.screenkey_process = QProcess()
         self.screenkey_process.setProgram("screenkey")
@@ -36,7 +32,7 @@ class ScreencastApplication(object):
 
         self.notify_process = QProcess()
         self.notify_process.setProgram("notify-send")
-        self.notify_process.setArguments(["Stopped because " + self.screencast_file + " exists"])
+        self.notify_process.setArguments(["Stopped. Screencast ist at " + self.screencast_file])
 
         icon = QIcon.fromTheme("camera-video-symbolic") # TODO: Find darker icon
         tray = QSystemTrayIcon()
@@ -60,10 +56,51 @@ class ScreencastApplication(object):
 
         self.app.exec_()
 
+    def stopFfmpeg(self):
+        if self.ffmpeg_process.pid():
+            print("Stopping ffmpeg...")
+            self.ffmpeg_process.kill()
+            self.start_stop_action.setText("Start")
+            
     def startStop(self):
 
         if self.ffmpeg_process.state() != QProcess.Running:
+            print("Determining sound device to be used for recording...")
+            # sysctl hw.snd.default_unit says e.g., "3", we use /dev/dsp3.0
+            p = QProcess()
+            p.setProgram("sysctl")
+            p.setArguments(["-n", "hw.snd.default_unit"])
+            p.start()
+            p.waitForFinished()
+            self.dsp = "/dev/dsp" + p.readAllStandardOutput().data().decode().strip() + ".0";
+            print("self.dsp: " + self.dsp);
             print("Starting ffmpeg...")
+            self.ffmpeg_process.setProgram("ffmpeg")
+            # FIXME: This command seems to produce OK files when used from bash but unusable files when used from Python
+            # This is a showstopper!
+            self.ffmpeg_process.setArguments(['-y', 
+                '-thread_queue_size', '1024', 
+                '-f', 'oss', 
+                '-i', self.dsp, '-framerate', '25', 
+                '-f', 'x11grab', 
+                '-i', ':0', 
+                '-c:v', 'libx264', 
+                '-preset', 'ultrafast', '-crf', '18', '-tune', 'fastdecode', # Lower CPU load
+                '-b:v', '2000k', 
+                '-maxrate', '3000k', 
+                '-bufsize', '5000k', 
+                '-g', '50', 
+                '-flags', 
+                '+global_header', 
+                '-vf', 'format=yuv420p', 
+                '-af', 'highpass-frequency=300', 
+                '-af', 'lowpass-frequency=4000', 
+                '-af', 'bass=frequency=100:gain=-50', 
+                '-af', 'bandreject=frequency=200:width_type=h:width=200', 
+                '-af', 'compand=attacks=.05:decays=.05:points=-90/-90 -70/-90 -15/-15 0/-10:soft-knee=6:volume=-70:gain=10', 
+                '-c:a', 'aac', 
+                '-b:a', '128k', 
+                '/tmp/screencast.mp4'])
             # The process was stopped, so we are starting it
             self.ffmpeg_process.setProcessChannelMode(QProcess.ForwardedChannels) # Pass through output to console
             self.ffmpeg_process.start()
@@ -75,9 +112,7 @@ class ScreencastApplication(object):
             if self.ffmpeg_process.pid():
                 self.start_stop_action.setText("Stop")
         else:
-            print("Stopping ffmpeg...")
-            self.ffmpeg_process.kill()
-            self.start_stop_action.setText("Start")
+            self.stopFfmpeg()
             self.notify_process.startDetached()
 
     def showTODO(self, detailed_text=""):
