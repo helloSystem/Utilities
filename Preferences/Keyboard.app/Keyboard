@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.7
+#!/usr/bin/env python3
 
 
 # Simple Keyboard Layout switcher for FreeBSD in PyQt5

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# Unfortunately python3 does not seem to work on FreeBSD
 
 # Sharing
 # Copyright (c) 2020, Simon Peter <probono@puredarwin.org>
