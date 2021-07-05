@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+
+# https://github.com/helloSystem/Menu/issues/3
+
+
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QWidget, QMessageBox
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer
+import os
+import psutil
+import sys
+
+class BatteryApplet(QObject):
+    def refresh(self):
+        battery = psutil.sensors_battery()
+        try:
+            seconds = battery.secsleft
+        except:
+            sys.stderr.write("No battery found in this computer.")
+            exit(1)
+        bsuffix = ""
+        if seconds == -2:
+            bsuffix = "-charging"
+            self.tray.setToolTip("Plugged in, %s charged" % (str(int(battery.percent // 1)) + "%"))
+        else:
+            minutes, seconds = divmod(seconds, 60)
+            hours, minutes = divmod(minutes, 60)
+            if minutes == 1:
+                m = 'minute'
+            else:
+                m = 'minutes'
+            if hours == 0:
+                self.tray.setToolTip("On battery, %s charge, %s %s left." % (str(int(battery.percent // 1)) + "%", minutes, m))
+            elif hours == 1:
+                self.tray.setToolTip("On battery, %s charge, %s hour and %s %s left." % (str(int(battery.percent // 1)) + "%", hours, minutes, m))
+            else:
+                self.tray.setToolTip("On battery, %s charge, %s hours and %s %s left." % (str(int(battery.percent // 1)) + "%", hours, minutes, m))
+        bl = int((battery.percent + 10) // 20) * 20
+        self.tray.setIcon(QIcon.fromTheme('battery-%03d%s' % (bl, bsuffix)))
+
+    def __init__(self):
+
+        super().__init__()
+        
+        self.showTODO()
+
+        icon = QIcon(os.path.dirname(__file__) + '/Resources/Battery.png')
+
+        self.tray = QSystemTrayIcon()
+        self.tray.setIcon(icon)
+        self.tray.setVisible(True)
+        self.refresh()
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.refresh)
+        self.timer.setInterval(5000)
+        self.timer.start()
+
+    def _showAbout(self):
+        print("showDialog")
+        msg = QMessageBox()
+        msg.setWindowTitle("Battery")
+        msg.setIconPixmap(QPixmap(os.path.dirname(__file__) + "/Resources/Battery.png").scaledToWidth(64, Qt.SmoothTransformation))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
+                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Battery</h3>")
+        msg.setInformativeText("A simple applet to show the battery percentage.<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
+
+    def showTODO(self, detailed_text=""):
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Information)
+        msg.setWindowTitle("Developer Preview")
+        msg.setText("This application is a preview for developers.<br>It is not fully functional yet.")
+        msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
+        msg.exec()
+
+if __name__ == "__main__":
+    # Simple singleton:
+    # Ensure that only one instance of this application is running by trying to kill the other ones
+    p = QProcess()
+    p.setProgram("pkill")
+    p.setArguments(["-f", os.path.abspath(__file__)])
+    cmd = p.program() + " " + " ".join(p.arguments())
+    print(cmd)
+    p.start()
+    p.waitForFinished()
+    #sys.exit(0)
+    app = QApplication(sys.argv)
+    app.setQuitOnLastWindowClosed(False)
+    app.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    widget = BatteryApplet()
+    sys.exit(app.exec_())
