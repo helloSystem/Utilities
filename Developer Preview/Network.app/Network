@@ -26,7 +26,8 @@ class NetworkMenu(QObject):
 
         super().__init__()
 
-        self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
+        # self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
+        self.showTODO()
 
         # icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/wireless.svg") # Does not seem to work
         # TODO: Change the icon depending on signal strength; see /usr/local/share/icons/elementary-xfce/status/symbolic/network-wireless-*
