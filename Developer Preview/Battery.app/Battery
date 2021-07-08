@@ -35,6 +35,8 @@ class BatteryApplet(QObject):
                 self.tray.setToolTip("On battery, %s charge, %s hour and %s %s left." % (str(int(battery.percent // 1)) + "%", hours, minutes, m))
             else:
                 self.tray.setToolTip("On battery, %s charge, %s hours and %s %s left." % (str(int(battery.percent // 1)) + "%", hours, minutes, m))
+        # Also create a menu entry with the same text
+        self.updateMenu(text = self.tray.toolTip())
         bl = int((battery.percent + 10) // 20) * 20
         self.tray.setIcon(QIcon.fromTheme('battery-%03d%s' % (bl, bsuffix)))
 
@@ -49,11 +51,6 @@ class BatteryApplet(QObject):
         self.tray = QSystemTrayIcon()
         self.tray.setIcon(icon)
         self.tray.setVisible(True)
-        self.refresh()
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.refresh)
-        self.timer.setInterval(30000)
-        self.timer.start()
 
         # Sneaky PyQt quirk! A reference to the actions must be kept around or the actions will be destroyed
         self.actions = []
@@ -63,19 +60,18 @@ class BatteryApplet(QObject):
         self.tray.setContextMenu(self.menu)
         self.tray.activated.connect(self.show_menu)
 
-        action = QAction("About")
-        action.triggered.connect(self._showAbout)
-        self.actions.append(action)
-        self.menu.addAction(action)
-
+        self.refresh()
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.refresh)
+        self.timer.setInterval(30000)
+        self.timer.start()
+        
     def show_menu(self, reason):
-
-
         if reason == QSystemTrayIcon.Trigger:
             # Ideally we would just tell it when it gets left-clicked
             # to just do whatever it does when it gets right-clicked, but:
             # self.tray.activated(QSystemTrayIcon.Context) # TypeError: native Qt signal is not callable
-            print(self.tray.geometry().getRect()) # Always returns (0, 0, 0, 0); why?
+            # print(self.tray.geometry().getRect()) # Always returns (0, 0, 0, 0); why?
             # self.menu.popup(QPoint(self.tray.geometry().x(), self.tray.geometry().y())) # Does not work for the same reason
             # self.menu.move(QCursor.pos())
             # self.menu.show() # When called like this, it appears as a context menu over the menu bar, which is not desired
@@ -97,6 +93,19 @@ class BatteryApplet(QObject):
         msg.setText("<h3>Battery</h3>")
         msg.setInformativeText("A simple applet to show the battery percentage using Python <a href='https://psutil.readthedocs.io/en/latest/index.html#psutil.sensors_battery'>psutil.sensors_battery()</a>.<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
+
+    def updateMenu(self, text=None):
+        self.menu.clear()
+        if text is not None:
+            actionT = QAction(text)
+            actionT.setEnabled(False)
+            self.actions.append(actionT)
+            self.menu.addAction(actionT)
+            self.menu.addSeparator()
+        action = QAction("About")
+        action.triggered.connect(self._showAbout)
+        self.actions.append(action)
+        self.menu.addAction(action)
 
     def showTODO(self, detailed_text=""):
         msg = QMessageBox()
