@@ -3,8 +3,8 @@
 # https://github.com/helloSystem/Menu/issues/3
 
 
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QWidget, QMessageBox
-from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QWidget, QMessageBox, QAction
+from PyQt5.QtGui import QIcon, QPixmap, QCursor
 from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer
 import os
 import psutil
@@ -52,8 +52,36 @@ class BatteryApplet(QObject):
         self.refresh()
         self.timer = QTimer()
         self.timer.timeout.connect(self.refresh)
-        self.timer.setInterval(5000)
+        self.timer.setInterval(30000)
         self.timer.start()
+
+        # Sneaky PyQt quirk! A reference to the actions must be kept around or the actions will be destroyed
+        self.actions = []
+        
+        self.menu = QMenu()
+        
+        self.tray.setContextMenu(self.menu)
+        self.tray.activated.connect(self.show_menu)
+
+        action = QAction("About")
+        action.triggered.connect(self._showAbout)
+        self.actions.append(action)
+        self.menu.addAction(action)
+
+    def show_menu(self, reason):
+
+
+        if reason == QSystemTrayIcon.Trigger:
+            # Ideally we would just tell it when it gets left-clicked
+            # to just do whatever it does when it gets right-clicked, but:
+            # self.tray.activated(QSystemTrayIcon.Context) # TypeError: native Qt signal is not callable
+            print(self.tray.geometry().getRect()) # Always returns (0, 0, 0, 0); why?
+            # self.menu.popup(QPoint(self.tray.geometry().x(), self.tray.geometry().y())) # Does not work for the same reason
+            # self.menu.move(QCursor.pos())
+            # self.menu.show() # When called like this, it appears as a context menu over the menu bar, which is not desired
+            # self.menu.activateWindow() # Needed on some systems to make the menu go away when clicked anywhere else but in the menu?
+            self.menu.popup(QCursor.pos()) # When called like this, it appears almost at the correct location but with the wrong font size, 
+            # as if it was a context menu rather than a real menu; probably because somehow its parent now is not the global menu bar main window?
 
     def _showAbout(self):
         print("showDialog")
@@ -67,7 +95,7 @@ class BatteryApplet(QObject):
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Battery</h3>")
-        msg.setInformativeText("A simple applet to show the battery percentage.<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.setInformativeText("A simple applet to show the battery percentage using Python <a href='https://psutil.readthedocs.io/en/latest/index.html#psutil.sensors_battery'>psutil.sensors_battery()</a>.<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
     def showTODO(self, detailed_text=""):
