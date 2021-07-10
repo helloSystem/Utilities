@@ -18,7 +18,7 @@ from PyQt5.QtGui import QIcon, QPixmap, QCursor
 from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer, QPoint, QTimer
 from subprocess import Popen, check_output
 import sys, os, re, subprocess
-
+import re
 
 class NetworkMenu(QObject):
 
@@ -141,13 +141,15 @@ class NetworkMenu(QObject):
                     continue
                 print(line)
                 # Parse out information for each network
-                bssid = line[0:17].strip()
-                signal_level = int(line[23:26].strip())
-                label = line[26:].strip() # Remove first 26 characers (bssid / frequency / signal level)
-                # Remove flags
-                label = re.sub(r'\[.*?\]', '', label).strip()
+                regex = r"([^\ ]+)\t([^\ ]+)\t([^\ ]+)\t([^\ ]+)\t(.*)$"
+                matches = re.findall(regex, line)
+                print(len(matches[0]))
+                bssid = matches[0][0]
+                signal_level = int(matches[0][2])
+                label = matches[0][4]
+
                 ssid = label
-                if label == "":
+                if label == "" or label.startswith("\\x00"):
                     label = bssid # For networks with hidden ssid (network name)
                 action = QAction(line)
                 action.__setattr__("ssid", ssid)
