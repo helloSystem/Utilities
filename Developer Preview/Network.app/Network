@@ -154,6 +154,7 @@ class NetworkMenu(QObject):
                 action = QAction(line)
                 action.__setattr__("ssid", ssid)
                 action.__setattr__("bssid", bssid)
+                action.__setattr__("flags", flags)
                 action.triggered.connect(self.switchNetwork)  # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
                 action.setText(label)
                 if "ssid=" + ssid in self.status_lines:
