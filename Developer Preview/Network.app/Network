@@ -146,6 +146,7 @@ class NetworkMenu(QObject):
                 print(len(matches[0]))
                 bssid = matches[0][0]
                 signal_level = int(matches[0][2])
+                flags = matches[0][3]
                 label = matches[0][4]
 
                 ssid = label
@@ -154,6 +155,7 @@ class NetworkMenu(QObject):
                 action = QAction(line)
                 action.__setattr__("ssid", ssid)
                 action.__setattr__("bssid", bssid)
+                # if 'flags' in vars():
                 action.__setattr__("flags", flags)
                 action.triggered.connect(self.switchNetwork)  # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
                 action.setText(label)
@@ -221,13 +223,15 @@ class NetworkMenu(QObject):
     
         ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
         bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
-
-        password, ok = QInputDialog.getText(None, "Wireless network password", "Please enter\
+        flags = getattr(self.wirelessGroup.checkedAction(), "flags")
+        
+        if "PSK" in flags:
+            password, ok = QInputDialog.getText(None, "Wireless network password", "Please enter\
  the password for the %s network:" % ssid if ssid else bssid,
-            QLineEdit.Password) # TODO: Make OK only clickable when we have >= 8 characters
-        if not ok:
-            print("User did not click OK in password dialog")
-            return # Don't try to connect to a network if it has been cancelled.
+                QLineEdit.Password) # TODO: Make OK only clickable when we have >= 8 characters
+            if not ok:
+                print("User did not click OK in password dialog")
+                return # Don't try to connect to a network if it has been cancelled.
 
         self.reconnect()
             
@@ -258,15 +262,16 @@ Information for debuggers:
                 n = parts[0]
 
         if isUsed: # TODO: We know we've already connected -- check why we are re-connecting
-            p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
-            print(p.program() + " " + " ".join(p.arguments()))
-            p.start()
-            p.waitForFinished()
-            if "OK" in str(p.readAllStandardOutput(), 'utf-8'):
-                return # good
-            else:
-                self.showError("Could not connect to the network. Please check the password.")
-                return # bad
+            if "PSK" in flags:
+                p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
+                print(p.program() + " " + " ".join(p.arguments()))
+                p.start()
+                p.waitForFinished()
+                if "OK" in str(p.readAllStandardOutput(), 'utf-8'):
+                    return # good
+                else:
+                    self.showError("Could not connect to the network. Please check the password.")
+                    return # bad
         else:
             p.setArguments(["add_network"])
             print(p.program() + " " + " ".join(p.arguments()))
