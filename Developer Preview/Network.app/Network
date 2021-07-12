@@ -232,7 +232,7 @@ class NetworkMenu(QObject):
             if not ok:
                 print("User did not click OK in password dialog")
                 return # Don't try to connect to a network if it has been cancelled.
-
+        
         self.reconnect()
             
         # Get a byte string with wpa_cli's output and decode it
@@ -298,7 +298,10 @@ We don't know why this happened.")
                 self.showError("Could not connect to the network.",
                                """Information for debuggers: """ + out)
                 return # bad
-            p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
+            if "PSK" in flags:
+                p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
+            else:
+                p.setArguments(["set_network", str(n), "key_mgmt", "NONE"])
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
