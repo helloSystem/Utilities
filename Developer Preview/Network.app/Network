@@ -135,7 +135,7 @@ class NetworkMenu(QObject):
         self.menu.addAction(action)
         
         if len(lines) > 1:
-
+            ssids_added_to_menu = []
             for line in lines:
                 if line.startswith("Selected") or line.startswith("bssid"):
                     continue
@@ -164,9 +164,11 @@ class NetworkMenu(QObject):
                 action.setCheckable(True)
                 if "default" in line:
                     action.setChecked(True)
-                self.actions.append(action)
-                self.wirelessGroup.addAction(action)
-                self.menu.addAction(action)
+                if ssid not in ssids_added_to_menu:
+                    self.actions.append(action)
+                    self.wirelessGroup.addAction(action)
+                    self.menu.addAction(action)
+                    ssids_added_to_menu.append(ssid)
 
         self.menu.addSeparator()
 
