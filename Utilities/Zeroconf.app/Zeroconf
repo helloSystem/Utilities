@@ -206,6 +206,15 @@ class ZeroconfBrowser(object):
             os.system("xsane")
         if url.startswith("ipp") or url.startswith("print") or url.startswith("pdl"):
             os.system("launch 'Print Settings'")
+        elif url.startswith("sftp"):
+            proc = QtCore.QProcess()
+            args = ["Filer", url + "/"]
+            try:
+                proc.startDetached("launch", args)
+                return
+            except:
+                print("Cannot open sftp location in Filer")
+                return
         elif url.startswith("ssh"):
             # Launch the browser
             sshL = sshLogin(host=url)
