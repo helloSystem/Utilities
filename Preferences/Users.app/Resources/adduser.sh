@@ -21,3 +21,4 @@ pw usermod "${username}" -s /usr/local/bin/zsh
 pw groupmod wheel -m "${username}"
 pw groupmod video -m "${username}"
 pw groupmod webcamd -m "${username}"
+pw groupmod cups -m "${username}"
