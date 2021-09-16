@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Welcome Wizard
-# Copyright (c) 2020-2021, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-21, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -83,20 +83,16 @@ class IntroPage(QtWidgets.QWizardPage):
         print("Displaying Page")
         if self.isFinalPage():
             # Write a file that start-hello can check to not start this again for this user
-            os.makedirs(os.path.expanduser("~/.config/hello/"))
             done_file = os.path.expanduser("~/.config/hello/.helloSetupDone")
             print(done_file)
             if os.path.exists(done_file):
                 os.utime(done_file, None)
             else:
+                os.makedirs(os.path.expanduser("~/.config/hello/"))
                 open(done_file, 'a').close()
+            sys.exit()
 
 if __name__ == "__main__":
-    # The following are needed here so that these thingss get loaded while the Intro is running, and provide for a smooth transition out
-    subprocess.Popen(["/System/Menu.AppDir/usr/bin/menubar"], start_new_session=True) # FIXME: Remove the need for this
-    subprocess.Popen(["/usr/local/bin/gmenudbusmenuproxy"], start_new_session=True) # FIXME: Remove the need for this
-    subprocess.Popen(["/System/Filer.AppDir/AppRun", "--desktop"], start_new_session=True) # FIXME: Remove the need for this
-    subprocess.Popen(["/System/Dock.AppDir/usr/bin/cyber-dock"], start_new_session=True) # FIXME: Remove the need for this
     wizard = Wizard()
     wizard.show()
     sys.exit(app.exec_())
