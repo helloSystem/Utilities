@@ -35,6 +35,15 @@ from PyQt5 import QtWidgets, QtGui, QtCore # pkg install py37-qt5-widgets
 
 app = QtWidgets.QApplication(sys.argv)
 
+def show_message(message="Text would go here"):
+    reply = QtWidgets.QMessageBox.warning(
+        None,
+        " ",
+        message,
+        QtWidgets.QMessageBox.Default
+    )
+        
+
 class Wizard(QtWidgets.QWizard, object):
     def __init__(self):
         print("Preparing wizard")
@@ -93,6 +102,9 @@ class IntroPage(QtWidgets.QWizardPage):
             sys.exit()
 
 if __name__ == "__main__":
+    if os.getenv("VIRTUAL_MACHINE") is not None:
+        show_message("It appears that this system is running inside a virtual machine.\n\nThis system has been optimized to run as a desktop system on real hardware.\n\nPlease consider running it on real hardware. A Live ISO is provided that can be written to a removable USB storage device to act as a boot medium.")
+
     wizard = Wizard()
     wizard.show()
     sys.exit(app.exec_())
