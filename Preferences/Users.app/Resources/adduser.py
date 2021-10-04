@@ -5,10 +5,19 @@ import sys
 import os
 import re
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox, QDialogButtonBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import QFile, pyqtSlot, pyqtSignal, QProcess, QProcessEnvironment
+from PyQt5.QtCore import QFile, pyqtSlot, QProcess, QProcessEnvironment
 from PyQt5.uic import loadUi
+
+# Translate this application using Qt .ts files without the need for compilation
+import tstranslator
+# FIXME: Do not import translations from outside of the appliction bundle
+# which currently is difficult because we have all translations for all applications
+# in the whole repository in the same .ts files
+tstr = tstranslator.TsTranslator(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))) + "/i18n", None)
+def _(input):
+    return tstr.tr(input)
 
 
 class User(object):
@@ -37,6 +46,13 @@ class Users(QMainWindow):
         ui_file.open(QFile.ReadOnly)
         loadUi(ui_file, self)
         ui_file.close()
+
+        # Translate the widgets in the UI objects that were just loaded from the .ui file
+        self.setWindowTitle(_(self.windowTitle()))
+        for e in self.centralWidget().children():
+            if hasattr(e, 'text') and hasattr(e, 'setText'):
+                e.setText(_(e.text()))
+
         self._showMenu()
         self.noMatchLabel.setHidden(True)
         self.addUserButton.setDisabled(True)
@@ -140,18 +156,18 @@ class Users(QMainWindow):
             self.addUserButton.setDisabled(False)
 
     def _showMenu(self):
-        exitAct = QAction('&Quit', self)
-        exitAct.setShortcut('Ctrl+Q')
-        exitAct.setStatusTip('Exit application')
-        exitAct.triggered.connect(QApplication.quit)
+        exit_act = QAction('&Quit', self)
+        exit_act.setShortcut('Ctrl+Q')
+        exit_act.setStatusTip('Exit application')
+        exit_act.triggered.connect(QApplication.quit)
         menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(exitAct)
-        aboutAct = QAction('&About', self)
-        aboutAct.setStatusTip('About this application')
-        aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menubar.addMenu('&Help')
-        helpMenu.addAction(aboutAct)
+        file_menu = menubar.addMenu('&File')
+        file_menu.addAction(exit_act)
+        about_act = QAction('&About', self)
+        about_act.setStatusTip('About this application')
+        about_act.triggered.connect(self._showAbout)
+        help_menu = menubar.addMenu('&Help')
+        help_menu.addAction(about_act)
 
     def _showAbout(self):
         print("showDialog")
