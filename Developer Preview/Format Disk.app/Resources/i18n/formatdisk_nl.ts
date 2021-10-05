@@ -6,12 +6,12 @@
     <message>
         <location filename="../formatdisk.py" line="53"/>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>Wissen</translation>
     </message>
     <message>
         <location filename="../formatdisk.py" line="54"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuleer</translation>
     </message>
 </context>
 <context>
@@ -19,57 +19,57 @@
     <message>
         <location filename="../formatdisk.ui" line="29"/>
         <source>Format Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Formatteer Schijf</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="99"/>
         <source>Erase &quot;%1&quot; (%2)?</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; (%2) wissen?</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="112"/>
         <source>Erasing &quot;%1&quot; will permanently delete all data stored on it, and cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>Het wissen van &quot;%1&quot; zal alle gegevens die erop zijn opgeslagen permanent wissen, en kan niet ongedaan worden gemaakt.</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="134"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Naam:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="141"/>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
+        <translation>Zonder titel</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="148"/>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Formaat:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="156"/>
         <source>Placeholder</source>
-        <translation type="unfinished"></translation>
+        <translation>Plaatsaanduiding</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="164"/>
         <source>Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Schema:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="172"/>
         <source>GUID Partition Map</source>
-        <translation type="unfinished"></translation>
+        <translation>GUID Partitiekaart</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="177"/>
         <source>Master Boot Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Master Boot Record</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="185"/>
         <source>Overwrite with zeros</source>
-        <translation type="unfinished"></translation>
+        <translation>Overschrijven met nullen</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Hallo Wereld</translation>
     </message>
 </context>
 </TS>
