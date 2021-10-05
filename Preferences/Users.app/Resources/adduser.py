@@ -16,7 +16,7 @@ import tstranslator
 # which currently is difficult because we have all translations for all applications
 # in the whole repository in the same .ts files
 tstr = tstranslator.TsTranslator(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))) + "/i18n", None)
-def _(input):
+def tr(input):
     return tstr.tr(input)
 
 
@@ -48,10 +48,10 @@ class Users(QMainWindow):
         ui_file.close()
 
         # Translate the widgets in the UI objects that were just loaded from the .ui file
-        self.setWindowTitle(_(self.windowTitle()))
-        for e in self.centralWidget().children():
+        self.setWindowTitle(tr(self.windowTitle()))
+        for e in self.findChildren(QObject, None, Qt.FindChildrenRecursively):
             if hasattr(e, 'text') and hasattr(e, 'setText'):
-                e.setText(_(e.text()))
+                e.setText(tr(e.text()))
 
         self._showMenu()
         self.noMatchLabel.setHidden(True)
