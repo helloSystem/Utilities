@@ -6,12 +6,12 @@
     <message>
         <location filename="../formatdisk.py" line="53"/>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>מחיקה</translation>
     </message>
     <message>
         <location filename="../formatdisk.py" line="54"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>ביטול</translation>
     </message>
 </context>
 <context>
@@ -19,57 +19,57 @@
     <message>
         <location filename="../formatdisk.ui" line="29"/>
         <source>Format Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>פרמוט כונן</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="99"/>
         <source>Erase &quot;%1&quot; (%2)?</source>
-        <translation type="unfinished"></translation>
+        <translation>למחוק את „%1” (%2)?</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="112"/>
         <source>Erasing &quot;%1&quot; will permanently delete all data stored on it, and cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>מחיקת „%1” תמחק את כל הנתונים שעליו לצמיתות ולא ניתן לשחזר זאת.</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="134"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>שם:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="141"/>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
+        <translation>ללא כותרת</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="148"/>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>פרמוט:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="156"/>
         <source>Placeholder</source>
-        <translation type="unfinished"></translation>
+        <translation>ממלא מקום</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="164"/>
         <source>Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>סכמה:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="172"/>
         <source>GUID Partition Map</source>
-        <translation type="unfinished"></translation>
+        <translation>מפת מחיצות מזהה ייחודי גלובי</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="177"/>
         <source>Master Boot Record</source>
-        <translation type="unfinished"></translation>
+        <translation>רשומת טעינה ראשית (MBR)</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="185"/>
         <source>Overwrite with zeros</source>
-        <translation type="unfinished"></translation>
+        <translation>שכתוב באפסים</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>שלום עולם</translation>
     </message>
 </context>
 </TS>
