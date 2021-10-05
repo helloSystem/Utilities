@@ -6,12 +6,12 @@
     <message>
         <location filename="../formatdisk.py" line="53"/>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>Effacer</translation>
     </message>
     <message>
         <location filename="../formatdisk.py" line="54"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>
@@ -19,57 +19,57 @@
     <message>
         <location filename="../formatdisk.ui" line="29"/>
         <source>Format Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Formater le disque</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="99"/>
         <source>Erase &quot;%1&quot; (%2)?</source>
-        <translation type="unfinished"></translation>
+        <translation>Effacer «%1» (%2) ?</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="112"/>
         <source>Erasing &quot;%1&quot; will permanently delete all data stored on it, and cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>L’effacement de «%1» supprimera définitivement toutes les données qui y sont stockées et ne pourra pas être annulé.</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="134"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nom :</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="141"/>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
+        <translation>Sans titre</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="148"/>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Format :</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="156"/>
         <source>Placeholder</source>
-        <translation type="unfinished"></translation>
+        <translation>Espace réservé</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="164"/>
         <source>Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Schème :</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="172"/>
         <source>GUID Partition Map</source>
-        <translation type="unfinished"></translation>
+        <translation>Carte de partition GUID</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="177"/>
         <source>Master Boot Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Master Boot Record</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="185"/>
         <source>Overwrite with zeros</source>
-        <translation type="unfinished"></translation>
+        <translation>Écraser par des zéros</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Bonjour le monde</translation>
     </message>
 </context>
 </TS>
