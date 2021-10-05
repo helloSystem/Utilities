@@ -64,7 +64,7 @@
     <message>
         <location filename="../formatdisk.ui" line="177"/>
         <source>Master Boot Record</source>
-        <translation></translation>
+        <translation>Master Boot Record</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="185"/>
