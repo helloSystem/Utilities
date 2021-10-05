@@ -6,12 +6,12 @@
     <message>
         <location filename="../formatdisk.py" line="53"/>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>Radera</translation>
     </message>
     <message>
         <location filename="../formatdisk.py" line="54"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Avbryt</translation>
     </message>
 </context>
 <context>
@@ -19,57 +19,57 @@
     <message>
         <location filename="../formatdisk.ui" line="29"/>
         <source>Format Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Formatera disk</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="99"/>
         <source>Erase &quot;%1&quot; (%2)?</source>
-        <translation type="unfinished"></translation>
+        <translation>Radera &quot;%1&quot; (%2)?</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="112"/>
         <source>Erasing &quot;%1&quot; will permanently delete all data stored on it, and cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>Om du raderar &quot;%1&quot; raderas all data som finns lagrad på den permanent och kan inte återställas.</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="134"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Namn:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="141"/>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
+        <translation>Utan titel</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="148"/>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Format:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="156"/>
         <source>Placeholder</source>
-        <translation type="unfinished"></translation>
+        <translation>Platshållare</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="164"/>
         <source>Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Schema:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="172"/>
         <source>GUID Partition Map</source>
-        <translation type="unfinished"></translation>
+        <translation>GUID-partitionskarta</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="177"/>
         <source>Master Boot Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Master Boot Record</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="185"/>
         <source>Overwrite with zeros</source>
-        <translation type="unfinished"></translation>
+        <translation>Skriv över med nollor</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Hej världen</translation>
     </message>
 </context>
 </TS>
