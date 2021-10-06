@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>Partition</source>
-        <translation>Particija</translation>
+        <translation>Razdelek</translation>
     </message>
     <message>
         <source>+</source>
@@ -37,11 +37,11 @@
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation>Informacije o pogonu:</translation>
+        <translation>Informacije o nosilcu:</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation>Shema particije:</translation>
+        <translation>Shema razdelkov:</translation>
     </message>
     <message>
         <source>Restore</source>
@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>The passwords do not match.</source>
-        <translation>Polja z gesli se ne ujemata.</translation>
+        <translation>Gesli se ne ujemata.</translation>
     </message>
 </context>
 <context>
