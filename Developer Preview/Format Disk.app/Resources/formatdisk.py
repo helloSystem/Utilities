@@ -19,7 +19,7 @@ import tstranslator
 # FIXME: Do not import translations from outside of the appliction bundle
 # which currently is difficult because we have all translations for all applications
 # in the whole repository in the same .ts files
-tstr = tstranslator.TsTranslator(os.path.dirname(__file__) + "/i18n", "formatdisk")
+tstr = tstranslator.TsTranslator(os.path.dirname(__file__) + "/i18n", "")
 def tr(input):
     return tstr.tr(input)
 
