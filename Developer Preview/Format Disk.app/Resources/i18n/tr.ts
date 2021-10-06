@@ -59,17 +59,17 @@
     <message>
         <location filename="../formatdisk.ui" line="172"/>
         <source>GUID Partition Map</source>
-        <translation type="unfinished"></translation>
+        <translation>GUID bölüm haritası</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="177"/>
         <source>Master Boot Record</source>
-        <translation type="unfinished"></translation>
+        <translation>Ana önyükleme kaydı</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="185"/>
         <source>Overwrite with zeros</source>
-        <translation type="unfinished"></translation>
+        <translation>Sıfırlarla üzerine yaz</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Merhaba Dünya</translation>
     </message>
 </context>
 </TS>
