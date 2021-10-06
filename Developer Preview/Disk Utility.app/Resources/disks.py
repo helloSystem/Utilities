@@ -196,6 +196,16 @@ class Partition(object):
     def __repr__(self):
         return("{'name': '%s', 'logical_starting_block': %s, 'size_in_blocks': %s, 'type_or_label': '%s', 'human_readable_size': '%s'}" % (self.name, self.logical_starting_block, self.size_in_blocks, self.type_or_label, self.human_readable_size))
 
+    def get_volume_label(self):
+        command = ["fstyp", "-l", "/dev/" + self.name]
+        out, err, rc = call(command)
+        parts = out[0].split(" ")
+        parts.pop(0)
+        result = " ".join(parts)
+        if result:
+            return(result)
+        else:
+            return self.name
 
 class Zpool(object):
 
