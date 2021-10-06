@@ -14,7 +14,7 @@ Pull requests welcome.
 
 ## Translations
 
-Translation happens on [Weblate](https://hosted.weblate.org/projects/hellosystem/). Everyone can contribute! Be sure to use the "Automatic suggestions" button which suggests translations from Deepl, Google Translate, Microsoft Translator, and various open source projects. This reduces the work to picking the most appropriate translation in many cases.
+Translation happens on [Weblate](https://hosted.weblate.org/engage/hellosystem/). Everyone can contribute! Be sure to use the "Automatic suggestions" button which suggests translations from Deepl, Google Translate, Microsoft Translator, and various open source projects. This reduces the work to picking the most appropriate translation in many cases.
 
 ```
 cd Resources/
