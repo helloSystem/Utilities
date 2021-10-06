@@ -44,6 +44,16 @@ import disks  # Privately bundled file
 
 import ssl
 
+# Translate this application using Qt .ts files without the need for compilation
+import tstranslator
+# FIXME: Do not import translations from outside of the appliction bundle
+# which currently is difficult because we have all translations for all applications
+# in the whole repository in the same .ts files
+tstr = tstranslator.TsTranslator(os.path.dirname(__file__) + "/i18n", "")
+def tr(input):
+    return tstr.tr(input)
+
+
 # Since we are running the installer on Live systems which more likely than not may have
 # the clock wrong, we cannot verify SSL certificates. Setting the following allows
 # content to be fetched from https locations even if the SSL certification cannot be verified.
@@ -101,7 +111,7 @@ def show_the_no_password_warning(sender):
 # https://doc.qt.io/qt-5/qwizard.html
 #############################################################################
 
-print("Install FreeBSD")
+print(tr("Install FreeBSD"))
 
 app = QtWidgets.QApplication(sys.argv)
 
@@ -130,14 +140,14 @@ class InstallWizard(QtWidgets.QWizard, object):
         # TODO: Make sure it is actually executable
 
         self.should_show_last_page = False
-        self.error_message_nice = "An unknown error occured."
+        self.error_message_nice = tr("An unknown error occured.")
 
         self.setWizardStyle(QtWidgets.QWizard.MacStyle)
 
         # self.setButtonLayout(
         #     [QtWidgets.QWizard.CustomButton1, QtWidgets.QWizard.Stretch, QtWidgets.QWizard.NextButton])
 
-        self.setWindowTitle("Install FreeBSD")
+        self.setWindowTitle(tr("Install FreeBSD"))
         self.setFixedSize(800, 550)
 
         # Remove window decorations, especially the close button
@@ -157,7 +167,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         for f in [self.logfile, self.errorslogfile]:
             if os.path.exists(f):
                 os.remove(f)
-                print("Pre-existing %s removed" % (f))
+                print(tr("Pre-existing %s removed") % (f))
             file = open(f, "w")
             file.write(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
             file.close()
@@ -165,7 +175,7 @@ class InstallWizard(QtWidgets.QWizard, object):
 
         # Add Installer Log button
         self.setOption(QtWidgets.QWizard.HaveCustomButton1)
-        self.setButtonText(self.CustomButton1, "Installer Log")
+        self.setButtonText(self.CustomButton1, tr("Installer Log"))
         self.customButtonClicked.connect(self.installerLogButtonClicked)
 
     # TODO: Find a way to stream the output of an installer shell script
@@ -191,7 +201,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         try:
             proc.startDetached(command, args)
         except:  # FIXME: do not use bare 'except'
-            self.showErrorPage("The Installer Log cannot be opened.")
+            self.showErrorPage(tr("The Installer Log cannot be opened."))
             return
 
     def showErrorPage(self, message):
@@ -251,8 +261,8 @@ class InstallWizard(QtWidgets.QWizard, object):
         if self.user_agreed_to_geolocate is not True:
             reply = QtWidgets.QMessageBox.question(
                 self,
-                "Question",
-                "This will send a request to ipapi.com one time to locate your computer over the network. Continue?",
+                tr("Question"),
+                tr("This will send a request to ipapi.com one time to locate your computer over the network. Continue?"),
                 QtWidgets.QMessageBox.Yes,
                 QtWidgets.QMessageBox.No,
             )
@@ -323,14 +333,14 @@ class LanguagePage(QtWidgets.QWizardPage, object):
         # Check prerequisites
         # TODO: Check more
         if shutil.which(wizard.installer_script) is None:
-            wizard.showErrorPage("The installer script was not found. Please make sure that you are running the installer on a supported system.")
+            wizard.showErrorPage(tr("The installer script was not found. Please make sure that you are running the installer on a supported system."))
 
         # TODO: Check if we can run the installer as root; e.g., by running it here
         #  to get the required disk space (repeat later)
 
         if shutil.which("sudo") is None:
             wizard.showErrorPage(
-                "The sudo binary not found. Please make sure that you are running the installer on a supported system.")
+                tr("The sudo binary not found. Please make sure that you are running the installer on a supported system."))
             return
 
         json_file = QtCore.QFile(os.path.dirname(__file__) + '/languages.json')  # https://gist.github.com/piraveen/fafd0d984b2236e809d03a0e306c8a4d
@@ -399,7 +409,7 @@ class LanguagePage(QtWidgets.QWizardPage, object):
 
         except:  # FIXME: do not use bare 'except'
             wizard.showErrorPage(
-                "There was an error while determining whether the language has already been set on this system.")
+                tr("There was an error while determining whether the language has already been set on this system."))
             return
 
     def clicked1(self):
@@ -477,8 +487,8 @@ class CountryPage(QtWidgets.QWizardPage, object):
         print("Preparing CountryPage")
         super().__init__()
 
-        self.setTitle('Select Country')
-        self.setSubTitle("To set up the locale and keyboard layout, select a country.")
+        self.setTitle(tr('Select Country'))
+        self.setSubTitle(tr("To set up the locale and keyboard layout, select a country."))
 
         self.listwidget = QtWidgets.QListWidget()
         # self.listwidget.setFont(QtGui.QFont(None, 14, QtGui.QFont.Normal))
@@ -569,8 +579,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("Preparing IntroPage")
         super().__init__()
 
-        self.setTitle('Install FreeBSD')
-        self.setSubTitle("To set up the installation of FreeBSD, click 'Continue'.")
+        self.setTitle(tr('Install FreeBSD'))
+        self.setSubTitle(tr("To set up the installation of FreeBSD, click 'Continue'."))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/FREEBSD_Logo_Vert_Pos_RGB.png').scaledToHeight(200, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
@@ -588,7 +598,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
         intro_label = QtWidgets.QLabel()
         intro_label.setWordWrap(True)
-        intro_label.setText("FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIX® developed at the University of California, Berkeley. It is developed and maintained by a large community.")
+        intro_label.setText(tr("FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIX® developed at the University of California, Berkeley. It is developed and maintained by a large community."))
         intro_vLayout.addWidget(intro_label, True)  # True = add stretch vertically
 
         tm_label = QtWidgets.QLabel()
@@ -610,7 +620,7 @@ class LicensePage(QtWidgets.QWizardPage, object):
         print("Preparing LicensePage")
         super().__init__()
 
-        self.setTitle('FreeBSD License')
+        self.setTitle(tr('License Terms'))
         self.setSubTitle('To continue installing the software, you must agree to the terms of the software license agreement.')
         license_label = QtWidgets.QLabel()
         license_label.setWordWrap(True)
@@ -628,7 +638,7 @@ class LicensePage(QtWidgets.QWizardPage, object):
 
         additional_licenses_label = QtWidgets.QLabel()
         additional_licenses_label.setWordWrap(True)
-        additional_licenses_label.setText("Additional components may be distributed under different licenses as stated in the respective documentation.")
+        additional_licenses_label.setText(tr("Additional components may be distributed under different licenses as stated in the respective documentation."))
         license_layout.addWidget(additional_licenses_label)
 
 
@@ -648,8 +658,8 @@ class DiskPage(QtWidgets.QWizardPage, object):
 
         self.timer = QtCore.QTimer()  # Used to periodically check the available disks
         self.old_ds = None  # The disks we have recognized so far
-        self.setTitle('Select Destination Disk')
-        self.setSubTitle('All data on the selected disk will be erased.')
+        self.setTitle(tr('Select Destination Disk'))
+        self.setSubTitle(tr('All data on the selected disk will be erased.'))
         self.disk_listwidget = QtWidgets.QListWidget()
         # self.disk_listwidget.setViewMode(QtWidgets.QListView.IconMode)
         self.disk_listwidget.setIconSize(QtCore.QSize(48, 48))
@@ -698,12 +708,12 @@ class DiskPage(QtWidgets.QWizardPage, object):
 
         if wizard.required_mib_on_disk < 5:
             self.timer.stop()
-            wizard.showErrorPage("The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?")
+            wizard.showErrorPage(tr("The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?"))
             self.disk_listwidget.hide()  # FIXME: Why is this needed? Can we do without?
             return
 
         print("Disk space required: %d MiB" % wizard.required_mib_on_disk)
-        self.label.setText("Disk space required: %s MiB" % wizard.required_mib_on_disk)
+        self.label.setText(tr("Disk space required: %s MiB") % wizard.required_mib_on_disk)
 
     def cleanupPage(self):
         print("Leaving DiskPage")
@@ -757,8 +767,8 @@ class DiskPage(QtWidgets.QWizardPage, object):
         wizard.user_agreed_to_erase = False
         reply = QtWidgets.QMessageBox.warning(
             wizard,
-            "Warning",
-            "This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?",
+            tr("Warning"),
+            tr("This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?"),
             QtWidgets.QMessageBox.Yes,
             QtWidgets.QMessageBox.No,
         )
@@ -804,23 +814,23 @@ class RootPwPage(QtWidgets.QWizardPage, object):
         super().__init__()
         self.no_password_is_ok = False
 
-        self.setTitle('Set Root Password')
-        self.setSubTitle('Please enter a password for the root user.')
+        self.setTitle(tr('Set Root Password'))
+        self.setSubTitle(tr('Please enter a password for the root user.'))
         rootpw_vlayout = QtWidgets.QVBoxLayout(self)
         rootpw_label1 = QtWidgets.QLabel()
-        rootpw_label1.setText("Password:")
+        rootpw_label1.setText(tr("Password:"))
         rootpw_vlayout.addWidget(rootpw_label1)
         rootpw_lineedit = QtWidgets.QLineEdit()
         rootpw_lineedit.setEchoMode(QtWidgets.QLineEdit.Password)
         rootpw_vlayout.addWidget(rootpw_lineedit)
         rootpw_label2 = QtWidgets.QLabel()
-        rootpw_label2.setText("Retype Password:")
+        rootpw_label2.setText(tr("Retype Password:"))
         rootpw_vlayout.addWidget(rootpw_label2)
         rootpw_lineedit2 = QtWidgets.QLineEdit()
         rootpw_lineedit2.setEchoMode(QtWidgets.QLineEdit.Password)
         rootpw_vlayout.addWidget(rootpw_lineedit2)
         self.rootpw_label_comment = QtWidgets.QLabel()
-        self.rootpw_label_comment.setText("The passwords do not match")
+        self.rootpw_label_comment.setText(tr("The passwords do not match"))
         self.rootpw_label_comment.setStyleSheet("color: red")
         self.rootpw_label_comment.setVisible(False)
         rootpw_vlayout.addWidget(self.rootpw_label_comment)
@@ -857,17 +867,17 @@ class UserPage(QtWidgets.QWizardPage, object):
         super().__init__()
         self.no_password_is_ok = False
 
-        self.setTitle('Create Computer Account')
-        self.setSubTitle('Please enter details to create an account for the main user on this computer.')
+        self.setTitle(tr('Create Local Computer Account'))
+        self.setSubTitle(tr('Please enter details to create an account for the main user on this computer.'))
 
         user_vlayout = QtWidgets.QVBoxLayout(self)
 
         # Full Name
         user_label_fullname = QtWidgets.QLabel()
-        user_label_fullname.setText("Full Name:")
+        user_label_fullname.setText(tr("Full Name:"))
         user_vlayout.addWidget(user_label_fullname)
         self.fullname_lineEdit = QtWidgets.QLineEdit()
-        self.fullname_lineEdit.setPlaceholderText("John Doe")
+        self.fullname_lineEdit.setPlaceholderText(tr("John Doe"))
         user_vlayout.addWidget(self.fullname_lineEdit)
         user_label1 = QtWidgets.QLabel()
         self.registerField('fullname*', self.fullname_lineEdit)
@@ -875,7 +885,7 @@ class UserPage(QtWidgets.QWizardPage, object):
 
         # Username
         user_label0 = QtWidgets.QLabel()
-        user_label0.setText("Username:")
+        user_label0.setText(tr("Username:"))
         user_vlayout.addWidget(user_label0)
         self.username_lineEdit = QtWidgets.QLineEdit()
         # self.username_lineEdit.setInputMask('+99_9999_999999') # FIXME: Limit to allowable characters
@@ -885,7 +895,7 @@ class UserPage(QtWidgets.QWizardPage, object):
 
         # User Password
         user_label1 = QtWidgets.QLabel()
-        user_label1.setText("Password:")
+        user_label1.setText(tr("Password:"))
         user_vlayout.addWidget(user_label1)
 
         pw_hlayout = QtWidgets.QHBoxLayout(self)
@@ -894,7 +904,7 @@ class UserPage(QtWidgets.QWizardPage, object):
         pw_hlayout.addWidget(userpassword_lineedit)
 
         userpassword2_lineedit = QtWidgets.QLineEdit()
-        userpassword2_lineedit.setPlaceholderText("Retype Password")
+        userpassword2_lineedit.setPlaceholderText(tr("Retype Password"))
         userpassword2_lineedit.setEchoMode(QtWidgets.QLineEdit.Password)
         pw_hlayout.addWidget(userpassword2_lineedit)
 
@@ -907,7 +917,7 @@ class UserPage(QtWidgets.QWizardPage, object):
 
         # Computer Name
         user_label_computername = QtWidgets.QLabel()
-        user_label_computername.setText("Computer Name:")
+        user_label_computername.setText(tr("Computer Name:"))
         user_vlayout.addWidget(user_label_computername)
         self.computername_lineEdit = QtWidgets.QLineEdit()
         user_vlayout.addWidget(self.computername_lineEdit)
@@ -924,7 +934,7 @@ class UserPage(QtWidgets.QWizardPage, object):
         self.registerField('enable_autologin*', self.autologin_checkbox)
         # sshd
         self.sshd_checkbox = QtWidgets.QCheckBox()
-        self.sshd_checkbox.setText("Enable users to log in over the network (ssh)")
+        self.sshd_checkbox.setText(tr("Enable users to log in over the network (ssh)"))
         # self.sshd_checkbox.setWordWrap(True) # Does not work, https://bugreports.qt.io/browse/QTBUG-5370
         user_vlayout.addWidget(self.sshd_checkbox)
         self.registerField('enable_ssh*', self.sshd_checkbox)
@@ -938,7 +948,7 @@ class UserPage(QtWidgets.QWizardPage, object):
 
         # Timezone
         self.timezone_checkbox = QtWidgets.QCheckBox()
-        self.timezone_checkbox.setText("Set time zone based on current location")
+        self.timezone_checkbox.setText(tr("Set time zone based on current location"))
         # self.sshd_checkbox.setWordWrap(True) # Does not work, https://bugreports.qt.io/browse/QTBUG-5370
         user_vlayout.addWidget(self.timezone_checkbox)
         self.registerField('set_timezone*', self.timezone_checkbox)
@@ -950,7 +960,7 @@ class UserPage(QtWidgets.QWizardPage, object):
 
         # Warning if passwords don't match
         self.user_label_comment = QtWidgets.QLabel()
-        self.user_label_comment.setText("The passwords do not match")  # TODO: make red
+        self.user_label_comment.setText(tr("The passwords do not match"))  # TODO: make red
         self.user_label_comment.setVisible(False)
         user_vlayout.addWidget(self.user_label_comment)
         self.computer_name = self.computerName()
@@ -1087,8 +1097,8 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         print("Preparing InstallationPage")
         super().__init__()
 
-        self.setTitle('Installing FreeBSD')
-        self.setSubTitle('FreeBSD is being installed to your computer.')
+        self.setTitle(tr('Installing FreeBSD'))
+        self.setSubTitle(tr('FreeBSD is being installed to your computer.'))
 
         self.timer = None
         self.installer_script_has_exited = False
@@ -1131,11 +1141,11 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         # Sanity check that we really have a device and permission to erase it
         dev_file = "/dev/" + wizard.selected_disk_device
         if wizard.selected_disk_device is None or os.path.exists(dev_file) is False:
-            wizard.showErrorPage("The selected disk device %s is not found." % dev_file)
+            wizard.showErrorPage(tr("The selected disk device %s is not found.") % dev_file)
             return  # Stop doing anything here
 
         if wizard.user_agreed_to_erase is False:
-            wizard.showErrorPage("Did not get permission to erase the target device.")
+            wizard.showErrorPage(tr("Did not get permission to erase the target device."))
             return  # Stop doing anything here
 
         # If we determined a custom keyboard layout, then we skipped the language selection
@@ -1189,7 +1199,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
             # print(pid) # This is None for non-detached processes. If we ran detached, we would get the pid back here
             print("Installer script process %s %s started" % (command, args))
         except:  # FIXME: do not use bare 'except'
-            self.showErrorPage("The installer cannot be launched.")
+            self.showErrorPage(tr("The installer cannot be launched."))
             return  # Stop doing anything here
 
     def onProcessFinished(self):
@@ -1203,7 +1213,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         self.installer_script_has_exited = True
         self.timer.stop()
         if(exit_code != 0):
-            wizard.showErrorPage("The installation did not succeed. Please see the Installer Log for more information.")
+            wizard.showErrorPage(tr("The installation did not succeed. Please see the Installer Log for more information."))
             return  # Stop doing anything here
         else:
             wizard.next()
@@ -1247,8 +1257,8 @@ class SuccessPage(QtWidgets.QWizardPage, object):
 
         wizard.playSound()
 
-        self.setTitle('Installation Complete')
-        self.setSubTitle('The installation succeeded.')
+        self.setTitle(tr('Installation Complete'))
+        self.setSubTitle(tr('The installation succeeded.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
@@ -1265,10 +1275,10 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         layout.addWidget(center_widget, True)  # True = add stretch vertically
 
         label = QtWidgets.QLabel()
-        label.setText("FreeBSD has been installed on your computer, click 'Restart' to begin using it.")
+        label.setText(tr("FreeBSD has been installed on your computer, click 'Restart' to begin using it."))
         layout.addWidget(label)
 
-        self.setButtonText(wizard.NextButton, "Restart")
+        self.setButtonText(wizard.NextButton, tr("Restart"))
         wizard.button(QtWidgets.QWizard.NextButton).clicked.connect(self.restart_computer)
 
     def restart_computer(self):
@@ -1279,7 +1289,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         try:
             proc.startDetached(command, args)
         except:  # FIXME: do not use bare 'except'
-            self.showErrorPage("Could not restart the computer.")
+            self.showErrorPage(tr("Could not restart the computer."))
             return
 
 
@@ -1292,8 +1302,8 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         print("Preparing ErrorPage")
         super().__init__()
 
-        self.setTitle('Error')
-        self.setSubTitle('The installation could not be performed.')
+        self.setTitle(tr('Error'))
+        self.setSubTitle(tr('The installation could not be performed.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/cross.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
@@ -1318,7 +1328,7 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.label.setWordWrap(True)
         self.label.clear()
         self.label.setText(wizard.error_message_nice)
-        self.setButtonText(wizard.CancelButton, "Quit")
+        self.setButtonText(wizard.CancelButton, tr("Quit"))
         wizard.setButtonLayout([QtWidgets.QWizard.CustomButton1, QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
 
 
