@@ -208,7 +208,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Hej världen</translation>
     </message>
 </context>
 </TS>
