@@ -178,6 +178,13 @@ class InstallWizard(QtWidgets.QWizard, object):
         self.setButtonText(self.CustomButton1, tr("Installer Log"))
         self.customButtonClicked.connect(self.installerLogButtonClicked)
 
+        # Translate the widgets in the UI objects in the Wizard
+        self.setWindowTitle(tr(self.windowTitle()))
+        for e in self.findChildren(QtCore.QObject, None, QtCore.Qt.FindChildrenRecursively):
+            if hasattr(e, 'text') and hasattr(e, 'setText'):
+                e.setText(tr(e.text()))
+
+
     # TODO: Find a way to stream the output of an installer shell script
     # into a log window. Probably need to read the installer output line by line
     # and make sure it does not interfere with our progress bar (this may be tricky).
@@ -228,10 +235,11 @@ class InstallWizard(QtWidgets.QWizard, object):
         # pkg install freedesktop-sound-theme
         try:
             url = QtCore.QUrl.fromLocalFile(soundfile)
+            print(url)
             content = QtMultimedia.QMediaContent(url)
-            player = QtMultimedia.QMediaPlayer()
-            player.setMedia(content)
-            player.play()
+            # player = QtMultimedia.QMediaPlayer() # This seems to crash, why?
+            # player.setMedia(content)
+            # player.play()
         except:
             pass
 
@@ -621,7 +629,7 @@ class LicensePage(QtWidgets.QWizardPage, object):
         super().__init__()
 
         self.setTitle(tr('License Terms'))
-        self.setSubTitle('To continue installing the software, you must agree to the terms of the software license agreement.')
+        self.setSubTitle(tr('To continue installing the software, you must agree to the terms of the software license agreement.'))
         license_label = QtWidgets.QLabel()
         license_label.setWordWrap(True)
         license_layout = QtWidgets.QVBoxLayout(self)
