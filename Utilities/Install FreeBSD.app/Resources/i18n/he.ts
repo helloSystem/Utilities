@@ -5,55 +5,55 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>התקנת FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>אירעה שגיאה בלתי ידועה.</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
-        <translation type="unfinished"></translation>
+        <translation>%s שהיה קיים קודם הוסר</translation>
     </message>
     <message>
         <source>Installer Log</source>
-        <translation type="unfinished"></translation>
+        <translation>יומן תכנית התקנה</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>אי אפשר לפתוח את יומן תכנית ההתקנה.</translation>
     </message>
     <message>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>שאלה</translation>
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>פעולה זו תשלח בקשה חד־פעמית אל ipapi.com כדי לאתר את המחשב שלך דרך הרשת. להמשיך?</translation>
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation type="unfinished"></translation>
+        <translation>סקריפט ההתקנה לא נמצא. נא לוודא שהפעלת את תכנית ההתקנה על מערכת נתמכת.</translation>
     </message>
     <message>
         <source>The sudo binary not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation type="unfinished"></translation>
+        <translation>הקובץ הבינרי של sudo לא נמצא. נא לוודא שהפעלת את תכנית ההתקנה על מערכת נתמכת.</translation>
     </message>
     <message>
         <source>There was an error while determining whether the language has already been set on this system.</source>
-        <translation type="unfinished"></translation>
+        <translation>אירעה שגיאה בעת הניסיון לזהות האם השפה כבר הוגדרה במערכת הזאת.</translation>
     </message>
     <message>
         <source>Select Country</source>
-        <translation type="unfinished"></translation>
+        <translation>בחירת מדינה</translation>
     </message>
     <message>
         <source>To set up the locale and keyboard layout, select a country.</source>
-        <translation type="unfinished"></translation>
+        <translation>כדי להגדיר הגדרות מקומיות ופריסת מקלדת, יש לבחור במדינה.</translation>
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>כדי להגדיר את התקנת FreeBSD, יש ללחוץ על ‚המשך’.</translation>
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
