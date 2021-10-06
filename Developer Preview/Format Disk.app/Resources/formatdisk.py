@@ -4,15 +4,15 @@
 import sys
 import os
 import re
-import threading
 import time
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox, QDialogButtonBox, QErrorMessage
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox, QDialogButtonBox
 from PyQt5.QtGui import QPixmap, QMovie
-from PyQt5.QtCore import Qt, QFile, pyqtSlot, QObject, QProcess
+from PyQt5.QtCore import Qt, QFile, pyqtSlot, QObject, QProcess, QStorageInfo
 from PyQt5.uic import loadUi
 
-import filesystems
+import filesystems # bundled
+import disks # bundled
 
 # Translate this application using Qt .ts files without the need for compilation
 import tstranslator
@@ -48,7 +48,7 @@ class Window(QMainWindow):
         self.device = sys.argv[1]
         self.readable_capacity = None
         self.readable_descr = None
-        if "s" in self.device or "p" in self.device:
+        if "p" in self.device:
             self.is_partition = True
             self.get_partition_details()
         else:
@@ -91,14 +91,23 @@ class Window(QMainWindow):
         self._showMenu()
 
         # Populate formats
+        # TODO: Only add ExFAT if mount.exfat is on the PATH and format_command[0] is also on the PATH,
+        # similar for NTFS and ext2
         fsystems = [filesystems.ufs2(self.device), filesystems.fat32(self.device), filesystems.fat16(self.device),
                     filesystems.ntfs(self.device), filesystems.exfat(self.device), filesystems.ext2(self.device)]
         self.formatComboBox.clear()
         for fs in fsystems:
             self.formatComboBox.addItem(fs.nice_name, fs)
 
+        # Populate schemes
+        self.schemeComboBox.clear()
+        self.schemeComboBox.addItem(tr("GUID Partition Map"), "GPT")
+        self.schemeComboBox.addItem(tr("Master Boot Record"), "MBR")
+
+
     def get_geom_details(self):
         # Find out which unpartitioned disk we are working on
+        # We could also use get_disk() from disks.py but that one does not give us the readable capacity (yet)
         p = QProcess()
         p.setProgram("geom")
         p.setArguments(["disk", "list", self.device.replace("/dev/", "")])
@@ -128,11 +137,21 @@ class Window(QMainWindow):
                     print(self.readable_capacity)
 
     def get_partition_details(self):
+        our_partition = None
+        partitions = disks.get_partitions(self.device.split("p")[0])
+        for partition in partitions:
+            if not partition.name:
+                # What are these even? Blank unused spaces?
+                continue
+            # FIXME: What is the difference between daXs1 and daXp1? This distinction is lost on Linux users...
+            # Things like this make FreeBSD look "complicated"
+            if partition.name == self.device.replace("/dev/", ""):
+                our_partition = partition
+                print(partition)
 
-        self.readable_descr = "UNKNOWN"
-        print(self.readable_descr)
+        self.readable_descr = our_partition.get_volume_label()
 
-        self.readable_capacity = "UNKNOWN"
+        self.readable_capacity = our_partition.human_readable_size.replace("(", "").replace(")", "")
         print(self.readable_capacity)
 
     @pyqtSlot()
@@ -143,33 +162,61 @@ class Window(QMainWindow):
     @pyqtSlot()
     def okButtonClicked(self):
         print("OK button clicked")
+
+        # Make all widgets unclickable
+        for e in self.findChildren(QObject, None, Qt.FindChildrenRecursively):
+            if hasattr(e, 'setDisabled'):
+                e.setDisabled(True)
+
         fs = self.formatComboBox.itemData(self.formatComboBox.currentIndex())
-        print(self.nameLineEdit.text())
         if self.nameLineEdit.text():
             fs.volume_label = self.nameLineEdit.text()
-        print(fs.volume_label)
-        print(fs.nice_name)
+        print("Name: %s" % fs.volume_label)
+        print("Format: %s" % fs.nice_name)
         # print(fs.create_command)
         # print(fs.modify_command)
         # print(fs.format_command)
+        scheme = self.schemeComboBox.itemData(self.schemeComboBox.currentIndex())
+        print("Scheme: %s" % scheme)
         self.spinner.show()
 
+        # Unmount the necessary devices
+        # FIXME: This fails for FUSE-mounted devices, as their device is /dev/fuse...
+        # How can we find out that e.g., /dev/da0s1 has been mounted with FUSE ExFAT
+        # to /media/exfat so that we can unmount that?
+        # 'mount' does not show any mention of /dev/da0s1 at all!
+        # /dev/fuse on /media/exfat (fusefs)
+        vols = QStorageInfo.mountedVolumes()
+        for vol in vols:
+            candidate = vol.device().data().decode()
+            if self.device == candidate:
+                self.runCommandAsRootAndAbortOnError(["umount", self.device])
+            # Not just unmount the device itself but also the devices for its partitions
+            if candidate.startswith(self.device + "p"):
+                self.runCommandAsRootAndAbortOnError(["umount", candidate])
+
         if self.overwriteCheckBox.isChecked():
-            cmd = ["dd", "if=/dev/zero", "of=" + self.device, "bs=8M"]
-            print(cmd)
+            self.runCommandAsRootAndAbortOnError = ["dd", "if=/dev/zero", "of=" + self.device, "bs=8M"]
 
         if self.is_partition == False:
-            self.fatalError("Creating the partition table is not implemented yet")
+            # Clean out any pre-existing partition table in a robust way
+            cmd = ["dd", "if=/dev/zero", "of="+self.device, "bs=1M", "count=1"]
+            self.runCommandAsRootAndAbortOnError(cmd)
+            # Create a new partition table
+            cmd = ["/sbin/gpart", "create", "-s", scheme, self.device.replace("/dev/", "")]
+            self.runCommandAsRootAndAbortOnError(cmd)
 
         if self.is_partition == False:
-            cmd = fs.create_command
+            cmd = fs.add_command
+            # fs.device = fs.device + "p0" # We have created a partition, so use it # FIXME: What is correct to do here?
         else:
             cmd = fs.modify_command
-        print(cmd)
-        cmd = fs.format_command
-        print(cmd)
+        self.runCommandAsRootAndAbortOnError(cmd)
 
-        self.runCommandAsRootAndAbortOnError(["sleep", "5"])
+        cmd = fs.format_command
+        self.runCommandAsRootAndAbortOnError(cmd)
+
+        self.runCommandAsRootAndAbortOnError(["/usr/local/sbin/automount", fs.device.replace("/dev/", ""), "attach"])
 
         sys.exit(0)
 
@@ -177,7 +224,7 @@ class Window(QMainWindow):
         p = QProcess()
         p.setProgram("sudo")
         p.setArguments(["-A", "-E"] + command)
-        print(p.arguments())
+        print("Running: 'sudo' '" + "' '".join(p.arguments()) +"'")
         # p.finished.connect(self.onProcessFinished)
         p.start()
 
@@ -187,16 +234,14 @@ class Window(QMainWindow):
                 QApplication.processEvents()
                 time.sleep(0.1)
 
-        err = p.readAllStandardError().data().decode()
-        if err:
-            self.fatalError(err)
-
         out = p.readAllStandardOutput().data().decode()
         if out:
             print(out)
-        print("p.exitStatus():", p.exitStatus())
+
         if p.exitStatus() != 0:
-            print("An error occured; TODO: Handle it in the GUI")
+            err = p.readAllStandardError().data().decode()
+            if err:
+                self.fatalError(err)
 
     def fatalError(self, errorstring, title=tr("Error")):
         print("Error: %s" % errorstring)

@@ -118,7 +118,7 @@ border-color: transparent;</string>
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>70</x>
@@ -178,15 +178,10 @@ border-color: transparent;</string>
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QComboBox" name="scheme">
+      <widget class="QComboBox" name="schemeComboBox">
        <item>
         <property name="text">
-         <string>GUID Partition Map</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Master Boot Record</string>
+         <string>Placeholder</string>
         </property>
        </item>
       </widget>

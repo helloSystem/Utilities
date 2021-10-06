@@ -8,12 +8,22 @@ class Filesystem(object):
 
     @property
     def modify_command(self):
-        return ["gpart", "modify", "-t", self.type_fbsd, self.device.replace("/dev/", "")]
+        if not "p" in self.device:
+            return
+        parent_device = self.device.split("p")[0]
+        partition_number = self.device.split("p")[1]
+        return ["/sbin/gpart", "modify", "-i", partition_number, "-t", self.type_fbsd, parent_device.replace("/dev/", "")]
 
     @property
-    def create_command(self):
-        return ["gpart", "create", "-t", self.type_fbsd, self.device.replace("/dev/", "")]
-
+    def add_command(self):
+        if "p" in self.device:
+            parent_device = self.device.split("p")[0]
+            # partition_number = self.device.split("p")[1]
+            # Is the i parameter neeed?
+            return ["/sbin/gpart", "add", "-t", self.type_fbsd, parent_device.replace("/dev/", "")]
+        else:
+            # We are asked to format a whole drive rather than a partition, but let's create a partition nonetheless?
+            return ["/sbin/gpart", "add", "-t", self.type_fbsd, self.device.replace("/dev/", "")]
 
 class ufs2(Filesystem):
     def __init__(self, device):
