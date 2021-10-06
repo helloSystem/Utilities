@@ -149,7 +149,7 @@
     </message>
     <message>
         <source>Installing FreeBSD</source>
-        <translation>FreeBSD wird installiert</translation>
+        <translation>FreeBSD Installation</translation>
     </message>
     <message>
         <source>FreeBSD is being installed to your computer.</source>
