@@ -44,7 +44,7 @@
     <message>
         <location filename="../formatdisk.ui" line="148"/>
         <source>Format:</source>
-        <translation>פרמוט:</translation>
+        <translation>מערכת קבצים:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="156"/>
