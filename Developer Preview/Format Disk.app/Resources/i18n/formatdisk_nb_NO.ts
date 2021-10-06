@@ -44,7 +44,7 @@
     <message>
         <location filename="../formatdisk.ui" line="148"/>
         <source>Format:</source>
-        <translation type="unfinished">Format:</translation>
+        <translation>Format:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="156"/>
@@ -59,7 +59,7 @@
     <message>
         <location filename="../formatdisk.ui" line="172"/>
         <source>GUID Partition Map</source>
-        <translation type="unfinished">GUID-partisjonstabell</translation>
+        <translation>GUID -partisjonskart</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="177"/>
