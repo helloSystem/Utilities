@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="de" sourcelanguage="en">
+<TS version="2.1" language="it" sourcelanguage="en">
 <context>
     <name>@default</name>
     <message>
         <location filename="../formatdisk.py" line="53"/>
         <source>Erase</source>
-        <translation>Löschen</translation>
+        <translation>Cancellare</translation>
     </message>
     <message>
         <location filename="../formatdisk.py" line="54"/>
         <source>Cancel</source>
-        <translation>Abbrechen</translation>
+        <translation>Annulla</translation>
     </message>
 </context>
 <context>
@@ -19,37 +19,37 @@
     <message>
         <location filename="../formatdisk.ui" line="29"/>
         <source>Format Disk</source>
-        <translation>Datenträger Formatieren</translation>
+        <translation>Formattare il disco</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="99"/>
         <source>Erase &quot;%1&quot; (%2)?</source>
-        <translation>&quot;%1&quot; (%2) löschen?</translation>
+        <translation>Cancellare &quot;%1&quot; (%2)?</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="112"/>
         <source>Erasing &quot;%1&quot; will permanently delete all data stored on it, and cannot be undone.</source>
-        <translation>Dadurch werden alle Daten auf &quot;%1&quot; unwiderbringlich gelöscht, und dies kann nicht rückgängig gemacht werden.</translation>
+        <translation>La cancellazione di &quot;%1&quot; eliminerà definitivamente tutti i dati memorizzati su di esso e non potrà essere annullata.</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="134"/>
         <source>Name:</source>
-        <translation></translation>
+        <translation>Nome:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="141"/>
         <source>Untitled</source>
-        <translation></translation>
+        <translation>Senza titolo</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="148"/>
         <source>Format:</source>
-        <translation></translation>
+        <translation>Formato:</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="156"/>
         <source>Placeholder</source>
-        <translation></translation>
+        <translation>Segnaposto</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="164"/>
@@ -59,7 +59,7 @@
     <message>
         <location filename="../formatdisk.ui" line="172"/>
         <source>GUID Partition Map</source>
-        <translation>GUID Partitionstabelle</translation>
+        <translation>Mappa delle partizioni GUID</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="177"/>
@@ -69,7 +69,7 @@
     <message>
         <location filename="../formatdisk.ui" line="185"/>
         <source>Overwrite with zeros</source>
-        <translation>Mit Nullen überschreiben</translation>
+        <translation>Sovrascrivi con zeri</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation></translation>
+        <translation>Ciao mondo</translation>
     </message>
 </context>
 </TS>
