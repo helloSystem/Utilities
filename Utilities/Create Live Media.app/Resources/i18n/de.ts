@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
-        <translation type="unfinished">Disk-Images (*.iso *.img);;Alle Dateien (*.*)</translation>
+        <translation>Disk-Images (*.iso *.img);;Alle Dateien (*.*)</translation>
     </message>
     <message>
         <source>This requires an active internet connection.</source>
