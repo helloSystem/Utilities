@@ -57,158 +57,158 @@
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD היא מערכת הפעלה למגוון מערכות שמתמקדמת ביכולות, מהירות ויציבות. היא נגזרת של BSD, גרסת ה־ UNIX® שפותחה על ידי האוניברסיטה של קליפורניה - ברקלי. הפיתוח והתחזוקה נסמכים היום על קהילה גדולה.</translation>
     </message>
     <message>
         <source>License Terms</source>
-        <translation type="unfinished"></translation>
+        <translation>תנאי הרישוי</translation>
     </message>
     <message>
         <source>Additional components may be distributed under different licenses as stated in the respective documentation.</source>
-        <translation type="unfinished"></translation>
+        <translation>רכיבים נוספים עשויים להיות מופצים בכפוף לרישיונות שונים כפי שצוין בתיעוד המתאים להם.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>בחירת כונן יעד</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>כל הנתונים בכונן הנבחר יימחקו.</translation>
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
-        <translation type="unfinished"></translation>
+        <translation>סקריפט ההתקנה לא דיווח על המיקום הנדרש בכונן. האם תכנית ההתקנה מופעלת על מערכת נתמכת? האם יש לך אפשרות להריץ את הסקריפט עם sudo ללא צורך בססמה?</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>המקום הדרוש בכונן: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>אזהרה</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>פעולה זו תמחק את כל תכני הכונן ותתקין עליו את מערכת ההפעלה FreeBSD. להמשיך?</translation>
     </message>
     <message>
         <source>Set Root Password</source>
-        <translation type="unfinished"></translation>
+        <translation>הגדרת ססמת משתמש על (root)</translation>
     </message>
     <message>
         <source>Please enter a password for the root user.</source>
-        <translation type="unfinished"></translation>
+        <translation>נא לבחור ססמה למשתמש העל (root).</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>ססמה:</translation>
     </message>
     <message>
         <source>Retype Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>הקלדה נוספת של הססמה:</translation>
     </message>
     <message>
         <source>The passwords do not match</source>
-        <translation type="unfinished"></translation>
+        <translation>הססמאות אינן תואמות</translation>
     </message>
     <message>
         <source>Create Local Computer Account</source>
-        <translation type="unfinished"></translation>
+        <translation>יצירת חשבון מקומי במחשב</translation>
     </message>
     <message>
         <source>Please enter details to create an account for the main user on this computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>נא למלא פרטים ליצירת חשבון למשתמש העיקרי במחשב הזה.</translation>
     </message>
     <message>
         <source>Full Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>שם מלא:</translation>
     </message>
     <message>
         <source>John Doe</source>
-        <translation type="unfinished"></translation>
+        <translation>ישראל ישראלי</translation>
     </message>
     <message>
         <source>Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>שם משתמש:</translation>
     </message>
     <message>
         <source>Retype Password</source>
-        <translation type="unfinished"></translation>
+        <translation>הקלדת ססמה שוב</translation>
     </message>
     <message>
         <source>Computer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>שם המחשב:</translation>
     </message>
     <message>
         <source>Enable users to log in over the network (ssh)</source>
-        <translation type="unfinished"></translation>
+        <translation>לאפשר למשתמשים להיכנס דרך הרשת (ssh)</translation>
     </message>
     <message>
         <source>Set time zone based on current location</source>
-        <translation type="unfinished"></translation>
+        <translation>הגדרת אזור זמן לפי המיקום הנוכחי</translation>
     </message>
     <message>
         <source>Installing FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>התקנת FreeBSD</translation>
     </message>
     <message>
         <source>FreeBSD is being installed to your computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD מותקנת על המחשב שלך.</translation>
     </message>
     <message>
         <source>The selected disk device %s is not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>הכונן הנבחר %s לא נמצא.</translation>
     </message>
     <message>
         <source>Did not get permission to erase the target device.</source>
-        <translation type="unfinished"></translation>
+        <translation>לא התקבלו הרשאות למחיקת כונן היעד.</translation>
     </message>
     <message>
         <source>The installer cannot be launched.</source>
-        <translation type="unfinished"></translation>
+        <translation>לא ניתן להפעיל את תכנית ההתקנה.</translation>
     </message>
     <message>
         <source>The installation did not succeed. Please see the Installer Log for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>ההתקנה לא הצליחה. נא לעיין ביומן ההתקנה לפרטים נוספים.</translation>
     </message>
     <message>
         <source>Installation Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>ההתקנה הושלמה</translation>
     </message>
     <message>
         <source>The installation succeeded.</source>
-        <translation type="unfinished"></translation>
+        <translation>ההתקנה הצליחה.</translation>
     </message>
     <message>
         <source>FreeBSD has been installed on your computer, click &apos;Restart&apos; to begin using it.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD הותקנה במחשב שלך, לחיצה על ‚הפעלה מחדש’ תוביל אותך להתחיל להשתמש בה.</translation>
     </message>
     <message>
         <source>Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>הפעלה מחדש</translation>
     </message>
     <message>
         <source>Could not restart the computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>לא ניתן להפעיל את המחשב מחדש.</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>שגיאה</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>לא ניתן לבצע את ההתקנה.</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>יציאה</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>שלום עולם</translation>
     </message>
 </context>
 </TS>
