@@ -20,24 +20,6 @@ Translation happens on [Weblate](https://hosted.weblate.org/engage/hellosystem/)
 <img src="https://hosted.weblate.org/widgets/hellosystem/-/287x66-grey.png" alt="Translation status" />
 </a>
 
-To make new strings available for translation, a developer runs in the respective application directory:
-
-```
-cd Resources/
-mkdir -p i18n
-
-# Create/update .ts file for English
-pylupdate5 -noobsolete *.{py,ui} -ts i18n/en.ts
-
-# Remove unneeded location tags
-xml ed -L -d '//location' i18n/en.ts 
-
-# Remove translations from en, since en is not to be further translated
-xml ed -L -d '//translation' i18n/en.ts 
-```
-
-Translators do not need to do this.
-
 ## Boot Environments.app
 
 Simple settings for ZFS Boot Environments.
