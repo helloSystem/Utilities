@@ -69,7 +69,7 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation>בחירת כונן יעד</translation>
+        <translation>נא לבחור כונן יעד</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
