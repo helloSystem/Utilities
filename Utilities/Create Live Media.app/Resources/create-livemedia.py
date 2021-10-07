@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Create Live Media
-# Copyright (c) 2020, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-21, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,6 +39,15 @@ from PyQt5 import QtWidgets, QtGui, QtCore, QtMultimedia # pkg install py37-qt5-
 import disks # Privately bundled file
 
 import ssl
+
+# Translate this application using Qt .ts files without the need for compilation
+import tstranslator
+# FIXME: Do not import translations from outside of the appliction bundle
+# which currently is difficult because we have all translations for all applications
+# in the whole repository in the same .ts files
+tstr = tstranslator.TsTranslator(os.path.dirname(__file__) + "/i18n", "")
+def tr(input):
+    return tstr.tr(input)
 
 # Since we are running the wizard on Live systems which more likely than not may have
 # the clock wrong, we cannot verify SSL certificates. Setting the following allows
@@ -103,6 +112,12 @@ class InstallWizard(QtWidgets.QWizard, object):
         self.setWindowTitle("Create Live Media")
         self.setFixedSize(600, 400)
 
+        # Translate the widgets in the UI objects in the Wizard
+        self.setWindowTitle(tr(self.windowTitle()))
+        for e in self.findChildren(QtCore.QObject, None, QtCore.Qt.FindChildrenRecursively):
+            if hasattr(e, 'text') and hasattr(e, 'setText'):
+                e.setText(tr(e.text()))
+
 
     def showErrorPage(self, message):
         print("Show error page")
@@ -129,9 +144,9 @@ class InstallWizard(QtWidgets.QWizard, object):
         try:
             url = QtCore.QUrl.fromLocalFile(soundfile)
             content = QtMultimedia.QMediaContent(url)
-            player = QtMultimedia.QMediaPlayer()
-            player.setMedia(content)
-            player.play()
+            # player = QtMultimedia.QMediaPlayer() # FIXME: Crashes!
+            # player.setMedia(content)
+            # player.play()
         except:
             pass
 
@@ -149,8 +164,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("Preparing IntroPage")
         super().__init__()
 
-        self.setTitle('Create Live Media')
-        self.setSubTitle("This will download a Live image and will write it to an attached storage device.")
+        self.setTitle(tr('Create Live Media'))
+        self.setSubTitle(tr("This will download a Live image and will write it to an attached storage device."))
 
         self.releases_url = None
 
@@ -162,15 +177,21 @@ class IntroPage(QtWidgets.QWizardPage, object):
         self.available_repos = ["https://api.github.com/repos/helloSystem/ISO/releases", "https://api.github.com/repos/mszoek/airyx/releases", "https://api.github.com/repos/probonopd/furybsd-livecd/releases", "https://api.github.com/repos/probonopd/ghostbsd-build/releases", "https://api.github.com/repos/andydotxyz/furybsd-livecd/releases"]
         for available_repo in self.available_repos:
             self.repo_menu.addItem("/".join(available_repo.split("/")[4:6]))
-        self.other_iso = "Other..."
+        self.other_iso = tr("Other...")
         self.repo_menu.addItem(self.other_iso)
         self.available_repos.append(self.other_iso)
+        self.local_iso = tr("Local ISO file...")
+        self.repo_menu.addItem(self.local_iso)
+        self.available_repos.append(self.local_iso)
+
         self.disk_vlayout.addWidget(self.repo_menu)
         self.repo_menu.currentTextChanged.connect(self.populateImageList)
+        #wizard.selected_iso_url = "file:///usr/home/user/Downloads/alpine-standard-3.13.0-x86_64.iso"
+        #urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
 
         # Release label
         self.label = QtWidgets.QLabel()
-        self.label.setText("Please choose an image:")
+        self.label.setText(tr("Please choose an image:"))
         self.disk_vlayout.addWidget(self.label)
 
         # Release ListWidget
@@ -180,13 +201,13 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
         # Date label
         self.date_label = QtWidgets.QLabel()
-        self.date_label.setText("Date")
+        self.date_label.setText(tr("Date"))
         self.date_label.hide()
         self.disk_vlayout.addWidget(self.date_label)
 
         # Checkbox for Pre-release and Experimental builds
         self.prerelease_checkbox = QtWidgets.QCheckBox()
-        self.prerelease_checkbox.setText("Show Pre-release builds")
+        self.prerelease_checkbox.setText(tr("Show Pre-release builds"))
         self.prerelease_checkbox.setChecked(False)
         self.disk_vlayout.addWidget(self.prerelease_checkbox)
         self.prerelease_checkbox.clicked.connect(self.populateImageList)
@@ -202,7 +223,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
         if self.available_repos[self.repo_menu.currentIndex()] == self.other_iso:
 
-            text, okPressed = QtWidgets.QInputDialog.getText(self, "Other", "URL of the ISO", QtWidgets.QLineEdit.Normal, "https://")
+            text, okPressed = QtWidgets.QInputDialog.getText(self, tr("Other"), tr("URL of the ISO"), QtWidgets.QLineEdit.Normal, "https://")
             if okPressed and text != '':
                 print(text)
 
@@ -215,8 +236,29 @@ class IntroPage(QtWidgets.QWizardPage, object):
             self.release_listwidget.addItem(item) # FIXME: Can we at least attempt to get the real size from the URL?
             return
 
+        if self.available_repos[self.repo_menu.currentIndex()] == self.local_iso:
+
+            filedialog = QtWidgets.QFileDialog()
+            filedialog.setDefaultSuffix("iso")
+            filedialog.setNameFilter(tr("Disk images (*.iso *.img);;All files (*.*)"))
+            filename = None
+            if filedialog.exec_():
+                filename = filedialog.selectedFiles()[0]
+            if not filename:
+                return
+            item = QtWidgets.QListWidgetItem(os.path.basename(filename))
+            item.__setattr__("browser_download_url",
+                             "file:///" + filename)  # __setattr__() is the equivalent to setProperty() in Qt
+            info = QtCore.QFileInfo(filename)
+            item.__setattr__("updated_at", info.lastModified().toString("%Y-%m-%dT%H:%M:%SZ"))
+            item.__setattr__("size", info.size())
+            item.__setattr__("prerelease", False)
+            self.release_listwidget.addItem(item) # FIXME: Can we at least attempt to get the real size from the URL?
+            self.onSelectionChanged()
+            return
+
         if internetCheckConnected() == False:
-            wizard.showErrorPage("This requires an active internet connection.")
+            wizard.showErrorPage(tr("This requires an active internet connection."))
             self.label.hide()  # FIXME: Why is this needed? Can we do without?
             self.repo_menu.hide()  # FIXME: Why is this needed? Can we do without?
             self.release_listwidget.hide()  # FIXME: Why is this needed? Can we do without?
@@ -293,8 +335,8 @@ class DiskPage(QtWidgets.QWizardPage, object):
 
         self.timer = QtCore.QTimer() # Used to periodically check the available disks
         self.old_ds = None # The disks we have recognized so far
-        self.setTitle('Select Destination Disk')
-        self.setSubTitle('All data on the selected disk will be erased.')
+        self.setTitle(tr('Select Destination Disk'))
+        self.setSubTitle(tr('All data on the selected disk will be erased.'))
         self.disk_listwidget = QtWidgets.QListWidget()
         # self.disk_listwidget.setViewMode(QtWidgets.QListView.IconMode)
         self.disk_listwidget.setIconSize(QtCore.QSize(48, 48))
@@ -313,12 +355,12 @@ class DiskPage(QtWidgets.QWizardPage, object):
 
         if wizard.required_mib_on_disk < 5:
             self.timer.stop()
-            wizard.showErrorPage("The installer could not get the required disk space.")
+            wizard.showErrorPage(tr("Could not determine the required disk space."))
             self.disk_listwidget.hide() # FIXME: Why is this needed? Can we do without?
             return
 
         print("Disk space required: %d MiB" % wizard.required_mib_on_disk)
-        self.label.setText("Disk space required: %s MiB" % wizard.required_mib_on_disk)
+        self.label.setText(tr("Disk space required: %s MiB") % wizard.required_mib_on_disk)
 
     def cleanupPage(self):
         print("Leaving DiskPage")
@@ -376,8 +418,8 @@ class DiskPage(QtWidgets.QWizardPage, object):
         wizard.user_agreed_to_erase = False
         reply = QtWidgets.QMessageBox.warning(
             wizard,
-            "Warning",
-            "This will erase all contents of this disk and install the live system on it. Continue?",
+            tr("Warning"),
+            tr("This will erase all contents of this disk and install the live system on it. Continue?"),
             QtWidgets.QMessageBox.Yes,
             QtWidgets.QMessageBox.No,
         )
@@ -424,8 +466,8 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         super().__init__()
 
 
-        self.setTitle('Downloading and writing Live medium')
-        self.setSubTitle('The Live image is being downloaded and written to the medium.')
+        self.setTitle(tr('Downloading and writing Live medium'))
+        self.setSubTitle(tr('The Live image is being downloaded and written to the medium.'))
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.progress = QtWidgets.QProgressBar(self)
@@ -467,15 +509,16 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         print(command, args)
         try:
             proc.startDetached(command, args)
+            proc.waitForFinished()
         except:
-            wizard.showErrorPage("Could not unmount parititons.")
-        proc.waitForFinished()
+            wizard.showErrorPage(tr("Could not unmount parititons."))
 
         # Download and write directly to the device
+        print(wizard.selected_iso_url)
         try:
             urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
         except:
-            wizard.showErrorPage("An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?")
+            wizard.showErrorPage(tr("An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?"))
 
         wizard.next()
 
@@ -497,8 +540,8 @@ class SuccessPage(QtWidgets.QWizardPage, object):
 
         wizard.playSound()
 
-        self.setTitle('Live Medium Complete')
-        self.setSubTitle('The Live image has been written to the device.')
+        self.setTitle(tr('Live Medium Complete'))
+        self.setSubTitle(tr('The Live image has been written to the device.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/usbsuccess.svg').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
@@ -515,10 +558,10 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         layout.addWidget(center_widget, True) # True = add stretch vertically
 
         label = QtWidgets.QLabel()
-        label.setText("You can now start your computer from the Live medium.")
+        label.setText(tr("You can now start your computer from the Live medium."))
         label.setWordWrap(True)
         layout.addWidget(label)
-        self.setButtonText(wizard.CancelButton, "Quit")
+        self.setButtonText(wizard.CancelButton, tr("Quit"))
         wizard.setButtonLayout([QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
 
         self.periodically_list_disks()
@@ -534,7 +577,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
     def list_disks(self):
         ds = disks.get_disks()
         if "/dev/" + wizard.selected_disk_device not in ds:
-            print("Device was unplugged, exiting")
+            print(tr("Device was unplugged, exiting"))
             self.timer.stop()
             sys.exit(0)
 
@@ -548,8 +591,8 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         print("Preparing ErrorPage")
         super().__init__()
 
-        self.setTitle('Error')
-        self.setSubTitle('The installation could not be performed.')
+        self.setTitle(tr('Error'))
+        self.setSubTitle(tr('The installation could not be performed.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/cross.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
@@ -574,7 +617,7 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.label.setWordWrap(True)
         self.label.clear()
         self.label.setText(wizard.error_message_nice)
-        self.setButtonText(wizard.CancelButton, "Quit")
+        self.setButtonText(wizard.CancelButton, tr("Quit"))
         wizard.setButtonLayout([QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
 
 #############################################################################

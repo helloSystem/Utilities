@@ -63,7 +63,6 @@ ssl._create_default_https_context = ssl._create_unverified_context
 # Plenty of TODOs and FIXMEs are sprinkled across this code.
 # These are invitations for new contributors to implement or comment on how to best implement.
 # These things are not necessarily hard, just no one had the time to do them so far.
-# TODO: Make translatable
 # TODO: Make it possible to clone an already-installed system to another one (backup) (skip rootpw, username screens)
 # TODO: Make live system clonable in live mode (just clone the live media as-is)
 # TODO: Make live system writable to DVD

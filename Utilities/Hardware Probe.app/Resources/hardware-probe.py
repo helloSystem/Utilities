@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Hardware Probe
-# Copyright (c) 2020, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-21, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,16 @@ from PyQt5 import QtWidgets, QtGui, QtCore # pkg install py37-qt5-widgets
 # Plenty of TODOs and FIXMEs are sprinkled across this code.
 # These are invitations for new contributors to implement or comment on how to best implement.
 # These things are not necessarily hard, just no one had the time to do them so far.
-# TODO: Make translatable
+
+
+# Translate this application using Qt .ts files without the need for compilation
+import tstranslator
+# FIXME: Do not import translations from outside of the appliction bundle
+# which currently is difficult because we have all translations for all applications
+# in the whole repository in the same .ts files
+tstr = tstranslator.TsTranslator(os.path.dirname(__file__) + "/i18n", "")
+def tr(input):
+    return tstr.tr(input)
 
 
 #############################################################################
@@ -80,7 +89,7 @@ class Wizard(QtWidgets.QWizard, object):
         super().__init__()
 
         self.should_show_last_page = False
-        self.error_message_nice = "An unknown error occured."
+        self.error_message_nice = tr("An unknown error occured.")
 
         self.setWizardStyle(QtWidgets.QWizard.MacStyle)
         self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Stethoscope-icon.png'))
@@ -90,10 +99,16 @@ class Wizard(QtWidgets.QWizard, object):
         self.server_probe_url = None
         self.local_probe_path = None
 
-        self.setWindowTitle("Hardware Probe")
+        self.setWindowTitle(tr("Hardware Probe"))
         self.setFixedSize(600, 400)
 
         self.setSubTitleFormat(QtCore.Qt.RichText) # Allow HTML; Qt 5.14+ also have an option for Markdown
+
+        # Translate the widgets in the UI objects in the Wizard
+        self.setWindowTitle(tr(self.windowTitle()))
+        for e in self.findChildren(QtCore.QObject, None, QtCore.Qt.FindChildrenRecursively):
+            if hasattr(e, 'text') and hasattr(e, 'setText'):
+                e.setText(tr(e.text()))
 
     def showErrorPage(self, message):
         print("Show error page")
@@ -136,8 +151,8 @@ class PrivacyPage(QtWidgets.QWizardPage, object):
         print("Privacy Information")
         super().__init__()
 
-        self.setTitle('Privacy Information')
-        self.setSubTitle('Uploading a Hardware Probe is subject to the following Pricacy Terms.')
+        self.setTitle(tr('Privacy Information'))
+        self.setSubTitle(tr('Uploading a Hardware Probe is subject to the following Pricacy Terms.'))
         license_label = QtWidgets.QTextBrowser()
         license_layout = QtWidgets.QVBoxLayout(self)
         license_text = open(os.path.dirname(__file__) + '/intro.txt', 'r').read()
@@ -150,7 +165,7 @@ class PrivacyPage(QtWidgets.QWizardPage, object):
 
         additional_licenses_label = QtWidgets.QLabel()
         additional_licenses_label.setWordWrap(True)
-        additional_licenses_label.setText('Please see <a href="https://bsd-hardware.info">https://bsd-hardware.info</a> for more information.')
+        additional_licenses_label.setText(tr('Please see %s for more information.') % '<a href="https://bsd-hardware.info">https://bsd-hardware.info</a>')
         license_layout.addWidget(additional_licenses_label)
 
 #############################################################################
@@ -163,15 +178,15 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("Preparing IntroPage")
         super().__init__()
 
-        self.setTitle('Hardware Probe')
-        self.setSubTitle("""<p>This utility collects hardware details of your computer and can anonymously upload them to a public database.</p>
+        self.setTitle(tr('Hardware Probe'))
+        self.setSubTitle(tr("""<p>This utility collects hardware details of your computer and can anonymously upload them to a public database.</p>
         <p>This can help users and operating system developers to collaboratively debug hardware related issues, check for operating system compatibility and find drivers.</p>
-        <p>You will get a permanent probe URL to view and share collected information.</p><br><br><br>""")
+        <p>You will get a permanent probe URL to view and share collected information.</p><br><br><br>"""))
 
         layout = QtWidgets.QVBoxLayout(self)
         # layout.addWidget(center_widget, True) # True = add stretch vertically
 
-        wizard.showHardwareProbeButton = QtWidgets.QPushButton('Show Hardware Probe', self)
+        wizard.showHardwareProbeButton = QtWidgets.QPushButton(tr('Show Hardware Probe'), self)
         wizard.showHardwareProbeButton.clicked.connect(self.showHardwareProbeButtonClicked)
         wizard.showHardwareProbeButton.setDisabled(True)
         layout.addWidget(wizard.showHardwareProbeButton)
@@ -186,7 +201,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
             print("Starting %s %s" % (command, args))
             proc.startDetached(command, args)
         except:
-            wizard.showErrorPage(self.tr("Failed to open the hardware probe."))
+            wizard.showErrorPage(tr("Failed to open the hardware probe."))
             return
 
     def initializePage(self):
@@ -206,7 +221,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
             print("Starting %s %s" % (command, args))
             proc.start(command, args)
         except:
-            wizard.showErrorPage(self.tr("Failed to run the %s tool." % wizard.hw_probe_tool)) # This does not catch most cases of errors; hence see below
+            wizard.showErrorPage(tr("Failed to run the %s tool." % wizard.hw_probe_tool)) # This does not catch most cases of errors; hence see below
             return
         proc.waitForFinished()
 
@@ -216,7 +231,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
             self.local_probe_path = str(output_lines[len(output_lines)-2], encoding='utf-8').split(":")[1].strip() # /root/HW_PROBE/LATEST/hw.info
             print("self.local_probe_path: %s" % self.local_probe_path)
         else:
-            wizard.showErrorPage(self.tr("Failed to run the %s tool." % wizard.hw_probe_tool)) # This catches most cases if something goes wrong
+            wizard.showErrorPage(tr("Failed to run the %s tool." % wizard.hw_probe_tool)) # This catches most cases if something goes wrong
             return
 
         # Make the Hardware Probe owned by user for easy access by the user
@@ -228,7 +243,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
             print("Starting %s %s" % (command, args))
             proc.start(command, args)
         except:
-            wizard.showErrorPage(self.tr(
+            wizard.showErrorPage(tr(
                 "Failed to set the owner to %x.") % os.environ.get('USER'))  # This does not catch most cases of errors; hence see below
             return
         proc.waitForFinished()
@@ -246,8 +261,8 @@ class UploadPage(QtWidgets.QWizardPage, object):
         print("Preparing InstallationPage")
         super().__init__()
 
-        self.setTitle('Uploading Hardware Probe')
-        self.setSubTitle('The Hardware Probe is being uploaded to the public database')
+        self.setTitle(tr('Uploading Hardware Probe'))
+        self.setSubTitle(tr('The Hardware Probe is being uploaded to the public database'))
 
         self.layout = QtWidgets.QVBoxLayout(self)
         wizard.progress = QtWidgets.QProgressBar(self)
@@ -264,7 +279,7 @@ class UploadPage(QtWidgets.QWizardPage, object):
 
         if internetCheckConnected() == False:
             print("Offline?")
-            wizard.showErrorPage(self.tr("You need an active internet connection in order to upload."))
+            wizard.showErrorPage(tr("You need an active internet connection in order to upload."))
             return
 
         # Without this, the progress bar does not get shown at all; why?
@@ -281,7 +296,7 @@ class UploadPage(QtWidgets.QWizardPage, object):
             print("Starting %s %s" % (command, args))
             proc.start(command, args)
         except:
-            wizard.showErrorPage(self.tr("Failed to upload using the %s tool." % wizard.hw_probe_tool)) # This does not catch most cases of errors; hence see below
+            wizard.showErrorPage(tr("Failed to upload using the %s tool." % wizard.hw_probe_tool)) # This does not catch most cases of errors; hence see below
             return
         proc.waitForFinished()
         # DIXME: What can we do so that the progress bar stays animatged without the need for threading?
@@ -298,7 +313,7 @@ class UploadPage(QtWidgets.QWizardPage, object):
                     wizard.server_probe_url = line.replace("Probe URL:","").strip()  # Probe URL: https://bsd-hardware.info/?probe=...
                     print("wizard.server_probe_url: %s" % wizard.server_probe_url)
         else:
-            wizard.showErrorPage(self.tr("Failed to upload using the %s tool." % wizard.hw_probe_tool)) # This catches most cases if something goes wrong
+            wizard.showErrorPage(tr("Failed to upload using the %s tool." % wizard.hw_probe_tool)) # This catches most cases if something goes wrong
             return
 
         wizard.next()
@@ -321,8 +336,8 @@ class SuccessPage(QtWidgets.QWizardPage, object):
 
         # wizard.playSound()
 
-        self.setTitle('Hardware Probe Uploaded')
-        self.setSubTitle('Thank you for uploading your Hardware Probe.')
+        self.setTitle(tr('Hardware Probe Uploaded'))
+        self.setSubTitle(re('Thank you for uploading your Hardware Probe.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
@@ -343,11 +358,11 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         # label.setWordWrap(True)
         # layout.addWidget(label)
 
-        wizard.showUploadedProbeButton = QtWidgets.QPushButton('Show uploaded Hardware Probe', self)
+        wizard.showUploadedProbeButton = QtWidgets.QPushButton(re('Show uploaded Hardware Probe'), self)
         wizard.showUploadedProbeButton.clicked.connect(self.showUploadedProbeButtonClicked)
         layout.addWidget(wizard.showUploadedProbeButton)
 
-        self.setButtonText(wizard.CancelButton, "Quit")
+        self.setButtonText(wizard.CancelButton, tr("Quit"))
         wizard.setButtonLayout([QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
 
     def showUploadedProbeButtonClicked(self):
@@ -360,7 +375,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
             print("Starting %s %s" % (command, args))
             proc.startDetached(command, args)
         except:
-            wizard.showErrorPage(self.tr("Failed to open the uploaded hardware probe."))
+            wizard.showErrorPage(tr("Failed to open the uploaded hardware probe."))
             return
 
 #############################################################################
@@ -373,8 +388,8 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         print("Preparing ErrorPage")
         super().__init__()
 
-        self.setTitle('Error')
-        self.setSubTitle('Hardware Probe was not successful.')
+        self.setTitle(tr('Error'))
+        self.setSubTitle(tr('Hardware Probe was not successful.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/cross.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
