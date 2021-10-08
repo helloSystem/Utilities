@@ -5,10 +5,12 @@ import sys
 import os
 import re
 import time
+import pprint
+import subprocess
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox, QDialogButtonBox
 from PyQt5.QtGui import QPixmap, QMovie
-from PyQt5.QtCore import Qt, QFile, pyqtSlot, QObject, QProcess, QStorageInfo
+from PyQt5.QtCore import Qt, QFile, pyqtSlot, QObject, QProcess, QStorageInfo, QTextCodec
 from PyQt5.uic import loadUi
 
 import filesystems # bundled
@@ -22,6 +24,20 @@ import tstranslator
 tstr = tstranslator.TsTranslator(os.path.dirname(__file__) + "/i18n", "")
 def tr(input):
     return tstr.tr(input)
+
+# https://gist.github.com/cahna/43a1a3ff4d075bcd71f9d7120037a501
+def get_processes():
+    """
+    Parse the output of `ps aux` into a list of dictionaries representing the parsed
+    process information from each row of the output. Keys are mapped to column names,
+    parsed from the first line of the process' output.
+    :rtype: list[dict]
+    :returns: List of dictionaries, each representing a parsed row from the command output
+    """
+    output = subprocess.Popen(['ps', 'axww'], stdout=subprocess.PIPE).stdout.readlines()
+    headers = [h for h in ' '.join(output[0].decode().strip().split()).split() if h]
+    raw_data = map(lambda s: s.strip().split(None, len(headers) - 1), output[1:])
+    return [dict(zip(headers, r)) for r in raw_data]
 
 
 class User(object):
@@ -42,10 +58,18 @@ class User(object):
 class Window(QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
+        self.commands = [] # Will hold the commands we are about to run, so that we can show them prior to running them
+        self.ext_process = QProcess()
         if len(sys.argv) < 2:
-            print("Usage: %s <device node>" % sys.argv[0])
+            print("Usage: %s <device node or mount point>" % sys.argv[0])
             exit(1)
-        self.device = sys.argv[1]
+        self.device = None
+        if sys.argv[1].startswith("/dev/"):
+            self.device = sys.argv[1]
+        else:
+            self.device = self.determineDeviceNode(sys.argv[1])
+
+        print(self.device)
         self.readable_capacity = None
         self.readable_descr = None
         if "p" in self.device:
@@ -55,6 +79,73 @@ class Window(QMainWindow):
             self.is_partition = False
             self.get_geom_details()
         self.load_ui()
+
+    def determineDeviceNode(self, mountpoint):
+        device_node = None
+        print("Determining device node for mount point %s..." % mountpoint)
+        vols = QStorageInfo.mountedVolumes()
+        found_devices = []
+        for vol in vols:
+            if vol.rootPath() == mountpoint:
+                found_devices.append(vol.device().data().decode())
+        if len(found_devices) != 1:
+            # This can happen e.g., when more than one device is mounted to the mount point.
+            # What should happen in this case? Should we just use the topmost device mounted
+            # at that mount point? For now, let's err on the safe side.
+            self.fatalError("Could not determine device node for '%s'" % mountpoint)
+        else:
+            device_node =  found_devices[0]
+        if device_node != "/dev/fuse":
+            return device_node
+        else:
+            # Special case. We need to find out the real device
+            # print("FUSE device, finding out real device node...")
+            found_devices = []
+            for process in get_processes():
+                command = process["COMMAND"].decode()
+                # print(command)
+                if mountpoint in command:
+                    regex = 'mount\..*?(\/dev\/.*?)\ (\/.*?)\ \(mount\..*?\)'
+                    candidates = re.findall(regex, command)
+                    for candidate in candidates:
+                        if candidate[1] == mountpoint:
+                            found_devices.append(candidate[0])
+            if len(found_devices) != 1:
+                self.fatalError("Could not determine the real device node for '%s'" % mountpoint)
+            else:
+                return(found_devices[0])
+
+    def determineAllMountPoints(self, device_node):
+        found_mountpoints = []
+        # print("Determining mount points for device node %s..." % device_node)
+        vols = QStorageInfo.mountedVolumes()
+        for vol in vols:
+            if vol.device().data().decode() == device_node:
+                found_mountpoints.append(vol.rootPath())
+        for process in get_processes():
+            command = process["COMMAND"].decode()
+            regex = 'mount\..*?(\/dev\/.*?)\ (\/.*?)\ \(mount\..*?\)'
+            candidates = re.findall(regex, command)
+            for candidate in candidates:
+                if candidate[0] == device_node:
+                    found_mountpoints.append(candidate[1])
+        return(found_mountpoints)
+
+    def determineAllMountPointsIncludingPartitonsAndSlices(self, device_node):
+        found_mountpoints = []
+        # print("Determining mount points for device node %s..." % device_node)
+        vols = QStorageInfo.mountedVolumes()
+        for vol in vols:
+            if vol.device().data().decode() == device_node or vol.device().data().decode().startswith(device_node + "p") or vol.device().data().decode().startswith(device_node + "s"):
+                found_mountpoints.append(vol.rootPath())
+        for process in get_processes():
+            command = process["COMMAND"].decode()
+            regex = 'mount\..*?(\/dev\/.*?)\ (\/.*?)\ \(mount\..*?\)'
+            candidates = re.findall(regex, command)
+            for candidate in candidates:
+                if candidate[0] == device_node or candidate[0].startswith(device_node + "p") or candidate[0].startswith(device_node + "s"):
+                    found_mountpoints.append(candidate[1])
+        return(found_mountpoints)
 
     def load_ui(self):
         path = os.path.join(os.path.dirname(__file__), "formatdisk.ui")
@@ -68,12 +159,12 @@ class Window(QMainWindow):
         self.buttonBox.button(QDialogButtonBox.Cancel).setText(tr("Cancel"))
 
         if self.is_partition == True:
-            self.scheme.hide()
+            self.schemeComboBox.hide()
             self.schemeLabel.hide()
 
         # Prepare spinner using an animated GIF
         self.spinner.hide()
-        self.movie = QMovie("small_spinner.gif") # Generated using http://ajaxload.info/
+        self.movie = QMovie(os.path.dirname(__file__) + "/small_spinner.gif") # Generated using http://ajaxload.info/
         self.spinner.setMovie(self.movie)
         self.movie.start()
 
@@ -161,12 +252,7 @@ class Window(QMainWindow):
 
     @pyqtSlot()
     def okButtonClicked(self):
-        print("OK button clicked")
-
-        # Make all widgets unclickable
-        for e in self.findChildren(QObject, None, Qt.FindChildrenRecursively):
-            if hasattr(e, 'setDisabled'):
-                e.setDisabled(True)
+        self.commands = []
 
         fs = self.formatComboBox.itemData(self.formatComboBox.currentIndex())
         if self.nameLineEdit.text():
@@ -178,70 +264,109 @@ class Window(QMainWindow):
         # print(fs.format_command)
         scheme = self.schemeComboBox.itemData(self.schemeComboBox.currentIndex())
         print("Scheme: %s" % scheme)
-        self.spinner.show()
 
-        # Unmount the necessary devices
-        # FIXME: This fails for FUSE-mounted devices, as their device is /dev/fuse...
-        # How can we find out that e.g., /dev/da0s1 has been mounted with FUSE ExFAT
-        # to /media/exfat so that we can unmount that?
-        # 'mount' does not show any mention of /dev/da0s1 at all!
-        # /dev/fuse on /media/exfat (fusefs)
-        vols = QStorageInfo.mountedVolumes()
-        for vol in vols:
-            candidate = vol.device().data().decode()
-            if self.device == candidate:
-                self.runCommandAsRootAndAbortOnError(["umount", self.device])
-            # Not just unmount the device itself but also the devices for its partitions
-            if candidate.startswith(self.device + "p"):
-                self.runCommandAsRootAndAbortOnError(["umount", candidate])
+
+        # Unmount the necessary mount points
+        if self.is_partition == True:
+            for mountpoint in self.determineAllMountPoints(self.device):
+                self.commands.append(["umount", mountpoint])
+        else:
+            for mountpoint in self.determineAllMountPointsIncludingPartitonsAndSlices(self.device):
+                self.commands.append(["umount", mountpoint])
 
         if self.overwriteCheckBox.isChecked():
-            self.runCommandAsRootAndAbortOnError = ["dd", "if=/dev/zero", "of=" + self.device, "bs=8M"]
+            cmd = ["dd", "if=/dev/zero", "of=" + self.device, "bs=8M"]
+            self.commands.append(cmd)
 
         if self.is_partition == False:
             # Clean out any pre-existing partition table in a robust way
             cmd = ["dd", "if=/dev/zero", "of="+self.device, "bs=1M", "count=1"]
-            self.runCommandAsRootAndAbortOnError(cmd)
+            self.commands.append(cmd)
             # Create a new partition table
             cmd = ["/sbin/gpart", "create", "-s", scheme, self.device.replace("/dev/", "")]
-            self.runCommandAsRootAndAbortOnError(cmd)
+            self.commands.append(cmd)
 
         if self.is_partition == False:
             cmd = fs.add_command
             # fs.device = fs.device + "p0" # We have created a partition, so use it # FIXME: What is correct to do here?
         else:
             cmd = fs.modify_command
-        self.runCommandAsRootAndAbortOnError(cmd)
+        self.commands.append(cmd)
 
         cmd = fs.format_command
-        self.runCommandAsRootAndAbortOnError(cmd)
+        self.commands.append(cmd)
 
-        self.runCommandAsRootAndAbortOnError(["/usr/local/sbin/automount", fs.device.replace("/dev/", ""), "attach"])
+        self.commands.append(["/usr/local/sbin/automount", fs.device.replace("/dev/", ""), "attach"])
 
+        readable_strings = []
+        for command in self.commands:
+            readable_string = ""
+            for part in command:
+                if " " in part:
+                    part = "'" + part + "'"
+                readable_string = readable_string + part + " "
+            readable_strings.append(readable_string.strip())
+
+        for readable_string in readable_strings:
+            print(readable_string)
+
+        message = tr("This will perform the following actions:") + "<ul>"
+        for readable_string in readable_strings:
+            message = message + "<li>" + readable_string + "</li>"
+        message = message + "</ul>" + tr("Do you want to continue?")
+
+        buttonReply = QMessageBox.question(self, '', message, QMessageBox.No | QMessageBox.No, QMessageBox.Yes)
+        if buttonReply == QMessageBox.Yes:
+            self.runCommands()
+
+    def runCommands(self):
+        # Make all widgets unclickable
+        for e in self.findChildren(QObject, None, Qt.FindChildrenRecursively):
+            if hasattr(e, 'setDisabled'):
+                e.setDisabled(True)
+
+        self.spinner.show()
+
+        for command in self.commands:
+            self.runCommandAsRootAndAbortOnError(command)
+
+        time.sleep(1) # Give automount time to respond
         sys.exit(0)
 
     def runCommandAsRootAndAbortOnError(self, command=["ls"]):
-        p = QProcess()
-        p.setProgram("sudo")
-        p.setArguments(["-A", "-E"] + command)
-        print("Running: 'sudo' '" + "' '".join(p.arguments()) +"'")
+        self.ext_process.setProgram("sudo")
+        self.ext_process.setArguments(["-A", "-E"] + command)
+        codec = QTextCodec.codecForLocale()
+        self.ext_process._decoder_stdout = codec.makeDecoder()
+        self.ext_process._decoder_stderr = codec.makeDecoder()
+        self.ext_process.readyReadStandardOutput.connect(self._readyReadStandardOutput)
+        print("--> 'sudo' '" + "' '".join(self.ext_process.arguments()) +"'")
         # p.finished.connect(self.onProcessFinished)
-        p.start()
+        self.ext_process.start()
 
         # Important trick so that the app stays responsive without the need for threading!
-        if p.waitForStarted(-1):
-            while p.state() == 2:
+        if self.ext_process.waitForStarted(-1):
+            while self.ext_process.state() == 2:
                 QApplication.processEvents()
-                time.sleep(0.1)
+                time.sleep(0.01)
 
-        out = p.readAllStandardOutput().data().decode()
+        out = self.ext_process.readAllStandardOutput().data().decode()
         if out:
             print(out)
 
-        if p.exitStatus() != 0:
-            err = p.readAllStandardError().data().decode()
+        if self.ext_process.exitStatus() != 0:
+            err = self.ext_process.readAllStandardError().data().decode()
             if err:
                 self.fatalError(err)
+
+    def _readyReadStandardOutput(self):
+        raw_bytes = self.ext_process.readAllStandardOutput()
+        text = self.ext_process._decoder_stdout.toUnicode(raw_bytes)
+        lines = text.split("\n")
+        for line in lines:
+            if line.strip() == "":
+                continue
+            print("<--", line)
 
     def fatalError(self, errorstring, title=tr("Error")):
         print("Error: %s" % errorstring)
