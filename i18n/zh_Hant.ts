@@ -25,23 +25,23 @@
     </message>
     <message>
         <source>Name:</source>
-        <translation>名稱:</translation>
+        <translation>名稱：</translation>
     </message>
     <message>
         <source>Format:</source>
-        <translation>格式:</translation>
+        <translation>格式：</translation>
     </message>
     <message>
         <source>Size:</source>
-        <translation>大小:</translation>
+        <translation>大小：</translation>
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation>卷宗訊息:</translation>
+        <translation>卷宗訊息：</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation>分割區佈局:</translation>
+        <translation>分割區佈局：</translation>
     </message>
     <message>
         <source>Restore</source>
@@ -60,11 +60,11 @@
     </message>
     <message>
         <source>Account Type:</source>
-        <translation>用戶類型:</translation>
+        <translation>用戶類型：</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation>用戶名:</translation>
+        <translation>用戶名：</translation>
     </message>
     <message>
         <source>Remove Users</source>
@@ -81,11 +81,11 @@
     </message>
     <message>
         <source>Password:</source>
-        <translation>密碼:</translation>
+        <translation>密碼：</translation>
     </message>
     <message>
         <source>Verify:</source>
-        <translation>驗證:</translation>
+        <translation>驗證：</translation>
     </message>
     <message>
         <source>The passwords do not match.</source>
@@ -96,7 +96,7 @@
     <name>main</name>
     <message>
         <source>Hello World</source>
-        <translation>哈囉 世界</translation>
+        <translation>哈囉，世界</translation>
     </message>
     <message>
         <source>Text Edit</source>
