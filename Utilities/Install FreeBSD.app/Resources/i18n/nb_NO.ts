@@ -73,7 +73,7 @@
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation>All data på disken vil slettes.</translation>
+        <translation>All data på valgt disk vil bli slettet.</translation>
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
@@ -197,7 +197,7 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation>Kunne ikke utføre installasjonen.</translation>
+        <translation>Kunne ikke utføre installasjon.</translation>
     </message>
     <message>
         <source>Quit</source>
