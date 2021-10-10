@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>Pre-existing %s removed</source>
-        <translation>預先存在的 %s 已移除</translation>
+        <translation>刪除現有的 %s</translation>
     </message>
     <message>
         <source>Installer Log</source>
@@ -37,7 +37,7 @@
     </message>
     <message>
         <source>The sudo binary not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation>未找到 sudo 二進位制文件。 請確保您在支援的系統上執行安裝程式。</translation>
+        <translation>未找到 sudo 二進位檔案。 請確保您在支援的系統上執行安裝程式。</translation>
     </message>
     <message>
         <source>There was an error while determining whether the language has already been set on this system.</source>
