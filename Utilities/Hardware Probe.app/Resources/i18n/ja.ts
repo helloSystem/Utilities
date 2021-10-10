@@ -86,7 +86,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>ハローワールド</translation>
     </message>
 </context>
 </TS>
