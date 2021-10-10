@@ -6,12 +6,12 @@
     <message>
         <location filename="../formatdisk.py" line="53"/>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>消す</translation>
     </message>
     <message>
         <location filename="../formatdisk.py" line="54"/>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>キャンセル</translation>
     </message>
 </context>
 <context>
@@ -19,57 +19,57 @@
     <message>
         <location filename="../formatdisk.ui" line="29"/>
         <source>Format Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>ディスクのフォーマット</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="99"/>
         <source>Erase &quot;%1&quot; (%2)?</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; (%2)を消去しますか?</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="112"/>
         <source>Erasing &quot;%1&quot; will permanently delete all data stored on it, and cannot be undone.</source>
-        <translation type="unfinished"></translation>
+        <translation>&quot;%1&quot; を消去すると、そのデータに保存されているすべてのデータが完全に削除され、元に戻すことはできません。</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="134"/>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>名前：</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="141"/>
         <source>Untitled</source>
-        <translation type="unfinished"></translation>
+        <translation>無題</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="148"/>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>形式：</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="156"/>
         <source>Placeholder</source>
-        <translation type="unfinished"></translation>
+        <translation>プレースホルダ</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="164"/>
         <source>Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>計画：</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="172"/>
         <source>GUID Partition Map</source>
-        <translation type="unfinished"></translation>
+        <translation>GUID パーティション マップ</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="177"/>
         <source>Master Boot Record</source>
-        <translation type="unfinished"></translation>
+        <translation>マスター ブート レコード</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="185"/>
         <source>Overwrite with zeros</source>
-        <translation type="unfinished"></translation>
+        <translation>ゼロで上書き</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>ハローワールド</translation>
     </message>
 </context>
 </TS>
