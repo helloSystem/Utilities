@@ -5,102 +5,102 @@
     <name>DiskUtility</name>
     <message>
         <source>Disk Utility</source>
-        <translation type="unfinished"></translation>
+        <translation>Дисковая утилита</translation>
     </message>
     <message>
         <source>Partition</source>
-        <translation type="unfinished"></translation>
+        <translation>Раздел</translation>
     </message>
     <message>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Настройки</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Название:</translation>
     </message>
     <message>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Формат:</translation>
     </message>
     <message>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Размер:</translation>
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation type="unfinished"></translation>
+        <translation>Информация о разделе:</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Схема разделов:</translation>
     </message>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Восстановить</translation>
     </message>
     <message>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>Стереть</translation>
     </message>
 </context>
 <context>
     <name>Users</name>
     <message>
         <source>Add User</source>
-        <translation type="unfinished"></translation>
+        <translation>Добавить пользователя</translation>
     </message>
     <message>
         <source>Account Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Тип учетной записи:</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя учетной записи:</translation>
     </message>
     <message>
         <source>Remove Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Удалить пользователей</translation>
     </message>
     <message>
         <source>Administrator</source>
         <comment>wheel</comment>
-        <translation type="unfinished"></translation>
+        <translation>Администратор</translation>
     </message>
     <message>
         <source>Full Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Полное имя:</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароль:</translation>
     </message>
     <message>
         <source>Verify:</source>
-        <translation type="unfinished"></translation>
+        <translation>Проверка:</translation>
     </message>
     <message>
         <source>The passwords do not match.</source>
-        <translation type="unfinished"></translation>
+        <translation>Пароли не совпадают.</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Привет Мир</translation>
     </message>
     <message>
         <source>Text Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Изменить текст</translation>
     </message>
 </context>
 </TS>
