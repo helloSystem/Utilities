@@ -32,6 +32,7 @@ class LiteInstaller(object):
         self.file_symlink_resolved = os.path.join(sys.path[0], os.path.basename(os.path.realpath(sys.argv[0])))
         self.filename = None
         self.packages = None # If None, then we assume that we are in update mode. In this case, instead of installing an application, update the system
+        self.showing_final_info = False # Whether we are already showing a final message (in order to show no more than one)
 
         self.iconfile = None
         for file in os.listdir(os.path.dirname(self.file_symlink_resolved) + "/Resources/"):
@@ -143,16 +144,22 @@ class LiteInstaller(object):
         text = self.ext_process._decoder_stdout.toUnicode(self.ext_process.readAllStandardOutput())
         lines = text.split("\n")
         for line in lines:
-            print("OUT:", line)
+            line = line.strip()
+            if line.endswith("...") and line[0].isupper():
+                self.msgBox.setText(line)
+            if line.startswith("["):
+                self.msgBox.setText("Installing...")
+            if line != "." and line.strip() != "":
+                print("OUT:", line)
             if "Updating FreeBSD repository" in line:
                 # Now pkg has actually started working
                 self.progress.setMaximum(100)
                 self.progress.setMinimum(0)
                 self.progress.setValue(1)
-            if line.strip() != ".":
+            if line != ".":
                 self.details_textedit.append(line)
-            if line.startswith("The following"):
-                self.total_packages_to_be_installed = int(line.split(" ")[2].strip())
+            if line.startswith("[") and "/" in line and "]" in line:
+                self.total_packages_to_be_installed = int(line.split("[")[1].split("/")[1].split("]")[0].strip())
                 print("total_packages_to_be_installed:", self.total_packages_to_be_installed)
             if "Fetching" in line and self.total_packages_to_be_installed:
                 p = (self.already_fetched_packages / self.total_packages_to_be_installed) * self.having_downloaded_means_percent
@@ -167,15 +174,14 @@ class LiteInstaller(object):
                     self.percentage_was_already_downloaded = self.already_fetched_packages / self.total_packages_to_be_installed
                     self.progress_after_downloading = (1 - self.percentage_was_already_downloaded) * self.having_downloaded_means_percent # Where our percentage indicator should be after the download phase: If everything came from the cache, at 0, If nothing came from the cache, at 0.5.
                 self.already_fetched_packages = self.total_packages_to_be_installed # Once we are in the Extracting phase, all packages have been fetched (or have come from the cache)
-
-                p = self.having_downloaded_means_percent + (self.already_extracted_packages / self.total_packages_to_be_installed) * (1-self.having_downloaded_means_percent)
-                self.progress.setValue(int(round(p*100)))
-                print(p)
+                if self.total_packages_to_be_installed:
+                    p = self.having_downloaded_means_percent + (self.already_extracted_packages / self.total_packages_to_be_installed) * (1-self.having_downloaded_means_percent)
+                    self.progress.setValue(int(round(p*100)))
+                    print(p)
                 self.already_extracted_packages = self.already_extracted_packages + 1 # Increment at the end, because the relevant line is printed when the action starts, not when it finishes
             if "Your packages are up to date" in line:
-                self.showInfoMessage("Your system is up to date.")
+                self.showFinalInfoMessage("Your system is up to date.")
                 # TODO: Offer to restart if FreeBSD updates were installed. We can find this out by running
-                sys.exit(0)
 
     # def scroll_to_last_line(self):
     #     cursor = self.textCursor()
@@ -191,7 +197,19 @@ class LiteInstaller(object):
             print("ERR:", line)
             self.details_textedit.append(line)
         if text:
-            self.showFatalError(text)
+            if self.ext_process.ProcessState == 2:
+                # The process is still running. We have an error but we are still alive
+                self.showNonfatalError(text)
+            else:
+                self.showFatalError(text)
+
+
+    def showNonfatalError(self, text):
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setWindowTitle("")
+            msg.setText(text)
+            msg.exec_()
 
     def showFatalError(self, text):
             self.msgBox.close()
@@ -202,17 +220,21 @@ class LiteInstaller(object):
             msg.exec_()
             sys.exit(1)
 
-    def showInfoMessage(self, text):
+    def showFinalInfoMessage(self, text):
+            if self.showing_final_info == True:
+                return
+            self.showing_final_info = True
             self.msgBox.close()
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Information)
             msg.setWindowTitle("")
             msg.setText(text)
             msg.exec_()
+            sys.exit(0)
 
     def onProcessFinished(self):
         self.progress.setValue(100)
-        print("Installer script process finished")
+        print("Process finished")
         # cursor = self.output.textCursor()
         # cursor.movePosition(cursor.End)
         # cursor.insertText(str(self.ext_process.readAllStandardOutput()))
@@ -225,6 +247,8 @@ class LiteInstaller(object):
                 # If we were running freebsd-update so far, we are not done yet and need to proceed to updating packages now
                 self.msgBox.setText("Updating FreeBSD Packages...")
                 self.startInstallProcess(["pkg.real", "upgrade", "--yes"])
+            if "upgrade" in self.ext_process.arguments():
+                self.showFinalInfoMessage("Your system has been updated.") # TODO: Offer restart if FreeBSD was updated
             if self.packages:
                 time.sleep(1)
                 executable = os.access(self.filename, os.X_OK)
@@ -233,8 +257,10 @@ class LiteInstaller(object):
                     self.msgBox.close()
                     subprocess.call(["launch"] + [self.filename] + sys.argv[1:])
                     sys.exit(0)
-        else:
-            self.showFatalError("An error has occured.\nCannot proceed.")
+        # Not doing the following because by that time most likely
+        # another error message is already on the screen
+        # else:
+        #     self.showFatalError("An error has occured.\nCannot proceed.")
 
 
     def show_install(self):
