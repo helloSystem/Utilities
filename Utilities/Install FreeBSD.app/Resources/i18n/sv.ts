@@ -69,11 +69,11 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Välj destinationsdisk</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>All data på den valda enheten kommer att raderas.</translation>
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
@@ -81,11 +81,11 @@
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Diskutrymme som krävs: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Varning</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
@@ -193,22 +193,22 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Fel</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Installationen kunde inte utföras.</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Lämna</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation>Hej världen</translation>
+        <translation>Hej Världen</translation>
     </message>
 </context>
 </TS>
