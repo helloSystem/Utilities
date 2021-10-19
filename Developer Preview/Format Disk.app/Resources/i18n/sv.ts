@@ -29,7 +29,7 @@
     <message>
         <location filename="../formatdisk.ui" line="112"/>
         <source>Erasing &quot;%1&quot; will permanently delete all data stored on it, and cannot be undone.</source>
-        <translation>Om du raderar &quot;%1&quot; raderas all data som finns lagrad på den permanent och kan inte återställas.</translation>
+        <translation>Raderar &quot;%1&quot; all data kommer att raderas permanent och kan ej återställas.</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="134"/>
@@ -39,7 +39,7 @@
     <message>
         <location filename="../formatdisk.ui" line="141"/>
         <source>Untitled</source>
-        <translation>Utan titel</translation>
+        <translation>Namnlös</translation>
     </message>
     <message>
         <location filename="../formatdisk.ui" line="148"/>
@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation>Hej världen</translation>
+        <translation>Hej Världen</translation>
     </message>
 </context>
 </TS>
