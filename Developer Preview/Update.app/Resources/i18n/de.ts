@@ -5,59 +5,59 @@
     <name>@default</name>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dies erfordert eine aktive Internetverbindung.</translation>
     </message>
     <message>
         <source>%s needs to be downloaded before it can be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>%s muss heruntergeladen werden, bevor es verwendet werden kann.</translation>
     </message>
     <message>
         <source>Do you want to download it now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Möchten Sie es jetzt herunterladen?</translation>
     </message>
     <message>
         <source>The following packages and their dependencies be installed:</source>
-        <translation type="unfinished"></translation>
+        <translation>Die folgenden Pakete und ihre Abhängigkeiten werden installiert:</translation>
     </message>
     <message>
         <source>This will update FreeBSD and all installed packages.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dadurch werden FreeBSD und alle installierten Pakete aktualisiert.</translation>
     </message>
     <message>
         <source>Do you want to update the system now?</source>
-        <translation type="unfinished"></translation>
+        <translation>Möchten Sie das System jetzt aktualisieren?</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktualisieren</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>Abbrechen</translation>
     </message>
     <message>
         <source>%s cannot be started.</source>
-        <translation type="unfinished"></translation>
+        <translation>%s kann nicht gestartet werden.</translation>
     </message>
     <message>
         <source>Installing...</source>
-        <translation type="unfinished"></translation>
+        <translation>Installieren...</translation>
     </message>
     <message>
         <source>Your system is up to date.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ihr System ist auf dem neuesten Stand.</translation>
     </message>
     <message>
         <source>Updating FreeBSD Packages...</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD Pakete aktualisieren...</translation>
     </message>
     <message>
         <source>Downloading %s...</source>
-        <translation type="unfinished"></translation>
+        <translation>%s wird heruntergeladen...</translation>
     </message>
     <message>
         <source>Updating FreeBSD...</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD aktualisieren...</translation>
     </message>
 </context>
 </TS>
