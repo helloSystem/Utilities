@@ -11,7 +11,7 @@
     <message>
         <location filename="../formatdisk.py" line="54"/>
         <source>Cancel</source>
-        <translation>ביטול</translation>
+        <translation>לבטל</translation>
     </message>
 </context>
 <context>
