@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>Installing...</source>
-        <translation>Installieren...</translation>
+        <translation>Installieren&#xa0;…</translation>
     </message>
     <message>
         <source>Your system is up to date.</source>
@@ -49,15 +49,15 @@
     </message>
     <message>
         <source>Updating FreeBSD Packages...</source>
-        <translation>FreeBSD Pakete aktualisieren...</translation>
+        <translation>FreeBSD Pakete aktualisieren&#xa0;…</translation>
     </message>
     <message>
         <source>Downloading %s...</source>
-        <translation>%s wird heruntergeladen...</translation>
+        <translation>%s wird heruntergeladen&#xa0;…</translation>
     </message>
     <message>
         <source>Updating FreeBSD...</source>
-        <translation>FreeBSD aktualisieren...</translation>
+        <translation>FreeBSD aktualisieren&#xa0;…</translation>
     </message>
 </context>
 </TS>
