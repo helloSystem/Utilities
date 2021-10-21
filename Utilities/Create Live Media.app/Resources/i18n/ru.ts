@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation>Необходимо подключение к интернет.</translation>
+        <translation>Необходимо соединение с интернет.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
