@@ -57,7 +57,7 @@
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
-        <translation>FreeBSD, çeşitli platformlar üzerinde kararlılık, hız ve özellik zenginliğine odaklanan bir işletim sistemidir. University of California, Berkeley tarafından geliştirilen UNIX®</translation>
+        <translation>FreeBSD, çeşitli platformlar üzerinde kararlılık, hız ve özellik zenginliğine odaklanan bir işletim sistemidir. University of California, Berkeley tarafından geliştirilen UNIX® sürümü olan BSD&apos;den derlenmiştir ve büyükçe bir topluluk tarafından geliştirilmektedir.</translation>
     </message>
     <message>
         <source>License Terms</source>
@@ -69,7 +69,7 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation>Hedef diski seçin</translation>
+        <translation>Hedef disk seçin</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
@@ -81,7 +81,7 @@
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation>Gereken disk alanı: %s MiB</translation>
+        <translation>Gerekli disk alanı: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
