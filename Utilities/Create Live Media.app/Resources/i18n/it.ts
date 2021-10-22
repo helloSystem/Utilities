@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Questo richiede una connessione internet attiva.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
