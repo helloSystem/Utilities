@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
-        <translation>Um die Installation von FreeBSD einzurichten, klicken Sie auf &quot;Weiter&quot;.</translation>
+        <translation>Um die Installation von FreeBSD einzurichten, klicken Sie auf „Weiter“.</translation>
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
