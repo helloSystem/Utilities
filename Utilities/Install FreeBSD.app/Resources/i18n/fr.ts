@@ -5,11 +5,11 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>Installer FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Une erreur inconnue s&apos;est produite.</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
@@ -25,7 +25,7 @@
     </message>
     <message>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Question</translation>
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
@@ -45,11 +45,11 @@
     </message>
     <message>
         <source>Select Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionnez un pays</translation>
     </message>
     <message>
         <source>To set up the locale and keyboard layout, select a country.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pour configurer les paramètres régionaux et la disposition du clavier, sélectionnez un pays.</translation>
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
@@ -61,7 +61,7 @@
     </message>
     <message>
         <source>License Terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Conditions de la licence</translation>
     </message>
     <message>
         <source>Additional components may be distributed under different licenses as stated in the respective documentation.</source>
@@ -69,11 +69,11 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Sélectionnez le disque de destination</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Toutes les données du disque sélectionné seront effacées.</translation>
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
@@ -81,11 +81,11 @@
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Espace disque requis&#xa0;: %s Mio</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Attention</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
@@ -193,22 +193,22 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Erreur</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;installation n&apos;a pas pu être effectuée.</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Quitter</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Bonjour le monde</translation>
     </message>
 </context>
 </TS>
