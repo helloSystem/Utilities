@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Lav live medie</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Disk afbildninger (*.iso *.img);;Alle filer (*.*)</translation>
     </message>
     <message>
         <source>This requires an active internet connection.</source>
@@ -57,47 +57,47 @@
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunne ikke bestemme den krævede disk plads.</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Krævet diskplads: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Advarsel</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Dette vil slette alt indhold på disken og installere live systemet på den. Forsæt?</translation>
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloader og skriver Live mediet</translation>
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>Live mediet er blevet downloaded og skrevet til mediet.</translation>
     </message>
     <message>
         <source>Could not unmount parititons.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunne ikke afmontere partitioner.</translation>
     </message>
     <message>
         <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
-        <translation type="unfinished"></translation>
+        <translation>En fejl indtraf mens der blev skrevet til mediet. Er download URL tilgængelig? Var alle partitioner afmonteret? Har du rettigheder til at skrive der?</translation>
     </message>
     <message>
         <source>Live Medium Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Live mediet er færdigt</translation>
     </message>
     <message>
         <source>The Live image has been written to the device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Live imaget er blevet skrevet til enheden.</translation>
     </message>
     <message>
         <source>You can now start your computer from the Live medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>Du kan nu starte din computer fra Live mediet.</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -105,7 +105,7 @@
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
-        <translation type="unfinished"></translation>
+        <translation>Enheden er afmonteret, lukker</translation>
     </message>
     <message>
         <source>Error</source>
@@ -113,7 +113,7 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Installationen kunne ikke gennemføres.</translation>
     </message>
 </context>
 <context>
