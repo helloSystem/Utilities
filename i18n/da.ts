@@ -5,62 +5,62 @@
     <name>DiskUtility</name>
     <message>
         <source>Disk Utility</source>
-        <translation type="unfinished"></translation>
+        <translation>Disk værktøj</translation>
     </message>
     <message>
         <source>Partition</source>
-        <translation type="unfinished"></translation>
+        <translation>Partitionering</translation>
     </message>
     <message>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Valgmuligheder</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Navn:</translation>
     </message>
     <message>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Formater:</translation>
     </message>
     <message>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Størrelse:</translation>
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation type="unfinished"></translation>
+        <translation>Disk information:</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Partitionerings skema:</translation>
     </message>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Gendan</translation>
     </message>
     <message>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>Slet</translation>
     </message>
 </context>
 <context>
     <name>Users</name>
     <message>
         <source>Add User</source>
-        <translation type="unfinished"></translation>
+        <translation>Tilføj bruger</translation>
     </message>
     <message>
         <source>Account Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Konto type:</translation>
     </message>
     <message>
         <source>Account Name:</source>
