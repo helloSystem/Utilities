@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>Installer FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occured.</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
-        <translation>Dette vil sende en anmodning til papi.com for at at finde din computer på netværket. Forsæt?</translation>
+        <translation>Dette vil sende en anmodning til ipapi.com en gang for at at finde din computer på netværket. Fortsæt?</translation>
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
@@ -61,11 +61,11 @@
     </message>
     <message>
         <source>License Terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Licens vilkår</translation>
     </message>
     <message>
         <source>Additional components may be distributed under different licenses as stated in the respective documentation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nogle tilføjede programmer kan være distribueret under forskellige licenser som beskrevet i deres dokumentation.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
@@ -77,119 +77,119 @@
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
-        <translation type="unfinished"></translation>
+        <translation>Installations scriptet kunne ikke finde den krævede disk plads. Kører du installationen på et understøttet system? Kan du køre installations scriptet med sudo uden brug af password?</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Krævet diskplads: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Advarsel</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Dette vil slette alt indhold på disken og installere FreeBSD operativsystemet på den. Ønsker du at fortsætte?</translation>
     </message>
     <message>
         <source>Set Root Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Angiv Root adgangskode</translation>
     </message>
     <message>
         <source>Please enter a password for the root user.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vær venlig og indtaste en adgangskode for root brugeren.</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Adgangskode:</translation>
     </message>
     <message>
         <source>Retype Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Gentag adgangskode:</translation>
     </message>
     <message>
         <source>The passwords do not match</source>
-        <translation type="unfinished"></translation>
+        <translation>Adgangskoderne er ikke ens</translation>
     </message>
     <message>
         <source>Create Local Computer Account</source>
-        <translation type="unfinished"></translation>
+        <translation>Opret en lokal computer konto</translation>
     </message>
     <message>
         <source>Please enter details to create an account for the main user on this computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vær venlig og angive oplysningerne for at oprette en konto for hovedbrugeren af denne computer.</translation>
     </message>
     <message>
         <source>Full Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Fuldt navn:</translation>
     </message>
     <message>
         <source>John Doe</source>
-        <translation type="unfinished"></translation>
+        <translation>Peter Hansen</translation>
     </message>
     <message>
         <source>Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Brugernavn:</translation>
     </message>
     <message>
         <source>Retype Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Gentag adgangskode</translation>
     </message>
     <message>
         <source>Computer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Computer navn:</translation>
     </message>
     <message>
         <source>Enable users to log in over the network (ssh)</source>
-        <translation type="unfinished"></translation>
+        <translation>Tillad brugere at logge ind over netværket (ssh)</translation>
     </message>
     <message>
         <source>Set time zone based on current location</source>
-        <translation type="unfinished"></translation>
+        <translation>Set tids zone baseret på nuværende lokation</translation>
     </message>
     <message>
         <source>Installing FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>Installer FreeBSD</translation>
     </message>
     <message>
         <source>FreeBSD is being installed to your computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD bliver installeret på din computer.</translation>
     </message>
     <message>
         <source>The selected disk device %s is not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>Den valgte disk enhed %s blev ikke fundet.</translation>
     </message>
     <message>
         <source>Did not get permission to erase the target device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Fik ikke rettigheder til at slette installations enheden.</translation>
     </message>
     <message>
         <source>The installer cannot be launched.</source>
-        <translation type="unfinished"></translation>
+        <translation>Installationen kan ikke starte.</translation>
     </message>
     <message>
         <source>The installation did not succeed. Please see the Installer Log for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Installationen mislykkedes. Vær venlig at se installations loggen for flere oplysninger.</translation>
     </message>
     <message>
         <source>Installation Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Installationen fuldført</translation>
     </message>
     <message>
         <source>The installation succeeded.</source>
-        <translation type="unfinished"></translation>
+        <translation>Installationen lykkedes.</translation>
     </message>
     <message>
         <source>FreeBSD has been installed on your computer, click &apos;Restart&apos; to begin using it.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD er blevet installeret på din computer, klik på &quot;Genstart&quot; for at begynde at bruge det.</translation>
     </message>
     <message>
         <source>Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>Genstart</translation>
     </message>
     <message>
         <source>Could not restart the computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kunne ikke genstarte computeren.</translation>
     </message>
     <message>
         <source>Error</source>
@@ -197,7 +197,7 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Installationen kunne ikke gennemføres.</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -205,7 +205,7 @@
     </message>
     <message>
         <source>To continue installing the software, you must agree to the terms of the software license agreement.</source>
-        <translation type="unfinished"></translation>
+        <translation>For at fortsætte med at installere programmet, må du godkende betingelserne i software licensen.</translation>
     </message>
 </context>
 <context>
