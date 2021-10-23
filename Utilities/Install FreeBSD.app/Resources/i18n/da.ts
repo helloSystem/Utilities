@@ -9,55 +9,55 @@
     </message>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der opstod en ukendt fejl.</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
-        <translation type="unfinished"></translation>
+        <translation>Den eksisterende %s blev fjernet</translation>
     </message>
     <message>
         <source>Installer Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Installer log</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>Installations loggen kan ikke åbnes.</translation>
     </message>
     <message>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Spørgsmål</translation>
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Dette vil sende en anmodning til papi.com for at at finde din computer på netværket. Forsæt?</translation>
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Installations scriptet kunne ikke findes. Er du sikker på at du kører installationen på et understøttet system.</translation>
     </message>
     <message>
         <source>The sudo binary not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation type="unfinished"></translation>
+        <translation>sudo programmet kunne ikke findes. Er du sikker på du kører installationen på et understøttet system.</translation>
     </message>
     <message>
         <source>There was an error while determining whether the language has already been set on this system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Der opstod en fejl i forsøget på at fastslå om sproget allerede er blevet sat på dette system.</translation>
     </message>
     <message>
         <source>Select Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Vælg land</translation>
     </message>
     <message>
         <source>To set up the locale and keyboard layout, select a country.</source>
-        <translation type="unfinished"></translation>
+        <translation>For at opsætte sprog og tastatur, vælg et land.</translation>
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>For at gennemføre installationen af FreeBSD, vælg &quot;Forsæt&quot;.</translation>
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD er et operativ system for forskellige platforme som fokuserer på features, hastighed og stabilitet. Det er udviklet fra BSD, verisionen af UNIXÂ® udviklet af the University of California, Berkeley. Det er udviklet og vedligeholdt af et stort comunity.</translation>
     </message>
     <message>
         <source>License Terms</source>
@@ -69,11 +69,11 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Vælg installations disk</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle data på disken vil blive slettet.</translation>
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
@@ -193,7 +193,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Fejl</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
@@ -201,7 +201,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Afslut</translation>
     </message>
     <message>
         <source>To continue installing the software, you must agree to the terms of the software license agreement.</source>
@@ -212,7 +212,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Hello World</translation>
     </message>
 </context>
 </TS>
