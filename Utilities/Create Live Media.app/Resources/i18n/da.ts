@@ -9,35 +9,35 @@
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dette vil hente et Live image og skrive det til en tilsuttet lagrings enhed.</translation>
     </message>
     <message>
         <source>Other...</source>
-        <translation type="unfinished"></translation>
+        <translation>Andet...</translation>
     </message>
     <message>
         <source>Local ISO file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokal ISO fil...</translation>
     </message>
     <message>
         <source>Please choose an image:</source>
-        <translation type="unfinished"></translation>
+        <translation>Vælg et disk image:</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Dato</translation>
     </message>
     <message>
         <source>Show Pre-release builds</source>
-        <translation type="unfinished"></translation>
+        <translation>Vis pre-release builds</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Andet</translation>
     </message>
     <message>
         <source>URL of the ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>Url til ISO</translation>
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
@@ -45,15 +45,15 @@
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dette kræver en aktiv internetforbindelse.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Vælg installations disk</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle data på disken vil blive slettet.</translation>
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
@@ -101,7 +101,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Afslut</translation>
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
@@ -109,7 +109,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Fejl</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
@@ -120,7 +120,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Hello World</translation>
     </message>
 </context>
 </TS>
