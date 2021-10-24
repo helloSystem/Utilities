@@ -96,7 +96,7 @@
     <name>main</name>
     <message>
         <source>Hello World</source>
-        <translation>Hello World</translation>
+        <translation>Hej Verden</translation>
     </message>
     <message>
         <source>Text Edit</source>
