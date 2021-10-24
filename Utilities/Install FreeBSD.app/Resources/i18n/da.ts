@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
-        <translation>Dette vil sende en anmodning til ipapi.com en gang for at at finde din computer på netværket. Fortsæt?</translation>
+        <translation>Dette vil sende en anmodning til ipapi.com en gang for at finde din computer på netværket. Fortsæt?</translation>
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
@@ -212,7 +212,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation>Hej Verden</translation>
+        <translation>Hej verden</translation>
     </message>
 </context>
 </TS>
