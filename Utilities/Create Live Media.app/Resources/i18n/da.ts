@@ -120,7 +120,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation>Hej Verden</translation>
+        <translation>Hej verden</translation>
     </message>
 </context>
 </TS>
