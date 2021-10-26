@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>這會需要連接到可用的網際網路。</translation>
     </message>
     <message>
         <source>%s needs to be downloaded before it can be used.</source>
@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>Do you want to download it now?</source>
-        <translation type="unfinished"></translation>
+        <translation>你想要現在下載嗎？</translation>
     </message>
     <message>
         <source>The following packages and their dependencies be installed:</source>
@@ -25,39 +25,39 @@
     </message>
     <message>
         <source>Do you want to update the system now?</source>
-        <translation type="unfinished"></translation>
+        <translation>你想要現在更新系統嗎？</translation>
     </message>
     <message>
         <source>Update</source>
-        <translation type="unfinished"></translation>
+        <translation>更新</translation>
     </message>
     <message>
         <source>Cancel</source>
-        <translation type="unfinished"></translation>
+        <translation>取消</translation>
     </message>
     <message>
         <source>%s cannot be started.</source>
-        <translation type="unfinished"></translation>
+        <translation>%s 無法啟動。</translation>
     </message>
     <message>
         <source>Installing...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在安裝...</translation>
     </message>
     <message>
         <source>Your system is up to date.</source>
-        <translation type="unfinished"></translation>
+        <translation>你的系統是最新的。</translation>
     </message>
     <message>
         <source>Updating FreeBSD Packages...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在更新 FreeBSD 套件...</translation>
     </message>
     <message>
         <source>Downloading %s...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在下載 %s...</translation>
     </message>
     <message>
         <source>Updating FreeBSD...</source>
-        <translation type="unfinished"></translation>
+        <translation>正在更新 FreeBSD ...</translation>
     </message>
 </context>
 </TS>
