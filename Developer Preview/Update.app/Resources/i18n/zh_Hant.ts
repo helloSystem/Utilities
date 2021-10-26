@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>%s needs to be downloaded before it can be used.</source>
-        <translation type="unfinished"></translation>
+        <translation>需要先下載 %s 才能繼續使用。</translation>
     </message>
     <message>
         <source>Do you want to download it now?</source>
@@ -17,11 +17,11 @@
     </message>
     <message>
         <source>The following packages and their dependencies be installed:</source>
-        <translation type="unfinished"></translation>
+        <translation>安裝以下套件以及依賴項目：</translation>
     </message>
     <message>
         <source>This will update FreeBSD and all installed packages.</source>
-        <translation type="unfinished"></translation>
+        <translation>將會更新 FreeBSD 和所有已安裝的套件。</translation>
     </message>
     <message>
         <source>Do you want to update the system now?</source>
