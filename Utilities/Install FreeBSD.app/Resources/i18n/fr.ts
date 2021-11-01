@@ -49,11 +49,11 @@
     </message>
     <message>
         <source>To set up the locale and keyboard layout, select a country.</source>
-        <translation>Pour configurer les paramètres régionaux et la disposition du clavier, sélectionnez un pays.</translation>
+        <translation>Pour configurer les paramètres régionaux et la disposition du clavier, veuillez sélectionner un pays.</translation>
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pour lancer l&apos;installation de FreeBSD, cliquez sur &apos;Continuer&apos;.</translation>
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
@@ -101,19 +101,19 @@
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Mot de passe :</translation>
     </message>
     <message>
         <source>Retype Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmation du mot de passe :</translation>
     </message>
     <message>
         <source>The passwords do not match</source>
-        <translation type="unfinished"></translation>
+        <translation>Ces mots de passe doivent être identiques</translation>
     </message>
     <message>
         <source>Create Local Computer Account</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer un compte local sur cet ordinateur</translation>
     </message>
     <message>
         <source>Please enter details to create an account for the main user on this computer.</source>
