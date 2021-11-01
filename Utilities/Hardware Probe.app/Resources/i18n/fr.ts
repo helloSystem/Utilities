@@ -9,61 +9,63 @@
     </message>
     <message>
         <source>Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Sonde matérielle</translation>
     </message>
     <message>
         <source>Privacy Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informations de confidentialité</translation>
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;envoi de la sonde matérielle est soumise aux termes de confidentialité suivants.</translation>
     </message>
     <message>
         <source>Please see %s for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Veuillez voir %s pour plus d&apos;informations.</translation>
     </message>
     <message>
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
         &lt;p&gt;This can help users and operating system developers to collaboratively debug hardware related issues, check for operating system compatibility and find drivers.&lt;/p&gt;
         &lt;p&gt;You will get a permanent probe URL to view and share collected information.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Cet utilitaire récupère les informations matériel de votre ordinateur et les envoie anonymement à une base de donnée publique.&lt;/p&gt;
+      &lt;p&gt;Cela peut aider les utilisateurs et les développeurs du système d&apos;exploitation de mieux collaborer sur les problèmes matériels, ainsi qu&apos;améliorer la compatibilité du système ou de trouver de nouveaux pilotes matériels.&lt;/p&gt;
+      &lt;p&gt;Vous obtiendrez une adresse internet permanente pour obtenir un aperçu et partager les données collectées.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>Show Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher la sonde matérielle</translation>
     </message>
     <message>
         <source>Failed to open the hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;ouverture de la sonde matérielle a échoué.</translation>
     </message>
     <message>
         <source>Failed to run the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec du lancement de l&apos;outil %s.</translation>
     </message>
     <message>
         <source>Failed to set the owner to %x.</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec pour assigner le propriétaire à %x.</translation>
     </message>
     <message>
         <source>Uploading Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Envoi de la sonde matérielle</translation>
     </message>
     <message>
         <source>The Hardware Probe is being uploaded to the public database</source>
-        <translation type="unfinished"></translation>
+        <translation>La sonde matérielle est en train d&apos;être envoyée à la base de données publique</translation>
     </message>
     <message>
         <source>You need an active internet connection in order to upload.</source>
-        <translation type="unfinished"></translation>
+        <translation>Une connexion internet active est nécessaire pour l&apos;envoi.</translation>
     </message>
     <message>
         <source>Failed to upload using the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de l&apos;envoi avec l&apos;outil %s.</translation>
     </message>
     <message>
         <source>Hardware Probe Uploaded</source>
-        <translation type="unfinished"></translation>
+        <translation>Sonde matérielle envoyée</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -71,7 +73,7 @@
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>Échec de l&apos;ouverture de la sonde matérielle envoyée.</translation>
     </message>
     <message>
         <source>Error</source>
@@ -79,7 +81,7 @@
     </message>
     <message>
         <source>Hardware Probe was not successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>La sonde matérielle n&apos;a pas été un succès.</translation>
     </message>
 </context>
 <context>
