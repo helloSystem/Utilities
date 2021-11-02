@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import os, sys, socket, subprocess, time, logging
+import os, sys, socket, subprocess, time, logging, datetime
 
 # Translate this application using Qt .ts files without the need for compilation
 import tstranslator
@@ -259,6 +259,9 @@ class LiteInstaller(object):
 
         logging.info("Process exit code: %s" % exit_code)
         if exit_code == 0:
+            if "bectl" in self.ext_process.arguments():
+                self.msgBox.setText(tr("Updating FreeBSD..."))
+                self.startInstallProcess(["freebsd-update", "fetch", "install", "--not-running-from-cron"])
             if "freebsd-update" in self.ext_process.arguments():
                 # If we were running freebsd-update so far, we are not done yet and need to proceed to updating packages now
                 self.msgBox.setText(tr("Updating FreeBSD Packages..."))
@@ -317,8 +320,9 @@ class LiteInstaller(object):
         if self.packages:
             self.startInstallProcess(["pkg", "install", "-y"] + self.packages)
         else:
-            self.msgBox.setText(tr("Updating FreeBSD..."))
-            self.startInstallProcess(["freebsd-update", "fetch", "install", "--not-running-from-cron"])
+            self.msgBox.setText(tr("Creating Boot Environment..."))
+            name = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
+            self.startInstallProcess(["bectl", "create", name])
 
         self.msgBox.exec()
 
