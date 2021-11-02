@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation>Dette krever at du er tilkoblet Internett</translation>
+        <translation>Dette krever en aktiv internettforbindelse.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
