@@ -49,7 +49,7 @@
     </message>
     <message>
         <source>Updating FreeBSD Packages...</source>
-        <translation>Opdaterer FreeBSD pakker...</translation>
+        <translation>Opdaterer FreeBSD-pakker…</translation>
     </message>
     <message>
         <source>Downloading %s...</source>
