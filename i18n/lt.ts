@@ -5,102 +5,102 @@
     <name>DiskUtility</name>
     <message>
         <source>Disk Utility</source>
-        <translation type="unfinished"></translation>
+        <translation>Diskų programa</translation>
     </message>
     <message>
         <source>Partition</source>
-        <translation type="unfinished"></translation>
+        <translation>Skirtukas</translation>
     </message>
     <message>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>-</translation>
     </message>
     <message>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Parinktys</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pavadinimas:</translation>
     </message>
     <message>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Formatas:</translation>
     </message>
     <message>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Dydis:</translation>
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacija apie apimtį:</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Parceliavimo schema:</translation>
     </message>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Atkurti</translation>
     </message>
     <message>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>Ištrinti</translation>
     </message>
 </context>
 <context>
     <name>Users</name>
     <message>
         <source>Add User</source>
-        <translation type="unfinished"></translation>
+        <translation>Pridėti naudotoją</translation>
     </message>
     <message>
         <source>Account Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sąskaitų tipai</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Sąskaitos pavadinimas</translation>
     </message>
     <message>
         <source>Remove Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Naudotojų pašalinimas</translation>
     </message>
     <message>
         <source>Administrator</source>
         <comment>wheel</comment>
-        <translation type="unfinished"></translation>
+        <translation>Administratoriaus</translation>
     </message>
     <message>
         <source>Full Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Visas vardas ir pavardė:</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Slaptažodis:</translation>
     </message>
     <message>
         <source>Verify:</source>
-        <translation type="unfinished"></translation>
+        <translation>Patikrinkite:</translation>
     </message>
     <message>
         <source>The passwords do not match.</source>
-        <translation type="unfinished"></translation>
+        <translation>Slaptažodžiai nesutampa.</translation>
     </message>
 </context>
 <context>
     <name>main</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Sveikas, pasauli</translation>
     </message>
     <message>
         <source>Text Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Teksto redagavimas</translation>
     </message>
 </context>
 </TS>
