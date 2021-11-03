@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation>Ladt ein Live-Image herunter und schreibt es auf einen lokalen Datenträger.</translation>
+        <translation>Lädt ein Live-Image herunter und schreibt es auf einen lokalen Datenträger.</translation>
     </message>
     <message>
         <source>Other...</source>
