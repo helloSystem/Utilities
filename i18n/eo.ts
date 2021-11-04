@@ -21,19 +21,19 @@
     </message>
     <message>
         <source>Options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opcioj</translation>
     </message>
     <message>
         <source>Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nomo:</translation>
     </message>
     <message>
         <source>Format:</source>
-        <translation type="unfinished"></translation>
+        <translation>Formato:</translation>
     </message>
     <message>
         <source>Size:</source>
-        <translation type="unfinished"></translation>
+        <translation>Grando:</translation>
     </message>
     <message>
         <source>Volume Information:</source>
@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Restaŭru</translation>
     </message>
     <message>
         <source>Erase</source>
@@ -56,7 +56,7 @@
     <name>Users</name>
     <message>
         <source>Add User</source>
-        <translation type="unfinished"></translation>
+        <translation>Aldonu Uzanton</translation>
     </message>
     <message>
         <source>Account Type:</source>
@@ -68,20 +68,20 @@
     </message>
     <message>
         <source>Remove Users</source>
-        <translation type="unfinished"></translation>
+        <translation>Forigu uzanton</translation>
     </message>
     <message>
         <source>Administrator</source>
         <comment>wheel</comment>
-        <translation type="unfinished"></translation>
+        <translation>Administranto</translation>
     </message>
     <message>
         <source>Full Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Plena Nomo</translation>
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasvorto:</translation>
     </message>
     <message>
         <source>Verify:</source>
@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>The passwords do not match.</source>
-        <translation type="unfinished"></translation>
+        <translation>La pasvortoj ne similas.</translation>
     </message>
 </context>
 <context>
