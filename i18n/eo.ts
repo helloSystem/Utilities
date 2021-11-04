@@ -5,19 +5,19 @@
     <name>DiskUtility</name>
     <message>
         <source>Disk Utility</source>
-        <translation type="unfinished"></translation>
+        <translation>Diskilo</translation>
     </message>
     <message>
         <source>Partition</source>
-        <translation type="unfinished"></translation>
+        <translation>Subdisko</translation>
     </message>
     <message>
         <source>+</source>
-        <translation type="unfinished"></translation>
+        <translation>+</translation>
     </message>
     <message>
         <source>-</source>
-        <translation type="unfinished"></translation>
+        <translation>−</translation>
     </message>
     <message>
         <source>Options</source>
@@ -37,11 +37,11 @@
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation type="unfinished"></translation>
+        <translation>Informoj pri volumo:</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation type="unfinished"></translation>
+        <translation>Subdiska skemo:</translation>
     </message>
     <message>
         <source>Restore</source>
@@ -49,7 +49,7 @@
     </message>
     <message>
         <source>Erase</source>
-        <translation type="unfinished"></translation>
+        <translation>Forviŝi</translation>
     </message>
 </context>
 <context>
@@ -60,11 +60,11 @@
     </message>
     <message>
         <source>Account Type:</source>
-        <translation type="unfinished"></translation>
+        <translation>Speco de konto:</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nomo de konto:</translation>
     </message>
     <message>
         <source>Remove Users</source>
@@ -85,7 +85,7 @@
     </message>
     <message>
         <source>Verify:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kontroli:</translation>
     </message>
     <message>
         <source>The passwords do not match.</source>
@@ -96,11 +96,11 @@
     <name>main</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Saluton, mondo</translation>
     </message>
     <message>
         <source>Text Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Tekstredaktilo</translation>
     </message>
 </context>
 </TS>
