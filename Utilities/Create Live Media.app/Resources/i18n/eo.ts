@@ -13,19 +13,19 @@
     </message>
     <message>
         <source>Other...</source>
-        <translation type="unfinished"></translation>
+        <translation>Alia…</translation>
     </message>
     <message>
         <source>Local ISO file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Loka ISO-dosiero…</translation>
     </message>
     <message>
         <source>Please choose an image:</source>
-        <translation type="unfinished"></translation>
+        <translation>Bonvolu elekti diskokopion:</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Dato</translation>
     </message>
     <message>
         <source>Show Pre-release builds</source>
@@ -33,23 +33,23 @@
     </message>
     <message>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Alia</translation>
     </message>
     <message>
         <source>URL of the ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>Retadreso de la ISO-dosiero</translation>
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Diskokopioj (*.iso *.img);;Ĉiaj dosieroj (*.*)</translation>
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tio postulas aktivan Interretan konekton.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Elektu celan diskon</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
@@ -61,11 +61,11 @@
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Postulata diskospaco: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Averto</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
@@ -101,7 +101,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Forlasi</translation>
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
@@ -109,7 +109,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Eraro</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
@@ -120,7 +120,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Saluton, mondo</translation>
     </message>
 </context>
 </TS>
