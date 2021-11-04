@@ -89,15 +89,15 @@
     </message>
     <message>
         <source>Live Medium Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Média en direct complété</translation>
     </message>
     <message>
         <source>The Live image has been written to the device.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;image en direct a été écrite sur la destination.</translation>
     </message>
     <message>
         <source>You can now start your computer from the Live medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous pouvez maintenant démarrer votre ordinateur depuis le media en direct.</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -105,7 +105,7 @@
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;appareil a été débranché, le programme va quitter</translation>
     </message>
     <message>
         <source>Error</source>
