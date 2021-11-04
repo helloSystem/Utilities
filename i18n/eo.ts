@@ -77,7 +77,7 @@
     </message>
     <message>
         <source>Full Name:</source>
-        <translation>Plena Nomo</translation>
+        <translation>Plena Nomo:</translation>
     </message>
     <message>
         <source>Password:</source>
