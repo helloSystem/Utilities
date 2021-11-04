@@ -5,15 +5,15 @@
     <name>@default</name>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Okazis nekonata eraro.</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Aparatosondilo</translation>
     </message>
     <message>
         <source>Privacy Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informoj pri privateco</translation>
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
@@ -21,7 +21,7 @@
     </message>
     <message>
         <source>Please see %s for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bonvolu vidi %s por pliaj informoj.</translation>
     </message>
     <message>
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
@@ -31,15 +31,15 @@
     </message>
     <message>
         <source>Show Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Montri Aparatosondilon</translation>
     </message>
     <message>
         <source>Failed to open the hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>Malsukcesis malfermi la aparatosondon.</translation>
     </message>
     <message>
         <source>Failed to run the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Malsukcesis ruli la ilaĵon %s.</translation>
     </message>
     <message>
         <source>Failed to set the owner to %x.</source>
@@ -47,7 +47,7 @@
     </message>
     <message>
         <source>Uploading Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Alŝutante Aparatosondon</translation>
     </message>
     <message>
         <source>The Hardware Probe is being uploaded to the public database</source>
@@ -59,7 +59,7 @@
     </message>
     <message>
         <source>Failed to upload using the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Malsukcesis alŝuti per la ilaĵo %s.</translation>
     </message>
     <message>
         <source>Hardware Probe Uploaded</source>
@@ -67,7 +67,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Forlasi</translation>
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
@@ -75,18 +75,18 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Eraro</translation>
     </message>
     <message>
         <source>Hardware Probe was not successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>Aparatosondilo malsukcesis.</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Saluton, mondo</translation>
     </message>
 </context>
 </TS>
