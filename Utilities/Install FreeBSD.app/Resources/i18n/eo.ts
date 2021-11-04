@@ -5,11 +5,11 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>Instali FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Okazis nekonata eraro.</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
@@ -25,7 +25,7 @@
     </message>
     <message>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Demando</translation>
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>Select Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Elektu landon</translation>
     </message>
     <message>
         <source>To set up the locale and keyboard layout, select a country.</source>
@@ -69,7 +69,7 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Elektu celan diskon</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
@@ -81,11 +81,11 @@
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Postulata diskospaco: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Averto</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
@@ -101,15 +101,15 @@
     </message>
     <message>
         <source>Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Pasvorto:</translation>
     </message>
     <message>
         <source>Retype Password:</source>
-        <translation type="unfinished"></translation>
+        <translation>Retajpu pasvorton:</translation>
     </message>
     <message>
         <source>The passwords do not match</source>
-        <translation type="unfinished"></translation>
+        <translation>La pasvortoj ne kongruas</translation>
     </message>
     <message>
         <source>Create Local Computer Account</source>
@@ -121,23 +121,23 @@
     </message>
     <message>
         <source>Full Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Plena nomo:</translation>
     </message>
     <message>
         <source>John Doe</source>
-        <translation type="unfinished"></translation>
+        <translation>Ludoviko Zamenhof</translation>
     </message>
     <message>
         <source>Username:</source>
-        <translation type="unfinished"></translation>
+        <translation>Salutnomo:</translation>
     </message>
     <message>
         <source>Retype Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Retajpu pasvorton</translation>
     </message>
     <message>
         <source>Computer Name:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nomo de komputilo:</translation>
     </message>
     <message>
         <source>Enable users to log in over the network (ssh)</source>
@@ -149,7 +149,7 @@
     </message>
     <message>
         <source>Installing FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>Instalante FreeBSD</translation>
     </message>
     <message>
         <source>FreeBSD is being installed to your computer.</source>
@@ -185,7 +185,7 @@
     </message>
     <message>
         <source>Restart</source>
-        <translation type="unfinished"></translation>
+        <translation>Restartigi</translation>
     </message>
     <message>
         <source>Could not restart the computer.</source>
@@ -193,7 +193,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Eraro</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
@@ -201,7 +201,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Forlasi</translation>
     </message>
     <message>
         <source>To continue installing the software, you must agree to the terms of the software license agreement.</source>
@@ -212,7 +212,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Saluton, mondo</translation>
     </message>
 </context>
 </TS>
