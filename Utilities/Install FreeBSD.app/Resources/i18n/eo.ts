@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Installer Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Protokolo de instalilo</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
@@ -61,7 +61,7 @@
     </message>
     <message>
         <source>License Terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Kondiĉoj de la permesilo</translation>
     </message>
     <message>
         <source>Additional components may be distributed under different licenses as stated in the respective documentation.</source>
@@ -93,11 +93,11 @@
     </message>
     <message>
         <source>Set Root Password</source>
-        <translation type="unfinished"></translation>
+        <translation>Agordi pasvorton de la ĉefuzanto</translation>
     </message>
     <message>
         <source>Please enter a password for the root user.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bonvolu tajpi pasvorton por la ĉefuzanto.</translation>
     </message>
     <message>
         <source>Password:</source>
@@ -113,7 +113,7 @@
     </message>
     <message>
         <source>Create Local Computer Account</source>
-        <translation type="unfinished"></translation>
+        <translation>Krei lokan komputilan konton</translation>
     </message>
     <message>
         <source>Please enter details to create an account for the main user on this computer.</source>
@@ -153,7 +153,7 @@
     </message>
     <message>
         <source>FreeBSD is being installed to your computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD estas instalata sur vian komputilon.</translation>
     </message>
     <message>
         <source>The selected disk device %s is not found.</source>
@@ -165,7 +165,7 @@
     </message>
     <message>
         <source>The installer cannot be launched.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne eblas lanĉi la instalilon.</translation>
     </message>
     <message>
         <source>The installation did not succeed. Please see the Installer Log for more information.</source>
@@ -173,11 +173,11 @@
     </message>
     <message>
         <source>Installation Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Instalado kompletiĝis</translation>
     </message>
     <message>
         <source>The installation succeeded.</source>
-        <translation type="unfinished"></translation>
+        <translation>La instalado sukcesis.</translation>
     </message>
     <message>
         <source>FreeBSD has been installed on your computer, click &apos;Restart&apos; to begin using it.</source>
@@ -197,7 +197,7 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne eblas instali.</translation>
     </message>
     <message>
         <source>Quit</source>
