@@ -280,7 +280,7 @@ class Window(QMainWindow):
 
         if self.is_partition == False:
             # Clean out any pre-existing partition table in a robust way
-            cmd = ["dd", "if=/dev/zero", "of="+self.device, "bs=1M", "count=1"]
+            cmd = ["/sbin/gpart", "destroy", "-F", self.device]
             self.commands.append(cmd)
             # Create a new partition table
             cmd = ["/sbin/gpart", "create", "-s", scheme, self.device.replace("/dev/", "")]
