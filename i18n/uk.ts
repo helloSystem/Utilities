@@ -96,7 +96,7 @@
     <name>main</name>
     <message>
         <source>Hello World</source>
-        <translation>Привіт Світ</translation>
+        <translation>Привіт, світе</translation>
     </message>
     <message>
         <source>Text Edit</source>
