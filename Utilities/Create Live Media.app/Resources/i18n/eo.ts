@@ -5,11 +5,11 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Krei startodiskon</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tio elŝutos startodiskokopion kaj skribos ĝin sur eksteran konservejon.</translation>
     </message>
     <message>
         <source>Other...</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>Show Pre-release builds</source>
-        <translation type="unfinished"></translation>
+        <translation>Montri nestabilajn versiojn</translation>
     </message>
     <message>
         <source>Other</source>
@@ -73,7 +73,7 @@
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
-        <translation type="unfinished"></translation>
+        <translation>Elŝutante kaj skribante startodiskokopion</translation>
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>Live Medium Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Skribado de startodiskokopio kompletiĝis</translation>
     </message>
     <message>
         <source>The Live image has been written to the device.</source>
@@ -97,7 +97,7 @@
     </message>
     <message>
         <source>You can now start your computer from the Live medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vi nun povas startigi vian komputilon per la ekstera konservejo.</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -113,7 +113,7 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne eblas instali.</translation>
     </message>
 </context>
 <context>
