@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сталася невідома помилка.</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
@@ -67,7 +67,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Вихід</translation>
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
@@ -75,7 +75,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Помилка</translation>
     </message>
     <message>
         <source>Hardware Probe was not successful.</source>
@@ -86,7 +86,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Привіт, світе</translation>
     </message>
 </context>
 </TS>
