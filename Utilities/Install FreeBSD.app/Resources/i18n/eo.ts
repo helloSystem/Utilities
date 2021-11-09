@@ -21,7 +21,7 @@
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>La protokolo de la instalilo ne estis malfermebla.</translation>
     </message>
     <message>
         <source>Question</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por daŭrigi la instaladon de FreeBSD, alklaku la butonon «Daŭrigi».</translation>
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
@@ -73,7 +73,7 @@
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ĉiom da datenoj sur la elektita disko estas forviŝota.</translation>
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
@@ -117,7 +117,7 @@
     </message>
     <message>
         <source>Please enter details to create an account for the main user on this computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Bonvolu tajpi detalojn por krei konton de la ĉefa uzanto de ĉi tiu komputilo.</translation>
     </message>
     <message>
         <source>Full Name:</source>
@@ -141,11 +141,11 @@
     </message>
     <message>
         <source>Enable users to log in over the network (ssh)</source>
-        <translation type="unfinished"></translation>
+        <translation>Ebligi salutadon per la reto (ssh)</translation>
     </message>
     <message>
         <source>Set time zone based on current location</source>
-        <translation type="unfinished"></translation>
+        <translation>Agordi la horzonon laŭ la aktuala loko</translation>
     </message>
     <message>
         <source>Installing FreeBSD</source>
@@ -169,7 +169,7 @@
     </message>
     <message>
         <source>The installation did not succeed. Please see the Installer Log for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>La instalado malsukcesis. Bonvolu legi la protokolon de instalilo por pliaj informoj.</translation>
     </message>
     <message>
         <source>Installation Complete</source>
@@ -189,7 +189,7 @@
     </message>
     <message>
         <source>Could not restart the computer.</source>
-        <translation type="unfinished"></translation>
+        <translation>Malsukcesis restartigi la komputilon.</translation>
     </message>
     <message>
         <source>Error</source>
