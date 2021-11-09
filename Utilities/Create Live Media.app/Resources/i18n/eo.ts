@@ -53,11 +53,11 @@
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ĉiom da datenoj sur la elektita disko estas forviŝota.</translation>
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ne eblis kalkuli la bezonatan diskospacon.</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
@@ -69,7 +69,7 @@
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Tio forviŝos ĉiom da datenoj sur ĉi tiu disko kaj instalos la startodiskokopion sur ĝin. Ĉu daŭrigi?</translation>
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
@@ -77,15 +77,15 @@
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>La startodiskokopio estas elŝutata kaj skribata sur la aparaton.</translation>
     </message>
     <message>
         <source>Could not unmount parititons.</source>
-        <translation type="unfinished"></translation>
+        <translation>Malsukcesis demeti subdiskon.</translation>
     </message>
     <message>
         <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
-        <translation type="unfinished"></translation>
+        <translation>Okazis eraro dum provo skribi la diskokopion. Ĉu la elŝutejo estas atingebla? Ĉu ĉiuj subdiskoj estas demetitaj? Ĉu vi havas skribajn rajtojn tie?</translation>
     </message>
     <message>
         <source>Live Medium Complete</source>
@@ -93,7 +93,7 @@
     </message>
     <message>
         <source>The Live image has been written to the device.</source>
-        <translation type="unfinished"></translation>
+        <translation>La startodiskokopio skribiĝis sur la aparaton.</translation>
     </message>
     <message>
         <source>You can now start your computer from the Live medium.</source>
@@ -105,7 +105,7 @@
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
-        <translation type="unfinished"></translation>
+        <translation>Aparato malkonektiĝis; ĉesante</translation>
     </message>
     <message>
         <source>Error</source>
