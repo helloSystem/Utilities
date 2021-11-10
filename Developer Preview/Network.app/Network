@@ -102,15 +102,18 @@ class NetworkMenu(QObject):
         for element in self.status_lines:
             if element.startswith("wpa_state="):
                 status = element.split("=")[1]
-                break           
-        if status == "SCANNING":
-            self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
-        elif status == "COMPLETED":
-            self.tray.setIcon(QIcon.fromTheme("network-wireless-symbolic"))
-            # TODO: Set different icons based on signal_level
-        else:
-            self.tray.setIcon(QIcon.fromTheme("network-wireless-offline-symbolic"))
-            
+                break
+        try:    
+            if status == "SCANNING":
+                self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
+            elif status == "COMPLETED":
+                self.tray.setIcon(QIcon.fromTheme("network-wireless-symbolic"))
+                # TODO: Set different icons based on signal_level
+            else:
+                self.tray.setIcon(QIcon.fromTheme("network-wireless-offline-symbolic"))
+        except:
+            pass
+             
     def updateMenu(self):
     
         # Find out whether we are connected to one of the networks
