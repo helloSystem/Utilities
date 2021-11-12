@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
-        <translation type="unfinished"></translation>
+        <translation>La aparatosondo alŝutiĝas laŭ la jenaj kondiĉoj pri privateco.</translation>
     </message>
     <message>
         <source>Please see %s for more information.</source>
@@ -27,7 +27,9 @@
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
         &lt;p&gt;This can help users and operating system developers to collaboratively debug hardware related issues, check for operating system compatibility and find drivers.&lt;/p&gt;
         &lt;p&gt;You will get a permanent probe URL to view and share collected information.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Ĉi tiu ilaĵo kolektas aparatajn detalojn de via komputilo kaj povas anonime alŝuti ilin en publikan datenbankon.&lt;/p&gt;
+        &lt;p&gt;Tio povas helpi uzantojn kaj programistojn de mastrumaj sistemoj kunlabore solvi cimojn pri aparatoj, kontroli la kongruecon de mastrumaj sistemoj kaj trovi zorgilojn.&lt;/p&gt;
+        &lt;p&gt;Vi ricevos konstantan retadreson de la sondo por vidi kaj kunhavigi kolektitajn informojn.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>Show Hardware Probe</source>
@@ -43,19 +45,19 @@
     </message>
     <message>
         <source>Failed to set the owner to %x.</source>
-        <translation type="unfinished"></translation>
+        <translation>Malsukcesis agordi la posedanton kiel %x.</translation>
     </message>
     <message>
         <source>Uploading Hardware Probe</source>
-        <translation>Alŝutante Aparatosondon</translation>
+        <translation>Alŝutante aparatosondon</translation>
     </message>
     <message>
         <source>The Hardware Probe is being uploaded to the public database</source>
-        <translation type="unfinished"></translation>
+        <translation>La aparatosondo estas alŝutata en publikan datenbankon</translation>
     </message>
     <message>
         <source>You need an active internet connection in order to upload.</source>
-        <translation type="unfinished"></translation>
+        <translation>Vi bezonas aktivan Interretan konekton por alŝuti.</translation>
     </message>
     <message>
         <source>Failed to upload using the %s tool.</source>
@@ -63,7 +65,7 @@
     </message>
     <message>
         <source>Hardware Probe Uploaded</source>
-        <translation type="unfinished"></translation>
+        <translation>Aparatosondo alŝutita</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -71,7 +73,7 @@
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>Malsukcesis malfermi la alŝutitan aparatosondon.</translation>
     </message>
     <message>
         <source>Error</source>
