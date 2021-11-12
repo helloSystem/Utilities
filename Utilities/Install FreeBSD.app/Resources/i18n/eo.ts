@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>Pre-existing %s removed</source>
-        <translation type="unfinished"></translation>
+        <translation>Antaŭekzistinta %s estis forigita</translation>
     </message>
     <message>
         <source>Installer Log</source>
@@ -29,19 +29,19 @@
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Tio sendos peton al ipapi.com unufoje por lokalizi vian komputilon per la reto. Ĉu daŭrigi?</translation>
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation type="unfinished"></translation>
+        <translation>La instalila programo ne troviĝis. Bonvolu certigi, ke vi rulas la instalilon sur subtenata sistemo.</translation>
     </message>
     <message>
         <source>The sudo binary not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation type="unfinished"></translation>
+        <translation>La programo «sudo» ne troviĝis. Bonvolu certigi, ke vi rulas la instalilon sur subtenata sistemo.</translation>
     </message>
     <message>
         <source>There was an error while determining whether the language has already been set on this system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Okazis eraro dum determini ĉu la lingvo jam estas agordita en ĉi tiu sistemo.</translation>
     </message>
     <message>
         <source>Select Country</source>
@@ -49,7 +49,7 @@
     </message>
     <message>
         <source>To set up the locale and keyboard layout, select a country.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por agordi la lokaĵojn kaj klavaranĝon, elektu landon.</translation>
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
@@ -57,7 +57,7 @@
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD estas mastruma sistemo por diversaj platformoj, kies fokusoj estas funkcioj, rapideco kaj stabileco. Ĝi devenas de BSD, la versio de Unikso evoluigita ĉe la Universitato de Kalifornio ĉe Berkeley. Ĝin evoluigas kaj prizorgas granda komunumo.</translation>
     </message>
     <message>
         <source>License Terms</source>
@@ -65,7 +65,7 @@
     </message>
     <message>
         <source>Additional components may be distributed under different licenses as stated in the respective documentation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kromaj komponantoj eble estas distribuataj sub aliaj permesiloj, laŭ siaj dokumentaroj.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
@@ -77,7 +77,7 @@
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
-        <translation type="unfinished"></translation>
+        <translation>La instalila programo ne raportis la bezonatan diskospacon. Ĉu vi rulas la instalilon sur subtenata sistemo? Ĉu vi povas ruli la instalilan programon per «sudo» sen bezoni pasvorton?</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Tio forviŝos ĉiom da datenoj sur ĉi tiu disko kaj instalos la mastruman sistemon FreeBSD sur ĝin. Ĉu daŭrigi?</translation>
     </message>
     <message>
         <source>Set Root Password</source>
@@ -157,11 +157,11 @@
     </message>
     <message>
         <source>The selected disk device %s is not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>La elektita diskaparato %s ne troviĝis.</translation>
     </message>
     <message>
         <source>Did not get permission to erase the target device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Mankas permeso por forviŝi la celan aparaton.</translation>
     </message>
     <message>
         <source>The installer cannot be launched.</source>
@@ -181,7 +181,7 @@
     </message>
     <message>
         <source>FreeBSD has been installed on your computer, click &apos;Restart&apos; to begin using it.</source>
-        <translation type="unfinished"></translation>
+        <translation>FreeBSD estas instalita sur vian komputilon; alklaku «Restartigi» por ekuzi ĝin.</translation>
     </message>
     <message>
         <source>Restart</source>
@@ -205,7 +205,7 @@
     </message>
     <message>
         <source>To continue installing the software, you must agree to the terms of the software license agreement.</source>
-        <translation type="unfinished"></translation>
+        <translation>Por instali la programojn, vi devas konsenti la kondiĉojn de la permesilo.</translation>
     </message>
 </context>
 <context>
