@@ -11,6 +11,14 @@ def tr(input):
 from PyQt5 import QtWidgets, QtGui, QtCore
 
 
+def isRootZfs():
+    for part in psutil.disk_partitions():
+   		if part.mountpoint == '/':
+   			if part.fstype == "zfs":
+   			    return True
+   			else:
+   			    return False
+   			    
 def internetCheckConnected(host="8.8.8.8", port=53, timeout=3):
     """
     Host: 8.8.8.8 (google-public-dns-a.google.com)
@@ -320,9 +328,13 @@ class LiteInstaller(object):
         if self.packages:
             self.startInstallProcess(["pkg", "install", "-y"] + self.packages)
         else:
-            self.msgBox.setText(tr("Creating Boot Environment..."))
-            name = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
-            self.startInstallProcess(["bectl", "create", name])
+            if isRootZfs == True:
+                self.msgBox.setText(tr("Creating Boot Environment..."))
+                name = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M")
+                self.startInstallProcess(["bectl", "create", name])
+            else:
+                self.msgBox.setText(tr("Updating FreeBSD..."))
+                self.startInstallProcess(["freebsd-update", "fetch", "install", "--not-running-from-cron"])
 
         self.msgBox.exec()
 
