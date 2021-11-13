@@ -719,6 +719,12 @@ class DiskPage(QtWidgets.QWizardPage, object):
             self.disk_listwidget.hide()  # FIXME: Why is this needed? Can we do without?
             return
 
+        # Since we are installing to zfs with compression on, we will actually need less
+        # space on the target disk. Hence we are using a correction factor derived from
+        # experimentation here.
+        zfs_compression_factor = 7984/2499 
+        wizard.required_mib_on_disk = wizard.required_mib_on_disk / zfs_compression_factor
+
         print("Disk space required: %d MiB" % wizard.required_mib_on_disk)
         self.label.setText(tr("Disk space required: %s MiB") % wizard.required_mib_on_disk)
 
@@ -1110,6 +1116,8 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         self.timer = None
         self.installer_script_has_exited = False
         self.mib_used_on_target_disk = 0
+        self.copying_has_started = False
+        
         self.ext_process = QtCore.QProcess()
 
         self.layout = QtWidgets.QVBoxLayout(self)
@@ -1131,9 +1139,9 @@ class InstallationPage(QtWidgets.QWizardPage, object):
             [QtWidgets.QWizard.CustomButton1, QtWidgets.QWizard.Stretch])
 
         print("wizard.required_mib_on_disk: %i" % wizard.required_mib_on_disk)
-        self.progress.setValue(0)  # Prevent random start value; FIXME: Does not seem to work? Shows 75% for a split-second
-        self.progress.setMaximum(wizard.required_mib_on_disk)
-
+        self.progress.setRange(0, wizard.required_mib_on_disk)
+        self.progress.setValue(0)
+        
         # Compute parameters to be handed over to the installer script
         print("wizard.selected_language: %s" % wizard.selected_language)
         print("wizard.selected_country: %s" % wizard.selected_country)
@@ -1229,24 +1237,34 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         # print("periodically_check_progress")
         self.checkProgress()
         self.timer = QtCore.QTimer()  # Used to periodically check the fill level of the target disk
-        self.timer.setInterval(1000)
+        self.timer.setInterval(200)
         self.timer.timeout.connect(self.checkProgress)
         self.timer.start()
 
     def checkProgress(self):
         # print("check_progress")
         # print("self.progress.value: %i", self.progress.value())
+        _, used, _ = shutil.disk_usage("/mnt")
+        self.mib_used_on_target_disk = used // (2**20)
 
-        # If the calculated percentage is over 100%, then set to pulsating progress bar
-        if self.progress.value() > wizard.required_mib_on_disk:
-            self.progress.setRange(0, 0)
+        print("%i of %i MiB on target disk" % (self.mib_used_on_target_disk, wizard.required_mib_on_disk))
+
+        if self.mib_used_on_target_disk == 0:
+            self.copying_has_started = True
+
+        if not self.copying_has_started:
+            # There is still old stuff on the disk because disk is not filling up yet
+            self.progress.setRange(0, 0) # Indeterminate
+        elif self.mib_used_on_target_disk < 5:
+            # The target disk is still almost empty
+            self.progress.setRange(0, 0) # Indeterminate
+        elif self.progress.value() > wizard.required_mib_on_disk:
+            # The target disk is filled more than we thought we would need
+            self.progress.setRange(0, 0) # Indeterminate
         else:
-            # self.progress.setValue(self.progress.value() + 100)
-            _, used, _ = shutil.disk_usage("/mnt")
-            self.mib_used_on_target_disk = used // (2**20)
+            self.progress.setRange(0, wizard.required_mib_on_disk)
             self.progress.setValue(self.mib_used_on_target_disk)
-
-
+        
 #############################################################################
 # Success page
 #############################################################################
