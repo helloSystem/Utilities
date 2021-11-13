@@ -266,6 +266,12 @@ class LiteInstaller(object):
         exit_code = self.ext_process.exitCode()
 
         logging.info("Process exit code: %s" % exit_code)
+        if exit_code != 0:
+            # An error occured, so we show the last line of output
+            all_output_so_far = self.details_textedit.toPlainText()
+            text = os.linesep.join([s for s in all_output_so_far.splitlines() if s])
+            last_line_of_output = text.splitlines()[-1]
+            self.showFatalError(last_line_of_output)
         if exit_code == 0:
             if "bectl" in self.ext_process.arguments():
                 self.msgBox.setText(tr("Updating FreeBSD..."))
