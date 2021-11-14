@@ -31,6 +31,7 @@
 # terms of use, available online in the following link:
 # http://www.freepik.com/terms_of_use
 
+import socket # Before urllib so that we can set the timeout
 import sys, os, re, socket
 import shutil
 from datetime import datetime
@@ -515,10 +516,14 @@ class InstallationPage(QtWidgets.QWizardPage, object):
 
         # Download and write directly to the device
         print(wizard.selected_iso_url)
+        socket.setdefaulttimeout(240)
+        print("socket.getdefaulttimeout(): %s" % socket.getdefaulttimeout())
         try:
             urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
-        except:
-            wizard.showErrorPage(tr("An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?"))
+        except BaseException as error:
+            print('An error occurred: {}'.format(error))
+            wizard.showErrorPage('{}'.format(error) + ".")
+
 
         wizard.next()
 
