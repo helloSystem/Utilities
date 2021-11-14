@@ -279,7 +279,7 @@ class LiteInstaller(object):
             if "freebsd-update" in self.ext_process.arguments():
                 # If we were running freebsd-update so far, we are not done yet and need to proceed to updating packages now
                 self.msgBox.setText(tr("Updating FreeBSD Packages..."))
-                self.startInstallProcess(["pkg.real", "upgrade", "--yes"])
+                self.startInstallProcess(["pkg", "upgrade", "--yes"])
             if "upgrade" in self.ext_process.arguments():
                 self.showFinalInfoMessage(tr("Your system is up to date.")) # TODO: Offer restart if FreeBSD was updated
             if self.packages:
