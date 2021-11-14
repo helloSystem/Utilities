@@ -5,19 +5,19 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>Instalar o FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu um erro desconhecido.</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
-        <translation type="unfinished"></translation>
+        <translation>%s pré-existentes removidas</translation>
     </message>
     <message>
         <source>Installer Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Registo do Instalador</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
