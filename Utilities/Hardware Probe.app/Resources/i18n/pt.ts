@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu um erro desconhecido.</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
