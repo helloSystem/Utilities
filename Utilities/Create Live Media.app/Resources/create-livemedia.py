@@ -136,17 +136,17 @@ class InstallWizard(QtWidgets.QWizard, object):
             return self.currentId() + 1
 
     def playSound(self):
-    print("Playing sound")
-    	# https://freesound.org/people/Leszek_Szary/sounds/171670/, licensed under CC0
-    	soundfile = os.path.dirname(__file__) + '/success.mp3'
-    	if os.path.exists(soundfile):
-        	try:
-            	subprocess.run(["mpg321", soundfile], stdout=subprocess.PIPE, text=True)
-        	except:
-            	pass
-    	else:
-        	print("No sound available")
-	
+        print("Playing sound")
+        # https://freesound.org/people/Leszek_Szary/sounds/171670/, licensed under CC0
+        soundfile = os.path.dirname(__file__) + '/success.mp3'
+        if os.path.exists(soundfile):
+            try:
+                subprocess.run(["mpg321", soundfile], stdout=subprocess.PIPE, text=True)
+            except:
+                pass
+        else:
+            print("No sound available")
+
 
 wizard = InstallWizard()
 
