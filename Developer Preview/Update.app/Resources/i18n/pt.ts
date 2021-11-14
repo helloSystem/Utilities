@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Isto requer uma ligação ativa à Internet.</translation>
     </message>
     <message>
         <source>%s needs to be downloaded before it can be used.</source>
