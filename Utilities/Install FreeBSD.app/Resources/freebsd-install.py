@@ -226,21 +226,16 @@ class InstallWizard(QtWidgets.QWizard, object):
             return self.currentId() + 1
 
     def playSound(self):
-        print("Playing sound")
-        # https://freesound.org/people/Leszek_Szary/sounds/171670/, licensed under CC0
-        soundfile = os.path.dirname(__file__) + '/success.ogg'
-        # or
-        # soundfile = "/usr/local/share/sounds/freedesktop/stereo/complete.oga" 
-        # pkg install freedesktop-sound-theme
-        try:
-            url = QtCore.QUrl.fromLocalFile(soundfile)
-            print(url)
-            content = QtMultimedia.QMediaContent(url)
-            # player = QtMultimedia.QMediaPlayer() # This seems to crash, why?
-            # player.setMedia(content)
-            # player.play()
-        except:
-            pass
+    print("Playing sound")
+    	# https://freesound.org/people/Leszek_Szary/sounds/171670/, licensed under CC0
+    	soundfile = os.path.dirname(__file__) + '/success.mp3'
+    	if os.path.exists(soundfile):
+        	try:
+            	subprocess.run(["mpg321", soundfile], stdout=subprocess.PIPE, text=True)
+        	except:
+            	pass
+    	else:
+        	print("No sound available")
 
     def _geolocate(self):
         if self.geolocation is not None:
