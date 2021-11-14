@@ -337,7 +337,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         # wizard.playSound()
 
         self.setTitle(tr('Hardware Probe Uploaded'))
-        self.setSubTitle(re('Thank you for uploading your Hardware Probe.'))
+        self.setSubTitle(tr('Thank you for uploading your Hardware Probe.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
