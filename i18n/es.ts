@@ -60,15 +60,15 @@
     </message>
     <message>
         <source>Account Type:</source>
-        <translation>Clasificación de Cuentas</translation>
+        <translation>Tipos de Cuentas:</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation>Nombre de Cuenta</translation>
+        <translation>Nombre de Cuenta:</translation>
     </message>
     <message>
         <source>Remove Users</source>
-        <translation>Eliminar usuario</translation>
+        <translation>Eliminar usuarios</translation>
     </message>
     <message>
         <source>Administrator</source>
@@ -85,7 +85,7 @@
     </message>
     <message>
         <source>Verify:</source>
-        <translation>Verifica:</translation>
+        <translation>Verificar:</translation>
     </message>
     <message>
         <source>The passwords do not match.</source>
