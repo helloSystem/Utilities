@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>Other...</source>
-        <translation type="unfinished"></translation>
+        <translation>Outros...</translation>
     </message>
     <message>
         <source>Local ISO file...</source>
@@ -25,7 +25,7 @@
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
         <source>Show Pre-release builds</source>
@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Isto requer uma ligação ativa à Internet.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
