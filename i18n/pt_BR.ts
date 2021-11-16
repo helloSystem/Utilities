@@ -60,11 +60,11 @@
     </message>
     <message>
         <source>Account Type:</source>
-        <translation>Tipos de Conta</translation>
+        <translation>Tipo de Conta:</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation>Nome da Conta</translation>
+        <translation>Nome da Conta:</translation>
     </message>
     <message>
         <source>Remove Users</source>
