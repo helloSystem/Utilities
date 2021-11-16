@@ -77,7 +77,7 @@
     <message>
         <location filename="../tstranslator.py" line="76"/>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Olá, Mundo</translation>
     </message>
 </context>
 </TS>
