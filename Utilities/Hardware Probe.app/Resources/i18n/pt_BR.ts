@@ -45,27 +45,27 @@
     </message>
     <message>
         <source>Failed to set the owner to %x.</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha ao definir o dono de %x.</translation>
     </message>
     <message>
         <source>Uploading Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Fazendo o Upload do Teste de Hardware</translation>
     </message>
     <message>
         <source>The Hardware Probe is being uploaded to the public database</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload do Teste de Hardware para o banco de dados público em andamento</translation>
     </message>
     <message>
         <source>You need an active internet connection in order to upload.</source>
-        <translation type="unfinished"></translation>
+        <translation>É necessária uma conexão ativa à Internet para fazer o upload.</translation>
     </message>
     <message>
         <source>Failed to upload using the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Falha no upload usando a ferramenta %s.</translation>
     </message>
     <message>
         <source>Hardware Probe Uploaded</source>
-        <translation type="unfinished"></translation>
+        <translation>Upload do Teste de Hardware Concluído</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -73,7 +73,7 @@
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível fazer o upload do teste de hardware.</translation>
     </message>
     <message>
         <source>Error</source>
@@ -81,7 +81,7 @@
     </message>
     <message>
         <source>Hardware Probe was not successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>O Teste de Hardware não foi bem sucedido.</translation>
     </message>
 </context>
 <context>
