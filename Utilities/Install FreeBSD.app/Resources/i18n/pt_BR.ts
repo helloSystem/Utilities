@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Installer Log</source>
-        <translation>Registo do Instalador</translation>
+        <translation>Registro do Instalador</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
-        <translation>Isto apagará todo o conteúdo deste disco e instalará o sistema operacional FreeBSD nele. Continuar?</translation>
+        <translation>Isso apagará todo o conteúdo deste disco e instalará o sistema operacional FreeBSD nele. Continuar?</translation>
     </message>
     <message>
         <source>Set Root Password</source>
