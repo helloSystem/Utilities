@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation>Isto requer uma conexão ativa com a Internet.</translation>
+        <translation>Isso requer uma conexão ativa com a Internet.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
@@ -69,7 +69,7 @@
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
-        <translation>Isto vai apagar todo o conteúdo deste disco e vai instalar o sistema nele. Continuar?</translation>
+        <translation>Isso vai apagar todo o conteúdo deste disco e vai instalar o sistema nele. Continuar?</translation>
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
