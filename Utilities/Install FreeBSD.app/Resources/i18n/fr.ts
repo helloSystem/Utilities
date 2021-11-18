@@ -29,8 +29,7 @@
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
-        <translation>Cela va envoyer une requête à ipapi.com une unique fois pour déterminer l&apos;emplacement de votre ordinateur sur le réseau.
-Voulez-vous continuer ?</translation>
+        <translation>Cela va envoyer une requête à ipapi.com une unique fois pour déterminer l&apos;emplacement de votre ordinateur sur le réseau. Voulez-vous continuer ?</translation>
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
