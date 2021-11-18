@@ -131,7 +131,7 @@ app = QApplication(sys.argv)
 reader = ProcessOutputReader()
 console = MyConsole()
 reader.produce_output.connect(console.append_output)
-reader.start('sh', ['-c', "tail -n 10 -f /var/log/*.log /var/log/messages"])
+reader.start('sh', ['-c', "tail -n 1000 -f /var/log/*.log /var/log/messages"])
 
 console.show()
 app.exec_()
