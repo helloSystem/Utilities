@@ -5,122 +5,122 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Live media maken</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Dit zal een Live image downloaden en wegschrijven naar een aangesloten opslagmedium.</translation>
     </message>
     <message>
         <source>Other...</source>
-        <translation type="unfinished"></translation>
+        <translation>Andere...</translation>
     </message>
     <message>
         <source>Local ISO file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Lokaal ISO-bestand...</translation>
     </message>
     <message>
         <source>Please choose an image:</source>
-        <translation type="unfinished"></translation>
+        <translation>Kies een afbeelding:</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Datum</translation>
     </message>
     <message>
         <source>Show Pre-release builds</source>
-        <translation type="unfinished"></translation>
+        <translation>Toon Pre-release builds</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Andere</translation>
     </message>
     <message>
         <source>URL of the ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>URL van de ISO</translation>
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Schijfkopieën (*.iso *.img);; Alle bestanden (*.*)</translation>
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiervoor is een actieve internetverbinding vereist.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecteer bestemmingsschijf</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Alle gegevens op de geselecteerde schijf worden gewist.</translation>
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan de vereiste schijfruimte niet bepalen.</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Benodigde schijfruimte: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Waarschuwing</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiermee wordt alle inhoud van deze schijf gewist en wordt het live systeem erop geïnstalleerd. Doorgaan?</translation>
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
-        <translation type="unfinished"></translation>
+        <translation>Downloaden en schrijven van Live medium</translation>
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>De Live image wordt gedownload en naar het medium geschreven.</translation>
     </message>
     <message>
         <source>Could not unmount parititons.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kan partities niet ontkoppelen.</translation>
     </message>
     <message>
         <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
-        <translation type="unfinished"></translation>
+        <translation>Er is een fout opgetreden tijdens het schrijven van de image. Is de download URL toegankelijk? Zijn alle partities ontkoppeld? Heeft u daar schrijfrechten?</translation>
     </message>
     <message>
         <source>Live Medium Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Live medium voltooid</translation>
     </message>
     <message>
         <source>The Live image has been written to the device.</source>
-        <translation type="unfinished"></translation>
+        <translation>De Live image is naar het apparaat geschreven.</translation>
     </message>
     <message>
         <source>You can now start your computer from the Live medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>U kunt nu uw computer opstarten vanaf het Live medium.</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Afsluiten</translation>
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
-        <translation type="unfinished"></translation>
+        <translation>Apparaat is losgekoppeld, verlaten</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Fout</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>De installatie kon niet worden uitgevoerd.</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Hallo Wereld</translation>
     </message>
 </context>
 </TS>
