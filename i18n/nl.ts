@@ -60,11 +60,11 @@
     </message>
     <message>
         <source>Account Type:</source>
-        <translation>Rekeningsoorten</translation>
+        <translation>Account type:</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation>Rekeningnaam</translation>
+        <translation>Account naam:</translation>
     </message>
     <message>
         <source>Remove Users</source>
