@@ -245,7 +245,7 @@ class ZeroconfBrowser(object):
                 QtWidgets.QApplication.processEvents()  # Important trick so that the app stays responsive without the need for threading!
                 time.sleep(0.1)
                 while self.ext_process.canReadLine():
-                    # This is a really crude attempt to read line-wise. FIXME: Do better
+                    # This is a really crude attempt to read line-wise. TODO: Do more elegant, like in 'Mount Disk Image.app'
                     line = str(self.ext_process.readLine())
                     self.processLine(line)
 
