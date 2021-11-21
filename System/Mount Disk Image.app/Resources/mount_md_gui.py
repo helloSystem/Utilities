@@ -73,7 +73,7 @@ class GUI(object):
             if line.startswith("Attached"):
                 # self.progress_window.hide()
                 timer = QtCore.QTimer()
-                timer.singleShot(1500, self.progress_window.hide)
+                timer.singleShot(2000, self.progress_window.hide)
             if line.startswith("Removed"):
                 self.process.waitForFinished()
                 sys.exit(0)
