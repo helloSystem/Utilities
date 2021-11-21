@@ -178,7 +178,7 @@ Note that Boot Environments by default may not cover all locations, such as /hom
                         ['', 'Boot Environment', 'Active', 'Mountpoint', 'Space', 'Created'])
 
                 i = i + 1
-                # This is a really crude attempt to read line-wise. FIXME: Do better
+                # This is a really crude attempt to read line-wise. TODO: Do more elegant, like in 'Mount Disk Image.app'
                 line = str(self.ext_process.readLine())
                 parts = line.split("\\t")
                 name = parts[0].replace("b'", "")
