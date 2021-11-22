@@ -20,7 +20,7 @@ class GUI(object):
         self.process = QtCore.QProcess()
         
         if not os.path.exists("/dev/cd0"):
-            self.showFatalError(tr("Optical drive not found.")) # TODO: Be more elaborate and check for burning capabilities
+            self.showFatalError(tr("Optical disc drive not found.")) # TODO: Be more elaborate and check for burning capabilities
             
         if len(sys.argv) < 2:
             filedialog = QtWidgets.QFileDialog()
