@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# Mock writing a DVD
+
+# This is useful for developing the graphical user interface without writing a DVD each time
+* BD/DVD±RW/-RAM format utility by <appro@fy.chalmers.se>, version 7.1.
+* 4.7GB DVD-RW media in Sequential mode detected.
+
+# sudo dvd+rw-format -blank /dev/cd0
+sleep 2 && echo '* blanking 10.2%'
+sleep 2 && echo '* blanking 40.0|'
+sleep 2 && echo '* blanking 74.2%'
+sleep 2 && echo '* blanking 100.0%'
+
+sleep 2 && echo '/dev/pass0: "Current Write Speed" is 4.1x1352KBps.'
+sleep 2 && echo '    3964928/1095487488 ( 0.4%) @0.9x, remaining 22:56 RBU 100.0% UBU   2.9%'
+sleep 2 && echo '   22413312/1095487488 ( 2.0%) @4.0x, remaining 7:10 RBU 100.0% UBU 100.0%'
+sleep 2 && echo '   40861696/1095487488 ( 3.7%) @4.0x, remaining 5:09 RBU 100.0% UBU 100.0%'
+sleep 2 && echo '   59342848/1095487488 ( 5.4%) @4.0x, remaining 4:21 RBU 100.0% UBU 100.0%'
+sleep 2 && echo '   77791232/1095487488 ( 7.1%) @4.0x, remaining 4:08 RBU 100.0% UBU 100.0%'
+sleep 2 && echo ' 1037893632/1095487488 (94.7%) @4.0x, remaining 0:10 RBU 100.0% UBU 100.0%'
+sleep 2 && echo ' 1056374784/1095487488 (96.4%) @4.0x, remaining 0:07 RBU 100.0% UBU 100.0%'
+sleep 2 && echo ' 1074823168/1095487488 (98.1%) @4.0x, remaining 0:03 RBU  61.6% UBU 100.0%'
+sleep 2 && echo ' 1093304320/1095487488 (99.8%) @4.0x, remaining 0:00 RBU   6.5% UBU 100.0%'
+sleep 2 && echo 'builtin_dd: 534912*2KB out @ average 3.9x1352KBps'
+sleep 2 && echo '/dev/pass0: flushing cache'
+sleep 2 && echo '/dev/pass0: updating RMA'
+sleep 2 && echo '/dev/pass0: closing disc'
