@@ -757,8 +757,6 @@ class DiskPage(QtWidgets.QWizardPage, object):
                         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-optical'), title)
                     elif di.get("geomname").startswith("da") == True:
                         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-removable-media'), title)
-                        item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable) # FIXME: https://github.com/helloSystem/ISO/issues/200
-                        item.setFlags(item.flags() & ~QtCore.Qt.ItemIsEnabled) # FIXME: https://github.com/helloSystem/ISO/issues/200
                     else:
                         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-harddisk'), title)
                     self.disk_listwidget.addItem(item)
