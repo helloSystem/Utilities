@@ -13,6 +13,10 @@ Freedom: Lets you load software without restrictions. No signatures, sandboxes, 
 
 Security: Built-in end-to-end encryption where possible. Has full source code available for verification.
 
+# You are in Command
+
+The Command key (⌘) is left to the spacebar on your keyboard. Use it to access shortcuts like ⌘C (Copy) and ⌘V (Paste).
+
 # That's it
 
 Have fun exploring the system. Please keep in mind that this is a pre-release version intended mainly for developers and testers.
