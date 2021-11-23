@@ -16,6 +16,11 @@ class GUI(object):
     def __init__(self):
 
         app = QtWidgets.QApplication(sys.argv)
+        
+        self.process = QtCore.QProcess()
+        
+        if not os.path.exists("/dev/cd0"):
+            self.showFatalError(tr("Optical disc drive not found.")) # TODO: Be more elaborate and check for burning capabilities
             
         if len(sys.argv) < 2:
             filedialog = QtWidgets.QFileDialog()
@@ -43,8 +48,6 @@ class GUI(object):
         
         if not os.path.exists(self.image):
             self.showFatalError(tr("%s does not exist" % self.image))
-        
-        self.process = QtCore.QProcess()
         
         self.burn(self.image)
         
@@ -207,9 +210,12 @@ class GUI(object):
         msg.exec_()
 
     def showFatalError(self, text):
-        self.process.terminate()
-        self.eject()
-        self.progress_window.hide()
+        try:
+            self.process.terminate()
+            self.eject()
+            self.progress_window.hide()
+        except:
+            pass
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Critical)
         msg.setWindowTitle(" ")
