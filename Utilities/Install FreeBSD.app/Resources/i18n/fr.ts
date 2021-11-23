@@ -57,7 +57,7 @@
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
-        <translation>FreeBSD est une système d&apos;exploitation pour une multitude de plateformes qui se concentre sur les fonctionnalités, la vitesse, et la stabilité. C&apos;est une dérivé de BSD, une version de UNIXÂ® développé par l&apos;Université de Berkeley, en Californie. Ce système est développé et maintenu pour une grande communauté à travers le monde.</translation>
+        <translation>FreeBSD est un système d&apos;exploitation pour une multitude de plateformes qui se concentre sur les fonctionnalités, la vitesse, et la stabilité. C&apos;est un dérivé de BSD, une version de UNIXÂ® développé par l&apos;Université de Berkeley, en Californie. Ce système est développé et maintenu pour une grande communauté à travers le monde.</translation>
     </message>
     <message>
         <source>License Terms</source>
