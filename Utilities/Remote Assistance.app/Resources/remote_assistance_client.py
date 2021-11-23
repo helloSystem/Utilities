@@ -32,7 +32,7 @@ from PyQt5.QtNetwork import QHostInfo
 import psutil
 import re
 import shutil
-
+from speakable import * # Bundled
 
 # TODO: Reimplement tuntox in Python using https://github.com/TokTok/py-toxcore-c
 # According to https://github.com/gjedeer/tuntox/issues/33#issuecomment-439614638
@@ -91,7 +91,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.tuntox_infolabel = QtWidgets.QLabel()
         vbox.addWidget(self.tuntox_infolabel)
-        self.tuntox_infolabel.setText(self.tr(self.tr("Enter ID of the computer asking for support:")))
+        self.tuntox_infolabel.setText(self.tr(self.tr("Enter the code of the computer asking for support:")))
 
         self.tox_btn = QtWidgets.QPushButton()
         self.tox_btn.setText(self.tr("Connect"))
@@ -141,7 +141,8 @@ class Window(QtWidgets.QMainWindow):
         self.tox_id_lineedit.setEnabled(False)
         command = "tuntox"
         # -L localport:127.0.0.1:dest_port
-        args = ["-i", self.tox_id_lineedit.text(), "-L", "59000:127.0.0.1:5900"]
+        tox_id = self.tox_id_lineedit.text()
+        args = ["-i", get_payload_from_speakable(tox_id), "-L", "59000:127.0.0.1:5900"]
         self.tuntox_process = QtCore.QProcess()
         self.tuntox_process.readyReadStandardOutput.connect(self.onReadyReadStandardOutput)
         self.tuntox_process.readyReadStandardError.connect(self.onReadyReadStandardError)
