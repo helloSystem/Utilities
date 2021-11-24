@@ -25,9 +25,10 @@ if [ -n "${INSTALLER_PRINT_MIB_NEEDED}" ] ; then
 fi
 
 if [ -e "${INSTALLER_TARGET_MOUNTPOINT}" ] ; then
-  cpdup -o -v "${HERE}" "${INSTALLER_TARGET_MOUNTPOINT}" # Allow to overwrite but not to delete anything
   # CAUTION: This is DANGEROUS if permissions on the image are insufficient, because then permissions
   # on the system will be changed accordingly
+  cpdup -o -v "${HERE}" "${INSTALLER_TARGET_MOUNTPOINT}" # Allow to overwrite but not to delete anything
+  rm -rf "${INSTALLER_TARGET_MOUNTPOINT}/Install Developer Tools.app"
 else
   echo "${INSTALLER_TARGET_MOUNTPOINT} does not exist" >&2
   exit 1
