@@ -545,8 +545,6 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         env = QtCore.QProcessEnvironment.systemEnvironment()
         
         env.insert("INSTALLER_TARGET_MOUNTPOINT", wizard.selected_vol.rootPath())
-        
-        print("xxxxxxxxxxxx1")
 
         self.ext_process.setProcessEnvironment(env)
         self.ext_process.setStandardOutputFile(wizard.logfile)
