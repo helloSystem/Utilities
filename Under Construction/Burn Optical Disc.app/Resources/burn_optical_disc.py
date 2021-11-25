@@ -166,7 +166,7 @@ class GUI(object):
                
     def blank(self):
         self.process.setProgram("sudo")
-        self.process.setArguments(["-A", "-E", "dvd+rw-format", "-blank", "/dev/cd0"])
+        self.process.setArguments(["-A", "-E", "dvd+rw-format", "-force", "-blank", "/dev/cd0"])
         codec = QtCore.QTextCodec.codecForLocale()
         self.process._decoder_stdout = codec.makeDecoder()
         self.process._decoder_stderr = codec.makeDecoder()
