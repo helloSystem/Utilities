@@ -598,7 +598,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
             # The target disk is filled more than we thought we would need
             wizard.progress.setRange(0, 0) # Indeterminate
         else:
-            wizard.progress.setRange(0, wizard.required_mib_on_disk + self.mib_already_on_disk_before_install)
+            wizard.progress.setRange(self.mib_already_on_disk_before_install, wizard.required_mib_on_disk + self.mib_already_on_disk_before_install)
             wizard.progress.setValue(mib_used_on_target_disk)
         
 #############################################################################
