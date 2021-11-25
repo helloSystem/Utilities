@@ -42,8 +42,6 @@ class GUI(object):
             if file.endswith(".png"):
                 self.iconfile = os.path.dirname(self.file_symlink_resolved) + "/" + file
                 break
-        self.disk_image_iconfile = self.iconfile # os.path.dirname(self.file_symlink_resolved) + "/discimage.png"
-
         self.prepare_progress_window()
         
         if not os.path.exists(self.image):
@@ -229,7 +227,7 @@ class GUI(object):
         self.progress_window.setWindowFlag(QtCore.Qt.WindowCloseButtonHint, False) # Why does KWin still show it, even if unclickable?
         self.progress_window.setStyleSheet("QDialogButtonBox,QTextEdit{min-width: 500px; } QLabel{min-height: 50px;} QProgressBar{min-width: 410px;}") # FIXME: Do this without hardcoding 410px
         self.progress_window.setStandardButtons(QtWidgets.QMessageBox.NoButton)
-        self.progress_window.setIconPixmap(QtGui.QPixmap(self.disk_image_iconfile))
+        self.progress_window.setIconPixmap(QtGui.QPixmap(self.iconfile))
         self.progress_window.layout().setAlignment(QtCore.Qt.AlignTop)
         self.progress = QtWidgets.QProgressBar()
         self.progress.setMaximum(0) # Indeterminate
