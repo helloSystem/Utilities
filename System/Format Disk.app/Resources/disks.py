@@ -199,6 +199,8 @@ class Partition(object):
     def get_volume_label(self):
         command = ["fstyp", "-l", "/dev/" + self.name]
         out, err, rc = call(command)
+        if rc != 0:
+            return self.name
         parts = out[0].split(" ")
         parts.pop(0)
         result = " ".join(parts)
