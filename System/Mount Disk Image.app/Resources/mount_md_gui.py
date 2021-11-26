@@ -45,8 +45,8 @@ class GUI(object):
             self.showFatalError(tr("%s does not exist" % self.image))
             
         self.process = QtCore.QProcess()
-        self.process.setProgram("sudo")
-        self.process.setArguments(["-A", "-E", "mount_md", self.image])
+        self.process.setProgram("mount_md") # chmod 6755 /sbin/mdconfig so that it runs as root:wheel
+        self.process.setArguments([self.image])
 
         print(self.process.program() + " " + " ".join(self.process.arguments()))
  
