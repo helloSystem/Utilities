@@ -66,6 +66,8 @@ class Window(QMainWindow):
         self.device = None
         if sys.argv[1].startswith("/dev/"):
             self.device = sys.argv[1]
+        if sys.argv[1].startswith("computer:///"):
+            self.device = self.determineDeviceNode(self.determineMountPoint(sys.argv[1]))
         else:
             self.device = self.determineDeviceNode(sys.argv[1])
 
@@ -80,6 +82,17 @@ class Window(QMainWindow):
             self.get_geom_details()
         self.load_ui()
 
+    def determineMountPoint(self, gio_uri):
+        # Whoever invented URIs for use in gio did not understand the Unix philosophy;
+        # so let's get back the path from that dreaded URI
+        cmd = "gio info '" + gio_uri + "' | grep 'standard::target-uri' | cut -d '/' -f 3-1024"
+        ps = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        output = ps.communicate()[0].decode("utf-8").strip()
+        if os.path.exists(output):
+            return(output)
+        else:
+            return(None)
+ 
     def determineDeviceNode(self, mountpoint):
         device_node = None
         print("Determining device node for mount point %s..." % mountpoint)
