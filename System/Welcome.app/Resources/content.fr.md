@@ -22,3 +22,5 @@ La touche Commande (⌘) se trouve à gauche de la barre d'espacement sur votre 
 Amusez-vous bien à explorer le système. N'oubliez pas qu'il s'agit d'une version préliminaire destinée principalement aux développeurs et aux testeurs.
 
 Nous serions ravis d'avoir de vos nouvelles.
+
+# END

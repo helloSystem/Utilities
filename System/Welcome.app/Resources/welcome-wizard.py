@@ -62,7 +62,16 @@ class Wizard(QtWidgets.QWizard, object):
         # Qt 5.14+ also have an option for Markdown
         # AttributeError: type object 'Qt' has no attribute 'MarkdownText'
         # FIXME: Make it work
-        with open(os.path.dirname(__file__) + '/content.en.md', 'r') as file:
+
+        md_file = os.path.dirname(__file__) + '/content.en.md'
+        # Find localized md file if it exists
+        cmd = 'env | grep "^LANG=" | cut -d "=" -f 2 | cut -d "_" -f 1 | cut -d "." -f 1'
+        ps = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+        output = ps.communicate()[0].decode("utf-8").strip()
+        if os.path.exists(os.path.dirname(__file__) + '/content.' + output + '.md'):
+            md_file = os.path.dirname(__file__) + '/content.' + output + '.md'
+
+        with open(md_file, 'r') as file:
             sections = file.read().split("#")
 
         for section in sections[1:]:

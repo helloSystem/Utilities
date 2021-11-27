@@ -22,3 +22,5 @@ La tecla Comando (⌘) está a la izquierda de la barra espaciadora de tu teclad
 Diviértete explorando el sistema. Por favor, ten en cuenta que esta es una versión preliminar destinada principalmente a desarrolladores y probadores.
 
 Nos encantaría saber de ti.
+
+# END

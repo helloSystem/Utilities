@@ -22,3 +22,5 @@ The Command key (⌘) is left to the spacebar on your keyboard. Use it to access
 Have fun exploring the system. Please keep in mind that this is a pre-release version intended mainly for developers and testers.
 
 We would love to hear from you.
+
+# END

@@ -22,3 +22,5 @@ Die Befehlstaste (⌘) befindet sich links neben der Leertaste auf Ihrer Tastatu
 Viel Spaß beim Erforschen des Systems. Bitte denken Sie daran, dass dies eine Vorabversion ist, die hauptsächlich für Entwickler und Tester gedacht ist.
 
 Wir würden uns freuen, von Ihnen zu hören.
+
+# END
