@@ -112,9 +112,9 @@ class LiteInstaller(object):
             if self.iconfile:
                 self.msgBox.setIconPixmap(QtGui.QPixmap(self.iconfile).scaledToWidth(64, QtCore.Qt.SmoothTransformation))
             self.msgBox.setWindowTitle(" ")
-            self.msgBox.setText(tr("%s needs to be downloaded before it can be used.") % os.path.basename(self.file_symlink_resolved))
+            self.msgBox.setText(tr("%s needs to be downloaded before it can be used.") % os.path.basename(os.path.dirname(self.file_symlink_resolved)).replace(".app", ""))
             self.msgBox.setInformativeText(tr("Do you want to download it now?"))
-            # self.msgBox.setDetailedText("The following packages and their dependencies will be installed:\n" + str(self.packages))
+            # self.msgBox.setDetailedText(tr("The following packages and their dependencies will be installed:\n") + str(self.packages))
             logging.info("The following packages and their dependencies be installed:" + "\n" + str(self.packages))
             self.msgBox.setStandardButtons(QtWidgets.QMessageBox.No | QtWidgets.QMessageBox.Yes)
             self.msgBox.setDefaultButton(QtWidgets.QMessageBox.Yes)
@@ -169,6 +169,12 @@ class LiteInstaller(object):
         lines = text.split("\n")
         for line in lines:
             line = line.strip()
+            if "still holds the lock" in line:
+                self.ext_process.kill()
+                self.msgBox.hide()
+                self.errBox = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning, " ", tr("Another installation is still running. Please try again after it has completed."))
+                self.errBox.exec()
+                exit(0)
             if line.endswith("...") and line[0].isupper():
                 self.msgBox.setText(line)
             if line.startswith("["):
@@ -186,10 +192,14 @@ class LiteInstaller(object):
                 self.total_packages_to_be_installed = int(line.split("[")[1].split("/")[1].split("]")[0].strip())
                 logging.info("total_packages_to_be_installed:", self.total_packages_to_be_installed)
             if "Fetching" in line and self.total_packages_to_be_installed:
-                p = (self.already_fetched_packages / self.total_packages_to_be_installed) * self.having_downloaded_means_percent
-                self.progress.setValue(int(round(p*100)))
-                # logging.info(p)
-                self.already_fetched_packages = self.already_fetched_packages + 1 # Increment at the end, because the relevant line is printed when the action starts, not when it finishes
+                 try:
+                    # Wrap in a 'try' statement to prevent from division by zero errors            
+                    p = (self.already_fetched_packages / self.total_packages_to_be_installed) * self.having_downloaded_means_percent
+                    self.progress.setValue(int(round(p*100)))
+                    # logging.info(p)
+                    self.already_fetched_packages = self.already_fetched_packages + 1 # Increment at the end, because the relevant line is printed when the action starts, not when it finishes
+                 except:
+                    pass
             if "Extracting" in line:
                 if self.already_fetched_packages < self.total_packages_to_be_installed:
                     # Some or all packages had already been downloaded and were re-used from the cache.
@@ -210,7 +220,7 @@ class LiteInstaller(object):
     # def scroll_to_last_line(self):
     #     cursor = self.textCursor()
     #     cursor.movePosition(QTextCursor.End)
-    #     cursor.movePosition(QTextCursor.Up if cursor.atBlockStart() else
+    #     cursor.movePosition(QTextCursor.Up if cursor.atBStart() else
     #                         QTextCursor.StartOfLine)
     #     self.setTextCursor(cursor)
 
@@ -347,7 +357,7 @@ class LiteInstaller(object):
 
     def read_file_contents(self, filename):
         global results
-        file = open(os.path.dirname(self.file_symlink_resolved) + "/" + filename)
+        file = open(os.path.dirname(self.file_symlink_resolved) + "/Resources/" + filename)
         lines = file.read().split("\n")
         file.close()
         results = []
