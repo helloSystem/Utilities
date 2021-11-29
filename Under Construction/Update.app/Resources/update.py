@@ -236,7 +236,8 @@ class LiteInstaller(object):
                 # self.showNonfatalError(text)
                 pass
             else:
-                self.showFatalError(text)
+                if not "/include/" in text and not "No such file" in text:
+                    self.showFatalError(text)
 
     def showNonfatalError(self, text):
             msg = QtWidgets.QMessageBox()
