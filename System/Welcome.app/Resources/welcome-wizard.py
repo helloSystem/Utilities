@@ -106,7 +106,10 @@ class IntroPage(QtWidgets.QWizardPage):
             if os.path.exists(done_file):
                 os.utime(done_file, None)
             else:
-                os.makedirs(os.path.expanduser("~/.config/hello/"))
+                try:
+                    os.makedirs(os.path.expanduser("~/.config/hello/"))
+                except FileExistsError:
+                    pass
                 open(done_file, 'a').close()
             sys.exit()
 
