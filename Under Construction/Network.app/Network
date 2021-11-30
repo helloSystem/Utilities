@@ -375,6 +375,18 @@ if __name__ == "__main__":
     p.start()
     p.waitForFinished()
 
+    # https://github.com/helloSystem/ISO/issues/330
+    # This requires ifconfig to be setuid so that normal users can run it
+    p.setProgram("ifconfig")
+    p.setArguments(["wlan0", "down"])
+    print(p.program() + " " + " ".join(p.arguments()))
+    p.start()
+    p.waitForFinished()
+    p.setArguments(["wlan0", "up"])
+    print(p.program() + " " + " ".join(p.arguments()))
+    p.start()
+    p.waitForFinished()
+
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     NM = NetworkMenu()
