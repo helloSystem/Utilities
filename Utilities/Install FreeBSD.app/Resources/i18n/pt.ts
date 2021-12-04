@@ -21,15 +21,15 @@
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>O registo do instalador não pode ser aberto.</translation>
     </message>
     <message>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Questão</translation>
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Isso enviará uma vez um pedido ao ipapi.com para localizar o seu computador pela rede. Continuar?</translation>
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
