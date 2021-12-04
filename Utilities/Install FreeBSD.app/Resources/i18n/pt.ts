@@ -17,11 +17,11 @@
     </message>
     <message>
         <source>Installer Log</source>
-        <translation>Registo do instalador</translation>
+        <translation>Registo do Instalador</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation>O registo do instalador não pode ser aberto.</translation>
+        <translation>O Registo do Instalador não pode ser aberto.</translation>
     </message>
     <message>
         <source>Question</source>
@@ -169,7 +169,7 @@
     </message>
     <message>
         <source>The installation did not succeed. Please see the Installer Log for more information.</source>
-        <translation>A instalação não teve sucesso. Por favor, consulte o Registro de Instalação para mais informações.</translation>
+        <translation>A instalação não foi bem sucedida. Para mais informações, consulte o Registo do Instalador.</translation>
     </message>
     <message>
         <source>Installation Complete</source>
@@ -181,7 +181,7 @@
     </message>
     <message>
         <source>FreeBSD has been installed on your computer, click &apos;Restart&apos; to begin using it.</source>
-        <translation>O FreeBSD foi instalado no seu computador, clique em &quot;Reiniciar&quot; para começar a usá-lo.</translation>
+        <translation>O FreeBSD foi instalado no computador, clique em &quot;Reiniciar&quot; para começar a utilizá-lo.</translation>
     </message>
     <message>
         <source>Restart</source>
@@ -197,7 +197,7 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation>A instalação não pôde ser realizada.</translation>
+        <translation>A instalação não pôde ser executada.</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -208,7 +208,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation>Olá, Mundo</translation>
+        <translation>Olá Mundo</translation>
     </message>
 </context>
 </TS>
