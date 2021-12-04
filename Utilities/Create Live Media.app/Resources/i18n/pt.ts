@@ -5,11 +5,11 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Criar um suporte &quot;Live&quot;</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Isto irá transferir uma imagem &quot;Live&quot; e irá gravá-la num dispositivo de armazenamento anexado.</translation>
     </message>
     <message>
         <source>Other...</source>
@@ -17,11 +17,11 @@
     </message>
     <message>
         <source>Local ISO file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Ficheiro ISO local...</translation>
     </message>
     <message>
         <source>Please choose an image:</source>
-        <translation type="unfinished"></translation>
+        <translation>Selecione uma imagem:</translation>
     </message>
     <message>
         <source>Date</source>
@@ -29,19 +29,19 @@
     </message>
     <message>
         <source>Show Pre-release builds</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostrar compilações de pré-lançamento</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Outro</translation>
     </message>
     <message>
         <source>URL of the ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>URL da ISO</translation>
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Imagens de disco (*.iso *.img);;Todos os ficheiros (*.*)</translation>
     </message>
     <message>
         <source>This requires an active internet connection.</source>
@@ -57,7 +57,7 @@
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível determinar o espaço necessário em disco.</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
@@ -69,35 +69,35 @@
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Isto irá apagar todo o conteúdo deste disco e instalará o sistema &quot;live&quot; no mesmo. Continuar?</translation>
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
-        <translation type="unfinished"></translation>
+        <translation>A transferir e a gravar o suporte &quot;Live&quot;</translation>
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem &quot;Live&quot; está a ser transferida e gravada para o suporte.</translation>
     </message>
     <message>
         <source>Could not unmount parititons.</source>
-        <translation type="unfinished"></translation>
+        <translation>Não foi possível desmontar as partições.</translation>
     </message>
     <message>
         <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ocorreu um erro ao tentar gravar a imagem. O URL de transferência está acessível? Todas as partições foram desmontadas? Tem permissões de gravação?</translation>
     </message>
     <message>
         <source>Live Medium Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Suporte &quot;Live&quot; concluído</translation>
     </message>
     <message>
         <source>The Live image has been written to the device.</source>
-        <translation type="unfinished"></translation>
+        <translation>A imagem &quot;Live&quot; foi gravada para o dispositivo.</translation>
     </message>
     <message>
         <source>You can now start your computer from the Live medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>Pode agora iniciar o seu computador a partir do suporte &quot;Live&quot;.</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -105,7 +105,7 @@
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
-        <translation type="unfinished"></translation>
+        <translation>O dispositivo foi removido, a terminar</translation>
     </message>
     <message>
         <source>Error</source>
@@ -113,14 +113,14 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation>A instalação não pôde ser realizada.</translation>
+        <translation>A instalação não pôde ser executada.</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation>Olá, Mundo</translation>
+        <translation>Olá Mundo</translation>
     </message>
 </context>
 </TS>
