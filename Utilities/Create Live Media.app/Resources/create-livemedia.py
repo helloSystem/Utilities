@@ -508,7 +508,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
             proc.startDetached(command, args)
             proc.waitForFinished()
         except:
-            wizard.showErrorPage(tr("Could not unmount parititons."))
+            wizard.showErrorPage(tr("Could not unmount partitions."))
 
         # Download and write directly to the device
         print(wizard.selected_iso_url)
