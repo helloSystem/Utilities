@@ -1,0 +1,4 @@
+#!/bin/sh
+
+mkdir -p ~/.local/share/fonts
+exec open ~/.local/share/fonts
