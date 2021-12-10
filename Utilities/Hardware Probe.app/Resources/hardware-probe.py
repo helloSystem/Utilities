@@ -358,7 +358,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         # label.setWordWrap(True)
         # layout.addWidget(label)
 
-        wizard.showUploadedProbeButton = QtWidgets.QPushButton(re('Show uploaded Hardware Probe'), self)
+        wizard.showUploadedProbeButton = QtWidgets.QPushButton(tr('Show uploaded Hardware Probe'), self)
         wizard.showUploadedProbeButton.clicked.connect(self.showUploadedProbeButtonClicked)
         layout.addWidget(wizard.showUploadedProbeButton)
 
