@@ -54,7 +54,7 @@ def make_speakable(payload):
             'accept': '*/*',
             'dnt': '1',
         }
-        data = '{"message":"' + payload + '","ttl":60}'
+        data = '{"message":"' + payload + '","ttl":300}'
         response = requests.post('https://url.api.stdlib.com/temporary@0.3.0/messages/create/', headers=headers,
                                  data=data)
         response.raise_for_status()
