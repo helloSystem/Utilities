@@ -195,6 +195,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
         self.release_listwidget = QtWidgets.QListWidget()
         self.disk_vlayout.addWidget(self.release_listwidget)
         self.release_listwidget.itemSelectionChanged.connect(self.onSelectionChanged)
+        self.release_listwidget.setAlternatingRowColors(True);
 
         # Date label
         self.date_label = QtWidgets.QLabel()
@@ -269,7 +270,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
             data = json.loads(url.read().decode())
             # print(data)
             for release in data:
-                if len(release["assets"]) > 1:
+                if len(release["assets"]) > 0:
                     # print(asset)
                     for asset in release["assets"]:
                         if asset["browser_download_url"].endswith(".iso"):
