@@ -1,0 +1,97 @@
+#!/bin/sh
+#
+# PROVIDE: debian
+# REQUIRE: archdep mountlate devd
+# KEYWORD: nojail
+#
+# This is a modified version of /etc/rc.d/linux from FreeBSD 12.2-RELEASE
+#
+. /etc/rc.subr
+
+name="debian"
+desc="Enable Debian chroot, and Linux ABI"
+rcvar="debian_enable"
+start_cmd="${name}_start"
+stop_cmd="${name}_stop"
+
+cleanup() {
+  umount -f /compat/*/tmp 2>/dev/null
+  umount -f /compat/*/dev/shm 2>/dev/null
+  umount -f /compat/*/dev/fd 2>/dev/null
+  umount -f /compat/*/dev 2>/dev/null
+  umount -f /compat/*/sys 2>/dev/null
+  umount -f /compat/*/proc 2>/dev/null
+  umount -f /media/.debian/tmp 2>/dev/null
+  umount -f /media/.debian/dev/shm 2>/dev/null
+  umount -f /media/.debian/dev/fd 2>/dev/null
+  umount -f /media/.debian/dev 2>/dev/null
+  umount -f /media/.debian/sys 2>/dev/null
+  umount -f /media/.debian/proc 2>/dev/null
+  umount -f /media/.debian 2>/dev/null
+}
+
+unmounted()
+{
+	[ `stat -f "%d" "$1"` == `stat -f "%d" "$1/.."` -a \
+	  `stat -f "%i" "$1"` != `stat -f "%i" "$1/.."` ]
+}
+
+debian_stop()
+{
+	sysctl compat.linux.emul_path=""
+	cleanup
+}
+
+debian_start()
+{
+	cleanup
+	if [ -e "$(readlink -f "/compat/debian.img")" ] ; then
+		md=$(mdconfig -a -t vnode -o readonly -f "/compat/debian.img")
+
+		# Give /usr/local/sbin/automount time to kick in;
+		# assuming debian.img is a uzip that will be mounted by automount
+		# at /media/.debian; try this for 5 seconds; continue otherwise
+		i=0
+		while [ $i -lt 50 ] ; do
+			mount | grep "^\/dev\/$md.uzip on " 2>&1 && break
+			sleep 0.1
+			i="$((i+1))" 
+		done
+	fi
+	
+	local _emul_path _tmpdir
+
+	load_kld -e 'linux(aout|elf)' linux
+	case `sysctl -n hw.machine_arch` in
+	amd64)
+		load_kld -e 'linux64elf' linux64
+		;;
+	esac
+
+	# Linux uses the pre-pts(4) tty naming scheme.
+	load_kld pty
+
+	# Handle unbranded ELF executables by defaulting to ELFOSABI_LINUX.
+	if [ `sysctl -ni kern.elf64.fallback_brand` -eq "-1" ]; then
+		sysctl kern.elf64.fallback_brand=3 > /dev/null
+	fi
+
+	if [ `sysctl -ni kern.elf32.fallback_brand` -eq "-1" ]; then
+		sysctl kern.elf32.fallback_brand=3 > /dev/null
+	fi
+	sysctl compat.linux.emul_path=/media/.debian
+
+	_emul_path="/media/.debian"
+	unmounted "${_emul_path}/proc" && (mount -t linprocfs linprocfs "${_emul_path}/proc" || exit 1)
+	unmounted "${_emul_path}/sys" && (mount -t linsysfs linsysfs "${_emul_path}/sys" || exit 1)
+	unmounted "${_emul_path}/dev" && (mount -t devfs devfs "${_emul_path}/dev" || exit 1)
+	unmounted "${_emul_path}/dev/fd" && (mount -o linrdlnk -t fdescfs fdescfs "${_emul_path}/dev/fd" || exit 1)
+	unmounted "${_emul_path}/dev/shm" && (mount -o mode=1777 -t tmpfs tmpfs "${_emul_path}/dev/shm" || exit 1)
+	unmounted "${_emul_path}/tmp" && (mount -t nullfs /tmp "${_emul_path}/tmp" || exit 1)
+	unmounted /dev/fd && (mount -t fdescfs null /dev/fd || exit 1)
+	unmounted /proc && (mount -t procfs procfs /proc || exit 1)
+	true
+}
+
+load_rc_config $name
+run_rc_command "$1"
