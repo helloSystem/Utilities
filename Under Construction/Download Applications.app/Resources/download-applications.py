@@ -100,6 +100,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         self.geolocation = None
         self.timezone = None
         self.required_mib_on_disk = 0
+        self.save_loc = None
 
         # TODO: Make sure it is actually executable
 
@@ -185,7 +186,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
         self.disk_vlayout.addWidget(self.repo_menu)
         self.repo_menu.currentTextChanged.connect(self.populateImageList)
         #wizard.selected_iso_url = "file:///usr/home/user/Downloads/alpine-standard-3.13.0-x86_64.iso"
-        #urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
+        #urllib.request.urlretrieve(wizard.selected_iso_url, wizard.save_loc, self.handleProgress)
 
         # Release label
         self.label = QtWidgets.QLabel()
@@ -350,7 +351,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
 
         # If we immediately call self.download(), then the window contents don't get drawn.
         # Hence we use a timer.
-        self.save_loc = str(Path.home()) + "/Downloads/" + os.path.basename(wizard.selected_iso_url)
+        wizard.save_loc = str(Path.home()) + "/Downloads/" + os.path.basename(wizard.selected_iso_url)
         workaroundtimer = QtCore.QTimer()
         workaroundtimer.singleShot(200, self.download)
 
@@ -373,7 +374,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         socket.setdefaulttimeout(240)
         print("socket.getdefaulttimeout(): %s" % socket.getdefaulttimeout())
         try:
-            urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
+            urllib.request.urlretrieve(wizard.selected_iso_url, wizard.save_loc, self.handleProgress)
         except BaseException as error:
             print('An error occurred: {}'.format(error))
             wizard.showErrorPage('{}'.format(error) + ".")
@@ -397,6 +398,17 @@ class SuccessPage(QtWidgets.QWizardPage, object):
 
         wizard.playSound()
 
+        # Mount the downloaded .img
+        proc = QtCore.QProcess()
+        command = 'launch'
+        args = ['Mount Disk Image',  wizard.save_loc]
+        print(command, args)
+        try:
+            proc.startDetached(command, args)
+            proc.waitForFinished()
+        except:
+            print("Could not mount disk image")
+                            
         self.setTitle(tr('Download Complete'))
         self.setSubTitle(tr('The application has been downloaded to ~/Downloads.'))
 
