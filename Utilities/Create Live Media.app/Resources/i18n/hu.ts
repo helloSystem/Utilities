@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Élő média létrehozása</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
@@ -49,11 +49,11 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Válaszd Ki A Céllemezt</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Minden adat törlésre kerül a kiválasztott lemezen.</translation>
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
@@ -61,11 +61,11 @@
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>A lemezen ennyi helyre van szükség: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Figyelem</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
@@ -101,7 +101,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Kilépés</translation>
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
@@ -109,18 +109,18 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiba</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>A telepítést nem sikerült végrehajtani.</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Hello Világ</translation>
     </message>
 </context>
 </TS>
