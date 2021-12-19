@@ -37,11 +37,11 @@
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation>Hangerő információ:</translation>
+        <translation>Lemez információ:</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation>Parititioning Scheme:</translation>
+        <translation>Partíciós séma:</translation>
     </message>
     <message>
         <source>Restore</source>
@@ -60,15 +60,15 @@
     </message>
     <message>
         <source>Account Type:</source>
-        <translation>Folyószámlatípusok</translation>
+        <translation>Fiók típusa:</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation>Folyószámla Neve</translation>
+        <translation>Fiók neve:</translation>
     </message>
     <message>
         <source>Remove Users</source>
-        <translation>Felhasználó eltávolítása</translation>
+        <translation>Felhasználók eltávolítása</translation>
     </message>
     <message>
         <source>Administrator</source>
@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>The passwords do not match.</source>
-        <translation>A jelszavak nem egyeznek meg.</translation>
+        <translation>A jelszavak nem egyeznek.</translation>
     </message>
 </context>
 <context>
