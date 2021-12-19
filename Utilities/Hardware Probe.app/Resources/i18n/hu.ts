@@ -5,15 +5,15 @@
     <name>@default</name>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ismeretlen hiba történt.</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Hardver szkennelés</translation>
     </message>
     <message>
         <source>Privacy Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Adatvédelmi információ</translation>
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
@@ -21,7 +21,7 @@
     </message>
     <message>
         <source>Please see %s for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kérlek nézd meg a %s-t több információért.</translation>
     </message>
     <message>
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
@@ -67,7 +67,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Kilépés</translation>
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
@@ -75,7 +75,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiba</translation>
     </message>
     <message>
         <source>Hardware Probe was not successful.</source>
@@ -86,7 +86,7 @@
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Hello Világ</translation>
     </message>
 </context>
 </TS>
