@@ -5,23 +5,23 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>დააინსტალირეთ FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>მოხდა უცნობი შეცდომა.</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
-        <translation type="unfinished"></translation>
+        <translation>წინასწარ არსებული %-ის წაიშალა</translation>
     </message>
     <message>
         <source>Installer Log</source>
-        <translation type="unfinished"></translation>
+        <translation>ინსტალატორის ლოგების ჟურნალი</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>ინსტალერის ლოგების ჟურნალის გახსნა შეუძლებელია.</translation>
     </message>
     <message>
         <source>Question</source>
