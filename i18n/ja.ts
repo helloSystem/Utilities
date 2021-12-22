@@ -5,11 +5,11 @@
     <name>DiskUtility</name>
     <message>
         <source>Disk Utility</source>
-        <translation>ディスクユティリティ</translation>
+        <translation>ディスクユーティリティ</translation>
     </message>
     <message>
         <source>Partition</source>
-        <translation>パティション</translation>
+        <translation>パーティション</translation>
     </message>
     <message>
         <source>+</source>
