@@ -5,11 +5,11 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>Zainstaluj FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wystąpił nieznany błąd.</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
@@ -25,7 +25,7 @@
     </message>
     <message>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Pytanie</translation>
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
