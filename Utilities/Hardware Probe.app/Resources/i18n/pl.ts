@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>An unknown error occured.</source>
-        <translation type="unfinished"></translation>
+        <translation>Wystąpił nieznany błąd.</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>Privacy Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Informacja o Prywatności</translation>
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
@@ -21,7 +21,7 @@
     </message>
     <message>
         <source>Please see %s for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zobacz %s po więcej informacji.</translation>
     </message>
     <message>
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
