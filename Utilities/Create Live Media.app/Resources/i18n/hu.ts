@@ -9,43 +9,43 @@
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ez le fogja tölteni a Live Image-et és kiírja a csatolt adattárolóra.</translation>
     </message>
     <message>
         <source>Other...</source>
-        <translation type="unfinished"></translation>
+        <translation>Egyéb...</translation>
     </message>
     <message>
         <source>Local ISO file...</source>
-        <translation type="unfinished"></translation>
+        <translation>Helyi ISO lemezképfájl...</translation>
     </message>
     <message>
         <source>Please choose an image:</source>
-        <translation type="unfinished"></translation>
+        <translation>Válasszon egy lemezképet:</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Dátum</translation>
     </message>
     <message>
         <source>Show Pre-release builds</source>
-        <translation type="unfinished"></translation>
+        <translation>Pre-Release buildek mutatása</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Egyéb</translation>
     </message>
     <message>
         <source>URL of the ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>Az ISO lemezképfájl URL-je</translation>
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Képfájlok (*.iso *img);;Minden fájl (*.*)</translation>
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ehhez internetkapcsolat szükséges.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
@@ -57,7 +57,7 @@
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nem sikerült a szükséges lemezterület meghatározása.</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
@@ -69,35 +69,35 @@
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Ez a lemez teljes tartalmát törölni fogja és telepíti a LIVE rendszert. Folytatja?</translation>
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
-        <translation type="unfinished"></translation>
+        <translation>Letöltés és LIVE rendszer kiírása</translation>
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>A Live Image letöltődés es felíródik az adattárolóra.</translation>
     </message>
     <message>
         <source>Could not unmount parititons.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nem sikerült a partíciók lecsatolása.</translation>
     </message>
     <message>
         <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
-        <translation type="unfinished"></translation>
+        <translation>Hiba történt a képfájlok kiírása közben. Elérhető az URL cím? Le volt csatolva minden partíció? Van önnek írási engedélye?</translation>
     </message>
     <message>
         <source>Live Medium Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>LIVE média kész</translation>
     </message>
     <message>
         <source>The Live image has been written to the device.</source>
-        <translation type="unfinished"></translation>
+        <translation>A Live Image ki lett írva az eszközre.</translation>
     </message>
     <message>
         <source>You can now start your computer from the Live medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>Most már elindíthatja gépét a Live Image-dzsel.</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -105,7 +105,7 @@
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
-        <translation type="unfinished"></translation>
+        <translation>Az eszköz ki lett húzva, kilépés</translation>
     </message>
     <message>
         <source>Error</source>
