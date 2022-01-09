@@ -8,7 +8,7 @@
         <translation>Встановлення FreeBSD</translation>
     </message>
     <message>
-        <source>An unknown error occured.</source>
+        <source>An unknown error occurred.</source>
         <translation>Сталася невідома помилка.</translation>
     </message>
     <message>

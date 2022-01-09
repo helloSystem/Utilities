@@ -84,7 +84,7 @@
         <translation>분할을 언로드할 수 없습니다.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>이미지를 작성하려고 할 때 오류가 발생했습니다. 다운로드 URL에 액세스할 수 있습니까? 모든 파티션을 마운트 해제한 것입니까? 거기에 쓰기 권한이 있습니까?</translation>
     </message>
     <message>

@@ -84,7 +84,7 @@
         <translation>Bölümlerin bağlantısı kesilemedi.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>Kalıbı yazmaya çalışırken bir hata oluştu. İndirme URL&apos;si erişilebilir mi? Tüm bölümlerin bağlantısı kesili mi? Yazma erişiminiz var mı?</translation>
     </message>
     <message>

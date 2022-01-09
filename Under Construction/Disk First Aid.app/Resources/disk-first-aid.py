@@ -86,7 +86,7 @@ class FirstAidWizard(QtWidgets.QWizard, object):
 
         self.selected_disk_device = None
         self.should_show_last_page = False
-        self.error_message_nice = "An unknown error occured."
+        self.error_message_nice = "An unknown error occurred."
 
         self.setWizardStyle(QtWidgets.QWizard.MacStyle)
         self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/background.png'))

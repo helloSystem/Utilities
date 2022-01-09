@@ -84,7 +84,7 @@
         <translation>Partitionen konnten nicht ausgehängt werden.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>Beim Versuch, das Image zu schreiben, ist ein Fehler aufgetreten. Ist die Download-URL zugänglich? Wurden alle Partitionen ausgehängt? Haben Sie dort Schreibrechte?</translation>
     </message>
     <message>

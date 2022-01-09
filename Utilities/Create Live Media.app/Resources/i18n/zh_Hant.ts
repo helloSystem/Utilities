@@ -84,7 +84,7 @@
         <translation>無法卸載分割。</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>嘗試寫入影像檔時發生錯誤。 下載 URL 網址可以訪問嗎？ 是否已卸載所有分割？ 你那裡有寫入權限嗎？</translation>
     </message>
     <message>

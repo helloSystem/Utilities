@@ -8,7 +8,7 @@
         <translation>FreeBSD Telepítése</translation>
     </message>
     <message>
-        <source>An unknown error occured.</source>
+        <source>An unknown error occurred.</source>
         <translation>Ismeretlen hiba történt.</translation>
     </message>
     <message>

@@ -84,7 +84,7 @@
         <translation>Kan partities niet ontkoppelen.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>Er is een fout opgetreden tijdens het schrijven van de image. Is de download URL toegankelijk? Zijn alle partities ontkoppeld? Heeft u daar schrijfrechten?</translation>
     </message>
     <message>

@@ -291,7 +291,7 @@ class ZeroconfBrowser(object):
                 msg.setDetailedText(data)
         msg.setText("<h3>Zeroconf</h3>")
         msg.setInformativeText(
-            "A simple utility to browse services on the network announced with Zeroconf<br><br>Grateful acknowledgement is made to <a href='https://en.wikipedia.org/wiki/Stuart_Cheshire'>Stuart Cheshire</a> who pioneered this incredibly useful technology<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+            "A simple utility to browse services on the network announced with Zeroconf<br><br>Grateful acknowledgment is made to <a href='https://en.wikipedia.org/wiki/Stuart_Cheshire'>Stuart Cheshire</a> who pioneered this incredibly useful technology<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
 if __name__ == "__main__":

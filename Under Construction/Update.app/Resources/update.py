@@ -278,7 +278,7 @@ class LiteInstaller(object):
 
         logging.info("Process exit code: %s" % exit_code)
         if exit_code != 0:
-            # An error occured, so we show the last line of output
+            # An error occurred, so we show the last line of output
             all_output_so_far = self.details_textedit.toPlainText()
             text = os.linesep.join([s for s in all_output_so_far.splitlines() if s])
             last_line_of_output = text.splitlines()[-1]
@@ -304,7 +304,7 @@ class LiteInstaller(object):
         # Not doing the following because by that time most likely
         # another error message is already on the screen
         # else:
-        #     self.showFatalError("An error has occured.\nCannot proceed.")
+        #     self.showFatalError("An error has occurred.\nCannot proceed.")
 
 
     def show_install(self):

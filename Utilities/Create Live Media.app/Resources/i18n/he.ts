@@ -84,7 +84,7 @@
         <translation>לא ניתן לנתק את המחיצות.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>אירעה שגיאה בניסיון כתיבת הדמות. האם כתובת ההורדה זמינה? האם כל המחיצות נותקו? יש לך הרשאות כתיבה לשם?</translation>
     </message>
     <message>

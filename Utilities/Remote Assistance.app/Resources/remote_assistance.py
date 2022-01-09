@@ -58,7 +58,7 @@ def internetCheckConnected(host="8.8.8.8", port=53, timeout=3):
         return False
 
 def nth_repl_all(s, sub, repl, nth):
-    "Replace every nth occurence of a string, https://stackoverflow.com/a/46705963"
+    "Replace every nth occurrence of a string, https://stackoverflow.com/a/46705963"
     find = s.find(sub)
     # loop util we find no match
     i = 1

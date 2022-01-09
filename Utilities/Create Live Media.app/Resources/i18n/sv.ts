@@ -84,7 +84,7 @@
         <translation>Kunde inte avmontera partitioner.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>Ett fel uppstod när avbilden försökte skrivas. Är URL:en tillgänglig? Är alla partitioner avmonterade? Har du skrivrättigheter där?</translation>
     </message>
     <message>

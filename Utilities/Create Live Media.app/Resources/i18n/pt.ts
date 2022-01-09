@@ -84,7 +84,7 @@
         <translation>Não foi possível desmontar as partições.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>Ocorreu um erro ao tentar gravar a imagem. O URL de transferência está acessível? Todas as partições foram desmontadas? Tem permissões de gravação?</translation>
     </message>
     <message>

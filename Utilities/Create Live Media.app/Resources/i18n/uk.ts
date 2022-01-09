@@ -84,7 +84,7 @@
         <translation>Не вдалося від&apos;єднати розділи.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>Під час спроби записати образ сталася помилка. Чи доступна URL-адреса для завантаження? Чи всі розділи були від&apos;єднано? Чи є у вас дозвіл на запис?</translation>
     </message>
     <message>
