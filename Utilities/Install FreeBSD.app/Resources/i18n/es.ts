@@ -8,7 +8,7 @@
         <translation>Instalar FreeBSD</translation>
     </message>
     <message>
-        <source>An unknown error occured.</source>
+        <source>An unknown error occurred.</source>
         <translation>Ocurrió un error desconocido.</translation>
     </message>
     <message>

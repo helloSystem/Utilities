@@ -8,7 +8,7 @@
         <translation>FreeBSD&apos;yi yükle</translation>
     </message>
     <message>
-        <source>An unknown error occured.</source>
+        <source>An unknown error occurred.</source>
         <translation>Bilinmeyen bir hata oluştu.</translation>
     </message>
     <message>

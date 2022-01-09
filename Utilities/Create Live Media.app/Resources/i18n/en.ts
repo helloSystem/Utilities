@@ -64,7 +64,7 @@
       <source>Could not unmount parititons.</source>
     </message>
     <message>
-      <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+      <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
     </message>
     <message>
       <source>Live Medium Complete</source>

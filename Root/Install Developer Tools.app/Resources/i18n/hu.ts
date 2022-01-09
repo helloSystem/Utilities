@@ -8,7 +8,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>An unknown error occured.</source>
+        <source>An unknown error occurred.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

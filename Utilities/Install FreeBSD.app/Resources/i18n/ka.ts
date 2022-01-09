@@ -8,7 +8,7 @@
         <translation>დააინსტალირეთ FreeBSD</translation>
     </message>
     <message>
-        <source>An unknown error occured.</source>
+        <source>An unknown error occurred.</source>
         <translation>მოხდა უცნობი შეცდომა.</translation>
     </message>
     <message>

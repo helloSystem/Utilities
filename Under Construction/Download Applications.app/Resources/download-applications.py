@@ -42,7 +42,7 @@ import ssl
 
 # Translate this application using Qt .ts files without the need for compilation
 import tstranslator
-# FIXME: Do not import translations from outside of the appliction bundle
+# FIXME: Do not import translations from outside of the application bundle
 # which currently is difficult because we have all translations for all applications
 # in the whole repository in the same .ts files
 tstr = tstranslator.TsTranslator(os.path.dirname(__file__) + "/i18n", "")
@@ -105,7 +105,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         # TODO: Make sure it is actually executable
 
         self.should_show_last_page = False
-        self.error_message_nice = "An unknown error occured."
+        self.error_message_nice = "An unknown error occurred."
 
         self.setWizardStyle(QtWidgets.QWizard.MacStyle)
         self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/background.png'))

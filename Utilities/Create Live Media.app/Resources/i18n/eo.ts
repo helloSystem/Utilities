@@ -84,7 +84,7 @@
         <translation>Malsukcesis demeti subdiskon.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>Okazis eraro dum provo skribi la diskokopion. Ĉu la elŝutejo estas atingebla? Ĉu ĉiuj subdiskoj estas demetitaj? Ĉu vi havas skribajn rajtojn tie?</translation>
     </message>
     <message>

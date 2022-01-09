@@ -7,7 +7,7 @@
       <source>Install FreeBSD</source>
     </message>
     <message>
-      <source>An unknown error occured.</source>
+      <source>An unknown error occurred.</source>
     </message>
     <message>
       <source>Pre-existing %s removed</source>

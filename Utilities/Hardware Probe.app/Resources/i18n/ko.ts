@@ -4,7 +4,7 @@
 <context>
     <name>@default</name>
     <message>
-        <source>An unknown error occured.</source>
+        <source>An unknown error occurred.</source>
         <translation>알 수없는 오류가 발생했습니다.</translation>
     </message>
     <message>

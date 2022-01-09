@@ -84,7 +84,7 @@
         <translation>Impossible de démonter les parititons.</translation>
     </message>
     <message>
-        <source>An error occured while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
+        <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
         <translation>Une erreur s&apos;est produite lors de la tentative d&apos;écriture de l&apos;image. L&apos;URL de téléchargement est-elle accessible ? Toutes les partitions ont-elles été démontées ? Avez-vous des droits d&apos;écriture&#xa0;?</translation>
     </message>
     <message>
