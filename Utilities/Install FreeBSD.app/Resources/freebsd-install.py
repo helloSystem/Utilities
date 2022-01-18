@@ -1025,7 +1025,10 @@ class UserPage(QtWidgets.QWizardPage, object):
 
         if self.field('enable_ssh') is True:
             self.hostname_label.show()
-            self.hostname_label.setText("ssh %s@%s.local." % (self.field('username'), self.field('computername')))
+            if not "." in self.field('computername'):
+                self.hostname_label.setText("ssh %s@%s.local." % (self.field('username'), self.field('computername')))
+            else:
+                self.hostname_label.setText("ssh %s@%s" % (self.field('username'), self.field('computername')))
         else:
             self.hostname_label.hide()
 
