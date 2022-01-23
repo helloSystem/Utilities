@@ -7,7 +7,7 @@ import re
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtCore import QFile, pyqtSlot, QProcess, QProcessEnvironment
+from PyQt5.QtCore import QFile, pyqtSlot, QProcess, QProcessEnvironment, QObject, Qt
 from PyQt5.uic import loadUi
 
 # Translate this application using Qt .ts files without the need for compilation
