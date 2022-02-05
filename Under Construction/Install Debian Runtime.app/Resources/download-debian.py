@@ -398,7 +398,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         print("Trying to copy rc script to /usr/local/etc/rc.d/debian")
         proc = QtCore.QProcess()
         command = '/bin/cp'
-        args = ['debian', '/usr/local/etc/rc.d/debian']
+        args = [os.path.dirname(__file__) + '/debian', '/usr/local/etc/rc.d/debian']
         print(command, args)
         try:
             proc.startDetached(command, args)
