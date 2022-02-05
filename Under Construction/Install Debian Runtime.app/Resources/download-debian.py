@@ -374,6 +374,17 @@ class InstallationPage(QtWidgets.QWizardPage, object):
     def download(self):
         print("Download started")
 
+        print("Trying to create /compat directory")
+        proc = QtCore.QProcess()
+        command = '/bin/mkdir'
+        args = ['-p', '/compat']
+        print(command, args)
+        try:
+            proc.startDetached(command, args)
+            proc.waitForFinished()
+        except:
+            wizard.showErrorPage(tr("Could not create /compat directory."))
+
         # Download and write directly to the device
         print(wizard.selected_iso_url)
         socket.setdefaulttimeout(240)
