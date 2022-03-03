@@ -52,7 +52,7 @@ from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import QPixmap
 
 __version__ = "0.1-mod1"
-__author__ = "Leodanis Pozo Ramos"
+__author__ = "Leodanis Pozo Ramos & Contributors"
 
 ERROR_MSG = "ERROR"
 
@@ -66,7 +66,7 @@ class PyCalcUi(QMainWindow):
         super().__init__()
         # Set some main window's properties
         self.setWindowTitle("Calculator")
-        self.setFixedSize(240, 280)
+        self.setFixedSize(160, 230)
         # Set the central widget and the general layout
         self.generalLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
@@ -84,7 +84,7 @@ class PyCalcUi(QMainWindow):
         # Set some display's properties
         # self.display.setFixedHeight(35)
         self.display.setAlignment(Qt.AlignRight)
-        self.display.setReadOnly(True)
+        self.display.setReadOnly(False)
         # Add the display to the general layout
         self.generalLayout.addWidget(self.display)
 
@@ -118,7 +118,7 @@ class PyCalcUi(QMainWindow):
         # Create the buttons and add them to the grid layout
         for btnText, pos in buttons.items():
             self.buttons[btnText] = QPushButton(btnText)
-            self.buttons[btnText].setFixedSize(50, 40)
+            self.buttons[btnText].setFixedSize(34, 36)
             buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1])
         # Add buttonsLayout to the general layout
         self.generalLayout.addLayout(buttonsLayout)
@@ -144,6 +144,7 @@ class PyCalcUi(QMainWindow):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAct)
+
         aboutAct = QAction('&About', self)
         aboutAct.setStatusTip('About this application')
         aboutAct.triggered.connect(self._showAbout)
@@ -209,6 +210,7 @@ class PyCalcCtrl:
         self._view.buttons["="].clicked.connect(self._calculateResult)
         self._view.display.returnPressed.connect(self._calculateResult)
         self._view.buttons["C"].clicked.connect(self._view.clearDisplay)
+        """self._view.display.escapePressed.connect(self._view.clearDisplay)"""
 
 
 # Client code
