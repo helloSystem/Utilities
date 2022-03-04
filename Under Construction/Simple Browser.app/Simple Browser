@@ -79,6 +79,8 @@ class MainWindow(QMainWindow):
 
         self.tabs = QTabWidget()
         self.tabs.setDocumentMode(True)
+        #self.tabs.setStretch(0, 1)
+        self.tabs.setMovable(True)
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
         self.tabs.currentChanged.connect(self.current_tab_changed)
         self.tabs.setTabsClosable(True)
@@ -124,7 +126,7 @@ class MainWindow(QMainWindow):
         self.urlbar.returnPressed.connect(self.navigate_to_url)
         navtb.addWidget(self.urlbar)
 
-        stop_btn = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'cross-circle.png')), "Stop", self)
+        stop_btn = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'stop-hex.png')), "Stop", self)
         stop_btn.setStatusTip("Stop loading current page")
         stop_btn.triggered.connect(lambda: self.tabs.currentWidget().stop())
         navtb.addAction(stop_btn)
@@ -134,11 +136,12 @@ class MainWindow(QMainWindow):
 
         file_menu = self.menuBar().addMenu("&File")
 
-        new_tab_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'ui-tab--plus.png')), "New Tab", self)
+        new_tab_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'plus.png')), "New Tab", self)
         new_tab_action.setStatusTip("Open a new tab")
         new_tab_action.triggered.connect(lambda _: self.add_new_tab())
         new_tab_action.setShortcut(QKeySequence("Ctrl+T"))
         file_menu.addAction(new_tab_action)
+        navtb.addAction(new_tab_action)
 
         close_tab_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'ui-tab--minus.png')), "Close Tab", self)
         close_tab_action.setStatusTip("Close the current tab")
@@ -148,11 +151,17 @@ class MainWindow(QMainWindow):
         
         file_menu.addSeparator()
 
-        open_file_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'disk--arrow.png')), "Open file...", self)
+        open_file_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'disk--arrow.png')), "Open File...", self)
         open_file_action.setStatusTip("Open from file")
         open_file_action.triggered.connect(self.open_file)
         open_file_action.setShortcut(QKeySequence("Ctrl+O"))
         file_menu.addAction(open_file_action)
+
+        open_location_action = QAction("Open Location", self)
+        open_location_action.setStatusTip("Select Location Bar")
+        open_location_action.triggered.connect(self.open_location)
+        open_location_action.setShortcut(QKeySequence("Ctrl+L"))
+        file_menu.addAction(open_location_action)
 
         save_file_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'disk--pencil.png')), "Save Page As...", self)
         save_file_action.setStatusTip("Save current page to file")
@@ -277,6 +286,10 @@ class MainWindow(QMainWindow):
 
             self.tabs.currentWidget().setHtml(html)
             self.urlbar.setText(filename)
+
+    def open_location(self):
+        self.urlbar.setFocus()
+        self.urlbar.selectAll()
 
     def save_file(self):
         filename, _ = QFileDialog.getSaveFileName(self, "Save Page As", "",
