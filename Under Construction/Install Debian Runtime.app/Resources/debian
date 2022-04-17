@@ -50,9 +50,9 @@ debian_start()
 
 		# Give /usr/local/sbin/automount time to kick in;
 		# assuming debian.img is a uzip that will be mounted by automount
-		# at /media/.debian; try this for 5 seconds; continue otherwise
+		# at /media/.debian; try this for 60 seconds; continue otherwise
 		i=0
-		while [ $i -lt 50 ] ; do
+		while [ $i -lt 600 ] ; do
 			mount | grep "^\/dev\/$md.uzip on " 2>&1 && break
 			sleep 0.1
 			i="$((i+1))" 
