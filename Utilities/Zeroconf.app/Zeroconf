@@ -4,7 +4,7 @@
 # Simple Zeroconf browser written for FreeBSD in PyQt5
 
 
-# Copyright (c) 2020-21, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-22, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -132,9 +132,10 @@ class sshLogin(QtWidgets.QDialog):
         args = ["QTerminal", "-e", "ssh", self.host, "-l", self.textName.text()]
         try:
             proc.startDetached("launch", args)
+            sys.exit(0)
         except:
-            print("Cannot launch browser")
-            return
+            print("Cannot launch QTerminal ssh")
+            sys.exit(0)
 
 class ZeroconfBrowser(object):
 
@@ -197,29 +198,31 @@ class ZeroconfBrowser(object):
             args = ["Falkon", url]
             try:
                 proc.startDetached("launch", args)
-                return
+                sys.exit(0)
             except:
                 print("Cannot launch browser")
-                return
+                sys.exit(0)
         elif url.startswith("scanner") or url.startswith("uscan"):
             # Launch Xsane in the hope that it can do something with it
             os.system("xsane")
+            sys.exit(0)
         if url.startswith("ipp") or url.startswith("print") or url.startswith("pdl"):
             os.system("launch 'Print Settings'")
+            sys.exit(0)
         elif url.startswith("sftp"):
             proc = QtCore.QProcess()
             args = ["Filer", url + "/"]
             try:
                 proc.startDetached("launch", args)
-                return
+                sys.exit(0)
             except:
                 print("Cannot open sftp location in Filer")
-                return
+                sys.exit(0)
         elif url.startswith("ssh"):
             # Launch the browser
             sshL = sshLogin(host=url)
             if sshL.exec_() == QtWidgets.QDialog.Accepted:
-                print("Do something")
+                sys.exit(0)
         else:
             reply = QtWidgets.QMessageBox.information(
                 self.window,
