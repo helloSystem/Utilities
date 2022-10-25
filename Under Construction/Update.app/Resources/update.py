@@ -74,8 +74,7 @@ class LiteInstaller(object):
             executable = os.access(self.filename, os.X_OK)
             logging.info(executable)
             if(executable):
-                # os.execve(self.filename, sys.argv, os.environ) # What sh exec also uses. Leads to issues when files are referenced in relation to the main binary path
-                subprocess.call(["launch"] + [self.filename] + sys.argv[1:])
+                os.execvp(self.filename, sys.argv)
         else:
             app = QtWidgets.QApplication(sys.argv)
 
@@ -299,7 +298,7 @@ class LiteInstaller(object):
                 if executable == True:
                     # os.execve(self.filename, sys.argv, os.environ) # What sh exec also uses. Leads to issues when files are referenced in relation to the main binary path
                     self.msgBox.close()
-                    subprocess.call(["launch"] + [self.filename] + sys.argv[1:])
+                    os.execvp(self.filename, sys.argv)
                     sys.exit(0)
         # Not doing the following because by that time most likely
         # another error message is already on the screen
