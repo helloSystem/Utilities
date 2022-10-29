@@ -26,13 +26,7 @@ class Ui_Slider(QWidget):
         screen = QDesktopWidget().screenGeometry()
         widget = self.geometry()
 
-        # self.setWindowFlag(Qt.WindowStaysOnTopHint)
-        self.setWindowFlag(Qt.FramelessWindowHint)
-        # FIXME: Find a way to give a hint to the window manager that this is a drop-down menu
-        # similar to what we are doing in Menu in C++ using
-        # KWindowSystem::setType(actionCompleter->popup()->winId(), NET::DropdownMenu);
-        # self.setWindowFlag("NET::DropdownMenu") # Does not work
-        self.setWindowFlag(Qt.WindowSystemMenuHint) # Does not seem to do the job
+        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowSystemMenuHint)
         self.move(QCursor.pos())
 
         self.horizontalLayout = QHBoxLayout(self)
