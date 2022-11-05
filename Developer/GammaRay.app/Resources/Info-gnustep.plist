@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ApplicationDescription</key>
+	<string>Qt-application inspection and manipulation tool</string>
+	<key>ApplicationName</key>
+	<string>GammaRay</string>
+	<key>NSExecutable</key>
+	<string>GammaRay</string>
+	<key>NSIcon</key>
+	<string>GammaRay.png</string>
+	<key>NSTypes</key>
+	<array/>
+	<key>XAppWrapper</key>
+	<true/>
+</dict>
+</plist>
