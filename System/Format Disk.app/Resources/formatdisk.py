@@ -66,7 +66,7 @@ class Window(QMainWindow):
         self.device = None
         if sys.argv[1].startswith("/dev/"):
             self.device = sys.argv[1]
-        if sys.argv[1].startswith("computer:///"):
+        elif sys.argv[1].startswith("computer:///"):
             self.device = self.determineDeviceNode(self.determineMountPoint(sys.argv[1]))
         else:
             self.device = self.determineDeviceNode(sys.argv[1])
