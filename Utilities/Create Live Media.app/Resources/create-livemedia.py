@@ -229,7 +229,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
             item.__setattr__("browser_download_url",
                              text)  # __setattr__() is the equivalent to setProperty() in Qt
             item.__setattr__("updated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
-            item.__setattr__("size", 2*1000*1000*1000)
+            item.__setattr__("size", 2*1024*1024*1024)
             item.__setattr__("prerelease", False)
             self.release_listwidget.addItem(item) # FIXME: Can we at least attempt to get the real size from the URL?
             return
@@ -310,7 +310,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
         date = QtCore.QDateTime.fromString(items[0].__getattribute__("updated_at"), "yyyy-MM-ddThh:mm:ssZ")
         self.date_label.setText(date.toLocalTime().toString(QtCore.Qt.SystemLocaleLongDate))
         self.date_label.show()
-        wizard.required_mib_on_disk = round(items[0].__getattribute__("size")/1000/1000, 1)
+        wizard.required_mib_on_disk = round(items[0].__getattribute__("size")/1024/1024, 1)
         # self.isComplete()  # Calling it like this does not make its result get used
         self.completeChanged.emit()  # But like this isComplete() gets called and its result gets used
 
@@ -632,8 +632,15 @@ class ErrorPage(QtWidgets.QWizardPage, object):
 
 # TODO: Check prerequisites and inspect /mnt, go straight to error page if needed
 
-intro_page = IntroPage()
-wizard.addPage(intro_page)
+if (len(sys.argv) == 2 and os.path.isfile(sys.argv[1])):
+    # A file has been supplied on the command line
+    filename = sys.argv[1]
+    wizard.selected_iso_url = "file://" + filename # TODO: Error checking
+    wizard.required_mib_on_disk = int(os.path.getsize(filename) / 1024 / 1024) # FIXME: get file size from the supplied path
+    wizard.setWindowTitle(os.path.basename(filename))
+else:
+    intro_page = IntroPage()
+    wizard.addPage(intro_page)
 disk_page = DiskPage()
 wizard.addPage(disk_page)
 installation_page = InstallationPage()
