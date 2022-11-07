@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ApplicationDescription</key>
+	<string>Listen to music</string>
+	<key>ApplicationName</key>
+	<string>Audacious</string>
+	<key>NSExecutable</key>
+	<string>Audacious</string>
+	<key>NSIcon</key>
+	<string>Audacious.png</string>
+	<key>NSTypes</key>
+	<array>
+		<dict>
+			<key>NSDocumentClass</key>
+			<string>AudaciousDocument</string>
+			<key>NSHumanReadableName</key>
+			<string>MIME type Audacious understands</string>
+			<key>NSMIMETypes</key>
+			<array>
+				<string>application/ogg</string>
+				<string>application/x-cue</string>
+				<string>application/x-ogg</string>
+				<string>application/xspf+xml</string>
+				<string>audio/aac</string>
+				<string>audio/flac</string>
+				<string>audio/midi</string>
+				<string>audio/mp3</string>
+				<string>audio/mp4</string>
+				<string>audio/mpeg</string>
+				<string>audio/mpegurl</string>
+				<string>audio/ogg</string>
+				<string>audio/prs.sid</string>
+				<string>audio/wav</string>
+				<string>audio/x-flac</string>
+				<string>audio/x-it</string>
+				<string>audio/x-mod</string>
+				<string>audio/x-mp3</string>
+				<string>audio/x-mpeg</string>
+				<string>audio/x-mpegurl</string>
+				<string>audio/x-ms-asx</string>
+				<string>audio/x-ms-wma</string>
+				<string>audio/x-musepack</string>
+				<string>audio/x-s3m</string>
+				<string>audio/x-scpls</string>
+				<string>audio/x-stm</string>
+				<string>audio/x-vorbis+ogg</string>
+				<string>audio/x-wav</string>
+				<string>audio/x-wavpack</string>
+				<string>audio/x-xm</string>
+				<string>x-content/audio-cdda</string>
+			</array>
+			<key>NSName</key>
+			<string>MIME type Audacious understands</string>
+		</dict>
+	</array>
+	<key>XAppWrapper</key>
+	<true/>
+</dict>
+</plist>
