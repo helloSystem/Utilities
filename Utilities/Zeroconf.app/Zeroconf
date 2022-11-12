@@ -148,7 +148,7 @@ class sshLogin(QtWidgets.QDialog):
         proc = QtCore.QProcess()
         hostname = urlparse(self.host).hostname
         path = "/media/%s" % hostname.replace(".local", "")
-        args = ["sshfs", "-o", "idmap=user", "-p",  str(urlparse(self.host).port), self.textName.text() + "@" + urlparse(self.host).hostname + ":/", path]
+        args = ["sshfs", "-o", "idmap=user,allow_other,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3", "-p",  str(urlparse(self.host).port), self.textName.text() + "@" + urlparse(self.host).hostname + ":/", path]
         print (" ".join(args))
         if not os.path.exists(path):
             try:
