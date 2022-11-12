@@ -30,6 +30,7 @@
 
 
 import os, sys, time
+from urllib.parse import urlparse
 
 try:
     from PyQt5 import QtWidgets, QtGui, QtCore
@@ -114,13 +115,16 @@ class ZeroconfService():
 
 
 class sshLogin(QtWidgets.QDialog):
-    def __init__(self, host=None, parent=None):
+    def __init__(self, host=None, parent=None, type="ssh"):
         super(sshLogin, self).__init__(parent)
         self.host = host
         self.setWindowTitle("Username")
         self.textName = QtWidgets.QLineEdit(self)
         self.buttonLogin = QtWidgets.QPushButton('Connect', self)
-        self.buttonLogin.clicked.connect(self.handleLogin)
+        if type == "sftp":
+            self.buttonLogin.clicked.connect(self.handleSftp)
+        else:
+            self.buttonLogin.clicked.connect(self.handleLogin)
         layout = QtWidgets.QVBoxLayout(self)
         layout.addWidget(self.textName)
         layout.addWidget(self.buttonLogin)
@@ -129,12 +133,34 @@ class sshLogin(QtWidgets.QDialog):
         self.accept() # Close dialog
         # Launch ssh in QTerminal
         proc = QtCore.QProcess()
-        args = ["QTerminal", "-e", "ssh", self.host, "-l", self.textName.text()]
+        rgs = ["QTerminal", "-e", "ssh", self.host, "-l", self.textName.text()]
         try:
             proc.startDetached("launch", args)
             sys.exit(0)
         except:
-            print("Cannot launch QTerminal ssh")
+            print("Cannot launch %s" % args[0])
+            sys.exit(0)
+
+
+    def handleSftp(self):
+        self.accept() # Close dialog
+        # Launch ssh in QTerminal
+        proc = QtCore.QProcess()
+        hostname = urlparse(self.host).hostname
+        path = "/media/%s" % hostname.replace(".local", "")
+        args = ["sshfs", "-o", "idmap=user", "-p",  str(urlparse(self.host).port), self.textName.text() + "@" + urlparse(self.host).hostname + ":/", path]
+        print (" ".join(args))
+        if not os.path.exists(path):
+            try:
+                os.makedirs(path)
+            except OSError as error:
+                print(error)
+                exit(1)
+        try:
+            proc.startDetached("launch", args)
+            sys.exit(0)
+        except:
+            print("Cannot launch %s" % args[0])
             sys.exit(0)
 
 class ZeroconfBrowser(object):
@@ -210,17 +236,11 @@ class ZeroconfBrowser(object):
             os.system("launch 'Print Settings'")
             sys.exit(0)
         elif url.startswith("sftp"):
-            proc = QtCore.QProcess()
-            args = ["Filer", url + "/"]
-            try:
-                proc.startDetached("launch", args)
-                sys.exit(0)
-            except:
-                print("Cannot open sftp location in Filer")
+            sftphL = sshLogin(host=url, type="sftp")
+            if sftphL.exec_() == QtWidgets.QDialog.Accepted:
                 sys.exit(0)
         elif url.startswith("ssh"):
-            # Launch the browser
-            sshL = sshLogin(host=url)
+            sshL = sshLogin(host=url, type="ssh")
             if sshL.exec_() == QtWidgets.QDialog.Accepted:
                 sys.exit(0)
         else:
