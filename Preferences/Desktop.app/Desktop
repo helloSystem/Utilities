@@ -1,3 +1,0 @@
-#!/bin/sh
-
-launch Filer --desktop-pref 1
