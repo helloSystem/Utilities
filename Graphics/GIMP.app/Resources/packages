@@ -1,7 +1,7 @@
-gimp-app# GNU Image Manipulation Program
+gimp-app # GNU Image Manipulation Program
 gimp-beautify-plugin # GIMP plug-ins to both quickly and easily beautify photo
 gimp-data-extras # Collection of additional brushes and patterns files for GIMP
-gimp-gmic-plugin # GREYC's Magic Image Converter
+# gimp-gmic-plugin # GREYC's Magic Image Converter
 gimp-gutenprint # Gutenprint Printer Drivers
 gimp-lensfun-plugin # Gimp plugin to correct lens distortion using the lensfun library
 gimp-lqr-plugin # Liquid rescale GIMP plug-in
