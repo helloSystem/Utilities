@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ApplicationDescription</key>
+	<string>Iridium browser</string>
+	<key>ApplicationName</key>
+	<string>Iridium</string>
+	<key>NSExecutable</key>
+	<string>Iridium</string>
+	<key>NSIcon</key>
+	<string>Iridium.png</string>
+	<key>NSTypes</key>
+	<array>
+		<dict>
+			<key>NSDocumentClass</key>
+			<string>IridiumDocument</string>
+			<key>NSHumanReadableName</key>
+			<string>MIME type Iridium understands</string>
+			<key>NSMIMETypes</key>
+			<array>
+				<string>text/html</string>
+				<string>text/xml</string>
+				<string>application/xhtml+xml</string>
+				<string>x-scheme-handler/http</string>
+				<string>x-scheme-handler/https</string>
+				<string>x-scheme-handler/ftp</string>
+			</array>
+			<key>NSName</key>
+			<string>MIME type Iridium understands</string>
+		</dict>
+	</array>
+	<key>XAppWrapper</key>
+	<true/>
+</dict>
+</plist>

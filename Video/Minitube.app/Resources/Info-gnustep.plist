@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ApplicationDescription</key>
+	<string>Watch YouTube videos</string>
+	<key>ApplicationName</key>
+	<string>Minitube</string>
+	<key>NSExecutable</key>
+	<string>Minitube</string>
+	<key>NSIcon</key>
+	<string>Minitube.png</string>
+	<key>NSTypes</key>
+	<array/>
+	<key>XAppWrapper</key>
+	<true/>
+</dict>
+</plist>
