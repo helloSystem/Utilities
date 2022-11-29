@@ -57,7 +57,7 @@
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
-        <translation type="unfinished">Kunde inte beräkna utrymmeskrav på disk.</translation>
+        <translation>Det gick inte att fastställa det nödvändiga diskutrymmet.</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
@@ -77,7 +77,7 @@
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
-        <translation type="unfinished">Live avbilden laddas ner och skrivs till vald enhet.</translation>
+        <translation>Live avbilden laddas ner och skrivs till mediet.</translation>
     </message>
     <message>
         <source>Could not unmount parititons.</source>

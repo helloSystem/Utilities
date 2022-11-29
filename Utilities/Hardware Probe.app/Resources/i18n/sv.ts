@@ -4,16 +4,16 @@
 <context>
     <name>@default</name>
     <message>
-        <source>An unknown error occurred.</source>
-        <translation type="unfinished"></translation>
+        <source>An unknown error occured.</source>
+        <translation>Ett okänt fel uppstod.</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Hårdvaruprob</translation>
     </message>
     <message>
         <source>Privacy Information</source>
-        <translation type="unfinished"></translation>
+        <translation>Sekretessinformation</translation>
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
@@ -21,7 +21,7 @@
     </message>
     <message>
         <source>Please see %s for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>Se %s för mer information.</translation>
     </message>
     <message>
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
@@ -31,39 +31,39 @@
     </message>
     <message>
         <source>Show Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Visa hårdvaruprob</translation>
     </message>
     <message>
         <source>Failed to open the hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>Misslyckades att öppna hårdvaruproben.</translation>
     </message>
     <message>
         <source>Failed to run the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Misslyckades att köra %s verktyget.</translation>
     </message>
     <message>
         <source>Failed to set the owner to %x.</source>
-        <translation type="unfinished"></translation>
+        <translation>Misslyckades att sätta ägare till %x.</translation>
     </message>
     <message>
         <source>Uploading Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>Laddar upp hårdvaruprob</translation>
     </message>
     <message>
         <source>The Hardware Probe is being uploaded to the public database</source>
-        <translation type="unfinished"></translation>
+        <translation>Hårdvaruproben laddas upp till den offentliga databasen</translation>
     </message>
     <message>
         <source>You need an active internet connection in order to upload.</source>
-        <translation type="unfinished"></translation>
+        <translation>Du behöver en aktiv internetanslutning för att ladda upp.</translation>
     </message>
     <message>
         <source>Failed to upload using the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>Misslyckades att ladda upp med %s verktyget.</translation>
     </message>
     <message>
         <source>Hardware Probe Uploaded</source>
-        <translation type="unfinished"></translation>
+        <translation>Hårdvaruprob uppladdad</translation>
     </message>
     <message>
         <source>Quit</source>
@@ -71,7 +71,7 @@
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>Misslyckades att öppna den uppladdade hårdvaruproben.</translation>
     </message>
     <message>
         <source>Error</source>
@@ -79,7 +79,7 @@
     </message>
     <message>
         <source>Hardware Probe was not successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>Hårdvaruproben lyckades inte.</translation>
     </message>
 </context>
 <context>
