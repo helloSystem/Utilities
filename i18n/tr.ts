@@ -5,7 +5,7 @@
     <name>DiskUtility</name>
     <message>
         <source>Disk Utility</source>
-        <translation>Disk İzlencesi</translation>
+        <translation>Disk izlencesi</translation>
     </message>
     <message>
         <source>Partition</source>
@@ -37,15 +37,15 @@
     </message>
     <message>
         <source>Volume Information:</source>
-        <translation>Disk Bölümü Bilgisi:</translation>
+        <translation>Disk bölümü bilgisi:</translation>
     </message>
     <message>
         <source>Parititioning Scheme:</source>
-        <translation>Bölümlendirme Şeması:</translation>
+        <translation>Bölümlendirme şeması:</translation>
     </message>
     <message>
         <source>Restore</source>
-        <translation>Eski Haline Döndür</translation>
+        <translation>Geri yükle</translation>
     </message>
     <message>
         <source>Erase</source>
@@ -56,19 +56,19 @@
     <name>Users</name>
     <message>
         <source>Add User</source>
-        <translation>Kullanıcı Ekle</translation>
+        <translation>Kullanıcı ekle</translation>
     </message>
     <message>
         <source>Account Type:</source>
-        <translation>Hesap Türü:</translation>
+        <translation>Hesap türü:</translation>
     </message>
     <message>
         <source>Account Name:</source>
-        <translation>Hesap Adı:</translation>
+        <translation>Hesap adı:</translation>
     </message>
     <message>
         <source>Remove Users</source>
-        <translation>Kullanıcıları Kaldır</translation>
+        <translation>Kullanıcıları kaldır</translation>
     </message>
     <message>
         <source>Administrator</source>
@@ -77,7 +77,7 @@
     </message>
     <message>
         <source>Full Name:</source>
-        <translation>Tam Ad:</translation>
+        <translation>Tam ad:</translation>
     </message>
     <message>
         <source>Password:</source>
@@ -100,7 +100,7 @@
     </message>
     <message>
         <source>Text Edit</source>
-        <translation>Metin Düzenleme</translation>
+        <translation>Metin düzenleme</translation>
     </message>
 </context>
 </TS>
