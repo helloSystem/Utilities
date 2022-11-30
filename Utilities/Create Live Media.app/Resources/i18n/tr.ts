@@ -49,7 +49,7 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation>Hedef disk seçin</translation>
+        <translation>Hedef disk seç</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
@@ -113,7 +113,7 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation>Yükleme gerçekleştirilemedi.</translation>
+        <translation>Kurulum gerçekleştirilemedi.</translation>
     </message>
 </context>
 <context>
