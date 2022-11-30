@@ -1,3 +1,2 @@
 #!/bin/sh
-HERE="$(dirname "$(readlink -f "${0}")")"
-SUDO_ASKPASS="${HERE}/Resources/askpass.py" exec sudo -A -E "${HERE}/Resources/create-livemedia.py" "$@"
+exec sudo -A -E "${HERE}/Resources/create-livemedia.py" "$@"
