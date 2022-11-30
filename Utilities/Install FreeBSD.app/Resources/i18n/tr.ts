@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation>FreeBSD&apos;yi yükle</translation>
+        <translation>FreeBSD&apos;yi kur</translation>
     </message>
     <message>
         <source>An unknown error occurred.</source>
@@ -17,11 +17,11 @@
     </message>
     <message>
         <source>Installer Log</source>
-        <translation>Yükleyici günlüğü</translation>
+        <translation>Kur günlüğü</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation>Yükleyici günlüğü açılamadı.</translation>
+        <translation>Kur günlüğü açılamadı.</translation>
     </message>
     <message>
         <source>Question</source>
@@ -33,11 +33,11 @@
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation>Yükleyici betiği bulunamadı. Yükleyiciyi desteklenen bir sistemde çalıştırdığınızdan emin olun.</translation>
+        <translation>Kurulum betiği bulunamadı. Kur&apos;u desteklenen bir sistemde çalıştırdığınızdan emin olun.</translation>
     </message>
     <message>
         <source>The sudo binary not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation>Sudo ikilisi bulunamadı. Yükleyiciyi desteklenen bir sistemde çalıştırdığınızdan emin olun.</translation>
+        <translation>Sudo ikilisi bulunamadı. Kur&apos;u desteklenen bir sistemde çalıştırdığınızdan emin olun.</translation>
     </message>
     <message>
         <source>There was an error while determining whether the language has already been set on this system.</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
-        <translation>FreeBSD yüklemesini ayarlamak için &apos;Sürdür&apos;e tıklayın.</translation>
+        <translation>FreeBSD kurulumunu ayarlamak için &apos;Sürdür&apos;e tıklayın.</translation>
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
@@ -69,7 +69,7 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation>Hedef disk seçin</translation>
+        <translation>Hedef disk seç</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
@@ -77,7 +77,7 @@
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
-        <translation>Yükleyici betiği gerekli disk alanını belirleyemedi. Yükleyiciyi desteklenen bir sistemde çalıştırdığınızdan emin misiniz? Yükleyiciyi sudo ile bir parolaya gereksinim olmadan çalıştırabiliyor musunuz?</translation>
+        <translation>Kur betiği gerekli disk alanını belirleyemedi. Kur&apos;u desteklenen bir sistemde çalıştırdığınızdan emin misiniz? Kur&apos;u sudo ile bir parolaya gereksinim olmadan çalıştırabiliyor musunuz?</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
@@ -89,7 +89,7 @@
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
-        <translation>Bu işlem diskteki tüm veriyi silecek ve diske FreeBSD işletim sistemini yükleyecektir. Sürdürülsün mü?</translation>
+        <translation>Bu işlem diskteki tüm veriyi silecek ve diske FreeBSD işletim sistemini kuracaktır. Sürdürülsün mü?</translation>
     </message>
     <message>
         <source>Set Root Password</source>
@@ -149,11 +149,11 @@
     </message>
     <message>
         <source>Installing FreeBSD</source>
-        <translation>FreeBSD yükleniyor</translation>
+        <translation>FreeBSD kuruluyor</translation>
     </message>
     <message>
         <source>FreeBSD is being installed to your computer.</source>
-        <translation>FreeBSD şu anda bilgisayarınıza yükleniyor.</translation>
+        <translation>FreeBSD şu anda bilgisayarınıza kuruluyor.</translation>
     </message>
     <message>
         <source>The selected disk device %s is not found.</source>
@@ -165,23 +165,23 @@
     </message>
     <message>
         <source>The installer cannot be launched.</source>
-        <translation>Yükleyici başlatılamadı.</translation>
+        <translation>Kur başlatılamadı.</translation>
     </message>
     <message>
         <source>The installation did not succeed. Please see the Installer Log for more information.</source>
-        <translation>Yükleme başarısız oldu. Daha fazla bilgi için yükleyici günlüğüne bir göz atın.</translation>
+        <translation>Kurulum başarısız oldu. Daha fazla bilgi için Kur günlüğüne bir göz atın.</translation>
     </message>
     <message>
         <source>Installation Complete</source>
-        <translation>Yükleme tamamlandı</translation>
+        <translation>Kurulum tamamlandı</translation>
     </message>
     <message>
         <source>The installation succeeded.</source>
-        <translation>Yükleme başarılı oldu.</translation>
+        <translation>Kurulum başarılı oldu.</translation>
     </message>
     <message>
         <source>FreeBSD has been installed on your computer, click &apos;Restart&apos; to begin using it.</source>
-        <translation>FreeBSD, bilgisayarınıza yüklendi. Kullanmaya başlamak için &apos;Yeniden başlat&apos;a tıklayın.</translation>
+        <translation>FreeBSD bilgisayarınıza kuruldu. Kullanmaya başlamak için &apos;Yeniden başlat&apos;a tıklayın.</translation>
     </message>
     <message>
         <source>Restart</source>
@@ -197,7 +197,7 @@
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation>Yükleme gerçekleştirilemedi.</translation>
+        <translation>Kurulum gerçekleştirilemedi.</translation>
     </message>
     <message>
         <source>Quit</source>
