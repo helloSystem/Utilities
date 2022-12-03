@@ -1,0 +1,106 @@
+#!/usr/bin/env python3
+
+import os, sys, signal
+from PyQt5.QtWidgets import QApplication, QWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QPushButton, QAbstractItemView, QShortcut
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import QTimer, Qt
+
+class ProcessMonitor(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle('Processes')
+        self.resize(480, 480)
+        
+        self.quitShortcut1 = QShortcut(QKeySequence('Ctrl+Q'), self)
+        self.quitShortcut1.activated.connect(self.close)
+
+        self.quitShortcut2 = QShortcut(QKeySequence('Ctrl+W'), self)
+        self.quitShortcut2.activated.connect(self.close)
+
+        self.processTree = QTreeWidget()
+        self.processTree.setColumnCount(4)
+        self.processTree.setHeaderLabels(['Process Name', 'Process ID', 'Memory', 'CPU'])
+        self.processTree.setSortingEnabled(True)
+        self.processTree.sortByColumn(3, Qt.DescendingOrder)
+        self.processTree.setAlternatingRowColors(True)
+        self.processTree.itemClicked.connect(self.onClicked)
+        self.processTree.itemDoubleClicked.connect(self.killProcess)
+        self.processTree.setSelectionMode(QAbstractItemView.SingleSelection)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.processTree)
+        self.killButton = QPushButton('Force Quit')
+        self.killButton.clicked.connect(self.killSelectedProcess)
+
+        self.selectedPid = -1
+
+        layout.addWidget(self.killButton)
+        self.setLayout(layout)
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.refreshProcessList)
+        self.timer.start(3000)
+        self.refreshProcessList()
+        
+    def close(self):
+        print("Quitting...")
+        sys.exit(0)
+
+    def refreshProcessList(self):
+        self.processTree.clear()
+        if os.name == 'posix':
+            command = 'ps -axeo pid,comm,%mem,%cpu'
+            output = os.popen(command)
+
+            for line in output.readlines():
+                data = line.split()
+                if data[1] == "COMMAND":
+                    continue
+                if int(data[0]) < 100:
+                    continue
+                if len(data) == 4:
+                    item = QTreeWidgetItem()
+                    item.setText(0, data[1]) # Process Name
+                    pid = data[0]
+
+                    if int(pid) == int(self.selectedPid):
+                        print("%s =? %s" % (pid, self.selectedPid))
+                        self.processTree.setCurrentItem(item)
+                    item.setText(1, pid) # PID
+                    item.setData(1, 0, data[0]) # Set PID as item.data
+                    mem = float(data[2].replace(",", "."))
+                    formattedMem = f"{mem:.1f}%"
+                    item.setText(2, formattedMem) # Memory %
+                    cpu = float(data[3].replace(",", "."))
+                    formattedCpu = f"{mem:.1f}%"
+                    item.setText(3, formattedCpu) # CPU %
+                    self.processTree.addTopLevelItem(item)
+
+        for i in range(self.processTree.columnCount()):
+            self.processTree.resizeColumnToContents(i)
+
+    def onClicked(self, item):
+        pid = int(item.text(1)) # The text in the 2nd column
+        self.selectedPid = item.data(1, 0)
+
+    def killProcess(self, item):
+        pid = int(item.text(1)) # The text in the 2nd column
+        os.kill(pid, signal.SIGKILL)
+
+    def killSelectedProcess(self):
+        selected = self.processTree.currentItem()
+        if selected is not None:
+            pid = int(selected.text(1))
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except:
+                pass
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    try:
+        monitor = ProcessMonitor()
+        monitor.show()
+        sys.exit(app.exec_())
+    except KeyboardInterrupt:
+        pass
