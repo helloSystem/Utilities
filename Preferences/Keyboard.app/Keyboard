@@ -216,13 +216,16 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         cleartext = ["English (United States)", "English (United Kingdom)", "Français", "Español",
                      "Deutsch", "Italiano", "日本語", "Português", "Norsk",
                      "Svenska", "Suomalainen", "Pусский", "Türkçe", "עִברִית"]
+        prev_lang_kbds = ["en_US:0", "en_GB:2", "fr:1", "es:8", "de:3", "it:4", "ja:16384", 
+                     "pl:30788", "nb:12", "sv:7", "fi:17", "ru:19456", "tr:-24", "he:-18432"]
         i = 0
         selected_index = -1
         for supported_layout in self.supported_layouts:
             item = QtWidgets.QListWidgetItem(cleartext[i])
             i = i+1
             setattr(item, "layout", supported_layout)
-            print("%s = %s" % (supported_layout, cleartext[i-1]))
+            setattr(item, "prev_lang_kbd", prev_lang_kbds[i-1])
+            print("%s = %s = %s" % (supported_layout, cleartext[i-1], prev_lang_kbds[i-1]))
             self.list_widget.addItem(item)
             if self.xkbmap.layout == supported_layout:
                 print( "Layout in xkbmap matches this layout")
@@ -278,6 +281,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         print("Selected layout changed")
         print(self.list_widget.selectedItems()[0].text())
         selected_layout = getattr(self.list_widget.selectedItems()[0], "layout")
+        selected_prev_lang_kbd = getattr(self.list_widget.selectedItems()[0], "prev_lang_kbd")
         print("selected_layout", selected_layout)
 
         self.updateVariantsMenu(selected_layout)
@@ -313,6 +317,15 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         self.checkbox_keyswap.setEnabled(True)
         self.checkbox_disablecapslock.setEnabled(True)
         self.list_widget.setEnabled(True)
+        
+        # Save to EFI NVRAM variable 7C436110-AB2A-4BBB-A880-FE41995C9F82-prev-lang:kbd
+        selected_prev_lang_kbd = getattr(self.list_widget.selectedItems()[0], "prev_lang_kbd")
+        proc = subprocess.Popen( "/usr/local/bin/sudo -A -E efivar -w -n 7C436110-AB2A-4BBB-A880-FE41995C9F82-prev-lang:kbd", stdin=subprocess.PIPE, shell=True )
+        bytes = bytearray(selected_prev_lang_kbd.encode())
+        bytes.append(00)
+        proc.communicate(bytes)
+        print(proc.returncode)
+
 
     def updateVariantsMenu(self, layout):
         self.variantsMenu.clear()
@@ -392,12 +405,10 @@ EndSection"""
         f.close()
 
         # Run a helper tool as root that puts the config file into the system-wide Xorg configuration and/or writes the information to EFI
-        # os.environ["SUDO_ASKPASS"] = os.path.dirname(__file__) + "/Resources/askpass.py"
         # TODO: Implement error handling with an error dialog
         proc = subprocess.Popen(["/usr/local/bin/sudo", "-A", "-E", os.path.dirname(__file__) + "/Resources/save.py"], stdout=subprocess.PIPE, env=os.environ)
         for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
             print(line)
-
 
     def _showAbout(self):
         print("showDialog")
