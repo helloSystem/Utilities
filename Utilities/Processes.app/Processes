@@ -72,7 +72,7 @@ class ProcessMonitor(QWidget):
                     formattedMem = f"{mem:.1f}%"
                     item.setText(2, formattedMem) # Memory %
                     cpu = float(data[3].replace(",", "."))
-                    formattedCpu = f"{mem:.1f}%"
+                    formattedCpu = f"{cpu:.1f}%"
                     item.setText(3, formattedCpu) # CPU %
                     self.processTree.addTopLevelItem(item)
 
