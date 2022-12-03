@@ -45,17 +45,19 @@ class LanguageSwitcher(QtWidgets.QMainWindow):
     def __init__(self, app):
         super().__init__()
         self.app = app
-        self.language = ""
-        self.basicWindow()
-
-    def basicWindow(self):
-        app = QtWidgets.QApplication(sys.argv)
+        
         self.window = QtWidgets.QMainWindow()
         self.window.setFixedSize(400, 400)
 
         # Remove window decorations, especially the close button
         self.window.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         self.window.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+
+        # Move window to center of the screen
+        qtRectangle = self.window.frameGeometry()
+        centerPoint = QtWidgets.QDesktopWidget().availableGeometry().center()
+        qtRectangle.moveCenter(centerPoint)
+        self.window.move(qtRectangle.topLeft())
 
         self.window.setWindowTitle('Language')
 
@@ -112,11 +114,6 @@ class LanguageSwitcher(QtWidgets.QMainWindow):
             setattr(item, "language", supported_language)
             eprint("%s = %s" % (cleartext[i-1], supported_language))
             self.list_widget.addItem(item)
-            if self.language == supported_language:
-                eprint( "self.language matches this language")
-                item.setSelected(True)
-                selected_index = i
-                self.updateVariantsMenu(self.xkbmap.language)
         if selected_index > -1:
             eprint("selected_index, %i" % selected_index)
             self.list_widget.setFocus()
@@ -131,14 +128,9 @@ class LanguageSwitcher(QtWidgets.QMainWindow):
         self.window.setCentralWidget(widget)
         self.window.show()
         app.exec_()
-        # If the user selected nothing else, fall back to English
-        print("en")
-        exit(0)
 
     def onSomethingChanged(self):
         self.list_widget.setEnabled(False)
-        self.app.setOverrideCursor(
-            QtGui.QCursor(QtCore.Qt.WaitCursor))
         selected_language = getattr(self.list_widget.selectedItems()[0], "language")
         print(selected_language)
         exit(0)
@@ -146,9 +138,8 @@ class LanguageSwitcher(QtWidgets.QMainWindow):
 
 if __name__ == "__main__":
 
-    if "LANG" in os.environ and os.getenv("LANG") != "":
+    if (("LANG" in os.environ) and (os.getenv("LANG") != "") and (os.getenv("LANG") != "C.UTF-8")):
         eprint("Language is set to:\nLANG=%s." % os.getenv("LANG"))
         exit(1)
     
-    app = QtWidgets.QApplication(sys.argv)
-    ks = LanguageSwitcher(app)
+    ks = LanguageSwitcher(QtWidgets.QApplication(sys.argv))
