@@ -94,7 +94,7 @@ class Users(QMainWindow):
         print("OK button clicked")
         p = QProcess()
         env = QProcessEnvironment.systemEnvironment()
-        env.insert("SUDO_ASKPASS",  os.path.dirname(__file__) + "/askpass.py") # FIXME: This is not working
+        # env.insert("SUDO_ASKPASS",  os.path.dirname(__file__) + "/askpass.py") # FIXME: This is not working
         p.setProcessEnvironment(env)
         p.setProgram("sudo")
         p.setArguments(["-A", "-E", os.path.dirname(__file__) + "/adduser.sh", self.username.text(), self.password.text()])
