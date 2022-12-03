@@ -160,7 +160,7 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         print("self.has_apple_keyboard: %s" % self.has_apple_keyboard)
         self.xkbmap = Xkbmap() # The xkbmap currently active in the system. No root needed to change this.
         self.basicWindow()
-        self._readConfig()
+        # self._readConfig()
 
     def saveConfig(self):
         directory = os.path.dirname(config_file)
@@ -201,7 +201,6 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         return supported_layouts
 
     def basicWindow(self):
-        app = QtWidgets.QApplication(sys.argv)
         self.window = QtWidgets.QMainWindow()
         self.window.setFixedSize(300, 450)
         self._showMenu()
