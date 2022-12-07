@@ -5,27 +5,27 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation type="unfinished"></translation>
+        <translation>创建Live Media</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>这将下载一个光盘映像并写入到插入的硬件设备中。</translation>
     </message>
     <message>
         <source>Other...</source>
-        <translation type="unfinished"></translation>
+        <translation>其他...</translation>
     </message>
     <message>
         <source>Local ISO file...</source>
-        <translation type="unfinished"></translation>
+        <translation>本地映像文件...</translation>
     </message>
     <message>
         <source>Please choose an image:</source>
-        <translation type="unfinished"></translation>
+        <translation>请选择一个映像文件：</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>日期</translation>
     </message>
     <message>
         <source>Show Pre-release builds</source>
