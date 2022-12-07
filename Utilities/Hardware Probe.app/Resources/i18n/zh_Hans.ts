@@ -5,15 +5,15 @@
     <name>@default</name>
     <message>
         <source>An unknown error occurred.</source>
-        <translation type="unfinished"></translation>
+        <translation>存在未知错误。</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>硬件检测</translation>
     </message>
     <message>
         <source>Privacy Information</source>
-        <translation type="unfinished"></translation>
+        <translation>隐私信息</translation>
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
