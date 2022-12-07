@@ -5,11 +5,11 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>安装FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occurred.</source>
-        <translation type="unfinished"></translation>
+        <translation>存在未知错误。</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
@@ -17,15 +17,15 @@
     </message>
     <message>
         <source>Installer Log</source>
-        <translation type="unfinished"></translation>
+        <translation>安装器日志</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>安装器日志无法打开。</translation>
     </message>
     <message>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>问题</translation>
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
