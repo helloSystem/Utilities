@@ -33,11 +33,11 @@
     </message>
     <message>
         <source>Show Hardware Probe</source>
-        <translation>Показать информацию о оборудовании</translation>
+        <translation>Сведения о оборудовании</translation>
     </message>
     <message>
         <source>Failed to open the hardware probe.</source>
-        <translation>Ошибка, при открытии информации о оборудовании.</translation>
+        <translation>Ошибка при открытии сведений о оборудовании.</translation>
     </message>
     <message>
         <source>Failed to run the %s tool.</source>
@@ -49,7 +49,7 @@
     </message>
     <message>
         <source>Uploading Hardware Probe</source>
-        <translation>Передача информации о оборудовании</translation>
+        <translation>Отправка сведений о оборудовании</translation>
     </message>
     <message>
         <source>The Hardware Probe is being uploaded to the public database</source>
