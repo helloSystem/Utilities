@@ -101,7 +101,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>やめておく</translation>
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
@@ -109,7 +109,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
