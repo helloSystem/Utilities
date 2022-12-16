@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>An unknown error occurred.</source>
-        <translation type="unfinished"></translation>
+        <translation>不明なエラーが発生しました</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
@@ -193,7 +193,7 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
@@ -201,7 +201,7 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>やめておく</translation>
     </message>
 </context>
 <context>
