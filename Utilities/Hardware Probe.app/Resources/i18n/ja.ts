@@ -5,15 +5,15 @@
     <name>@default</name>
     <message>
         <source>An unknown error occurred.</source>
-        <translation type="unfinished"></translation>
+        <translation>不明なエラーが発生しました</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアプローブ</translation>
     </message>
     <message>
         <source>Privacy Information</source>
-        <translation type="unfinished"></translation>
+        <translation>プライバシー情報</translation>
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
@@ -21,7 +21,7 @@
     </message>
     <message>
         <source>Please see %s for more information.</source>
-        <translation type="unfinished"></translation>
+        <translation>詳細については、%s を参照してください。</translation>
     </message>
     <message>
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
@@ -31,23 +31,23 @@
     </message>
     <message>
         <source>Show Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアプローブを表示</translation>
     </message>
     <message>
         <source>Failed to open the hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアプローブを開けませんでした。</translation>
     </message>
     <message>
         <source>Failed to run the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>%s ツールを実行できませんでした。</translation>
     </message>
     <message>
         <source>Failed to set the owner to %x.</source>
-        <translation type="unfinished"></translation>
+        <translation>所有者を %x に設定できませんでした。</translation>
     </message>
     <message>
         <source>Uploading Hardware Probe</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアプローブのアップロード</translation>
     </message>
     <message>
         <source>The Hardware Probe is being uploaded to the public database</source>
@@ -59,15 +59,15 @@
     </message>
     <message>
         <source>Failed to upload using the %s tool.</source>
-        <translation type="unfinished"></translation>
+        <translation>%s ツールを使用してアップロードできませんでした。</translation>
     </message>
     <message>
         <source>Hardware Probe Uploaded</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアプローブがアップロードされました</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>やめておく</translation>
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
@@ -75,11 +75,11 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>エラー</translation>
     </message>
     <message>
         <source>Hardware Probe was not successful.</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアプローブは成功しませんでした。</translation>
     </message>
 </context>
 <context>
