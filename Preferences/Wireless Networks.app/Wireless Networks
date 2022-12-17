@@ -1,3 +1,4 @@
 #!/bin/sh
+HERE="$(dirname "$(readlink -f "${0}")")"
 exec sudo -E "${HERE}/Resources/wireless-networks" "$@"
     
