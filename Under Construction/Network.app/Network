@@ -146,6 +146,8 @@ class NetworkMenu(QObject):
                 # Parse out information for each network
                 regex = r"([^\ ]+)\t([^\ ]+)\t([^\ ]+)\t([^\ ]+)\t(.*)$"
                 matches = re.findall(regex, line)
+                if not matches:
+                    continue
                 print(len(matches[0]))
                 bssid = matches[0][0]
                 signal_level = int(matches[0][2])
