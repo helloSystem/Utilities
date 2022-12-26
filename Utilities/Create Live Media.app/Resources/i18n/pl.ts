@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Utwórz Nośnik Live</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
@@ -33,31 +33,31 @@
     </message>
     <message>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Inne</translation>
     </message>
     <message>
         <source>URL of the ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>Adres URL ISO</translation>
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Obrazy dysków (*.iso *.img);;Wszystkie pliki (*.*)</translation>
     </message>
     <message>
         <source>This requires an active internet connection.</source>
-        <translation type="unfinished"></translation>
+        <translation>To wymaga aktywnego połączenia internetowego.</translation>
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Wybierz Dysk Docelowy</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Cała zawartość na wybranym dysku zostanie wymazana.</translation>
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nie udało się ustalić wymaganej przestrzeni dyskowej.</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
