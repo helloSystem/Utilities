@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
     def onCookieAdded(self, cookie):
         print("Cookie added:", cookie.toRawForm())
 
-    def add_new_tab(self, qurl=None, label="Blank"): # TODO: Can be configured @TriVoxel P=high
+    def add_new_tab(self, qurl=None, label="Blank"):
         if qurl is None:
             qurl = QUrl('')
 
@@ -230,7 +230,7 @@ class MainWindow(QMainWindow):
         profile.cookieStore().cookieAdded.connect(self.onCookieAdded)
         
         # Block third-party cookies
-        profile.cookieStore().setCookieFilter(lambda _info: True) # TODO: Make this a config @TriVoxel P=high
+        profile.cookieStore().setCookieFilter(lambda _info: True)
         
         webview.setUrl(qurl)
         i = self.tabs.addTab(webview, label)
@@ -344,7 +344,3 @@ app.setOrganizationDomain("mozarella.org")
 window = MainWindow()
 
 app.exec_()
-
-# Some more TODOs
-# Would be nice to toggle web engine between Chromium, Firefox & WebKit
-# Would be nice to utilize Firefox Sync
