@@ -79,6 +79,8 @@ class MainWindow(QMainWindow):
 
         self.tabs = QTabWidget()
         self.tabs.setDocumentMode(True)
+        #self.tabs.setStretch(0, 1)
+        self.tabs.setMovable(True)
         self.tabs.tabBarDoubleClicked.connect(self.tab_open_doubleclick)
         self.tabs.currentChanged.connect(self.current_tab_changed)
         self.tabs.setTabsClosable(True)
@@ -106,6 +108,7 @@ class MainWindow(QMainWindow):
 
         reload_btn = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'arrow-circle-315.png')), "Reload", self)
         reload_btn.setStatusTip("Reload page")
+        reload_btn.setShortcut(QKeySequence("Ctrl+R"))
         reload_btn.triggered.connect(lambda: self.tabs.currentWidget().reload())
         navtb.addAction(reload_btn)
 
@@ -124,7 +127,7 @@ class MainWindow(QMainWindow):
         self.urlbar.returnPressed.connect(self.navigate_to_url)
         navtb.addWidget(self.urlbar)
 
-        stop_btn = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'cross-circle.png')), "Stop", self)
+        stop_btn = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'stop-hex.png')), "Stop", self)
         stop_btn.setStatusTip("Stop loading current page")
         stop_btn.triggered.connect(lambda: self.tabs.currentWidget().stop())
         navtb.addAction(stop_btn)
@@ -134,33 +137,32 @@ class MainWindow(QMainWindow):
 
         file_menu = self.menuBar().addMenu("&File")
 
-        new_tab_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'ui-tab--plus.png')), "New Tab", self)
+        new_tab_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'plus.png')), "New Tab", self)
         new_tab_action.setStatusTip("Open a new tab")
         new_tab_action.triggered.connect(lambda _: self.add_new_tab())
         new_tab_action.setShortcut(QKeySequence("Ctrl+T"))
-        file_menu.addAction(new_tab_action)
+        navtb.addAction(new_tab_action)
 
         close_tab_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'ui-tab--minus.png')), "Close Tab", self)
         close_tab_action.setStatusTip("Close the current tab")
         close_tab_action.triggered.connect(lambda _: self.close_current_tab(self.current_tab))
         close_tab_action.setShortcut(QKeySequence("Ctrl+W"))
-        file_menu.addAction(close_tab_action)
         
-        file_menu.addSeparator()
 
-        open_file_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'disk--arrow.png')), "Open file...", self)
+        open_file_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'disk--arrow.png')), "Open File...", self)
         open_file_action.setStatusTip("Open from file")
         open_file_action.triggered.connect(self.open_file)
         open_file_action.setShortcut(QKeySequence("Ctrl+O"))
-        file_menu.addAction(open_file_action)
+
+        open_location_action = QAction("Open Location", self)
+        open_location_action.setStatusTip("Select Location Bar")
+        open_location_action.triggered.connect(self.open_location)
+        open_location_action.setShortcut(QKeySequence("Ctrl+L"))
 
         save_file_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'disk--pencil.png')), "Save Page As...", self)
         save_file_action.setStatusTip("Save current page to file")
         save_file_action.setShortcut(QKeySequence("Ctrl+S"))
         save_file_action.triggered.connect(self.save_file)
-        file_menu.addAction(save_file_action)
-        
-        file_menu.addSeparator()
 
         # print_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'printer.png')), "Print...", self)
         # print_action.setStatusTip("Print current page")
@@ -173,8 +175,17 @@ class MainWindow(QMainWindow):
         quit_action.setStatusTip("Quit this application")
         quit_action.setShortcut(QKeySequence("Ctrl+Q"))
         quit_action.triggered.connect(app.exit)
-        file_menu.addAction(quit_action)
 
+        #File menu
+        file_menu.addAction(new_tab_action)
+        file_menu.addAction(close_tab_action)
+        file_menu.addAction(reload_btn)
+        file_menu.addSeparator()
+        file_menu.addAction(open_file_action)
+        file_menu.addAction(open_location_action)
+        file_menu.addAction(save_file_action)
+        file_menu.addSeparator()
+        file_menu.addAction(quit_action)
 
         help_menu = self.menuBar().addMenu("&Help")
 
@@ -182,8 +193,6 @@ class MainWindow(QMainWindow):
         about_action.setStatusTip("Find out more about Simple Browser")  # Hungry!
         about_action.triggered.connect(self.about)
         help_menu.addAction(about_action)
-        
-        file_menu.addSeparator()
 
         navigate_mozarella_action = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'lifebuoy.png')),
                                             "Documentation", self)
@@ -202,14 +211,16 @@ class MainWindow(QMainWindow):
         print("Cookie added:", cookie.toRawForm())
 
     def add_new_tab(self, qurl=None, label="Blank"):
-
         if qurl is None:
             qurl = QUrl('')
 
         webview = QWebEngineView()
-        profile = QWebEngineProfile(None, webview) # "Private"
+        #profile = QWebEngineProfile(None, webview) # "Private"
         # https://doc.qt.io/qt-5/qwebengineprofile.html#isOffTheRecord
         # Off-the-record profile that leaves no record on the computer
+        # TriVoxel: "Undoing this so we can have a separate "private" mode"
+
+        profile = QWebEngineProfile(webview)
         webpage = QWebEnginePage(profile, webview)
         webview.setPage(webpage)
         if profile.isOffTheRecord() == True:
@@ -221,7 +232,7 @@ class MainWindow(QMainWindow):
         # Block third-party cookies
         profile.cookieStore().setCookieFilter(lambda _info: True)
         
-        webview.setUrl(qurl)       
+        webview.setUrl(qurl)
         i = self.tabs.addTab(webview, label)
 
         self.tabs.setCurrentIndex(i)
@@ -277,6 +288,10 @@ class MainWindow(QMainWindow):
 
             self.tabs.currentWidget().setHtml(html)
             self.urlbar.setText(filename)
+
+    def open_location(self):
+        self.urlbar.setFocus()
+        self.urlbar.selectAll()
 
     def save_file(self):
         filename, _ = QFileDialog.getSaveFileName(self, "Save Page As", "",
