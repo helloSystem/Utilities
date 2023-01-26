@@ -5,11 +5,11 @@
     <name>@default</name>
     <message>
         <source>Install FreeBSD</source>
-        <translation type="unfinished"></translation>
+        <translation>Installa FreeBSD</translation>
     </message>
     <message>
         <source>An unknown error occurred.</source>
-        <translation type="unfinished"></translation>
+        <translation>Si è verificato un errore sconosciuto.</translation>
     </message>
     <message>
         <source>Pre-existing %s removed</source>
@@ -17,43 +17,43 @@
     </message>
     <message>
         <source>Installer Log</source>
-        <translation type="unfinished"></translation>
+        <translation>Log d&apos;installazione</translation>
     </message>
     <message>
         <source>The Installer Log cannot be opened.</source>
-        <translation type="unfinished"></translation>
+        <translation>Il log di installazione non può essere aperto.</translation>
     </message>
     <message>
         <source>Question</source>
-        <translation type="unfinished"></translation>
+        <translation>Domanda</translation>
     </message>
     <message>
         <source>This will send a request to ipapi.com one time to locate your computer over the network. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Questo invierà una singola richiesta a ipapi.com per individuare il computer sulla rete. Vuoi continuare?</translation>
     </message>
     <message>
         <source>The installer script was not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Lo script di installazione non è stato trovato. Assicurati di avviare il programma di installazione su un sistema supportato.</translation>
     </message>
     <message>
         <source>The sudo binary not found. Please make sure that you are running the installer on a supported system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Il sudo binario non trovato. Assicurati di eseguire l&apos;installatore su un sistema supportato.</translation>
     </message>
     <message>
         <source>There was an error while determining whether the language has already been set on this system.</source>
-        <translation type="unfinished"></translation>
+        <translation>Si è verificato un errore nel determinare se la lingua è già stata impostata su questo sistema.</translation>
     </message>
     <message>
         <source>Select Country</source>
-        <translation type="unfinished"></translation>
+        <translation>Seleziona paese</translation>
     </message>
     <message>
         <source>To set up the locale and keyboard layout, select a country.</source>
-        <translation type="unfinished"></translation>
+        <translation>Per impostare la localizzazione e il layout di tastiera, seleziona il paese.</translation>
     </message>
     <message>
         <source>To set up the installation of FreeBSD, click &apos;Continue&apos;.</source>
-        <translation type="unfinished"></translation>
+        <translation>Per impostare l&apos;installazione di FreeBSD, clicca su &apos;Continua&apos;.</translation>
     </message>
     <message>
         <source>FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIXÂ® developed at the University of California, Berkeley. It is developed and maintained by a large community.</source>
@@ -69,11 +69,11 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Selezionare il disco di destinazione</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tutti i dati presenti sul disco selezionato verranno cancellati.</translation>
     </message>
     <message>
         <source>The installer script did not report the required disk space. Are you running the installer on a supported system? Can you run the installer script with sudo without needing a password?</source>
@@ -81,11 +81,11 @@
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Spazio su disco richiesto: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Attenzione</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the FreeBSD operating system on it. Continue?</source>
@@ -193,22 +193,22 @@
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Non è stato possibile eseguire l&apos;installazione.</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Esci</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Ciao Mondo</translation>
     </message>
 </context>
 </TS>
