@@ -5,43 +5,43 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation type="unfinished"></translation>
+        <translation>Creare Dispositivo Live</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation type="unfinished"></translation>
+        <translation>Questo scaricherà un&apos;immagine live e la scriverà su un dispositivo di archiviazione collegato.</translation>
     </message>
     <message>
         <source>Other...</source>
-        <translation type="unfinished"></translation>
+        <translation>Altro…</translation>
     </message>
     <message>
         <source>Local ISO file...</source>
-        <translation type="unfinished"></translation>
+        <translation>File ISO locale...</translation>
     </message>
     <message>
         <source>Please choose an image:</source>
-        <translation type="unfinished"></translation>
+        <translation>Scegli un&apos;immagine:</translation>
     </message>
     <message>
         <source>Date</source>
-        <translation type="unfinished"></translation>
+        <translation>Data</translation>
     </message>
     <message>
         <source>Show Pre-release builds</source>
-        <translation type="unfinished"></translation>
+        <translation>Mostra le versioni preliminari</translation>
     </message>
     <message>
         <source>Other</source>
-        <translation type="unfinished"></translation>
+        <translation>Altro</translation>
     </message>
     <message>
         <source>URL of the ISO</source>
-        <translation type="unfinished"></translation>
+        <translation>URL dell&apos;ISO</translation>
     </message>
     <message>
         <source>Disk images (*.iso *.img);;All files (*.*)</source>
-        <translation type="unfinished"></translation>
+        <translation>Immagini disco (*.iso *.img);;Tutti i file (*.*)</translation>
     </message>
     <message>
         <source>This requires an active internet connection.</source>
@@ -49,78 +49,78 @@
     </message>
     <message>
         <source>Select Destination Disk</source>
-        <translation type="unfinished"></translation>
+        <translation>Selezionare il disco di destinazione</translation>
     </message>
     <message>
         <source>All data on the selected disk will be erased.</source>
-        <translation type="unfinished"></translation>
+        <translation>Tutti i dati presenti sul disco selezionato verranno cancellati.</translation>
     </message>
     <message>
         <source>Could not determine the required disk space.</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossibile determinare lo spazio su disco richiesto.</translation>
     </message>
     <message>
         <source>Disk space required: %s MiB</source>
-        <translation type="unfinished"></translation>
+        <translation>Spazio su disco richiesto: %s MiB</translation>
     </message>
     <message>
         <source>Warning</source>
-        <translation type="unfinished"></translation>
+        <translation>Attenzione</translation>
     </message>
     <message>
         <source>This will erase all contents of this disk and install the live system on it. Continue?</source>
-        <translation type="unfinished"></translation>
+        <translation>Questo cancellerà tutti i contenuti del disco e verrà installato il sistema live su di esso. Continuare?</translation>
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
-        <translation type="unfinished"></translation>
+        <translation>Scaricamento e scrittura del disco Live</translation>
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;immagine Live viene scaricata e scritta sul disco.</translation>
     </message>
     <message>
         <source>Could not unmount parititons.</source>
-        <translation type="unfinished"></translation>
+        <translation>Non è stato possibile smontare le parizioni.</translation>
     </message>
     <message>
         <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
-        <translation type="unfinished"></translation>
+        <translation>Si è verificato un errore durante il tentativo di scrivere immagine. L&apos;URL di download è accessibile? Tutte le partizioni sono state smontate? Avete i permessi di scrittura?</translation>
     </message>
     <message>
         <source>Live Medium Complete</source>
-        <translation type="unfinished"></translation>
+        <translation>Disco Live Completo</translation>
     </message>
     <message>
         <source>The Live image has been written to the device.</source>
-        <translation type="unfinished"></translation>
+        <translation>L&apos;immagine Live è stata scritta al dispositivo.</translation>
     </message>
     <message>
         <source>You can now start your computer from the Live medium.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ora è possibile avviare il computer dal disco Live.</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Esci</translation>
     </message>
     <message>
         <source>Device was unplugged, exiting</source>
-        <translation type="unfinished"></translation>
+        <translation>Il dispositivo è stato scollegato, in uscita</translation>
     </message>
     <message>
         <source>Error</source>
-        <translation type="unfinished"></translation>
+        <translation>Errore</translation>
     </message>
     <message>
         <source>The installation could not be performed.</source>
-        <translation type="unfinished"></translation>
+        <translation>Non è stato possibile eseguire l&apos;installazione.</translation>
     </message>
 </context>
 <context>
     <name>tstr</name>
     <message>
         <source>Hello World</source>
-        <translation type="unfinished"></translation>
+        <translation>Ciao Mondo</translation>
     </message>
 </context>
 </TS>
