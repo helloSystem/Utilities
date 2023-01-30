@@ -181,24 +181,6 @@ class VolumeMenu(QObject):
         p.waitForFinished()
         lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
         
-        # TODO: /dev/sndstat calls *any* USB audio device just "<USB audio>"
-        # How can we get the proper name, e.g., the one that shows up in /var/log/messages?
-        # This is what /var/log/messages shows:
-        # ugen0.8: <ZOOM Corporation H1> at usbus0
-        # uaudio1 on uhub3
-        # uaudio1: <ZOOM Corporation H1, class 0/0, rev 1.10/0.00, addr 7> on usbus0
-        # (...)
-        # uaudio1: No MIDI sequencer.
-        # pcm3: <USB audio> on uaudio1
-        # uaudio1: No HID volume keys found.
-        #
-        # This is what /dev/sndstat shows:
-        # pcm3: <USB audio> (play/rec)
-        #
-        # So we could match from pcm3 via uaudio1 to <ZOOM Corporation H1>
-        # but doing so by parsing /var/log/messages can become messy quickly
-        # as devices can come and go. What is the best way to do this?
-
         # Add the devices to the menu
         # Playback devices
         self.playbackGroup = QActionGroup(self.menu) # Only one of the actions added to this group can be active
