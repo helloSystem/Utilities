@@ -14,11 +14,12 @@
 
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QGroupBox, QSlider, QWidget, \
     QActionGroup, QDesktopWidget, QMessageBox, QInputDialog, QLineEdit
-from PyQt5.QtGui import QIcon, QPixmap, QCursor
+from PyQt5.QtGui import QIcon, QPixmap, QCursor, QColor
 from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer, QPoint, QTimer
 from subprocess import Popen, check_output
 import sys, os, re, subprocess
 import re
+
 
 class NetworkMenu(QObject):
 
@@ -87,6 +88,7 @@ class NetworkMenu(QObject):
         p.waitForFinished()
 
     def updateStatus(self):
+        bssid = ""
         p = QProcess()
         p.setProgram("wpa_cli")
         p.setArguments(["status"])
@@ -100,6 +102,10 @@ class NetworkMenu(QObject):
         
         # Update the icon in the menu
         for element in self.status_lines:
+            if element.startswith("bssid="):
+                bssid = element.split("=")[1]
+                continue
+
             if element.startswith("wpa_state="):
                 status = element.split("=")[1]
                 break
@@ -107,10 +113,45 @@ class NetworkMenu(QObject):
             if status == "SCANNING":
                 self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
             elif status == "COMPLETED":
-                self.tray.setIcon(QIcon.fromTheme("network-wireless-symbolic"))
+                p.setArguments(["bss", bssid])
+                p.start()
+                p.waitForFinished()
+                lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
+
+                signal_strength_dbm = 0
+                signal_noise_dbm = 0
+                for line in lines:
+                    if line.startswith("noise="):
+                        signal_noise_dbm = int(line.split("=")[1])
+                        continue
+                    if line.startswith("level="):
+                        signal_strength_dbm = int(line.split("=")[1])
+                        break
+
+                # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr.c#L848
+                signal_level = (signal_strength_dbm - signal_noise_dbm) * 4
+
+                print('Signal strength: %s, signal noise: %s, signal level: %s' % (signal_strength_dbm,
+                                                                                   signal_noise_dbm, signal_level))
+
+                # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
+                if signal_level > 80:
+                    icon_name = "network-wireless-100"
+                elif signal_level > 60:
+                    icon_name = "network-wireless-75"
+                elif signal_level > 40:
+                    icon_name = "network-wireless-50"
+                elif signal_level > 20:
+                    icon_name = "network-wireless-25"
+                elif signal_level > 0:
+                    icon_name = "network-wireless-00"
+                else:
+                    icon_name = "network-wireless-00"
+
+                self.tray.setIcon(QIcon.fromTheme(icon_name))
                 # TODO: Set different icons based on signal_level
             else:
-                self.tray.setIcon(QIcon.fromTheme("network-wireless-offline-symbolic"))
+                self.tray.setIcon(QIcon.fromTheme("network-wireless-disconnected"))
         except:
             pass
              
@@ -261,14 +302,14 @@ n wpa_cli doesn't seem to be working.
 Information for debuggers:
 """ + o.strip())
             return
-        isUsed = 0
+        is_used = 0
         for line in l[2:]: # Ignore 'selected interface' message and column labels
-            parts = line.split()
+            parts = line.split('\t')
             if parts[1] in [ssid, bssid]:
-                isUsed = 1
+                is_used = 1
                 n = parts[0]
 
-        if isUsed: # TODO: We know we've already connected -- check why we are re-connecting
+        if is_used: # TODO: We know we've already connected -- check why we are re-connecting
             if "PSK" in flags:
                 p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
                 print(p.program() + " " + " ".join(p.arguments()))
