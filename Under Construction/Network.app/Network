@@ -111,8 +111,13 @@ class NetworkMenu(QObject):
                 break
         try:    
             if status == "SCANNING":
+                flags = getattr(self.wirelessGroup.checkedAction(), "flags")
+                if self.new_network_selected and "PSK" in flags:
+                    self.reset_network_password()
+
                 self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
             elif status == "COMPLETED":
+                self.new_network_selected = False
                 p.setArguments(["bss", bssid])
                 p.start()
                 p.waitForFinished()
@@ -273,15 +278,7 @@ class NetworkMenu(QObject):
         bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
         flags = getattr(self.wirelessGroup.checkedAction(), "flags")
         
-        if "PSK" in flags:
-            password, ok = QInputDialog.getText(None, "Wireless network password", "Please enter\
- the password for the %s network:" % ssid if ssid else bssid,
-                QLineEdit.Password) # TODO: Make OK only clickable when we have >= 8 characters
-            if not ok:
-                print("User did not click OK in password dialog")
-                return # Don't try to connect to a network if it has been cancelled.
-        
-        self.reconnect()
+        # self.reconnect()
             
         # Get a byte string with wpa_cli's output and decode it
         p = QProcess()
@@ -292,9 +289,9 @@ class NetworkMenu(QObject):
         print(p.program() + " " + " ".join(p.arguments()))
         p.start()
         p.waitForFinished()
-        output = str(p.readAllStandardOutput(), 'utf-8')
-        l = output.strip().splitlines() # Split that output into lines, ignoring the
-        if len(l) < 2:                  # useless ones.
+        # Split that output into lines, ignoring the useless ones
+        output = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
+        if len(output) < 2:
             # If this is called, something is wrong with wpa_cli.
             self.showError("Could not connect to the network", """For some reaso\
 n wpa_cli doesn't seem to be working.
@@ -303,23 +300,19 @@ Information for debuggers:
 """ + o.strip())
             return
         is_used = 0
-        for line in l[2:]: # Ignore 'selected interface' message and column labels
+        for line in output[2:]: # Ignore 'selected interface' message and column labels
             parts = line.split('\t')
             if parts[1] in [ssid, bssid]:
                 is_used = 1
-                n = parts[0]
+                self.network_id = parts[0]
+                continue
 
         if is_used: # TODO: We know we've already connected -- check why we are re-connecting
-            if "PSK" in flags:
-                p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
-                print(p.program() + " " + " ".join(p.arguments()))
-                p.start()
-                p.waitForFinished()
-                if "OK" in str(p.readAllStandardOutput(), 'utf-8'):
-                    return # good
-                else:
-                    self.showError("Could not connect to the network. Please check the password.")
-                    return # bad
+            p.setArguments(["select_network", str(self.network_id)])
+            p.start()
+            p.waitForFinished()
+            self.new_network_selected = True
+
         else:
             p.setArguments(["add_network"])
             print(p.program() + " " + " ".join(p.arguments()))
@@ -337,7 +330,7 @@ Information for debuggers:
 We don't know why this happened.")
                 print("returned non-zero exit code")
                 return # bad
-            p.setArguments(["set_network", str(n), "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"'])
+            p.setArguments(["set_network", str(self.network_id), "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"'])
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
@@ -347,9 +340,9 @@ We don't know why this happened.")
                                """Information for debuggers: """ + out)
                 return # bad
             if "PSK" in flags:
-                p.setArguments(["set_network", str(n), "psk", '"' + password + '"'])
+                p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
             else:
-                p.setArguments(["set_network", str(n), "key_mgmt", "NONE"])
+                p.setArguments(["set_network", str(self.network_id), "key_mgmt", "NONE"])
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
@@ -358,7 +351,7 @@ We don't know why this happened.")
                 self.showError("Could not connect to the network. Please check the password.",
                                """Information for debuggers: """ + out)
                 return # not good
-            p.setArguments(["enable_network", str(n)])
+            p.setArguments(["enable_network", str(self.network_id)])
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
@@ -405,6 +398,33 @@ We don't know why this happened.")
         msg.setText("This application is a preview for developers.<br>It is not fully functional yet.")
         msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
         msg.exec()
+
+    def reset_network_password(self):
+        ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
+        bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
+        password, ok = QInputDialog.getText(None, "Wireless network password",
+                                            "Please enter the password for the %s network:" % ssid if ssid else bssid,
+                                            QLineEdit.Password)  # TODO: Make OK only clickable when we have >= 8 characters
+        if not ok:
+            self.new_network_selected = False
+            print("User did not click OK in password dialog")
+            return  # Don't try to connect to a network if it has been cancelled.
+
+        p = QProcess()
+        p.setProgram("wpa_cli")
+        p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
+        print(p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        self.reconnect()
+
+        if "OK" in str(p.readAllStandardOutput(), 'utf-8'):
+            self.new_network_selected = False
+            return  # good
+        else:
+            self.showError("Could not connect to the network. Please check the password.")
+            return  # bad
+
 
 if __name__ == "__main__":
 
