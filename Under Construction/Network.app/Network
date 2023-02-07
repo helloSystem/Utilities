@@ -18,7 +18,46 @@ from PyQt5.QtGui import QIcon, QPixmap, QCursor, QColor
 from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer, QPoint, QTimer
 from subprocess import Popen, check_output
 import sys, os, re, subprocess
-import re
+
+
+def get_icon_for_signal_level(signal_level: int) -> str:
+    # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
+    if signal_level > 80:
+        icon_name = "network-wireless-100"
+    elif signal_level > 60:
+        icon_name = "network-wireless-75"
+    elif signal_level > 40:
+        icon_name = "network-wireless-50"
+    elif signal_level > 20:
+        icon_name = "network-wireless-25"
+    elif signal_level > 0:
+        icon_name = "network-wireless-00"
+    else:
+        icon_name = "network-wireless-00"
+
+    return icon_name
+
+
+def get_network_signal_level(bssid: str) -> int:
+    p = QProcess()
+    p.setProgram("wpa_cli")
+    p.setArguments(["bss", bssid])
+    p.start()
+    p.waitForFinished()
+    lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
+
+    signal_strength_dbm = 0
+    signal_noise_dbm = 0
+    for line in lines:
+        if line.startswith("noise="):
+            signal_noise_dbm = int(line.split("=")[1])
+            continue
+        if line.startswith("level="):
+            signal_strength_dbm = int(line.split("=")[1])
+            break
+
+    # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr.c#L848
+    return (signal_strength_dbm - signal_noise_dbm) * 4
 
 
 class NetworkMenu(QObject):
@@ -71,7 +110,7 @@ class NetworkMenu(QObject):
             # self.menu.move(QCursor.pos())
             # self.menu.show() # When called like this, it appears as a context menu over the menu bar, which is not desired
             # self.menu.activateWindow() # Needed on some systems to make the menu go away when clicked anywhere else but in the menu?
-            self.menu.popup(QCursor.pos()) # When called like this, it appears almost at the correct location but with the wrong font size, 
+            self.menu.popup(QCursor.pos()) # When called like this, it appears almost at the correct location but with the wrong font size,
             # as if it was a context menu rather than a real menu; probably because somehow its parent now is not the global menu bar main window?
 
 
@@ -118,43 +157,10 @@ class NetworkMenu(QObject):
                 self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
             elif status == "COMPLETED":
                 self.new_network_selected = False
-                p.setArguments(["bss", bssid])
-                p.start()
-                p.waitForFinished()
-                lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
 
-                signal_strength_dbm = 0
-                signal_noise_dbm = 0
-                for line in lines:
-                    if line.startswith("noise="):
-                        signal_noise_dbm = int(line.split("=")[1])
-                        continue
-                    if line.startswith("level="):
-                        signal_strength_dbm = int(line.split("=")[1])
-                        break
-
-                # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr.c#L848
-                signal_level = (signal_strength_dbm - signal_noise_dbm) * 4
-
-                print('Signal strength: %s, signal noise: %s, signal level: %s' % (signal_strength_dbm,
-                                                                                   signal_noise_dbm, signal_level))
-
-                # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
-                if signal_level > 80:
-                    icon_name = "network-wireless-100"
-                elif signal_level > 60:
-                    icon_name = "network-wireless-75"
-                elif signal_level > 40:
-                    icon_name = "network-wireless-50"
-                elif signal_level > 20:
-                    icon_name = "network-wireless-25"
-                elif signal_level > 0:
-                    icon_name = "network-wireless-00"
-                else:
-                    icon_name = "network-wireless-00"
-
-                self.tray.setIcon(QIcon.fromTheme(icon_name))
-                # TODO: Set different icons based on signal_level
+                signal_level = get_network_signal_level(bssid)
+                print('Signal level: %s' % signal_level)
+                self.tray.setIcon(QIcon.fromTheme(get_icon_for_signal_level(signal_level)))
             else:
                 self.tray.setIcon(QIcon.fromTheme("network-wireless-disconnected"))
         except:
@@ -190,15 +196,15 @@ class NetworkMenu(QObject):
                     continue
                 print(line)
                 # Parse out information for each network
-                regex = r"([^\ ]+)\t([^\ ]+)\t([^\ ]+)\t([^\ ]+)\t(.*)$"
+                regex = r"([^\ ]+)\t[^\ ]+\t[^\ ]+\t([^\ ]+)\t(.*)$"
                 matches = re.findall(regex, line)
                 if not matches:
                     continue
                 print(len(matches[0]))
                 bssid = matches[0][0]
-                signal_level = int(matches[0][2])
-                flags = matches[0][3]
-                label = matches[0][4]
+                flags = matches[0][1]
+                label = matches[0][2]
+                signal_level = get_network_signal_level(bssid)
 
                 ssid = label
                 if label == "" or label.startswith("\\x00"):
@@ -215,6 +221,8 @@ class NetworkMenu(QObject):
 
                 if "ssid=" + ssid in self.status_lines:
                     action.setChecked(True)
+
+                # TODO: Show networks with same SSID but different BSSID
                 if ssid not in ssids_added_to_menu:
                     self.actions.append(action)
                     self.wirelessGroup.addAction(action)
@@ -229,12 +237,12 @@ class NetworkMenu(QObject):
         self.actions.append(action)
         self.menu.addAction(action)
 
-        action = QAction("Create Hotspot...") # TODO: To be implemented
+        action = QAction("Create Hotspot...")  # TODO: To be implemented
         action.setDisabled(True)
         self.actions.append(action)
         self.menu.addAction(action)
 
-        action = QAction("Disconnect") # TODO: To be implemented
+        action = QAction("Disconnect")
         if "wpa_state=COMPLETED" in self.status_lines:
             action.setDisabled(False)
         else:
