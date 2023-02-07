@@ -96,7 +96,7 @@ class NetworkMenu(QObject):
         p.start()
         p.waitForFinished()
 
-        self.status_lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
+        self.status_lines = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
         
         print(self.status_lines)
         
@@ -176,7 +176,7 @@ class NetworkMenu(QObject):
 
         lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
 
-        self.wirelessGroup = QActionGroup(self.menu) # Only one of the actions added to this group can be active
+        self.wirelessGroup = QActionGroup(self.menu)  # Only one of the actions added to this group can be active
 
         action = QAction("Wireless")
         action.setDisabled(True)
@@ -209,11 +209,11 @@ class NetworkMenu(QObject):
                 # if 'flags' in vars():
                 action.__setattr__("flags", flags)
                 action.triggered.connect(self.switchNetwork)  # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
-                action.setText(label)
-                if "ssid=" + ssid in self.status_lines:
-                    action.setIcon(QIcon.fromTheme("network-wireless-symbolic"))
                 action.setCheckable(True)
-                if "default" in line:
+                action.setText(label)
+                action.setIcon(QIcon.fromTheme("network-wireless-symbolic"))
+
+                if "ssid=" + ssid in self.status_lines:
                     action.setChecked(True)
                 if ssid not in ssids_added_to_menu:
                     self.actions.append(action)
