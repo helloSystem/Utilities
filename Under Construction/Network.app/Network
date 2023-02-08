@@ -12,10 +12,10 @@
 # https://docs.freebsd.org/en/books/handbook/advanced-networking/#network-wireless
 
 
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QGroupBox, QSlider, QWidget, \
-    QActionGroup, QDesktopWidget, QMessageBox, QInputDialog, QLineEdit
-from PyQt5.QtGui import QIcon, QPixmap, QCursor, QColor
-from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer, QPoint, QTimer
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QWidget, QActionGroup,\
+    QMessageBox, QInputDialog, QLineEdit, QStyle, QStyleOptionMenuItem, QLabel, QWidgetAction, QProxyStyle
+from PyQt5.QtGui import QIcon, QPixmap, QCursor, QPainter, QMouseEvent, QPaintEvent
+from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QRect, QSize
 from subprocess import Popen, check_output
 import sys, os, re, subprocess
 
@@ -98,6 +98,7 @@ class NetworkMenu(QObject):
     def eventFilter(self, obj, event):
         print("eventFilter function running") # FIXME: Why is this never called when the icon is right-clicked?
         # We need to refresh the contents of the right-click menu somehow when the user right-clicks...
+        return super().eventFilter(obj, event)
 
     def show_menu(self, reason):
         self.updateMenu()
@@ -165,6 +166,14 @@ class NetworkMenu(QObject):
                 self.tray.setIcon(QIcon.fromTheme("network-wireless-disconnected"))
         except:
             pass
+
+        if not self.menu.isHidden():
+            for action in self.menu.actions():
+                if hasattr(action, "bssid"):
+                    bssid = getattr(action, "bssid")
+                    flags = getattr(action, "flags")
+                    action.defaultWidget().set_signal_level(get_network_signal_level(bssid))
+                    action.defaultWidget().set_password_protected("PSK" in flags)
              
     def updateMenu(self):
     
@@ -208,8 +217,8 @@ class NetworkMenu(QObject):
 
                 ssid = label
                 if label == "" or label.startswith("\\x00"):
-                    label = bssid # For networks with hidden ssid (network name)
-                action = QAction(line)
+                    label = bssid  # For networks with hidden ssid (network name)
+                action = QWidgetAction(self.menu)
                 action.__setattr__("ssid", ssid)
                 action.__setattr__("bssid", bssid)
                 # if 'flags' in vars():
@@ -217,7 +226,12 @@ class NetworkMenu(QObject):
                 action.triggered.connect(self.switchNetwork)  # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
                 action.setCheckable(True)
                 action.setText(label)
-                action.setIcon(QIcon.fromTheme("network-wireless-symbolic"))
+                # TODO: Update these on when the popup is present
+                #action.setIcon(QIcon.fromTheme(get_icon_for_signal_level(signal_level)))
+
+                #item = NetworkItem(self.menu, action, label, "ssid=" + ssid in self.status_lines, "PSK" in flags)
+                item = NetworkItem(self.menu, action, "PSK" in flags)
+                action.setDefaultWidget(item)
 
                 if "ssid=" + ssid in self.status_lines:
                     action.setChecked(True)
@@ -432,6 +446,80 @@ We don't know why this happened.")
         else:
             self.showError("Could not connect to the network. Please check the password.")
             return  # bad
+
+
+# https://forum.qt.io/post/367830
+class NetworkItem(QWidget):
+
+    #def __init__(self, parent: QWidget, action: QAction, text: str, checked:bool,
+    # password_protected: bool):
+    def __init__(self, parent: QWidget, action: QAction, password_protected: bool):
+        super().__init__(parent)
+
+        self.proxyStyle = QProxyStyle("panda")
+
+        self.action = action
+        #self.text = text
+        #self.checked = checked
+
+        self.layout = QHBoxLayout()
+        self.layout.setAlignment(Qt.AlignTrailing)
+        self.layout.setContentsMargins(0, 0, 10, 0)
+
+        self.lock_label = QLabel()
+        self.lock_label.setPixmap(QIcon.fromTheme("locked").pixmap(QSize(14, 14)))
+        self.lock_label.setVisible(password_protected)
+        self.layout.addWidget(self.lock_label)
+        self.signal_label = QLabel()
+        self.signal_label.setPixmap(QIcon.fromTheme("network-wireless-100").pixmap(QSize(14, 14)))
+        self.layout.addWidget(self.signal_label)
+
+        self.setLayout(self.layout)
+        self.setMouseTracking(True)
+
+    def set_password_protected(self, password_protected: bool):
+        self.lock_label.setVisible(password_protected)
+
+    def set_signal_level(self, signal_level: int):
+        self.signal_label.setPixmap(QIcon.fromTheme(get_icon_for_signal_level(signal_level)).pixmap(QSize(14, 14)))
+
+    def minimumSizeHint(self):
+        opt = QStyleOptionMenuItem()
+        opt.initFrom(self)
+        opt.menuHasCheckableItems = True
+        contentSize = self.fontMetrics().size(Qt.TextSingleLine | Qt.TextShowMnemonic, self.action.text())
+        return self.style().sizeFromContents(QStyle.CT_MenuItem, opt, contentSize, self)\
+            + QSize(self.layout.sizeHint().width(), 0)
+
+    def paintEvent(self, e: QPaintEvent):
+        p = QPainter(self)
+        p.setFont(self.parent().font())
+        opt = QStyleOptionMenuItem()
+        QMenu.initStyleOption(self.parent(), opt, self.action)
+        #opt.initFrom(self.parent())
+        #opt.text = self.text
+        #opt.menuHasCheckableItems = True
+        #opt.checked = self.checked
+        opt.checkType = QStyleOptionMenuItem.NonExclusive
+        #opt.menuItemType = QStyleOptionMenuItem.Normal
+        #opt.font = self.action.font().resolve(self.parent().font())
+        #opt.fontMetrics = QFontMetrics(opt.font)
+        #opt.palette = self.parent().palette()
+
+        #if self.rect().contains(self.mapFromGlobal(self.cursor().pos())):
+        #    opt.state |= QStyle.State_Selected
+
+        self.proxyStyle.drawControl(QStyle.CE_MenuItem, opt, p, self)
+
+    def mouseReleaseEvent(self, e: QMouseEvent):
+        super().mouseReleaseEvent(e)
+        checkboxRect = QRect(0, 0, 25, self.height()) # the value 25 seems to be hardcoded in the style
+        if self.isEnabled():
+            if checkboxRect.contains(self.mapFromGlobal(self.cursor().pos())):
+                self.checked = not self.checked
+                # emit toggled(checked)
+            #else:
+                # emit activated();
 
 
 if __name__ == "__main__":
