@@ -83,7 +83,7 @@ class NetworkMenu(QObject):
         # Sneaky PyQt quirk! A reference to the actions must be kept around or the actions will be destroyed
         self.actions = []
         self.sliderWindow = None
-        self.new_network_selected = False
+        self.check_network_password = False
         self.updateStatus()
         
         self.timer = QTimer()
@@ -154,12 +154,13 @@ class NetworkMenu(QObject):
         if status == "SCANNING":
             if self.wirelessGroup.checkedAction() is not None:
                 flags = getattr(self.wirelessGroup.checkedAction(), "flags")
-                if self.new_network_selected and "PSK" in flags:
-                    self.reset_network_password()
+                if self.check_network_password:
+                    self.set_network_password()
+                    self.reconnect()
 
             self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
         elif status == "COMPLETED":
-            self.new_network_selected = False
+            self.check_network_password = False
 
             signal_level = get_network_signal_level(bssid)
             print('Signal level: %s' % signal_level)
@@ -291,6 +292,7 @@ class NetworkMenu(QObject):
         self.tray.setIcon(QIcon.fromTheme("network-wireless-offline-symbolic"))
         
     def switchNetwork(self, line):
+        self.check_network_password = False
         self.updateStatus()
     
         ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
@@ -312,26 +314,35 @@ class NetworkMenu(QObject):
         output = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
         if len(output) < 2:
             # If this is called, something is wrong with wpa_cli.
-            self.showError("Could not connect to the network", """For some reaso\
-n wpa_cli doesn't seem to be working.
+            self.showError("Could not connect to the network", """For some reason wpa_cli doesn't seem to be working.
 
 Information for debuggers:
-""" + o.strip())
+""" + output.strip())
             return
         is_used = 0
         for line in output[2:]: # Ignore 'selected interface' message and column labels
             parts = line.split('\t')
             if parts[1] in [ssid, bssid]:
-                is_used = 1
+                is_used = True
                 self.network_id = parts[0]
                 continue
 
         if is_used: # TODO: We know we've already connected -- check why we are re-connecting
+            if "PSK" in flags:
+                self.check_network_password = True
+            else:
+                # Synchronize current network configuration with configuration file
+                p.setArguments(["set_network", str(self.network_id), "key_mgmt", "NONE"])
+                p.start()
+                p.waitForFinished()
+
+                p.setArguments(["save_config"])
+                p.start()
+                p.waitForFinished()
+
             p.setArguments(["select_network", str(self.network_id)])
             p.start()
             p.waitForFinished()
-            self.new_network_selected = True
-
         else:
             p.setArguments(["add_network"])
             print(p.program() + " " + " ".join(p.arguments()))
@@ -359,11 +370,7 @@ We don't know why this happened.")
                                """Information for debuggers: """ + out)
                 return # bad
             if "PSK" in flags:
-                password, ok = self.request_network_password(ssid, bssid)
-                if not ok:
-                    return
-
-                p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
+                self.set_network_password()
             else:
                 p.setArguments(["set_network", str(self.network_id), "key_mgmt", "NONE"])
             print(p.program() + " " + " ".join(p.arguments()))
