@@ -44,7 +44,7 @@ def get_network_signal_level(bssid: str) -> int:
     p.setArguments(["bss", bssid])
     p.start()
     p.waitForFinished()
-    lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
+    lines = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
 
     signal_strength_dbm = 0
     signal_noise_dbm = 0
@@ -69,12 +69,11 @@ class NetworkMenu(QObject):
         # self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
         self.showTODO()
 
-        # icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/wireless.svg") # Does not seem to work
-        # TODO: Change the icon depending on signal strength; see /usr/local/share/icons/elementary-xfce/status/symbolic/network-wireless-*
         self.tray = QSystemTrayIcon()
 
         self.tray.setVisible(True)
         self.menu = QMenu()
+        self.wirelessGroup = QActionGroup(self.menu)  # Only one of the actions added to this group can be active
 
         self.tray.setContextMenu(self.menu)
         self.tray.activated.connect(self.show_menu)
@@ -84,6 +83,7 @@ class NetworkMenu(QObject):
         # Sneaky PyQt quirk! A reference to the actions must be kept around or the actions will be destroyed
         self.actions = []
         self.sliderWindow = None
+        self.new_network_selected = False
         self.updateStatus()
         
         self.timer = QTimer()
@@ -95,7 +95,7 @@ class NetworkMenu(QObject):
         self.tray.installEventFilter(self) # FIXME: This never seems to get called, why?
         self.installEventFilter(self)  # FIXME: This never seems to get called, why?
 
-    def eventFilter(self, obj, event):
+    def eventFilter(self, obj, event) -> bool:
         print("eventFilter function running") # FIXME: Why is this never called when the icon is right-clicked?
         # We need to refresh the contents of the right-click menu somehow when the user right-clicks...
         return super().eventFilter(obj, event)
@@ -129,6 +129,7 @@ class NetworkMenu(QObject):
 
     def updateStatus(self):
         bssid = ""
+        status = ""
         p = QProcess()
         p.setProgram("wpa_cli")
         p.setArguments(["status"])
@@ -149,23 +150,22 @@ class NetworkMenu(QObject):
             if element.startswith("wpa_state="):
                 status = element.split("=")[1]
                 break
-        try:    
-            if status == "SCANNING":
+
+        if status == "SCANNING":
+            if self.wirelessGroup.checkedAction() is not None:
                 flags = getattr(self.wirelessGroup.checkedAction(), "flags")
                 if self.new_network_selected and "PSK" in flags:
                     self.reset_network_password()
 
-                self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
-            elif status == "COMPLETED":
-                self.new_network_selected = False
+            self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
+        elif status == "COMPLETED":
+            self.new_network_selected = False
 
-                signal_level = get_network_signal_level(bssid)
-                print('Signal level: %s' % signal_level)
-                self.tray.setIcon(QIcon.fromTheme(get_icon_for_signal_level(signal_level)))
-            else:
-                self.tray.setIcon(QIcon.fromTheme("network-wireless-disconnected"))
-        except:
-            pass
+            signal_level = get_network_signal_level(bssid)
+            print('Signal level: %s' % signal_level)
+            self.tray.setIcon(QIcon.fromTheme(get_icon_for_signal_level(signal_level)))
+        else:
+            self.tray.setIcon(QIcon.fromTheme("network-wireless-disconnected"))
 
         if not self.menu.isHidden():
             for action in self.menu.actions():
@@ -173,6 +173,7 @@ class NetworkMenu(QObject):
                     bssid = getattr(action, "bssid")
                     flags = getattr(action, "flags")
                     action.defaultWidget().set_signal_level(get_network_signal_level(bssid))
+                    # TODO: Those flags are not updating
                     action.defaultWidget().set_password_protected("PSK" in flags)
              
     def updateMenu(self):
@@ -189,9 +190,7 @@ class NetworkMenu(QObject):
         p.start()
         p.waitForFinished()
 
-        lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
-
-        self.wirelessGroup = QActionGroup(self.menu)  # Only one of the actions added to this group can be active
+        lines = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
 
         action = QAction("Wireless")
         action.setDisabled(True)
@@ -226,8 +225,6 @@ class NetworkMenu(QObject):
                 action.triggered.connect(self.switchNetwork)  # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
                 action.setCheckable(True)
                 action.setText(label)
-                # TODO: Update these on when the popup is present
-                #action.setIcon(QIcon.fromTheme(get_icon_for_signal_level(signal_level)))
 
                 #item = NetworkItem(self.menu, action, label, "ssid=" + ssid in self.status_lines, "PSK" in flags)
                 item = NetworkItem(self.menu, action, "PSK" in flags)
@@ -346,7 +343,7 @@ Information for debuggers:
                 print("'%s' is not a number." % e)
                 return # bad
             try:
-                n = int(e)
+                self.network_id = int(e)
             except:
                 self.showError("Could not connect to the network.", "\
 We don't know why this happened.")
@@ -362,6 +359,10 @@ We don't know why this happened.")
                                """Information for debuggers: """ + out)
                 return # bad
             if "PSK" in flags:
+                password, ok = self.request_network_password(ssid, bssid)
+                if not ok:
+                    return
+
                 p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
             else:
                 p.setArguments(["set_network", str(self.network_id), "key_mgmt", "NONE"])
@@ -421,15 +422,23 @@ We don't know why this happened.")
         msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
         msg.exec()
 
-    def reset_network_password(self):
-        ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
-        bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
+    def request_network_password(self, ssid: str, bssid: str) -> tuple[str, bool]:
         password, ok = QInputDialog.getText(None, "Wireless network password",
                                             "Please enter the password for the %s network:" % ssid if ssid else bssid,
                                             QLineEdit.Password)  # TODO: Make OK only clickable when we have >= 8 characters
         if not ok:
             self.new_network_selected = False
             print("User did not click OK in password dialog")
+
+        return password, ok
+
+    def reset_network_password(self):
+        ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
+        bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
+        password, ok = self.request_network_password(ssid, bssid)
+
+        if not ok:
+            self.new_network_selected = False
             return  # Don't try to connect to a network if it has been cancelled.
 
         p = QProcess()
@@ -441,7 +450,7 @@ We don't know why this happened.")
         self.reconnect()
 
         if "OK" in str(p.readAllStandardOutput(), 'utf-8'):
-            self.new_network_selected = False
+            # self.new_network_selected = False
             return  # good
         else:
             self.showError("Could not connect to the network. Please check the password.")
@@ -467,7 +476,7 @@ class NetworkItem(QWidget):
         self.layout.setContentsMargins(0, 0, 10, 0)
 
         self.lock_label = QLabel()
-        self.lock_label.setPixmap(QIcon.fromTheme("locked").pixmap(QSize(14, 14)))
+        self.lock_label.setPixmap(QIcon.fromTheme("network-wireless-encrypted-symbolic").pixmap(QSize(14, 14)))
         self.lock_label.setVisible(password_protected)
         self.layout.addWidget(self.lock_label)
         self.signal_label = QLabel()
@@ -510,16 +519,6 @@ class NetworkItem(QWidget):
         #    opt.state |= QStyle.State_Selected
 
         self.proxyStyle.drawControl(QStyle.CE_MenuItem, opt, p, self)
-
-    def mouseReleaseEvent(self, e: QMouseEvent):
-        super().mouseReleaseEvent(e)
-        checkboxRect = QRect(0, 0, 25, self.height()) # the value 25 seems to be hardcoded in the style
-        if self.isEnabled():
-            if checkboxRect.contains(self.mapFromGlobal(self.cursor().pos())):
-                self.checked = not self.checked
-                # emit toggled(checked)
-            #else:
-                # emit activated();
 
 
 if __name__ == "__main__":
