@@ -18,8 +18,7 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBox
 from PyQt5.QtGui import QIcon, QPixmap, QCursor, QPainter, QPaintEvent
 from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QSize
 from subprocess import Popen, check_output
-import sys, os, re, subprocess
-
+import sys, os, re, subprocess, signal
 
 def get_icon_for_signal_level(signal_level: int) -> str:
     # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
