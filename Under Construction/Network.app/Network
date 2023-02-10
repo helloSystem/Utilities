@@ -452,9 +452,9 @@ We don't know why this happened.")
 
         p = QProcess()
         p.setProgram("wpa_cli")
-        p.setArguments(["set_network", str(self.network_id), "key_mgmt", flags.split(" ")[0]])
-        p.start()
-        p.waitForFinished()
+        #p.setArguments(["set_network", str(self.network_id), "key_mgmt", flags.split(" ")[0]])
+        #p.start()
+        #p.waitForFinished()
 
         p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
         print(p.program() + " " + " ".join(p.arguments()))
@@ -556,7 +556,6 @@ class PasswordRequestDialog(QDialog):
         self.password_line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
         self.show_password_checkbox = QCheckBox()
-        self.show_password_checkbox.setChecked(True)
         self.show_password_checkbox.setText("Show password")
         self.show_password_checkbox.stateChanged.connect(self.show_password_changed)
 
@@ -593,13 +592,13 @@ class PasswordRequestDialog(QDialog):
     def get_password(self) -> tuple[bool, str]:
         self.exec()
 
-        return self.result(), self.password_label.text()
+        return self.result(), self.password_line_edit.text()
 
     def password_changed(self, password: str):
         self.connect_button.setEnabled(len(password) > 8)
 
     def show_password_changed(self, state: int):
-        self.password_line_edit.setEchoMode(QLineEdit.Password if state else QLineEdit.Normal)
+        self.password_line_edit.setEchoMode(QLineEdit.Normal if state else QLineEdit.Password)
 
 
 if __name__ == "__main__":
