@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBox
 from PyQt5.QtGui import QIcon, QPixmap, QCursor, QPainter, QPaintEvent
 from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QSize
 from subprocess import Popen, check_output
+from collections import namedtuple
 import sys, os, re, subprocess, signal
 
 def get_icon_for_signal_level(signal_level: int) -> str:
@@ -38,7 +39,11 @@ def get_icon_for_signal_level(signal_level: int) -> str:
     return icon_name
 
 
-def get_network_signal_level(bssid: str) -> int:
+# Only need this for now
+NetworkInfo = namedtuple("NetworkInfo", ["flags", "signal_level"])
+
+
+def get_network_info(bssid: str) -> NetworkInfo:
     p = QProcess()
     p.setProgram("wpa_cli")
     p.setArguments(["bss", bssid])
@@ -48,16 +53,19 @@ def get_network_signal_level(bssid: str) -> int:
 
     signal_strength_dbm = 0
     signal_noise_dbm = 0
+    flags = ""
     for line in lines:
         if line.startswith("noise="):
             signal_noise_dbm = int(line.split("=")[1])
             continue
         if line.startswith("level="):
             signal_strength_dbm = int(line.split("=")[1])
-            break
+            continue
+        if line.startswith("flags="):
+            flags = line.split("=")[1]
 
     # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr.c#L848
-    return (signal_strength_dbm - signal_noise_dbm) * 4
+    return NetworkInfo(flags, (signal_strength_dbm - signal_noise_dbm) * 4)
 
 
 class NetworkMenu(QObject):
@@ -102,7 +110,7 @@ class NetworkMenu(QObject):
         self.installEventFilter(self)  # FIXME: This never seems to get called, why?
 
     def eventFilter(self, obj, event) -> bool:
-        print("eventFilter function running") # FIXME: Why is this never called when the icon is right-clicked?
+        print("eventFilter function running")  # FIXME: Why is this never called when the icon is right-clicked?
         # We need to refresh the contents of the right-click menu somehow when the user right-clicks...
         return super().eventFilter(obj, event)
 
@@ -161,7 +169,7 @@ class NetworkMenu(QObject):
             self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
         elif status == "COMPLETED":
             self.check_network_password = False
-            signal_level = get_network_signal_level(bssid)
+            signal_level = get_network_info(bssid).signal_level
             print('Signal level: %s' % signal_level)
             self.tray.setIcon(QIcon.fromTheme(get_icon_for_signal_level(signal_level)))
         else:
@@ -172,9 +180,10 @@ class NetworkMenu(QObject):
                 if hasattr(action, "bssid"):
                     bssid = getattr(action, "bssid")
                     flags = getattr(action, "flags")
-                    action.defaultWidget().set_signal_level(get_network_signal_level(bssid))
+                    network_info = get_network_info(bssid)
+                    action.defaultWidget().set_signal_level(network_info.signal_level)
                     # TODO: Those flags are not updating
-                    action.defaultWidget().set_password_protected("PSK" in flags)
+                    action.defaultWidget().set_password_protected("PSK" in network_info.flags)
              
     def updateMenu(self):
     
@@ -212,7 +221,7 @@ class NetworkMenu(QObject):
                 bssid = matches[0][0]
                 flags = matches[0][1]
                 label = matches[0][2]
-                signal_level = get_network_signal_level(bssid)
+                signal_level = get_network_info(bssid).signal_level
 
                 ssid = label
                 if label == "" or label.startswith("\\x00"):
@@ -226,8 +235,8 @@ class NetworkMenu(QObject):
                 action.setCheckable(True)
                 action.setText(label)
 
-                #item = NetworkItem(self.menu, action, label, "ssid=" + ssid in self.status_lines, "PSK" in flags)
-                item = NetworkItem(self.menu, action, "PSK" in flags)
+                item = NetworkItem(self.menu, action)
+                item.set_password_protected("PSK" in flags)
                 action.setDefaultWidget(item)
 
                 if "ssid=" + ssid in self.status_lines:
@@ -369,7 +378,8 @@ We don't know why this happened.")
                                """Information for debuggers: """ + out)
                 return # bad
             if "PSK" in flags:
-                self.set_network_password()
+                # TODO: Don't add network if user presses "Cancel" on password dialog
+                self.set_network_password("<h4>Please enter the password for the \"%s\" network:</h4>" % ssid if ssid else bssid)
             else:
                 p.setArguments(["set_network", str(self.network_id), "key_mgmt", "NONE"])
             print(p.program() + " " + " ".join(p.arguments()))
@@ -428,8 +438,8 @@ We don't know why this happened.")
         msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
         msg.exec()
 
-    def request_network_password(self, ssid: str, bssid: str) -> tuple[str, bool]:
-        dialog = PasswordRequestDialog("<h4>Please enter the password for the \"%s\" network:</h4>" % ssid if ssid else bssid)
+    def request_network_password(self, dialog_text: str) -> tuple[str, bool]:
+        dialog = PasswordRequestDialog(dialog_text)
         dialog.setWindowTitle("Wireless network password")
 
         ok, password = dialog.get_password()
@@ -438,11 +448,11 @@ We don't know why this happened.")
 
         return password, ok
 
-    def set_network_password(self):
+    def set_network_password(self, dialog_text: str):
         ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
         bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
         flags = getattr(self.wirelessGroup.checkedAction(), "flags")
-        password, ok = self.request_network_password(ssid, bssid)
+        password, ok = self.request_network_password(dialog_text)
 
         if not ok:
             self.check_network_password = False
@@ -468,8 +478,10 @@ We don't know why this happened.")
 
         if self.check_network_password and self.wirelessGroup.checkedAction() and\
                 ("ssid=\"%s\"" % getattr(self.wirelessGroup.checkedAction(), "ssid")) and "reason=WRONG_KEY" in output:
+            ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
+            bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
             self.disconnect()  # Prevent wpa_supplicant from trying to connect and fail again
-            self.set_network_password()
+            self.set_network_password("<h4>Please enter the password for the \"%s\" network:</h4></br>Incorrect password. Please try again." % ssid if ssid else bssid)
             self.reconnect()
 
 
@@ -478,7 +490,7 @@ class NetworkItem(QWidget):
 
     #def __init__(self, parent: QWidget, action: QAction, text: str, checked:bool,
     # password_protected: bool):
-    def __init__(self, parent: QWidget, action: QAction, password_protected: bool):
+    def __init__(self, parent: QWidget, action: QAction):
         super().__init__(parent)
 
         self.proxyStyle = QProxyStyle("panda")
