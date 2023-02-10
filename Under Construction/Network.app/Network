@@ -12,10 +12,11 @@
 # https://docs.freebsd.org/en/books/handbook/advanced-networking/#network-wireless
 
 
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QWidget, QActionGroup,\
-    QMessageBox, QInputDialog, QLineEdit, QStyle, QStyleOptionMenuItem, QLabel, QWidgetAction, QProxyStyle
-from PyQt5.QtGui import QIcon, QPixmap, QCursor, QPainter, QMouseEvent, QPaintEvent
-from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QRect, QSize
+from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QWidget, QActionGroup, \
+    QMessageBox, QLineEdit, QStyle, QStyleOptionMenuItem, QLabel, QWidgetAction, QProxyStyle, QDialog, \
+    QGridLayout, QLayout, QCheckBox, QPushButton, QSizePolicy
+from PyQt5.QtGui import QIcon, QPixmap, QCursor, QPainter, QPaintEvent
+from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QSize
 from subprocess import Popen, check_output
 import sys, os, re, subprocess
 
@@ -319,7 +320,7 @@ class NetworkMenu(QObject):
 Information for debuggers:
 """ + output.strip())
             return
-        is_used = 0
+        is_used = False
         for line in output[2:]: # Ignore 'selected interface' message and column labels
             parts = line.split('\t')
             if parts[1] in [ssid, bssid]:
@@ -430,38 +431,39 @@ We don't know why this happened.")
         msg.exec()
 
     def request_network_password(self, ssid: str, bssid: str) -> tuple[str, bool]:
-        password, ok = QInputDialog.getText(None, "Wireless network password",
-                                            "Please enter the password for the %s network:" % ssid if ssid else bssid,
-                                            QLineEdit.Password)  # TODO: Make OK only clickable when we have >= 8 characters
+        dialog = PasswordRequestDialog("<h4>Please enter the password for the \"%s\" network:</h4>" % ssid if ssid else bssid)
+        dialog.setWindowTitle("Wireless network password")
+
+        ok, password = dialog.get_password()
         if not ok:
-            self.new_network_selected = False
             print("User did not click OK in password dialog")
 
         return password, ok
 
-    def reset_network_password(self):
+    def set_network_password(self):
         ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
         bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
+        flags = getattr(self.wirelessGroup.checkedAction(), "flags")
         password, ok = self.request_network_password(ssid, bssid)
 
         if not ok:
-            self.new_network_selected = False
+            self.check_network_password = False
             return  # Don't try to connect to a network if it has been cancelled.
 
         p = QProcess()
         p.setProgram("wpa_cli")
+        p.setArguments(["set_network", str(self.network_id), "key_mgmt", flags.split(" ")[0]])
+        p.start()
+        p.waitForFinished()
+
         p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
         print(p.program() + " " + " ".join(p.arguments()))
         p.start()
         p.waitForFinished()
-        self.reconnect()
 
-        if "OK" in str(p.readAllStandardOutput(), 'utf-8'):
-            # self.new_network_selected = False
-            return  # good
-        else:
-            self.showError("Could not connect to the network. Please check the password.")
-            return  # bad
+        # Not really a way to tell if authentication failure occurred
+        if "FAIL" in str(p.readAllStandardOutput(), 'utf-8'):
+            print("Failure while setting network password")
 
 
 # https://forum.qt.io/post/367830
@@ -526,6 +528,78 @@ class NetworkItem(QWidget):
         #    opt.state |= QStyle.State_Selected
 
         self.proxyStyle.drawControl(QStyle.CE_MenuItem, opt, p, self)
+
+
+class PasswordRequestDialog(QDialog):
+    def __init__(self, text: str):
+        super().__init__()
+
+        self.layout = QGridLayout()
+        self.layout.setHorizontalSpacing(15)
+        self.layout.setSizeConstraint(QLayout.SetFixedSize)
+
+        self.icon_label = QLabel()
+        self.icon_label.setPixmap(QPixmap(os.path.dirname(__file__) + "/Resources/Network.png").scaledToWidth(64, Qt.SmoothTransformation))
+
+        self.text_label = QLabel()
+        self.text_label.setMaximumWidth(300)
+        self.text_label.setContentsMargins(0, 5, 0, 0)
+        self.text_label.setText(text)
+        self.text_label.setWordWrap(True)
+
+        self.password_label = QLabel()
+        self.password_label.setText("Password:")
+
+        self.password_line_edit = QLineEdit()
+        self.password_line_edit.setEchoMode(QLineEdit.Password)
+        self.password_line_edit.textChanged.connect(self.password_changed)
+        self.password_line_edit.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+
+        self.show_password_checkbox = QCheckBox()
+        self.show_password_checkbox.setChecked(True)
+        self.show_password_checkbox.setText("Show password")
+        self.show_password_checkbox.stateChanged.connect(self.show_password_changed)
+
+        self.buttons_layout = QHBoxLayout()
+        self.buttons_layout.setContentsMargins(0, 10, 0, 0)
+        self.buttons_layout.setSpacing(10)
+        self.buttons_layout.setSizeConstraint(QLayout.SetFixedSize)
+
+        self.cancel_button = QPushButton()
+        self.cancel_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.cancel_button.setText("Cancel")
+        self.cancel_button.clicked.connect(self.reject)
+
+        self.connect_button = QPushButton()
+        self.connect_button.setEnabled(False)
+        self.connect_button.setText("Connect")
+        self.connect_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.connect_button.clicked.connect(self.accept)
+
+        self.buttons_layout.addWidget(self.cancel_button)
+        self.buttons_layout.addWidget(self.connect_button)
+
+        self.layout.addWidget(self.icon_label, 0, 0, Qt.AlignTop)
+        self.layout.addWidget(self.text_label, 0, 1, 1, 2, Qt.AlignTop)
+        self.layout.addWidget(self.password_label, 1, 1, Qt.AlignTop)
+        self.layout.addWidget(self.password_line_edit, 1, 2, Qt.AlignTop)
+        self.layout.addWidget(self.show_password_checkbox, 2, 2, Qt.AlignTop)
+        self.layout.addLayout(self.buttons_layout, 3, 2, Qt.AlignTrailing)
+
+        self.setLayout(self.layout)
+        self.setModal(True)
+        self.setSizeGripEnabled(False)
+
+    def get_password(self) -> tuple[bool, str]:
+        self.exec()
+
+        return self.result(), self.password_label.text()
+
+    def password_changed(self, password: str):
+        self.connect_button.setEnabled(len(password) > 8)
+
+    def show_password_changed(self, state: int):
+        self.password_line_edit.setEchoMode(QLineEdit.Password if state else QLineEdit.Normal)
 
 
 if __name__ == "__main__":
