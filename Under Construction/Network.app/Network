@@ -21,6 +21,13 @@ from subprocess import Popen, check_output
 from collections import namedtuple
 import sys, os, re, subprocess, signal
 
+
+def signal_handler(signal_number: int):
+    if signal_number == signal.SIGTERM:
+        # Needed for read_log_process to stop
+        app.quit()
+
+
 def get_icon_for_signal_level(signal_level: int) -> str:
     # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
     if signal_level > 80:
@@ -66,6 +73,17 @@ def get_network_info(bssid: str) -> NetworkInfo:
 
     # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr.c#L848
     return NetworkInfo(flags, (signal_strength_dbm - signal_noise_dbm) * 4)
+
+
+def request_network_password(dialog_text: str) -> tuple[str, bool]:
+    dialog = PasswordRequestDialog(dialog_text)
+    dialog.setWindowTitle("Wireless network password")
+
+    ok, password = dialog.get_password()
+    if not ok:
+        print("User did not click OK in password dialog")
+
+    return password, ok
 
 
 class NetworkMenu(QObject):
@@ -179,12 +197,10 @@ class NetworkMenu(QObject):
             for action in self.menu.actions():
                 if hasattr(action, "bssid"):
                     bssid = getattr(action, "bssid")
-                    flags = getattr(action, "flags")
                     network_info = get_network_info(bssid)
                     action.defaultWidget().set_signal_level(network_info.signal_level)
-                    # TODO: Those flags are not updating
                     action.defaultWidget().set_password_protected("PSK" in network_info.flags)
-             
+
     def updateMenu(self):
     
         # Find out whether we are connected to one of the networks
@@ -237,9 +253,10 @@ class NetworkMenu(QObject):
 
                 item = NetworkItem(self.menu, action)
                 item.set_password_protected("PSK" in flags)
+                item.set_signal_level(signal_level)
                 action.setDefaultWidget(item)
 
-                if "ssid=" + ssid in self.status_lines:
+                if "bssid=" + bssid in self.status_lines:
                     action.setChecked(True)
 
                 # TODO: Show networks with same SSID but different BSSID
@@ -300,6 +317,7 @@ class NetworkMenu(QObject):
         self.tray.setIcon(QIcon.fromTheme("network-wireless-offline-symbolic"))
         
     def switchNetwork(self, line):
+        # TODO: Support networks protected with EAP
         self.check_network_password = False
         self.updateStatus()
     
@@ -328,25 +346,24 @@ Information for debuggers:
 """ + output.strip())
             return
         is_used = False
-        for line in output[2:]: # Ignore 'selected interface' message and column labels
+        for line in output[2:]:  # Ignore 'selected interface' message and column labels
             parts = line.split('\t')
             if parts[1] in [ssid, bssid]:
-                is_used = True
-                self.network_id = parts[0]
-                continue
+                p.setArguments(["get_network", parts[0], "key_mgmt"])
+                p.start()
+                p.waitForFinished()
+                key_mgmt = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()[1]
+
+                # Accept if the same authentication method is used, treat as different network if not.
+                # Not handling IEEE8021X
+                if ("WPA" in flags) == ("WPA" in key_mgmt):
+                    is_used = True
+                    self.network_id = parts[0]
+                    break
 
         if is_used: # TODO: We know we've already connected -- check why we are re-connecting
             if "PSK" in flags:
                 self.check_network_password = True
-            else:
-                # Synchronize current network configuration with configuration file
-                p.setArguments(["set_network", str(self.network_id), "key_mgmt", "NONE"])
-                p.start()
-                p.waitForFinished()
-
-                p.setArguments(["save_config"])
-                p.start()
-                p.waitForFinished()
 
             p.setArguments(["select_network", str(self.network_id)])
             p.start()
@@ -367,7 +384,7 @@ Information for debuggers:
                 self.showError("Could not connect to the network.", "\
 We don't know why this happened.")
                 print("returned non-zero exit code")
-                return # bad
+                return  # bad
             p.setArguments(["set_network", str(self.network_id), "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"'])
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
@@ -378,8 +395,15 @@ We don't know why this happened.")
                                """Information for debuggers: """ + out)
                 return # bad
             if "PSK" in flags:
-                # TODO: Don't add network if user presses "Cancel" on password dialog
-                self.set_network_password("<h4>Please enter the password for the \"%s\" network:</h4>" % ssid if ssid else bssid)
+                password, ok = request_network_password(
+                    "<h4>Please enter the password for the \"%s\" network:</h4>" % ssid if ssid else bssid)
+                if ok:
+                    p.setArguments(["set_network", str(self.network_id), "psk", "\"%s\"" % password])
+                else:
+                    p.setArguments(["remove_network", str(self.network_id)])
+                    p.start()
+                    p.waitForFinished()
+                    return
             else:
                 p.setArguments(["set_network", str(self.network_id), "key_mgmt", "NONE"])
             print(p.program() + " " + " ".join(p.arguments()))
@@ -438,41 +462,6 @@ We don't know why this happened.")
         msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
         msg.exec()
 
-    def request_network_password(self, dialog_text: str) -> tuple[str, bool]:
-        dialog = PasswordRequestDialog(dialog_text)
-        dialog.setWindowTitle("Wireless network password")
-
-        ok, password = dialog.get_password()
-        if not ok:
-            print("User did not click OK in password dialog")
-
-        return password, ok
-
-    def set_network_password(self, dialog_text: str):
-        ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
-        bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
-        flags = getattr(self.wirelessGroup.checkedAction(), "flags")
-        password, ok = self.request_network_password(dialog_text)
-
-        if not ok:
-            self.check_network_password = False
-            return  # Don't try to connect to a network if it has been cancelled.
-
-        p = QProcess()
-        p.setProgram("wpa_cli")
-        #p.setArguments(["set_network", str(self.network_id), "key_mgmt", flags.split(" ")[0]])
-        #p.start()
-        #p.waitForFinished()
-
-        p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
-        print(p.program() + " " + " ".join(p.arguments()))
-        p.start()
-        p.waitForFinished()
-
-        # Not really a way to tell if authentication failure occurred
-        if "FAIL" in str(p.readAllStandardOutput(), 'utf-8'):
-            print("Failure while setting network password")
-
     def read_wpa_supplicant_log(self):
         output = str(self.read_log_process.readAllStandardOutput(), 'UTF-8')
 
@@ -481,7 +470,20 @@ We don't know why this happened.")
             ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
             bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
             self.disconnect()  # Prevent wpa_supplicant from trying to connect and fail again
-            self.set_network_password("<h4>Please enter the password for the \"%s\" network:</h4></br>Incorrect password. Please try again." % ssid if ssid else bssid)
+
+            password, ok = request_network_password("<h4>Please enter the password for the \"%s\" network:</h4></br>Incorrect password. Please try again." % ssid if ssid else bssid)
+
+            if not ok:
+                self.check_network_password = False
+                return  # Don't try to connect to a network if it has been cancelled.
+
+            p = QProcess()
+            p.setProgram("wpa_cli")
+            p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
+            print(p.program() + " " + " ".join(p.arguments()))
+            p.start()
+            p.waitForFinished()
+
             self.reconnect()
 
 
@@ -505,7 +507,6 @@ class NetworkItem(QWidget):
 
         self.lock_label = QLabel()
         self.lock_label.setPixmap(QIcon.fromTheme("network-wireless-encrypted-symbolic").pixmap(QSize(14, 14)))
-        self.lock_label.setVisible(password_protected)
         self.layout.addWidget(self.lock_label)
         self.signal_label = QLabel()
         self.signal_label.setPixmap(QIcon.fromTheme("network-wireless-100").pixmap(QSize(14, 14)))
@@ -618,11 +619,6 @@ class PasswordRequestDialog(QDialog):
 
     def show_password_changed(self, state: int):
         self.password_line_edit.setEchoMode(QLineEdit.Normal if state else QLineEdit.Password)
-
-def signal_handler(signal_number: int):
-    if signal_number == signal.SIGTERM:
-        # Needed for read_log_process to stop
-        app.quit()
 
 if __name__ == "__main__":
 
