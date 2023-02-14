@@ -12,17 +12,18 @@
 # https://docs.freebsd.org/en/books/handbook/advanced-networking/#network-wireless
 
 
+from ctypes import cast, POINTER, c_uint32
+from PyQt5.sip import voidptr
 from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QWidget, QActionGroup, \
     QMessageBox, QLineEdit, QStyle, QStyleOptionMenuItem, QLabel, QWidgetAction, QProxyStyle, QDialog, \
     QGridLayout, QLayout, QCheckBox, QPushButton, QSizePolicy
-from PyQt5.QtGui import QIcon, QPixmap, QCursor, QPainter, QPaintEvent
+from PyQt5.QtGui import QIcon, QPixmap, QCursor, QPainter, QPaintEvent, QImage, qGray, qAlpha, qRgba
 from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QSize, QFileSystemWatcher
-from subprocess import Popen, check_output
 from collections import namedtuple
-import sys, os, re, subprocess
+import sys, os, re
 
 
-def get_icon_for_signal_level(signal_level: int) -> str:
+def get_icon_for_signal_level(signal_level: int) -> QIcon:
     # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
     if signal_level > 80:
         icon_name = "network-wireless-100"
@@ -37,7 +38,32 @@ def get_icon_for_signal_level(signal_level: int) -> str:
     else:
         icon_name = "network-wireless-00"
 
-    return icon_name
+    icon = QIcon.fromTheme(icon_name)
+    pixmap: QPixmap = icon.pixmap(QSize(16, 16))
+    image = pixmap.toImage()
+    image = QPixmap.fromImage(set_monochrome_image_color(image))
+
+    return QIcon(image)
+
+
+# https://github.com/helloSystem/Menu/blob/c13548d3866c3896d728d2388bd0d4cd636a3a91/plugin-statusnotifier/statusnotifierbutton.cpp#L108
+def set_monochrome_image_color(src_image: QImage, rgb_value: int=-1) -> QImage:
+    image: QImage = src_image.convertToFormat(QImage.Format_ARGB32 if src_image.hasAlphaChannel() else QImage.Format_RGB32)
+    pointer: voidptr = image.bits()
+    pixel_array = cast(pointer.__int__(), POINTER(c_uint32))
+    pixel_count = image.width() * image.height()
+
+    for i in range(pixel_count):
+        pixel = pixel_array.__getitem__(i)
+
+        value = rgb_value
+        if rgb_value == -1:
+            value = qGray(pixel)
+
+        value = qRgba(value, value, value, qAlpha(pixel))
+        pixel_array.__setitem__(i, value)
+
+    return image
 
 
 # Only need this for now
@@ -176,7 +202,7 @@ class NetworkMenu(QObject):
             self.check_network_password = False
             signal_level = get_network_info(bssid).signal_level
             print('Signal level: %s' % signal_level)
-            self.tray.setIcon(QIcon.fromTheme(get_icon_for_signal_level(signal_level)))
+            self.tray.setIcon(get_icon_for_signal_level(signal_level))
         else:
             self.tray.setIcon(QIcon.fromTheme("network-wireless-disconnected"))
 
@@ -487,16 +513,12 @@ We don't know why this happened.")
 # https://forum.qt.io/post/367830
 class NetworkItem(QWidget):
 
-    #def __init__(self, parent: QWidget, action: QAction, text: str, checked:bool,
     # password_protected: bool):
     def __init__(self, parent: QWidget, action: QAction):
         super().__init__(parent)
 
         self.proxyStyle = QProxyStyle("panda")
-
         self.action = action
-        #self.text = text
-        #self.checked = checked
 
         self.layout = QHBoxLayout()
         self.layout.setAlignment(Qt.AlignTrailing)
@@ -506,7 +528,7 @@ class NetworkItem(QWidget):
         self.lock_label.setPixmap(QIcon.fromTheme("network-wireless-encrypted-symbolic").pixmap(QSize(14, 14)))
         self.layout.addWidget(self.lock_label)
         self.signal_label = QLabel()
-        self.signal_label.setPixmap(QIcon.fromTheme("network-wireless-100").pixmap(QSize(14, 14)))
+        self.signal_label.setPixmap(QIcon.fromTheme("network-wireless-100").pixmap(QSize(16, 16)))
         self.layout.addWidget(self.signal_label)
 
         self.setLayout(self.layout)
@@ -516,7 +538,7 @@ class NetworkItem(QWidget):
         self.lock_label.setVisible(password_protected)
 
     def set_signal_level(self, signal_level: int):
-        self.signal_label.setPixmap(QIcon.fromTheme(get_icon_for_signal_level(signal_level)).pixmap(QSize(14, 14)))
+        self.signal_label.setPixmap(get_icon_for_signal_level(signal_level).pixmap(QSize(16, 16)))
 
     def minimumSizeHint(self):
         opt = QStyleOptionMenuItem()
@@ -543,6 +565,15 @@ class NetworkItem(QWidget):
 
         #if self.rect().contains(self.mapFromGlobal(self.cursor().pos())):
         #    opt.state |= QStyle.State_Selected
+        if opt.state & QStyle.State_Selected and opt.state & QStyle.State_Enabled:
+            rgb_color = 255
+        else:
+            rgb_color = 0
+
+        self.lock_label.setPixmap(QPixmap.fromImage(set_monochrome_image_color(self.lock_label.pixmap().toImage(),
+                                                                               rgb_color)))
+        self.signal_label.setPixmap(QPixmap.fromImage(set_monochrome_image_color(self.signal_label.pixmap().toImage(),
+                                                                                 rgb_color)))
 
         self.proxyStyle.drawControl(QStyle.CE_MenuItem, opt, p, self)
 
