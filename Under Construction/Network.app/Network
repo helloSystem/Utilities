@@ -23,27 +23,33 @@ from collections import namedtuple
 import sys, os, re
 
 
-def get_icon_for_signal_level(signal_level: int) -> QIcon:
-    # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
-    if signal_level > 80:
-        icon_name = "network-wireless-100"
-    elif signal_level > 60:
-        icon_name = "network-wireless-75"
-    elif signal_level > 40:
-        icon_name = "network-wireless-50"
-    elif signal_level > 20:
-        icon_name = "network-wireless-25"
-    elif signal_level > 0:
-        icon_name = "network-wireless-00"
+def get_pixmap_for_status(status: str, signal_level: int) -> QPixmap:
+    if status == "SCANNING" or status == "ACQUIRING":
+        icon_name = "network-wireless-acquiring-symbolic"
+    elif status == "COMPLETED":
+        # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
+        if signal_level > 80:
+            icon_name = "network-wireless-signal-excellent-symbolic"
+        elif signal_level > 60:
+            icon_name = "network-wireless-signal-good-symbolic"
+        elif signal_level > 40:
+            icon_name = "network-wireless-signal-ok-symbolic"
+        elif signal_level > 20:
+            icon_name = "network-wireless-signal-weak-symbolic"
+        elif signal_level > 0:
+            icon_name = "network-wireless-signal-none-symbolic"
+        else:
+            icon_name = "network-wireless-signal-none-symbolic"
     else:
-        icon_name = "network-wireless-00"
+        icon_name = "network-wireless-offline-symbolic"
 
     icon = QIcon.fromTheme(icon_name)
     pixmap: QPixmap = icon.pixmap(QSize(16, 16))
     image = pixmap.toImage()
-    image = QPixmap.fromImage(set_monochrome_image_color(image))
+    # Use 100 on this icon set for a gray color that looks similar to the rest of the icons on the system tray
+    pixmap = QPixmap.fromImage(set_monochrome_image_color(image, 100))
 
-    return QIcon(image)
+    return pixmap
 
 
 # https://github.com/helloSystem/Menu/blob/c13548d3866c3896d728d2388bd0d4cd636a3a91/plugin-statusnotifier/statusnotifierbutton.cpp#L108
@@ -161,7 +167,6 @@ class NetworkMenu(QObject):
             self.menu.popup(QCursor.pos()) # When called like this, it appears almost at the correct location but with the wrong font size,
             # as if it was a context menu rather than a real menu; probably because somehow its parent now is not the global menu bar main window?
 
-
     def refreshMenu(self):
         self.actions = []
         # Get the networks from wpa_cli
@@ -196,21 +201,15 @@ class NetworkMenu(QObject):
                 status = element.split("=")[1]
                 break
 
-        if status == "SCANNING":
-            self.tray.setIcon(QIcon.fromTheme("network-wireless-acquiring-symbolic"))
-        elif status == "COMPLETED":
+        if status == "COMPLETED":
             self.check_network_password = False
-            signal_level = get_network_info(bssid).signal_level
-            print('Signal level: %s' % signal_level)
-            self.tray.setIcon(get_icon_for_signal_level(signal_level))
-        else:
-            self.tray.setIcon(QIcon.fromTheme("network-wireless-disconnected"))
+
+        network_info = get_network_info(bssid)
+        self.tray.setIcon(QIcon(get_pixmap_for_status(status, network_info.signal_level)))
 
         if not self.menu.isHidden():
             for action in self.menu.actions():
                 if hasattr(action, "bssid"):
-                    bssid = getattr(action, "bssid")
-                    network_info = get_network_info(bssid)
                     action.defaultWidget().set_signal_level(network_info.signal_level)
                     action.defaultWidget().set_password_protected("PSK" in network_info.flags)
 
@@ -507,6 +506,10 @@ We don't know why this happened.")
             p.start()
             p.waitForFinished()
 
+            p.setArguments(["save_config"])
+            p.start()
+            p.waitForFinished()
+
             self.reconnect()
 
 
@@ -528,7 +531,7 @@ class NetworkItem(QWidget):
         self.lock_label.setPixmap(QIcon.fromTheme("network-wireless-encrypted-symbolic").pixmap(QSize(14, 14)))
         self.layout.addWidget(self.lock_label)
         self.signal_label = QLabel()
-        self.signal_label.setPixmap(QIcon.fromTheme("network-wireless-100").pixmap(QSize(16, 16)))
+        self.signal_label.setPixmap(QIcon.fromTheme("network-wireless-symbolic").pixmap(QSize(16, 16)))
         self.layout.addWidget(self.signal_label)
 
         self.setLayout(self.layout)
@@ -538,7 +541,7 @@ class NetworkItem(QWidget):
         self.lock_label.setVisible(password_protected)
 
     def set_signal_level(self, signal_level: int):
-        self.signal_label.setPixmap(get_icon_for_signal_level(signal_level).pixmap(QSize(16, 16)))
+        self.signal_label.setPixmap(get_pixmap_for_status("COMPLETED", signal_level))
 
     def minimumSizeHint(self):
         opt = QStyleOptionMenuItem()
@@ -643,7 +646,11 @@ class PasswordRequestDialog(QDialog):
         return self.result(), self.password_line_edit.text()
 
     def password_changed(self, password: str):
-        self.connect_button.setEnabled(len(password) > 8)
+        password_length = len(password)
+        self.connect_button.setEnabled(password_length > 8)
+
+        if password_length > 63:
+            self.password_line_edit.setText(password[:63])
 
     def show_password_changed(self, state: int):
         self.password_line_edit.setEchoMode(QLineEdit.Normal if state else QLineEdit.Password)
