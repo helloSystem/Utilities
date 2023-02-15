@@ -24,7 +24,8 @@ import sys, os, re
 
 
 def get_pixmap_for_status(status: str, signal_level: int) -> QPixmap:
-    if status == "SCANNING" or status == "ACQUIRING":
+    # https://w1.fi/wpa_supplicant/devel/defs_8h.html#a4aeb27c1e4abd046df3064ea9756f0bca6304c99164cf51fa8baecf8b124c6117
+    if status == "SCANNING" or status == "ASSOCIATING":
         icon_name = "network-wireless-acquiring-symbolic"
     elif status == "COMPLETED":
         # https://github.com/maxatome/wifimgr/blob/ca9951f0c08a72ad3f36c98a970414219d5b9b03/src/wifimgr-gtk.c#L1312
@@ -40,6 +41,8 @@ def get_pixmap_for_status(status: str, signal_level: int) -> QPixmap:
             icon_name = "network-wireless-signal-none-symbolic"
         else:
             icon_name = "network-wireless-signal-none-symbolic"
+    elif status == "INTERFACE_DISABLED":
+        icon_name = "network-wireless-no-route-symbolic"
     else:
         icon_name = "network-wireless-offline-symbolic"
 
