@@ -22,8 +22,23 @@ from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QSize, QFileSystemWatche
 from collections import namedtuple
 import sys, os, re
 
+WIRED_CONNECTED = 0
+WIRED_DISCONNECTED = 1
+WIRED_OFFLINE = 2
 
-def get_pixmap_for_status(status: str, signal_level: int) -> QPixmap:
+
+def get_pixmap_for_wired_status(status: int) -> QPixmap:
+    if status == WIRED_CONNECTED:
+        icon_name = "network-wired-symbolic"
+    elif status == WIRED_DISCONNECTED:
+        icon_name = "network-wired-disconnected-symbolic"  # Same as "network-wired-offline-symbolic"
+    else:
+        icon_name = "network-wired-no-route-symbolic"
+
+    return get_tray_icon_with_color(icon_name)
+
+
+def get_pixmap_for_wpa_status(status: str, signal_level: int) -> QPixmap:
     # https://w1.fi/wpa_supplicant/devel/defs_8h.html#a4aeb27c1e4abd046df3064ea9756f0bca6304c99164cf51fa8baecf8b124c6117
     if status == "SCANNING" or status == "ASSOCIATING":
         icon_name = "network-wireless-acquiring-symbolic"
@@ -46,13 +61,15 @@ def get_pixmap_for_status(status: str, signal_level: int) -> QPixmap:
     else:
         icon_name = "network-wireless-offline-symbolic"
 
+    return get_tray_icon_with_color(icon_name)
+
+
+def get_tray_icon_with_color(icon_name: str) -> QPixmap:
     icon = QIcon.fromTheme(icon_name)
     pixmap: QPixmap = icon.pixmap(QSize(16, 16))
     image = pixmap.toImage()
     # Use 100 on this icon set for a gray color that looks similar to the rest of the icons on the system tray
-    pixmap = QPixmap.fromImage(set_monochrome_image_color(image, 100))
-
-    return pixmap
+    return QPixmap.fromImage(set_monochrome_image_color(image, 100))
 
 
 # https://github.com/helloSystem/Menu/blob/c13548d3866c3896d728d2388bd0d4cd636a3a91/plugin-statusnotifier/statusnotifierbutton.cpp#L108
@@ -186,6 +203,40 @@ class NetworkMenu(QObject):
         bssid = ""
         status = ""
         p = QProcess()
+
+        p.setProgram("ifconfig")
+        p.setArguments(["-l", "ether"])
+        p.start()
+        p.waitForFinished()
+        interfaces = str(p.readAllStandardOutput(), 'UTF-8').strip().split(' ')
+
+        wlan_present = False
+        wired_status = -1
+        if len(interfaces) == 0:
+            self.tray.setIcon(QIcon(get_pixmap_for_wired_status(WIRED_OFFLINE)))
+
+        for i in interfaces:
+            # wpa_cli takes care of wireless interfaces
+            if "wlan" in i:
+                wlan_present = True
+                continue
+
+            p.setArguments([i, "inet"])
+            p.start()
+            p.waitForFinished()
+            output = str(p.readAllStandardOutput(), 'UTF-8')
+
+            # If it doesn't have an IPv4 address then "inet" is not present, but "inet6" is always there, does that
+            # mean that it always has an IPv6 address? Is it the MAC address?
+            if "inet" in output:
+                wired_status = WIRED_CONNECTED
+            else:
+                wired_status = WIRED_DISCONNECTED
+
+        if not wlan_present:
+            self.tray.setIcon(QIcon(get_pixmap_for_wired_status(wired_status)))
+            return
+
         p.setProgram("wpa_cli")
         p.setArguments(["status"])
         print(p.program() + " " + " ".join(p.arguments()))
@@ -207,12 +258,17 @@ class NetworkMenu(QObject):
         if status == "COMPLETED":
             self.check_network_password = False
 
-        network_info = get_network_info(bssid)
-        self.tray.setIcon(QIcon(get_pixmap_for_status(status, network_info.signal_level)))
+        if wired_status == WIRED_CONNECTED:
+            icon_pixmap = get_pixmap_for_wired_status(wired_status)
+        else:
+            icon_pixmap = get_pixmap_for_wpa_status(status, get_network_info(bssid).signal_level)
+
+        self.tray.setIcon(QIcon(icon_pixmap))
 
         if not self.menu.isHidden():
             for action in self.menu.actions():
                 if hasattr(action, "bssid"):
+                    network_info = get_network_info(getattr(action, "bssid"))
                     action.defaultWidget().set_signal_level(network_info.signal_level)
                     action.defaultWidget().set_password_protected("PSK" in network_info.flags)
 
