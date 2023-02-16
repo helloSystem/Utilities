@@ -22,6 +22,19 @@ from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QSize, QFileSystemWatche
 from collections import namedtuple
 import sys, os, re
 
+
+def run_command_and_get_output(command: str, args, process: QProcess = None) -> str:
+    if process is None:
+        process = QProcess()
+
+    process.setProgram(command)
+    process.setArguments(args)
+    print(process.program() + " " + " ".join(process.arguments()))
+    process.start()
+    process.waitForFinished()
+    return str(process.readAllStandardOutput(), 'UTF-8')
+
+
 WIRED_CONNECTED = 0
 WIRED_DISCONNECTED = 1
 WIRED_OFFLINE = 2
@@ -97,12 +110,7 @@ NetworkInfo = namedtuple("NetworkInfo", ["flags", "signal_level"])
 
 
 def get_network_info(bssid: str) -> NetworkInfo:
-    p = QProcess()
-    p.setProgram("wpa_cli")
-    p.setArguments(["bss", bssid])
-    p.start()
-    p.waitForFinished()
-    lines = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
+    lines = run_command_and_get_output("wpa_cli", ["bss", bssid]).strip().splitlines()
 
     signal_strength_dbm = 0
     signal_noise_dbm = 0
@@ -203,12 +211,7 @@ class NetworkMenu(QObject):
         bssid = ""
         status = ""
         p = QProcess()
-
-        p.setProgram("ifconfig")
-        p.setArguments(["-l", "ether"])
-        p.start()
-        p.waitForFinished()
-        interfaces = str(p.readAllStandardOutput(), 'UTF-8').strip().split(' ')
+        interfaces = run_command_and_get_output("ifconfig", ["-l", "ether"], p).strip().split(' ')
 
         wlan_present = False
         wired_status = -1
@@ -221,10 +224,7 @@ class NetworkMenu(QObject):
                 wlan_present = True
                 continue
 
-            p.setArguments([i, "inet"])
-            p.start()
-            p.waitForFinished()
-            output = str(p.readAllStandardOutput(), 'UTF-8')
+            output = run_command_and_get_output("ifconfig", [i, "inet"], p)
 
             # If it doesn't have an IPv4 address then "inet" is not present, but "inet6" is always there, does that
             # mean that it always has an IPv6 address? Is it the MAC address?
@@ -237,14 +237,7 @@ class NetworkMenu(QObject):
             self.tray.setIcon(QIcon(get_pixmap_for_wired_status(wired_status)))
             return
 
-        p.setProgram("wpa_cli")
-        p.setArguments(["status"])
-        print(p.program() + " " + " ".join(p.arguments()))
-        p.start()
-        p.waitForFinished()
-
-        self.status_lines = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
-        
+        self.status_lines = run_command_and_get_output("wpa_cli", ["status"]).strip().splitlines()
         print(self.status_lines)
         
         # Update the icon in the menu
@@ -279,14 +272,7 @@ class NetworkMenu(QObject):
     
         self.menu.clear()
         # Second, show
-        p = QProcess()
-        p.setProgram("wpa_cli")
-        p.setArguments(["scan_results"])
-        print(p.program() + " " + " ".join(p.arguments()))
-        p.start()
-        p.waitForFinished()
-
-        lines = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
+        lines = run_command_and_get_output("wpa_cli", ["scan_results"]).strip().splitlines()
 
         action = QAction("Wireless")
         action.setDisabled(True)
@@ -367,25 +353,11 @@ class NetworkMenu(QObject):
         self.menu.addAction(action)
 
     def reconnect(self):
-        p = QProcess()
-        p.setProgram("wpa_cli")
-        p.setArguments(["reconnect"])
-        print(p.program() + " " + " ".join(p.arguments()))
-        p.start()
-        p.waitForFinished()
-        output = str(p.readAllStandardOutput(), 'utf-8')
-        print(output)
+        print(run_command_and_get_output("wpa_cli", ["reconnect"]))
          
     def disconnect(self):
-        p = QProcess()
-        p.setProgram("wpa_cli")
-        p.setArguments(["disconnect"])
-        print(p.program() + " " + " ".join(p.arguments()))
-        p.start()
-        p.waitForFinished()
-        output = str(p.readAllStandardOutput(), 'utf-8')
-        print(output)
-        self.tray.setIcon(QIcon.fromTheme("network-wireless-offline-symbolic"))
+        print(run_command_and_get_output("wpa_cli", ["disconnect"]))
+        # self.tray.setIcon(QIcon.fromTheme("network-wireless-offline-symbolic"))
         
     def switchNetwork(self, line):
         # TODO: Support networks protected with EAP
@@ -400,16 +372,10 @@ class NetworkMenu(QObject):
             
         # Get a byte string with wpa_cli's output and decode it
         p = QProcess()
-        p.setProgram("wpa_cli")
-
-        # First, scan
-        p.setArguments(["list_networks"])
-        print(p.program() + " " + " ".join(p.arguments()))
-        p.start()
-        p.waitForFinished()
         # Split that output into lines, ignoring the useless ones
-        output = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()
-        if len(output) < 2:
+        output = run_command_and_get_output("wpa_cli", ["list_networks"], p)
+        network_list = output.strip().splitlines()
+        if len(network_list) < 2:
             # If this is called, something is wrong with wpa_cli.
             self.showError("Could not connect to the network", """For some reason wpa_cli doesn't seem to be working.
 
@@ -417,13 +383,11 @@ Information for debuggers:
 """ + output.strip())
             return
         is_used = False
-        for line in output[2:]:  # Ignore 'selected interface' message and column labels
+        for line in network_list[2:]:  # Ignore 'selected interface' message and column labels
             parts = line.split('\t')
             if parts[1] in [ssid, bssid]:
-                p.setArguments(["get_network", parts[0], "key_mgmt"])
-                p.start()
-                p.waitForFinished()
-                key_mgmt = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()[1]
+                key_mgmt = run_command_and_get_output("wpa_cli", ["get_network", parts[0], "key_mgmt"],
+                                                      p).strip().splitlines()[1]
 
                 # Accept if the same authentication method is used, treat as different network if not.
                 # Not handling IEEE8021X
@@ -440,30 +404,34 @@ Information for debuggers:
             p.start()
             p.waitForFinished()
         else:
-            p.setArguments(["add_network"])
-            print(p.program() + " " + " ".join(p.arguments()))
-            p.start()
-            p.waitForFinished()
-            e = str(p.readAllStandardOutput(), 'utf-8').strip().splitlines()[-1]
-            if not e.isnumeric():
-                self.showError("Could not connect to the network.", "'%s' is not a number." % e)
-                print("'%s' is not a number." % e)
+            output = run_command_and_get_output("wpa_cli", ["add_network"], p).strip().splitlines()[-1]
+            if not output.isnumeric():
+                self.showError("Could not connect to the network.", "'%s' is not a number." % output)
+                print("'%s' is not a number." % output)
                 return # bad
             try:
-                self.network_id = int(e)
+                self.network_id = int(output)
             except:
                 self.showError("Could not connect to the network.", "\
 We don't know why this happened.")
                 print("returned non-zero exit code")
                 return  # bad
-            p.setArguments(["set_network", str(self.network_id), "ssid" if ssid else "bssid", '"' + (ssid if ssid else bssid) + '"'])
-            print(p.program() + " " + " ".join(p.arguments()))
-            p.start()
-            p.waitForFinished()
-            out = str(p.readAllStandardOutput(), 'utf-8')
-            if "OK" not in out:
+
+            if ssid:
+                identifier = "ssid"
+                identifier_str = ssid
+            else:
+                identifier = "bssid"
+                identifier_str = bssid
+
+            output = run_command_and_get_output(
+                "wpa_cli",
+                ["set_network", str(self.network_id), identifier, "\"%s\"" % identifier_str],
+                p)
+
+            if "OK" not in output:
                 self.showError("Could not connect to the network.",
-                               """Information for debuggers: """ + out)
+                               """Information for debuggers: """ + output)
                 return # bad
             if "PSK" in flags:
                 password, ok = request_network_password(
@@ -477,20 +445,18 @@ We don't know why this happened.")
                     return
             else:
                 p.setArguments(["set_network", str(self.network_id), "key_mgmt", "NONE"])
+
             print(p.program() + " " + " ".join(p.arguments()))
             p.start()
             p.waitForFinished()
-            out = str(p.readAllStandardOutput(), 'utf-8')
-            if "OK" not in out:
+            output = str(p.readAllStandardOutput(), 'utf-8')
+            if "OK" not in output:
                 self.showError("Could not connect to the network. Please check the password.",
-                               """Information for debuggers: """ + out)
+                               """Information for debuggers: """ + output)
                 return # not good
-            p.setArguments(["enable_network", str(self.network_id)])
-            print(p.program() + " " + " ".join(p.arguments()))
-            p.start()
-            p.waitForFinished()
-            lastout = str(p.readAllStandardOutput(), 'utf-8')
-            if "OK" in lastout:
+
+            output = run_command_and_get_output("wpa_cli", ["enable_network", str(self.network_id)], p)
+            if "OK" in output:
                 p.setArguments(["save_config"])
                 print(p.program() + " " + " ".join(p.arguments()))
                 p.start()
@@ -498,7 +464,7 @@ We don't know why this happened.")
                 return # good
             else:
                 self.showError("Could not connect to the network. Please check the password.",
-                               """Information for debuggers: """ + lastout)
+                               """Information for debuggers: """ + output)
                 return # not good
 
     def _showAbout(self):
@@ -600,7 +566,7 @@ class NetworkItem(QWidget):
         self.lock_label.setVisible(password_protected)
 
     def set_signal_level(self, signal_level: int):
-        self.signal_label.setPixmap(get_pixmap_for_status("COMPLETED", signal_level))
+        self.signal_label.setPixmap(get_pixmap_for_wpa_status("COMPLETED", signal_level))
 
     def minimumSizeHint(self):
         opt = QStyleOptionMenuItem()
