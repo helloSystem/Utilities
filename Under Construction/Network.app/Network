@@ -211,7 +211,7 @@ class NetworkMenu(QObject):
         bssid = ""
         status = ""
         p = QProcess()
-        interfaces = run_command_and_get_output("ifconfig", ["-l", "ether"], p).strip().split(' ')
+        interfaces = run_command_and_get_output("ifconfig", ["-ul", "ether"], p).strip().split(' ')
 
         wlan_present = False
         wired_status = -1
@@ -224,7 +224,11 @@ class NetworkMenu(QObject):
                 wlan_present = True
                 continue
 
-            output = run_command_and_get_output("ifconfig", [i, "inet"], p)
+            output = run_command_and_get_output("ifconfig", ["-v", i], p)
+            # Could use the number before the "<" and: http://fxr.watson.org/fxr/source/net/if.h#L142
+            # But this also works
+            interface_flags = output[output.find("<"):output.find(">")]
+            has_active_status = "status: active" in output  # status row is not present for "ue" interfaces
 
             # If it doesn't have an IPv4 address then "inet" is not present, but "inet6" is always there, does that
             # mean that it always has an IPv6 address? Is it the MAC address?
@@ -272,12 +276,33 @@ class NetworkMenu(QObject):
     
         self.menu.clear()
         # Second, show
-        lines = run_command_and_get_output("wpa_cli", ["scan_results"]).strip().splitlines()
+        p = QProcess()
+        # Get interfaces marked as "UP" but exclude those containing "wlan"
+        interfaces = [i for i in run_command_and_get_output("ifconfig", ["-ul", "ether"], p).strip().split(' ') if "wlan" not in i]
+
+        if interfaces:
+            action = QAction("Wired")
+            action.setDisabled(True)
+            self.actions.append(action)
+            self.menu.addAction(action)
+
+            for i in interfaces:
+                name = ""
+                if "ue" in i:
+                    name = "USB Ethernet"
+                elif "eth":  # Is this correct? But doesn't seem like the best thing to do... How many of these identifiers are there
+                    name = "Ethernet"
+
+                action = QAction(name)
+                self.actions.append(action)
+                self.menu.addAction(action)
 
         action = QAction("Wireless")
         action.setDisabled(True)
         self.actions.append(action)
         self.menu.addAction(action)
+
+        lines = run_command_and_get_output("wpa_cli", ["scan_results"]).strip().splitlines()
         
         if len(lines) > 1:
             ssids_added_to_menu = []
