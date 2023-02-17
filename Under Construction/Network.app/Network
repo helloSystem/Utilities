@@ -40,6 +40,20 @@ WIRED_DISCONNECTED = 1
 WIRED_OFFLINE = 2
 
 
+def get_wired_status(interface_name: str) -> int:
+    output = run_command_and_get_output("ifconfig", ["-v", interface_name])
+    has_active_status = "status: active" in output  # "status" row is not present for "ue" interfaces
+
+    # If it doesn't have an IPv4 address then "inet" is not present, but "inet6" is always there, does that
+    # mean that it always has an IPv6 address? Is it the MAC address?
+    if "ue" in interface_name and "inet" in output or has_active_status:
+        wired_status = WIRED_CONNECTED
+    else:
+        wired_status = WIRED_DISCONNECTED
+
+    return wired_status
+
+
 def get_pixmap_for_wired_status(status: int) -> QPixmap:
     if status == WIRED_CONNECTED:
         icon_name = "network-wired-symbolic"
@@ -224,24 +238,13 @@ class NetworkMenu(QObject):
                 wlan_present = True
                 continue
 
-            output = run_command_and_get_output("ifconfig", ["-v", i], p)
-            # Could use the number before the "<" and: http://fxr.watson.org/fxr/source/net/if.h#L142
-            # But this also works
-            interface_flags = output[output.find("<"):output.find(">")]
-            has_active_status = "status: active" in output  # status row is not present for "ue" interfaces
-
-            # If it doesn't have an IPv4 address then "inet" is not present, but "inet6" is always there, does that
-            # mean that it always has an IPv6 address? Is it the MAC address?
-            if "inet" in output:
-                wired_status = WIRED_CONNECTED
-            else:
-                wired_status = WIRED_DISCONNECTED
+            wired_status = get_wired_status(i)
 
         if not wlan_present:
             self.tray.setIcon(QIcon(get_pixmap_for_wired_status(wired_status)))
             return
 
-        self.status_lines = run_command_and_get_output("wpa_cli", ["status"]).strip().splitlines()
+        self.status_lines = run_command_and_get_output("wpa_cli", ["status"], p).strip().splitlines()
         print(self.status_lines)
         
         # Update the icon in the menu
@@ -290,10 +293,18 @@ class NetworkMenu(QObject):
                 name = ""
                 if "ue" in i:
                     name = "USB Ethernet"
-                elif "eth":  # Is this correct? But doesn't seem like the best thing to do... How many of these identifiers are there
-                    name = "Ethernet"
+                else:
+                    name = "Ethernet (%s)" % name
 
-                action = QAction(name)
+                action = QWidgetAction(self.menu)
+                action.setCheckable(False)
+                action.setText(name)
+
+                wired_status = get_wired_status(i)
+                item = NetworkItem(self.menu, action)
+                item.set_wired_status(wired_status)
+                action.setDefaultWidget(item)
+
                 self.actions.append(action)
                 self.menu.addAction(action)
 
@@ -302,7 +313,7 @@ class NetworkMenu(QObject):
         self.actions.append(action)
         self.menu.addAction(action)
 
-        lines = run_command_and_get_output("wpa_cli", ["scan_results"]).strip().splitlines()
+        lines = run_command_and_get_output("wpa_cli", ["scan_results"], p).strip().splitlines()
         
         if len(lines) > 1:
             ssids_added_to_menu = []
@@ -579,6 +590,7 @@ class NetworkItem(QWidget):
 
         self.lock_label = QLabel()
         self.lock_label.setPixmap(QIcon.fromTheme("network-wireless-encrypted-symbolic").pixmap(QSize(14, 14)))
+        self.lock_label.setVisible(False)
         self.layout.addWidget(self.lock_label)
         self.signal_label = QLabel()
         self.signal_label.setPixmap(QIcon.fromTheme("network-wireless-symbolic").pixmap(QSize(16, 16)))
@@ -592,6 +604,9 @@ class NetworkItem(QWidget):
 
     def set_signal_level(self, signal_level: int):
         self.signal_label.setPixmap(get_pixmap_for_wpa_status("COMPLETED", signal_level))
+
+    def set_wired_status(self, status: int):
+        self.signal_label.setPixmap(get_pixmap_for_wired_status(status))
 
     def minimumSizeHint(self):
         opt = QStyleOptionMenuItem()
