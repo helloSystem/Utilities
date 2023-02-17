@@ -439,6 +439,10 @@ Information for debuggers:
             p.setArguments(["select_network", str(self.network_id)])
             p.start()
             p.waitForFinished()
+
+            p.setArguments(["save_config"])
+            p.start()
+            p.waitForFinished()
         else:
             output = run_command_and_get_output("wpa_cli", ["add_network"], p).strip().splitlines()[-1]
             if not output.isnumeric():
