@@ -1,0 +1,363 @@
+#!/usr/bin/env python3
+
+import subprocess
+import sys
+import threading
+import time
+import signal
+
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtWidgets import (QApplication, QLabel, QListView, QProgressBar, QVBoxLayout, QWizard, QWizardPage, QAbstractItemView, QVBoxLayout)
+from PyQt5.QtGui import QStandardItem, QStandardItemModel, QIcon
+
+
+
+class BluetoothWizard(QWizard):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Bluetooth Wizard")
+        self.current_id = 0
+        self.devices = []        
+        self.errorMessage = None
+        self.show()
+        self.addPage(ScanProgressPage())
+        self.addPage(BluetoothDevicePage())
+        self.addPage(HIDInformationPage())
+        self.addPage(ResultPage())
+        self.addPage(ErrorPage())
+
+    def nextId(self):
+        if self.errorMessage:
+            return ErrorPage.id
+        current_id = self.current_id
+        if current_id == ScanProgressPage.id:
+            if len(self.devices) == 0:
+                return ErrorPage.id
+            else:
+                return BluetoothDevicePage.id
+        elif current_id == BluetoothDevicePage.id:
+            return HIDInformationPage.id
+        elif current_id == HIDInformationPage.id:
+            return ResultPage.id
+        else:
+            return -1
+
+class ScanProgressPage(QWizardPage):
+    id = 0
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setTitle("Scanning for Bluetooth devices...")
+        self.setSubTitle("Please wait while we scan for Bluetooth devices.")
+
+    def initializePage(self):
+        print("initializePage called")
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 0)  # Set range to (0, 0) for indeterminate progress
+        self.progress_bar.setAlignment(Qt.AlignCenter)
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.progress_bar)
+        self.setLayout(layout)
+      
+        self.thread = ScanDevicesThread(self)
+        self.thread.finished.connect(self.threadFinished)
+
+        self.thread.start()
+        print("ScanDevicesThread started")
+
+    def threadFinished(self):
+        print("ScanDevicesThread finished")
+        self.completeChanged.emit()
+        # If no devices were found, show error message
+        if len(self.wizard().devices) == 0:
+            self.wizard().errorMessage = "No Bluetooth devices were found."
+
+        self.wizard().next()
+
+    def isComplete(self):
+        return True
+
+
+class BluetoothDevicePage(QWizardPage):
+    id = 1
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setTitle("Select Bluetooth Device")
+        self.setSubTitle("Please select a Bluetooth device to query for HID device information.")
+
+    def initializePage(self):
+        self.device_list = QListView()
+        self.device_list.setModel(QStandardItemModel())
+        self.device_list.setSelectionMode(QAbstractItemView.SingleSelection)
+        self.device_list.selectionModel().selectionChanged.connect(self.updateSelection)
+        self.device_list.setAlternatingRowColors(True)
+
+        # Prevent from going to next page until a device is selected
+        self.setFinalPage(False)
+
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.device_list)
+        self.setLayout(self.layout)
+
+        self.device_info = {}
+
+        model = self.device_list.model()
+
+        try:
+            output = subprocess.check_output(["hccontrol", "read_node_list"])
+            nodes = output.decode().split()
+        except subprocess.CalledProcessError:
+            nodes = []
+
+        for device in self.wizard().devices:
+            item = QStandardItem(device["name"])
+            item.setToolTip(device["address"])
+            # If device_class is 0x0005, it is a HID device
+            if device["class"] == "00:25:40":
+                item.setIcon(QIcon.fromTheme('input-keyboard'))
+            model.appendRow(item)
+
+        # If there is exactly one device, select it
+        if len(self.wizard().devices) == 1:
+            self.device_list.setCurrentIndex(model.index(0, 0))
+        
+    def updateSelection(self):
+        selected_rows = self.device_list.selectionModel().selectedRows()
+        if selected_rows:
+            row = selected_rows[0].row()
+            device = self.wizard().devices[row]
+            print("Selected device: {}".format(device))
+            
+
+class HIDInformationPage(QWizardPage):
+    id = 2
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setTitle("Query HID Device Information")
+        self.setSubTitle("Please wait while we query the Bluetooth device for HID information.")
+
+    def initializePage(self):
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 0)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.progress_bar)
+        self.setLayout(self.layout)
+
+        self.device_info = {}
+        self.hid_info = {}
+
+        self.thread = HIDQueryThread(self)
+        self.thread.finished.connect(self.threadFinished)
+        self.thread.start()
+
+    def threadFinished(self):
+        # self.setField("hid_info", self.hid_info)
+        self.completeChanged.emit()
+
+    def isComplete(self):
+        # return "hid_info" in self.field("hid_info")
+        return True
+
+    def nextId(self):
+        return ResultPage.id
+
+
+class ResultPage(QWizardPage):
+    id = 3
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setTitle("Results")
+        self.setSubTitle("The following information was retrieved from the Bluetooth device:")
+
+    def initializePage(self):
+
+        self.device_label = QLabel()
+        self.device_label.setWordWrap(True)
+
+        self.hid_label = QLabel()
+        self.hid_label.setWordWrap(True)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.device_label)
+        self.layout.addWidget(self.hid_label)
+        self.setLayout(self.layout)
+
+        device_name = self.field("BluetoothDevicePage.device_name")
+        device_address = self.field("BluetoothDevicePage.address")
+
+        hid_info = self.field("HIDInformationPage.hid_info")
+
+        self.device_label.setText("Device Name: {}\nDevice Address: {}".format(device_name, device_address))
+
+        if hid_info:
+            self.hid_label.setText("HID Information:\n{}".format(hid_info))
+        else:
+            self.hid_label.setText("Error: Unable to retrieve HID information.")
+
+
+# ErrorPage that displays an error message
+# Other pages in the wizard can set the error message by setting the "error_message" field like this:
+# self.wizard().errorMessage = "Error message"
+# and then jump to the error page like this:
+# self.wizard().nextId = ErrorPage.id
+class ErrorPage(QWizardPage):
+    id = 4
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.setTitle("Error")
+        self.setSubTitle("An error has occurred.")
+
+        self.error_label = QLabel()
+        self.error_label.setWordWrap(True)
+
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.error_label)
+        self.setLayout(self.layout)
+
+    def initializePage(self):
+        self.error_label.setText("Error: {}".format(self.wizard().errorMessage))
+        
+
+class HIDQueryThread(QThread):
+    hid_info_ready = pyqtSignal(dict)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        self.device_info = parent.device_info
+
+    def run(self):
+        try:
+            for address, info in self.device_info.items():
+                output = subprocess.check_output(["bthidcontrol", "-a", address, "query"], timeout=10)
+                self.parent().hid_info[address] = output.decode()
+        except subprocess.CalledProcessError:
+            self.parent().hid_info = {}
+
+        self.hid_info_ready.emit(self.parent().hid_info)
+
+class ScanDevicesThread(QThread):
+    scan_devices_ready = pyqtSignal(list)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def run(self):
+        nodes = []
+        devices = []
+        # Scan for devices using hccontrol and store the results in the wizard
+        try:
+            print("Scanning for devices...")
+            command = ["hccontrol", "read_node_list"]
+
+            print (" ".join(command))
+            output = subprocess.check_output(command)
+
+            # Format of the output is:
+            # % hccontrol read_node_list
+            # Name            ID       Num hooks
+            # ubt0hci         00000007         3
+            # ubt1hci         00000008         3
+            
+            nodes = output.decode().split("\n")
+            
+            # Remove the first line (header)
+            nodes = nodes[1:]
+
+            # Remove empty lines
+            nodes = [x for x in nodes if x]
+            
+            # For each line, get the first word (the node name)
+            for i in range(len(nodes)):
+                try:
+                    nodes[i] = nodes[i].split()[0]
+                except:
+                    pass
+        except:
+            print("Error running command: " + " ".join(command))
+            nodes = []
+
+
+        print("Scanning for devices")
+        try:
+            command = ["hccontrol", "inquiry"]
+            print (" ".join(command))
+            output = subprocess.check_output(command, timeout=10)
+            lines = output.decode().split("\n")
+        except:
+            print("Error running command: " + " ".join(command))
+        
+        address = None
+        deviceclass = ""
+        name = "Unknown"
+
+        for line in lines:
+
+            if not line:
+                continue
+            if "BD_ADDR:" in line:
+                print("Found device: " + line)
+                # Parse the address out of the line
+                address = line.split("BD_ADDR:")[1].strip()
+                print("Address: " + address)
+                print("Getting name")
+                name = address
+                
+                command = ["hccontrol", "remote_name_request", address]
+                print (" ".join(command))
+                try:
+                    output = subprocess.check_output(command, timeout=10)
+                except:
+                    print("Error running command: " + " ".join(command))
+                    continue
+                lines = output.decode().split("\n")
+                for line in lines:
+                    if "Name:" in line:
+                        name = line.split("Name:")[1].strip()
+                        print("Name: " + name)
+                        break
+            if "Class:" in line:
+                print("Class: " + line)
+                # Parse the class out of the line
+                deviceclass = line.split("Class:")[1].strip()
+                print("Class: " + deviceclass) 
+                self.parent().wizard().devices.append({"address": address, "name": name, "class": deviceclass})
+        
+        print("Found {} devices.".format(len(self.parent().wizard().devices)))
+
+        for device in self.parent().wizard().devices:
+            print(device)
+
+        print("Scan complete.")
+        # self.scan_devices_ready.emit()
+        # Exit the thread
+        self.exit(0)
+
+
+if __name__ == "__main__":
+
+    # Handle Ctrl+C
+    def signal_handler(signal, frame):
+        print("Exiting...")
+        sys.exit(0)
+
+    signal.signal(signal.SIGINT, signal_handler)
+
+    app = QApplication(sys.argv)
+    wizard = BluetoothWizard()
+    wizard.show()
+    sys.exit(app.exec_())
+
+
+
