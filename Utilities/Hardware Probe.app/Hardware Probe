@@ -1,3 +1,9 @@
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
+
+# https://github.com/helloSystem/Utilities/issues/152
+if [ "$LANG" == "en" ] ; then
+  export LANG=en_US.UTF-8
+fi
+
 exec "${HERE}/Resources/hardware-probe.py" "$@"
