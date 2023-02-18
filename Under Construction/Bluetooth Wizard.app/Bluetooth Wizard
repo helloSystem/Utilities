@@ -7,7 +7,7 @@ import time
 import signal
 
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from PyQt5.QtWidgets import (QApplication, QLabel, QListView, QProgressBar, QVBoxLayout, QWizard, QWizardPage, QAbstractItemView, QVBoxLayout)
+from PyQt5.QtWidgets import (QApplication, QLabel, QListView, QProgressBar, QVBoxLayout, QWizard, QWizardPage, QAbstractItemView, QVBoxLayout, QHBoxLayout)
 from PyQt5.QtGui import QStandardItem, QStandardItemModel, QIcon
 
 
@@ -48,20 +48,23 @@ class ScanProgressPage(QWizardPage):
         super().__init__(parent)
 
         self.setTitle("Scanning for Bluetooth devices...")
-        self.setSubTitle("Please wait while we scan for Bluetooth devices.")
 
-    def initializePage(self):
-        print("initializePage called")
         self.progress_bar = QProgressBar()
         self.progress_bar.setRange(0, 0)  # Set range to (0, 0) for indeterminate progress
         self.progress_bar.setAlignment(Qt.AlignCenter)
 
         layout = QVBoxLayout()
+        layout.addStretch(1)
         layout.addWidget(self.progress_bar)
+        layout.addStretch(1)
         self.setLayout(layout)
-      
+
         self.thread = ScanDevicesThread(self)
         self.thread.finished.connect(self.threadFinished)
+
+    def initializePage(self):
+
+        print("initializePage called")
 
         self.thread.start()
         print("ScanDevicesThread started")
@@ -71,7 +74,7 @@ class ScanProgressPage(QWizardPage):
         self.completeChanged.emit()
         # If no devices were found, show error message
         if len(self.wizard().devices) == 0:
-            self.wizard().errorMessage = "No Bluetooth devices were found."
+            self.wizard().errorMessage = "No Bluetooth devices were found. Please turn on discoverable mode on your Bluetooth device and try again."
 
         self.wizard().next()
 
@@ -119,6 +122,12 @@ class BluetoothDevicePage(QWizardPage):
             # If device_class is 0x0005, it is a HID device
             if device["class"] == "00:25:40":
                 item.setIcon(QIcon.fromTheme('input-keyboard'))
+            # The following ones are guesses; FIXME
+            elif device["class"] == "00:25:80":
+                item.setIcon(QIcon.fromTheme('input-mouse'))
+            elif device["class"] == "5a:02:0c":
+                # Mobile phone
+                item.setIcon(QIcon.fromTheme('phone'))
             model.appendRow(item)
 
         # If there is exactly one device, select it
@@ -215,8 +224,9 @@ class ErrorPage(QWizardPage):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+    def initializePage(self):
         self.setTitle("Error")
-        self.setSubTitle("An error has occurred.")
+        self.setSubTitle(self.wizard().errorMessage)
 
         self.error_label = QLabel()
         self.error_label.setWordWrap(True)
@@ -224,10 +234,6 @@ class ErrorPage(QWizardPage):
         self.layout = QVBoxLayout()
         self.layout.addWidget(self.error_label)
         self.setLayout(self.layout)
-
-    def initializePage(self):
-        self.error_label.setText("Error: {}".format(self.wizard().errorMessage))
-        
 
 class HIDQueryThread(QThread):
     hid_info_ready = pyqtSignal(dict)
@@ -288,8 +294,13 @@ class ScanDevicesThread(QThread):
             print("Error running command: " + " ".join(command))
             nodes = []
 
+        if len(nodes) == 0:
+            print("No nodes found")
+            wizard.errorMessage = "No Bluetooth nodes found. Plug in a Bluetooth USB dongle and try again."
+            wizard.next()
 
         print("Scanning for devices")
+        lines = []
         try:
             command = ["hccontrol", "inquiry"]
             print (" ".join(command))
