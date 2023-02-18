@@ -295,7 +295,7 @@ class NetworkMenu(QObject):
                 if "ue" in i:
                     name = "USB Ethernet"
                 else:
-                    name = "Ethernet (%s)" % name
+                    name = "Ethernet (%s)" % i
 
                 action = QWidgetAction(self.menu)
                 action.setCheckable(False)
