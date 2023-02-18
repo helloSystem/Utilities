@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Hardware Probe
-# Copyright (c) 2020-21, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-2023, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -195,8 +195,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("showHardwareProbeButtonClicked")
         print("self.local_probe_path: %s" % self.local_probe_path)
         proc = QtCore.QProcess()
-        command = 'launch'
-        args = ["Filer", self.local_probe_path]
+        command = 'open'
+        args = [self.local_probe_path]
         try:
             print("Starting %s %s" % (command, args))
             proc.startDetached(command, args)

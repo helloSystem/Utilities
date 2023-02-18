@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Install FreeBSD
-# Copyright (c) 2020-21, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-2023, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1185,7 +1185,7 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         env.insert("INSTALLER_COUNTRY", wizard.selected_country)
         env.insert("INSTALLER_LOCALE_UTF8", computed_locale_utf8)
         if wizard.timezone is not None:
-            env.insert("INSTALLER_ZIMEZONE", wizard.timezone)
+            env.insert("INSTALLER_TIMEZONE", wizard.timezone)
 
         if self.field('enable_autologin') is True:
             env.insert("INSTALLER_ENABLE_AUTOLOGIN", "YES")
