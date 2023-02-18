@@ -276,6 +276,7 @@ class NetworkMenu(QObject):
     
         # Find out whether we are connected to one of the networks
         self.updateStatus()
+        self.refreshMenu()
     
         self.menu.clear()
         # Second, show
@@ -581,7 +582,6 @@ We don't know why this happened.")
 # https://forum.qt.io/post/367830
 class NetworkItem(QWidget):
 
-    # password_protected: bool):
     def __init__(self, parent: QWidget, action: QAction):
         super().__init__(parent)
 
@@ -596,9 +596,9 @@ class NetworkItem(QWidget):
         self.lock_label.setPixmap(QIcon.fromTheme("network-wireless-encrypted-symbolic").pixmap(QSize(14, 14)))
         self.lock_label.setVisible(False)
         self.layout.addWidget(self.lock_label)
-        self.signal_label = QLabel()
-        self.signal_label.setPixmap(QIcon.fromTheme("network-wireless-symbolic").pixmap(QSize(16, 16)))
-        self.layout.addWidget(self.signal_label)
+        self.status_label = QLabel()
+        self.status_label.setPixmap(QIcon.fromTheme("network-wireless-symbolic").pixmap(QSize(16, 16)))
+        self.layout.addWidget(self.status_label)
 
         self.setLayout(self.layout)
         self.setMouseTracking(True)
@@ -607,10 +607,10 @@ class NetworkItem(QWidget):
         self.lock_label.setVisible(password_protected)
 
     def set_signal_level(self, signal_level: int):
-        self.signal_label.setPixmap(get_pixmap_for_wpa_status("COMPLETED", signal_level))
+        self.status_label.setPixmap(get_pixmap_for_wpa_status("COMPLETED", signal_level))
 
     def set_wired_status(self, status: int):
-        self.signal_label.setPixmap(get_pixmap_for_wired_status(status))
+        self.status_label.setPixmap(get_pixmap_for_wired_status(status))
 
     def minimumSizeHint(self):
         opt = QStyleOptionMenuItem()
@@ -644,7 +644,7 @@ class NetworkItem(QWidget):
 
         self.lock_label.setPixmap(QPixmap.fromImage(set_monochrome_image_color(self.lock_label.pixmap().toImage(),
                                                                                rgb_color)))
-        self.signal_label.setPixmap(QPixmap.fromImage(set_monochrome_image_color(self.signal_label.pixmap().toImage(),
+        self.status_label.setPixmap(QPixmap.fromImage(set_monochrome_image_color(self.status_label.pixmap().toImage(),
                                                                                  rgb_color)))
 
         self.proxyStyle.drawControl(QStyle.CE_MenuItem, opt, p, self)
