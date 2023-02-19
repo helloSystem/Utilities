@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>An unknown error occurred.</source>
-        <translation>不明なエラーが発生しました</translation>
+        <translation>不明なエラーが発生しました。</translation>
     </message>
     <message>
         <source>Hardware Probe</source>
@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアプローブのアップロードには、以下のPricacy条件が適用されます。</translation>
     </message>
     <message>
         <source>Please see %s for more information.</source>
@@ -27,7 +27,9 @@
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
         &lt;p&gt;This can help users and operating system developers to collaboratively debug hardware related issues, check for operating system compatibility and find drivers.&lt;/p&gt;
         &lt;p&gt;You will get a permanent probe URL to view and share collected information.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;このユーティリティは、コンピュータのハードウェアの詳細を収集し、それらをパブリックデータベースに匿名でアップロードできます。&lt;/p&gt;
+        &lt;p&gt;これは、ユーザーとオペレーティングシステム開発者がハードウェア関連の問題を共同でデバッグし、オペレーティングシステムの互換性を確認し、ドライバーを見つけるのに役立ちます。&lt;/p&gt;
+        &lt;p&gt;収集された情報を表示および共有するための永続的なプローブURLを取得します。&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>Show Hardware Probe</source>
@@ -51,11 +53,11 @@
     </message>
     <message>
         <source>The Hardware Probe is being uploaded to the public database</source>
-        <translation type="unfinished"></translation>
+        <translation>ハードウェアプローブがパブリックデータベースにアップロードされています</translation>
     </message>
     <message>
         <source>You need an active internet connection in order to upload.</source>
-        <translation type="unfinished"></translation>
+        <translation>アップロードするには、アクティブなインターネット接続が必要です。</translation>
     </message>
     <message>
         <source>Failed to upload using the %s tool.</source>
@@ -67,11 +69,11 @@
     </message>
     <message>
         <source>Quit</source>
-        <translation>やめておく</translation>
+        <translation>中止</translation>
     </message>
     <message>
         <source>Failed to open the uploaded hardware probe.</source>
-        <translation type="unfinished"></translation>
+        <translation>アップロードされたハードウェアプローブを開けませんでした。</translation>
     </message>
     <message>
         <source>Error</source>
