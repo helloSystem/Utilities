@@ -23,10 +23,7 @@ from collections import namedtuple
 import sys, os, re
 
 
-def run_command_and_get_output(command: str, args, process: QProcess = None) -> str:
-    if process is None:
-        process = QProcess()
-
+def run_command_and_get_output(command: str, args, process = QProcess()) -> str:
     process.setProgram(command)
     process.setArguments(args)
     print(process.program() + " " + " ".join(process.arguments()))
@@ -158,7 +155,6 @@ class NetworkMenu(QObject):
 
         super().__init__()
 
-        # self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
         self.showTODO()
 
         self.tray = QSystemTrayIcon()
@@ -186,6 +182,9 @@ class NetworkMenu(QObject):
 
         log_file_watcher = QFileSystemWatcher(["/var/log/messages"], self)
         log_file_watcher.fileChanged.connect(self.read_log_file)
+
+        with open("/var/log/messages", 'rb') as file:
+            self.log_file_position = file.seek(0, os.SEEK_END)
 
         self.refreshMenu()  # Initially populate the menu
         self.tray.installEventFilter(self) # FIXME: This never seems to get called, why?
@@ -318,7 +317,7 @@ class NetworkMenu(QObject):
 
         lines = run_command_and_get_output("wpa_cli", ["scan_results"], p).strip().splitlines()
         
-        if len(lines) > 1:
+        if len(lines) > 2:
             ssids_added_to_menu = []
             for line in lines[2:]:
                 print(line)
@@ -539,40 +538,57 @@ We don't know why this happened.")
     def read_log_file(self, path):
         output = ""
 
-        # Read last line of file
+        # Read lines added to file
         with open(path, 'rb') as file:
             try:
-                file.seek(-2, os.SEEK_END)
-                while file.read(1) != b'\n':
-                    file.seek(-2, os.SEEK_CUR)
+                file.seek(self.log_file_position, os.SEEK_CUR)
             except OSError:
-                file.seek(0)
-            output = file.readline().decode()
+                return
 
-        if self.check_network_password and self.wirelessGroup.checkedAction() and\
-                ("ssid=\"%s\"" % getattr(self.wirelessGroup.checkedAction(), "ssid")) and "reason=WRONG_KEY" in output:
-            ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
-            bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
-            self.disconnect()  # Prevent wpa_supplicant from trying to connect and fail again
+            lines = file.readlines()
+            self.log_file_position = file.tell()
 
-            password, ok = request_network_password("<h4>Please enter the password for the \"%s\" network:</h4></br>Incorrect password. Please try again." % ssid if ssid else bssid)
+        for line in lines:
+            output = line.decode()
+            print(output)
+            if self.check_network_password and self.wirelessGroup.checkedAction() and\
+                    ("ssid=\"%s\"" % getattr(self.wirelessGroup.checkedAction(), "ssid")) and "reason=WRONG_KEY" in output:
+                ssid = getattr(self.wirelessGroup.checkedAction(), "ssid")
+                bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
+                self.disconnect()  # Prevent wpa_supplicant from trying to connect and fail again
 
-            if not ok:
-                self.check_network_password = False
-                return  # Don't try to connect to a network if it has been cancelled.
+                password, ok = request_network_password("<h4>Please enter the password for the \"%s\" network:</h4></br>Incorrect password. Please try again." % ssid if ssid else bssid)
 
-            p = QProcess()
-            p.setProgram("wpa_cli")
-            p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
-            print(p.program() + " " + " ".join(p.arguments()))
-            p.start()
-            p.waitForFinished()
+                if not ok:
+                    self.check_network_password = False
+                    return  # Don't try to connect to a network if it has been cancelled.
 
-            p.setArguments(["save_config"])
-            p.start()
-            p.waitForFinished()
+                p = QProcess()
+                p.setProgram("wpa_cli")
+                p.setArguments(["set_network", str(self.network_id), "psk", '"' + password + '"'])
+                print(p.program() + " " + " ".join(p.arguments()))
+                p.start()
+                p.waitForFinished()
 
-            self.reconnect()
+                p.setArguments(["save_config"])
+                p.start()
+                p.waitForFinished()
+
+                self.reconnect()
+            elif "dhclient" in output:
+                if "New Routers" in output:
+                    gateway = output[output.rfind(":") + 1:].strip()
+                    print(run_command_and_get_output("ifconfig", ["wlan0", "down"]))
+                    print(run_command_and_get_output("route", ["add", "default", gateway]))
+                elif "Interface" and "no longer appears valid." in output:
+                    interface = output[output.find("Interface ") + 10:]
+                    lines = run_command_and_get_output("/sbin/resolvconf", ["-l", interface]).strip().splitlines()
+
+                    if lines:
+                        gateway = lines[1].split(' ')[1]
+                        print(run_command_and_get_output("route", ["delete", "default", gateway]))
+
+                    print(run_command_and_get_output("ifconfig", ["wlan0", "up"]))
 
 
 # https://forum.qt.io/post/367830
