@@ -123,6 +123,19 @@ class LanguageSwitcher(QtWidgets.QMainWindow):
         self.list_widget.setItemAlignment(QtCore.Qt.AlignVCenter)
         layout.addWidget(self.list_widget)
 
+        self.additional_text = QtWidgets.QLabel()
+        self.additional_text.setText("You are asked to select a language because \
+the language has not been set in EFI NVRAM yet \
+and no Raspberry Pi Keyboard and Hub is attached to the computer, \
+from which the language could be automatically detected.")
+        self.additional_text.setWordWrap(True)
+        layout.addWidget(self.additional_text)
+
+        font = QtGui.QFont()
+        font.setPointSize(8)
+        self.additional_text.setFont(font)
+
+
         widget = QtWidgets.QWidget()
         widget.setLayout(layout)
         self.window.setCentralWidget(widget)
