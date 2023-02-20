@@ -176,6 +176,7 @@ class NetworkMenu(QObject):
         self.actions = []
         self.sliderWindow = None
         self.check_network_password = False
+        self.status_lines = ""
         self.updateStatus()
         
         self.timer = QTimer()
@@ -284,16 +285,17 @@ class NetworkMenu(QObject):
         # Get interfaces marked as "UP" but exclude those containing "wlan"
         interfaces = [i for i in run_command_and_get_output("ifconfig", ["-ul", "ether"], p).strip().split(' ') if "wlan" not in i]
 
-        if interfaces:
+        if interfaces and interfaces[0] != '':
             action = QAction("Wired")
             action.setDisabled(True)
             self.actions.append(action)
             self.menu.addAction(action)
 
             for i in interfaces:
-                name = ""
                 if "ue" in i:
                     name = "USB Ethernet"
+                elif "lagg" in i:
+                    name = "Link aggregation (%s)" % i
                 else:
                     name = "Ethernet (%s)" % i
 
@@ -318,9 +320,7 @@ class NetworkMenu(QObject):
         
         if len(lines) > 1:
             ssids_added_to_menu = []
-            for line in lines:
-                if line.startswith("Selected") or line.startswith("bssid"):
-                    continue
+            for line in lines[2:]:
                 print(line)
                 # Parse out information for each network
                 regex = r"([^\ ]+)\t[^\ ]+\t[^\ ]+\t([^\ ]+)\t(.*)$"
@@ -330,10 +330,10 @@ class NetworkMenu(QObject):
                 print(len(matches[0]))
                 bssid = matches[0][0]
                 flags = matches[0][1]
-                label = matches[0][2]
+                ssid = matches[0][2]
                 signal_level = get_network_info(bssid).signal_level
 
-                ssid = label
+                label = ssid
                 if label == "" or label.startswith("\\x00"):
                     label = bssid  # For networks with hidden ssid (network name)
                 action = QWidgetAction(self.menu)
@@ -353,7 +353,7 @@ class NetworkMenu(QObject):
                 if "bssid=" + bssid in self.status_lines:
                     action.setChecked(True)
 
-                # TODO: Show networks with same SSID but different BSSID
+                # TODO: Show networks with same SSID
                 if ssid not in ssids_added_to_menu:
                     self.actions.append(action)
                     self.wirelessGroup.addAction(action)
@@ -363,7 +363,6 @@ class NetworkMenu(QObject):
         self.menu.addSeparator()
 
         action = QAction("Rescan Networks")
-        # action.setDisabled(True)
         action.triggered.connect(self.refreshMenu)
         self.actions.append(action)
         self.menu.addAction(action)
@@ -374,10 +373,7 @@ class NetworkMenu(QObject):
         self.menu.addAction(action)
 
         action = QAction("Disconnect")
-        if "wpa_state=COMPLETED" in self.status_lines:
-            action.setDisabled(False)
-        else:
-            action.setDisabled(True)
+        action.setEnabled("wpa_state=COMPLETED" in self.status_lines)
         action.triggered.connect(self.disconnect)
         self.actions.append(action)
         self.menu.addAction(action)
