@@ -30,7 +30,7 @@ Simple settings for ZFS Boot Environments.
 
 Simple tool to download a Live ISO and write it to a device (e.g., USB stick) in one go.
 
-## Install FreeBSD.app
+## Install helloSystem.app
 
 Simple installer to install the Live ISO to disk.
 
