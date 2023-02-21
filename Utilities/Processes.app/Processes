@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+import hashlib
 import os, sys, signal
-from PyQt5.QtWidgets import QApplication, QWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QPushButton, QAbstractItemView, QShortcut
-from PyQt5.QtGui import QKeySequence
-from PyQt5.QtCore import QTimer, Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QPushButton, QAbstractItemView, QShortcut, QLabel
+from PyQt5.QtGui import QKeySequence, QIcon
+from PyQt5.QtCore import QTimer, Qt, QSize
+
 
 class ProcessMonitor(QWidget):
     def __init__(self):
@@ -18,6 +20,12 @@ class ProcessMonitor(QWidget):
         self.quitShortcut2.activated.connect(self.close)
 
         self.processTree = QTreeWidget()
+
+        # Set uniform row heights to avoid the treeview from jumping around when refreshing
+        self.processTree.setIconSize(QSize(16, 16))
+        self.processTree.setStyleSheet("QTreeWidget::item { height: 20px; }")
+
+        self.processTree.setUniformRowHeights(True)
         self.processTree.setColumnCount(4)
         self.processTree.setHeaderLabels(['Process Name', 'Process ID', 'Memory', 'CPU'])
         self.processTree.setSortingEnabled(True)
@@ -27,19 +35,32 @@ class ProcessMonitor(QWidget):
         self.processTree.itemDoubleClicked.connect(self.killProcess)
         self.processTree.setSelectionMode(QAbstractItemView.SingleSelection)
 
+        self.total_cpu_label = QLabel("Total CPU usage:")
+        self.total_cpu_value = QLabel("0.00%")
+        self.total_memory_label = QLabel("Total emory usage (resident set):")
+        self.total_memory_value = QLabel("0.00 MB")
+
         layout = QVBoxLayout()
+
         layout.addWidget(self.processTree)
+
         self.killButton = QPushButton('Force Quit')
         self.killButton.clicked.connect(self.killSelectedProcess)
 
         self.selectedPid = -1
 
         layout.addWidget(self.killButton)
+
+        layout.addWidget(self.total_cpu_label)
+        layout.addWidget(self.total_cpu_value)
+        layout.addWidget(self.total_memory_label)
+        layout.addWidget(self.total_memory_value)
+
         self.setLayout(layout)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.refreshProcessList)
-        self.timer.start(3000)
+        self.timer.start(5000)
         self.refreshProcessList()
         
     def close(self):
@@ -47,9 +68,14 @@ class ProcessMonitor(QWidget):
         sys.exit(0)
 
     def refreshProcessList(self):
+
+        # Calculate total CPU and memory usage
+        total_cpu = 0
+        total_memory = 0
+
         self.processTree.clear()
         if os.name == 'posix':
-            command = 'ps -axeo pid,comm,%mem,%cpu'
+            command = 'ps -axeo pid,comm,rss,%cpu'
             output = os.popen(command)
 
             for line in output.readlines():
@@ -64,20 +90,71 @@ class ProcessMonitor(QWidget):
                     pid = data[0]
 
                     if int(pid) == int(self.selectedPid):
-                        print("%s =? %s" % (pid, self.selectedPid))
                         self.processTree.setCurrentItem(item)
                     item.setText(1, pid) # PID
                     item.setData(1, 0, data[0]) # Set PID as item.data
-                    mem = float(data[2].replace(",", "."))
-                    formattedMem = f"{mem:.1f}%"
+
+                    item.setIcon(0, QIcon.fromTheme("application-x-executable"))
+
+                    # Get the environment variables for the given PID using FreeBSD "procstat penv" command
+                    env = {}
+                    env_command = 'procstat penv %s' % pid
+                    env_output = os.popen(env_command)
+                    for env_line in env_output.readlines():
+                        # Discard everything up to and including ": "
+                        env_line = env_line[env_line.find(": ") + 2:]
+                        env_data = env_line.split("=")
+                        if len(env_data) == 2:
+                            env[env_data[0]] = env_data[1].strip()
+                            
+                    # Check whether there is a LAUNCHED_BUNDLE environment variable
+                    if "LAUNCHED_BUNDLE" in env:
+                        # Without the path, only the bundle name, without the last suffix
+                        bundle_path = env["LAUNCHED_BUNDLE"]
+                        bundle_name = bundle_path.split("/")[-1].split(".")[0]
+                        item.setText(0, bundle_name)
+                        
+                        # Get the application bundle icon
+                        # AppDir
+                        if os.path.exists(bundle_path + "/DirIcon"):
+                                icon = QIcon(bundle_path + "/DirIcon")
+                                item.setIcon(0, icon)
+                        else:
+                            # .app
+                            icon_suffixes = ["png", "jpg", "xpg", "svg", "xpm"]
+                            for icon_suffix in icon_suffixes:
+                                if os.path.exists(bundle_path + "/Resources/" + bundle_name + "." + icon_suffix):
+                                    icon = QIcon(bundle_path + "/Resources/" + bundle_name + "." + icon_suffix)
+                                    item.setIcon(0, icon)
+                                    break
+                        # XDG thumbnails for AppImages; TODO: Test this
+                        if bundle_path.endswith(".AppImage"):
+                            # xdg_thumbnail_path = os.path.join(xdg.BaseDirectory.xdg_cache_home, "thumbnails", "normal")
+                            xdg_thumbnail_path = os.path.expanduser("~/.cache/thumbnails/normal")
+                            print(xdg_thumbnail_path)
+                            xdg_thumbnail_path = os.path.join(xdg_thumbnail_path, hashlib.md5(bundle_path.encode("utf-8")).hexdigest() + ".png")
+                            if os.path.exists(xdg_thumbnail_path):
+                                icon = QIcon(xdg_thumbnail_path)
+                                item.setIcon(0, icon)
+
+                    mem = float(data[2])
+                    formattedMem = f"{mem / 1024:.0f} MB" # MB
                     item.setText(2, formattedMem) # Memory %
                     cpu = float(data[3].replace(",", "."))
                     formattedCpu = f"{cpu:.1f}%"
                     item.setText(3, formattedCpu) # CPU %
                     self.processTree.addTopLevelItem(item)
 
+                    # Update total CPU and memory usage
+                    total_cpu += cpu
+                    total_memory += mem
+                    
         for i in range(self.processTree.columnCount()):
-            self.processTree.resizeColumnToContents(i)
+            self.processTree.resizeColumnToContents(i)     
+
+        # Update total CPU and memory labels
+        self.total_cpu_value.setText(f"{total_cpu:.2f}%")
+        self.total_memory_value.setText(f"{total_memory / 1024:.0f} MB")
 
     def onClicked(self, item):
         pid = int(item.text(1)) # The text in the 2nd column
