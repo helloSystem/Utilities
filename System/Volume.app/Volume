@@ -3,14 +3,18 @@
 # https://github.com/helloSystem/Menu/issues/3
 
 
-from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBoxLayout, QGroupBox, QSlider, QWidget, \
-    QActionGroup, QDesktopWidget, QMessageBox
-from PyQt5.QtGui import QIcon, QPixmap, QCursor
-from PyQt5.QtCore import Qt, QProcess, QMetaObject, QCoreApplication, QEvent, QObject, QTimer
-import sys, os
-
+import os
+import platform
 import re
 import subprocess
+import sys
+
+from PyQt5.QtCore import (QCoreApplication, QEvent, QMetaObject, QObject,
+                          QProcess, Qt, QTimer)
+from PyQt5.QtGui import QCursor, QIcon, QPixmap
+from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication,
+                             QDesktopWidget, QGroupBox, QHBoxLayout, QMenu,
+                             QMessageBox, QSlider, QSystemTrayIcon, QWidget)
 
 
 # Show the slider UI when QSystemTrayIcon is left-clicked
@@ -136,16 +140,39 @@ class VolumeMenu(QObject):
         self.tray.setVisible(True)
         self.menu = QMenu()
         
-        self.tray.activated.connect(self.onClicked) # Refresh each time the menu is clicked. FIXME: Does not work on right-click; why?
-
-        self.tray.setContextMenu(self.menu)
+        self.tray.activated.connect(self.onClicked) # Refresh each time the menu is clicked (left click)
+        # Also refresh the list of devices when the context menu is requested (right click)
+        self.menu.aboutToShow.connect(self.refreshMenu)
         
-        # TODO: Add a check to ensure that
-        # sysctl hw.snd.verbose is 0
+        self.tray.setContextMenu(self.menu)
+
+        # If we are on FreeBSD, ensure that sysctl hw.snd.verbose is 0
         # Otherwise this application will not work correctly
-        # and that 
-        # sysctl hw.snd.default_auto is 2
-        # Otherwise newly attached sound devices will not be activated automatically
+        if platform.system() == "FreeBSD":
+            if int(subprocess.check_output("sysctl hw.snd.verbose", shell=True).decode('utf-8').split(" ")[-1]) != 0:
+                print("hw.snd.verbose is not 0")
+                # Show a warning dialog
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("hw.snd.verbose is not 0")
+                msg.setInformativeText("This application will not work correctly unless hw.snd.verbose is 0")
+                msg.setWindowTitle("Warning")
+                msg.setStandardButtons(QMessageBox.Ok)
+                msg.exec_()
+
+        # If we are on FreeBSD, check that hw.snd.default_auto is 2
+        if platform.system() == "FreeBSD":
+            default_auto = subprocess.check_output("sysctl hw.snd.default_auto", shell=True).decode('utf-8').split(" ")[-1]
+            if int(default_auto) != 2:
+                print("hw.snd.default_auto is not 2 but it is " + default_auto)
+                # Show a warning dialog
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Warning)
+                msg.setText("hw.snd.default_auto is not 2")
+                msg.setInformativeText("In order to switch automatically to the sound device plugged in most recently, set hw.snd.default_auto to 2")
+                msg.setWindowTitle("Warning")
+                msg.setStandardButtons(QMessageBox.Ok)
+                msg.exec_()
         
         # NOTE:
         # https://forum.learnpyqt.com/t/qsystemtrayicon-example/689
@@ -154,12 +181,6 @@ class VolumeMenu(QObject):
         self.sliderWindow = None
         
         self.refreshMenu() # Initially populate the menu
-        self.tray.installEventFilter(self) # FIXME: This never seems to get called, why?
-        self.installEventFilter(self)  # FIXME: This never seems to get called, why?
-
-    def eventFilter(self, obj, event):
-        print("eventFilter function running") # FIXME: Why is this never called when the icon is right-clicked?
-        # We need to refresh the contents of the right-click menu somehow when the user right-clicks...
 
     def onClicked(self, reason):
         # TODO: Is using customContextMenuRequested the proper way to do this? How?
@@ -169,6 +190,7 @@ class VolumeMenu(QObject):
         S.show()
 
     def refreshMenu(self):
+        print("refreshMenu function running")
         self.actions = []
         self.menu.clear()
         # Get the sound devices from
