@@ -202,7 +202,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         # command = 'xterm'
         # args = ['-T', 'Installer Log', '-n', 'Installer Log', '+sb', '-geometry', '200x20', '-e', 'tail', '-f', self.logfile, self.errorslogfile]
         command = 'launch'
-        args = ['QTerminal', '-e', 'tail', '-f', self.logfile, self.errorslogfile]
+        args = ['QTerminal', '-e', 'tail', '-f', self.logfile, self.errorslogfile, "/tmp/bsdinstall_log"]
         print(args)
         try:
             proc.startDetached(command, args)
