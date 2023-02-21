@@ -827,6 +827,10 @@ class DiskPage(QtWidgets.QWizardPage, object):
                 print(searchstring)
                 if len(self.disk_listwidget.selectedItems()) < 1:
                     return False
+                available_bytes = int(di.get("mediasize").split(" ")[0])
+                print("Available bytes: %d" % available_bytes)
+                print("Available space: %d GB" % (available_bytes // (2 ** 30)))
+                wizard.target_disk_size = available_bytes
                 if searchstring in self.disk_listwidget.selectedItems()[0].text():
                     wizard.selected_disk_device = str(di.get("geomname"))
                     self.timer.stop()  # FIXME: This does not belong here, but cleanupPage() gets called only
@@ -974,12 +978,7 @@ class UserPage(QtWidgets.QWizardPage, object):
         # self.sshd_checkbox.setWordWrap(True) # Does not work, https://bugreports.qt.io/browse/QTBUG-5370
         user_vlayout.addWidget(self.sshd_checkbox)
         self.registerField('enable_ssh*', self.sshd_checkbox)
-        # swap
-        self.swap_checkbox = QtWidgets.QCheckBox()
-        self.swap_checkbox.setText(tr("Disable swap (recommended for USB sticks and SD cards)"))
-        # self.sshd_checkbox.setWordWrap(True) # Does not work, https://bugreports.qt.io/browse/QTBUG-5370
-        user_vlayout.addWidget(self.swap_checkbox)
-        self.registerField('disable_swap*', self.swap_checkbox)
+
         self.hostname_label = QtWidgets.QLabel()
         font = QtGui.QFont()
         font.setFamily('monospace')
@@ -1000,6 +999,13 @@ class UserPage(QtWidgets.QWizardPage, object):
         self.tz_label.setVisible(False)
         user_vlayout.addWidget(self.tz_label)
 
+        # swap
+        self.swap_checkbox = QtWidgets.QCheckBox()
+        self.swap_checkbox.setText(tr("Disable swap (recommended for USB sticks and SD cards)"))
+        # self.swap_checkbox.setWordWrap(True) # Does not work, https://bugreports.qt.io/browse/QTBUG-5370
+        user_vlayout.addWidget(self.swap_checkbox)
+        self.registerField('disable_swap*', self.swap_checkbox)
+        
         # Warning if passwords don't match
         self.user_label_comment = QtWidgets.QLabel()
         self.user_label_comment.setText(tr("The passwords do not match"))  # TODO: make red
@@ -1025,6 +1031,11 @@ class UserPage(QtWidgets.QWizardPage, object):
         if internetCheckConnected() is False:
             self.timezone_checkbox.hide()
             print("Not offering to set time zone based on currrent location because not connected to the internet")
+
+        # Disable swap if the target disk is smaller than 80 GB
+        if wizard.target_disk_size < 80 * 1024 * 1024 * 1024:
+            self.swap_checkbox.setChecked(True)
+            self.swap_checkbox.setEnabled(False)
 
     def populateUsername(self):
         if " " in self.field('fullname'):
@@ -1142,8 +1153,8 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         print("Preparing InstallationPage")
         super().__init__()
 
-        self.setTitle(tr('Installing FreeBSD'))
-        self.setSubTitle(tr('FreeBSD is being installed to your computer.'))
+        self.setTitle(tr('Installing helloSystem'))
+        self.setSubTitle(tr('helloSystem is being installed to your computer.'))
 
         self.timer = None
         self.installer_script_has_exited = False
