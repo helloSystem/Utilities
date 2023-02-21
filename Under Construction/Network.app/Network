@@ -39,11 +39,8 @@ WIRED_OFFLINE = 2
 
 def get_wired_status(interface_name: str) -> int:
     output = run_command_and_get_output("ifconfig", ["-v", interface_name])
-    has_active_status = "status: active" in output  # "status" row is not present for "ue" interfaces
 
-    # If it doesn't have an IPv4 address then "inet" is not present, but "inet6" is always there, does that
-    # mean that it always has an IPv6 address? Is it the MAC address?
-    if "ue" in interface_name and "inet" in output or has_active_status:
+    if "inet" in output:
         wired_status = WIRED_CONNECTED
     else:
         wired_status = WIRED_DISCONNECTED
@@ -94,6 +91,15 @@ def get_tray_icon_with_color(icon_name: str) -> QPixmap:
     image = pixmap.toImage()
     # Use 100 on this icon set for a gray color that looks similar to the rest of the icons on the system tray
     return QPixmap.fromImage(set_monochrome_image_color(image, 100))
+
+
+def is_wired_interface_plugged_in(interface_name: str) -> bool:
+    output = run_command_and_get_output("ifconfig", ["-v", interface_name])
+    status_index = output.find("status:")
+
+    # Some interfaces (like the ones with the "urndis" driver) don't display status, media and parent interface
+    # rows. Is there a way to relate those two interfaces to provide a more reliable check?
+    return (status_index == -1 and "ue" in interface_name) or "status: active" in output
 
 
 # https://github.com/helloSystem/Menu/blob/c13548d3866c3896d728d2388bd0d4cd636a3a91/plugin-statusnotifier/statusnotifierbutton.cpp#L108
@@ -237,6 +243,8 @@ class NetworkMenu(QObject):
             if "wlan" in i:
                 wlan_present = True
                 continue
+            if not is_wired_interface_plugged_in(i):
+                continue
 
             wired_status = get_wired_status(i)
 
@@ -282,7 +290,8 @@ class NetworkMenu(QObject):
         # Second, show
         p = QProcess()
         # Get interfaces marked as "UP" but exclude those containing "wlan"
-        interfaces = [i for i in run_command_and_get_output("ifconfig", ["-ul", "ether"], p).strip().split(' ') if "wlan" not in i]
+        interfaces = [i for i in run_command_and_get_output("ifconfig", ["-ul", "ether"], p).strip().split(' ')
+                      if "wlan" not in i and is_wired_interface_plugged_in(i)]
 
         if interfaces and interfaces[0] != '':
             action = QAction("Wired")
@@ -290,16 +299,26 @@ class NetworkMenu(QObject):
             self.actions.append(action)
             self.menu.addAction(action)
 
+            route_info = run_command_and_get_output("route", ["-n", "get", "default"])
+            interface_index = route_info.find("interface: ")
+            default_route_interface = ""
+
+            if interface_index != -1:
+                default_route_interface = route_info[interface_index + 11:route_info.find("\n", interface_index)]
+
             for i in interfaces:
                 if "ue" in i:
-                    name = "USB Ethernet"
+                    name = "USB Ethernet (%s)"
                 elif "lagg" in i:
-                    name = "Link aggregation (%s)" % i
+                    name = "Link aggregation (%s)"
                 else:
-                    name = "Ethernet (%s)" % i
+                    name = "Ethernet (%s)"
+
+                name = name % i
 
                 action = QWidgetAction(self.menu)
-                action.setCheckable(False)
+                action.setCheckable(True)
+                action.setChecked(i == default_route_interface)
                 action.setText(name)
 
                 wired_status = get_wired_status(i)
@@ -735,6 +754,7 @@ class PasswordRequestDialog(QDialog):
 
     def show_password_changed(self, state: int):
         self.password_line_edit.setEchoMode(QLineEdit.Normal if state else QLineEdit.Password)
+
 
 if __name__ == "__main__":
 
