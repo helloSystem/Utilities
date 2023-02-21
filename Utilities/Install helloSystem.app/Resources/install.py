@@ -766,6 +766,25 @@ class DiskPage(QtWidgets.QWizardPage, object):
 
     def list_disks(self):
 
+        # Find out which disk the Live system is running from
+        proc = QtCore.QProcess()
+        command = 'mount'
+        args = []
+        try:
+            print("Starting %s %s" % (command, args))
+            proc.start(command, args)
+            proc.waitForFinished()
+        except:
+            wizard.showErrorPage(tr("Could not run the mount command."))
+            return
+
+        output_lines = proc.readAllStandardOutput().split("\n")
+        live_system_device = None
+        for output_line in output_lines:
+            if "on /media/LIVE" in str(output_line):
+                live_system_device = str(output_line).split(" ")[0].split("/dev/")[1]
+                print("Live system device: %s" % live_system_device)
+        
         ds = disks.get_disks()
         # Do not refresh the list of disks if nothing has changed, because it de-selects the selection
         if ds != self.old_ds:
@@ -778,7 +797,7 @@ class DiskPage(QtWidgets.QWizardPage, object):
                 # Only show disks that are above minimum_target_disk_size and are writable
                 available_bytes = int(di.get("mediasize").split(" ")[0])
                 # For now, we don't show cd* but once we add burning capabilities we may want to un-blacklist them
-                # TODO: Identify the disk the Live system is running from, and don't offer that
+                
                 if (available_bytes >= wizard.required_mib_on_disk) and di.get("geomname").startswith("cd") is False:
                     # item.setTextAlignment()
                     title = "%s on %s (%s GiB)" % (di.get("descr"), di.get("geomname"), f"{(available_bytes // (2 ** 30)):,}")
@@ -790,6 +809,11 @@ class DiskPage(QtWidgets.QWizardPage, object):
                     else:
                         item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-harddisk'), title)
                     self.disk_listwidget.addItem(item)
+
+                    if di.get("geomname") == live_system_device:
+                        item.setFlags(item.flags() & ~QtCore.Qt.ItemIsEnabled)
+                        item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable)
+                        item.setToolTip(tr("This is the disk that the Live system is running from"))
             self.old_ds = ds
 
     def onSelectionChanged(self):
