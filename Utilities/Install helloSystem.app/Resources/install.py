@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Install FreeBSD
+# Install helloSystem
 # Copyright (c) 2020-2023, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
@@ -110,7 +110,7 @@ def show_the_no_password_warning(sender):
 # https://doc.qt.io/qt-5/qwizard.html
 #############################################################################
 
-print(tr("Install FreeBSD"))
+print(tr("Install helloSystem"))
 
 app = QtWidgets.QApplication(sys.argv)
 
@@ -146,14 +146,14 @@ class InstallWizard(QtWidgets.QWizard, object):
         # self.setButtonLayout(
         #     [QtWidgets.QWizard.CustomButton1, QtWidgets.QWizard.Stretch, QtWidgets.QWizard.NextButton])
 
-        self.setWindowTitle(tr("Install FreeBSD"))
+        self.setWindowTitle(tr("Install helloSystem"))
         self.setFixedSize(800, 550)
 
         # Remove window decorations, especially the close button
         self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
-        self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Background.png'))
+        # self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Background.png'))
 
         self.setOption(QtWidgets.QWizard.ExtendedWatermarkPixmap, True)
         # self.setPixmap(QtWidgets.QWizard.LogoPixmap, 'Logo.png')
@@ -581,12 +581,24 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("Preparing IntroPage")
         super().__init__()
 
-        self.setTitle(tr('Install FreeBSD'))
-        self.setSubTitle(tr("To set up the installation of FreeBSD, click 'Continue'."))
+        self.setTitle(tr('Install helloSystem'))
+        self.setSubTitle(tr("To begin with the installation, click 'Continue'."))
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/FREEBSD_Logo_Vert_Pos_RGB.png').scaledToHeight(200, QtCore.Qt.SmoothTransformation)
-        logo_label = QtWidgets.QLabel()
-        logo_label.setPixmap(logo_pixmap)
+        intro_vLayout = QtWidgets.QVBoxLayout(self)
+        
+        intro_label = QtWidgets.QLabel()
+        intro_label.setWordWrap(True)
+        intro_label.setText(tr("<p>helloSystem is based on FreeBSD, an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIX® developed at the University of California, Berkeley. FreeBSD is developed and maintained by a large community.</p>"))
+        intro_vLayout.addWidget(intro_label, False)  # True = add stretch vertically
+
+        # Add stretch vertically
+        intro_vLayout.addStretch()
+
+        logo = "/usr/local/share/icons/elementary-xfce/devices/128/computer-hello.png"
+        if os.path.exists(logo):
+            logo_pixmap = QtGui.QPixmap("/usr/local/share/icons/elementary-xfce/devices/128/computer-hello.png").scaledToHeight(128, QtCore.Qt.SmoothTransformation)
+            logo_label = QtWidgets.QLabel()
+            logo_label.setPixmap(logo_pixmap)
 
         center_layout = QtWidgets.QHBoxLayout(self)
         center_layout.addStretch()
@@ -595,13 +607,11 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
         center_widget = QtWidgets.QWidget()
         center_widget.setLayout(center_layout)
-        intro_vLayout = QtWidgets.QVBoxLayout(self)
-        intro_vLayout.addWidget(center_widget, True)  # True = add stretch vertically
+        
+        intro_vLayout.addWidget(center_widget, False)  # True = add stretch vertically
 
-        intro_label = QtWidgets.QLabel()
-        intro_label.setWordWrap(True)
-        intro_label.setText(tr("FreeBSD is an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIX® developed at the University of California, Berkeley. It is developed and maintained by a large community."))
-        intro_vLayout.addWidget(intro_label, True)  # True = add stretch vertically
+        # Add stretch vertically
+        intro_vLayout.addStretch()
 
         tm_label = QtWidgets.QLabel()
         tm_label.setWordWrap(True)
@@ -609,7 +619,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
         font.setPointSize(8)
         tm_label.setFont(font)
         tm_label.setText("The FreeBSD Logo and the mark FreeBSD are registered trademarks of The FreeBSD Foundation and are used by Simon Peter with the permission of The FreeBSD Foundation.")
-        intro_vLayout.addWidget(tm_label)
+        intro_vLayout.addWidget(tm_label, False)
+
 
 
 #############################################################################
@@ -628,7 +639,7 @@ class LicensePage(QtWidgets.QWizardPage, object):
         license_label.setWordWrap(True)
         license_layout = QtWidgets.QVBoxLayout(self)
         license_text = open('/COPYRIGHT', 'r').read()
-        license_label.setText("\n".join(license_text.split("\n")[3:]))  # Skip the first 3 lines
+        license_label.setText("\n".join(license_text.split("\n")[2:]))  # Skip the first 2 lines
 
         font = wizard.font()
         font.setFamily("monospace")
@@ -707,6 +718,25 @@ class DiskPage(QtWidgets.QWizardPage, object):
         wizard.required_mib_on_disk = self.getMiBRequiredOnDisk()
         self.disk_listwidget.clearSelection()  # If the user clicked back and forth, start with nothing selected
         self.periodically_list_disks()
+
+        # Check if the output of "mount" contains "/media/.uzip" as an indication that we are running from a Live system
+        proc = QtCore.QProcess()
+        command = 'mount'
+        args = []
+        try:
+            print("Starting %s %s" % (command, args))
+            proc.start(command, args)
+        except:
+            wizard.showErrorPage(tr("Could not run the mount command."))
+            return
+        proc.waitForFinished()
+
+        if not "/media/.uzip" in str(proc.readAllStandardOutput()):
+            self.timer.stop()
+            wizard.showErrorPage(tr("The installer can only run from the installation medium, not from an installed system."))
+            self.disk_listwidget.hide()  # FIXME: Why is this needed? Can we do without?
+            return
+
 
         if wizard.required_mib_on_disk < 5:
             self.timer.stop()
@@ -944,6 +974,12 @@ class UserPage(QtWidgets.QWizardPage, object):
         # self.sshd_checkbox.setWordWrap(True) # Does not work, https://bugreports.qt.io/browse/QTBUG-5370
         user_vlayout.addWidget(self.sshd_checkbox)
         self.registerField('enable_ssh*', self.sshd_checkbox)
+        # swap
+        self.swap_checkbox = QtWidgets.QCheckBox()
+        self.swap_checkbox.setText(tr("Disable swap (recommended for USB sticks and SD cards)"))
+        # self.sshd_checkbox.setWordWrap(True) # Does not work, https://bugreports.qt.io/browse/QTBUG-5370
+        user_vlayout.addWidget(self.swap_checkbox)
+        self.registerField('disable_swap*', self.swap_checkbox)
         self.hostname_label = QtWidgets.QLabel()
         font = QtGui.QFont()
         font.setFamily('monospace')
@@ -1191,6 +1227,8 @@ class InstallationPage(QtWidgets.QWizardPage, object):
             env.insert("INSTALLER_ENABLE_AUTOLOGIN", "YES")
         if self.field('enable_ssh') is True:
             env.insert("INSTALLER_ENABLE_SSH", "YES")
+        if self.field('disable_swap') is True:
+            env.insert("INSTALLER_DISABLE_SWAP", "YES")
 
         # Print the keys to stderr for debugging
         for key in env.keys():
