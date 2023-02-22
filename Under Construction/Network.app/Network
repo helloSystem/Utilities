@@ -49,9 +49,9 @@ WIRED_OFFLINE = 2
 
 
 def get_wired_status(interface_name: str) -> int:
-    output = run_command_and_get_output("ifconfig", ["-v", interface_name])
+    addresses: dict = netifaces.ifaddresses(interface_name)
 
-    if "inet" in output:
+    if netifaces.AF_INET in addresses:
         wired_status = WIRED_CONNECTED
     else:
         wired_status = WIRED_DISCONNECTED
