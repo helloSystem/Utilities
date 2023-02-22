@@ -32,6 +32,17 @@ def run_command_and_get_output(command: str, args, process = QProcess()) -> str:
     return str(process.readAllStandardOutput(), 'UTF-8')
 
 
+def get_default_route_interface() -> str:
+    route_info = run_command_and_get_output("route", ["-n", "get", "default"])
+    interface_index = route_info.find("interface: ")
+    default_route_interface = ""
+
+    if interface_index != -1:
+        default_route_interface = route_info[interface_index + 11:route_info.find("\n", interface_index)]
+
+    return default_route_interface
+
+
 WIRED_CONNECTED = 0
 WIRED_DISCONNECTED = 1
 WIRED_OFFLINE = 2
@@ -153,6 +164,16 @@ def request_network_password(dialog_text: str) -> tuple[str, bool]:
         print("User did not click OK in password dialog")
 
     return password, ok
+
+
+def get_gateway_for_interface(interface_name) -> str:
+    lines = run_command_and_get_output("/sbin/resolvconf", ["-l", interface_name]).strip().splitlines()
+    gateway = ""
+
+    if lines:
+        gateway = lines[1].split(' ')[1]
+
+    return gateway
 
 
 class NetworkMenu(QObject):
@@ -292,19 +313,14 @@ class NetworkMenu(QObject):
         # Get interfaces marked as "UP" but exclude those containing "wlan"
         interfaces = [i for i in run_command_and_get_output("ifconfig", ["-ul", "ether"], p).strip().split(' ')
                       if "wlan" not in i and is_wired_interface_plugged_in(i)]
+        wired_interfaces_available = len(interfaces) > 0 and interfaces[0] != ''
+        default_route_interface = get_default_route_interface()
 
-        if interfaces and interfaces[0] != '':
+        if wired_interfaces_available:
             action = QAction("Wired")
             action.setDisabled(True)
             self.actions.append(action)
             self.menu.addAction(action)
-
-            route_info = run_command_and_get_output("route", ["-n", "get", "default"])
-            interface_index = route_info.find("interface: ")
-            default_route_interface = ""
-
-            if interface_index != -1:
-                default_route_interface = route_info[interface_index + 11:route_info.find("\n", interface_index)]
 
             for i in interfaces:
                 if "ue" in i:
@@ -317,12 +333,12 @@ class NetworkMenu(QObject):
                 name = name % i
 
                 action = QWidgetAction(self.menu)
-                action.setCheckable(True)
-                action.setChecked(i == default_route_interface)
+                action.setCheckable(False)
                 action.setText(name)
 
                 wired_status = get_wired_status(i)
                 item = NetworkItem(self.menu, action)
+                item.set_default_route_interface(i == default_route_interface)
                 item.set_wired_status(wired_status)
                 action.setDefaultWidget(item)
 
@@ -370,6 +386,8 @@ class NetworkMenu(QObject):
 
                 if "bssid=" + bssid in self.status_lines:
                     action.setChecked(True)
+                    # Only display the "internet" icon when there are wired interfaces
+                    item.set_default_route_interface(wired_interfaces_available and "wlan" in default_route_interface)
 
                 # TODO: Show networks with same SSID
                 if ssid not in ssids_added_to_menu:
@@ -420,9 +438,15 @@ class NetworkMenu(QObject):
         flags = getattr(self.wirelessGroup.checkedAction(), "flags")
         
         # self.reconnect()
-            
-        # Get a byte string with wpa_cli's output and decode it
         p = QProcess()
+
+        #default_route_interface = get_default_route_interface()
+
+        #if "wlan" not in default_route_interface:
+        #    gateway = get_gateway_for_interface("wlan0")
+        #    print(run_command_and_get_output("route", ["change", "default", gateway, "-ifp", "wlan0"]))
+
+        # Get a byte string with wpa_cli's output and decode it
         # Split that output into lines, ignoring the useless ones
         output = run_command_and_get_output("wpa_cli", ["list_networks"], p)
         network_list = output.strip().splitlines()
@@ -576,7 +600,9 @@ We don't know why this happened.")
                 bssid = getattr(self.wirelessGroup.checkedAction(), "bssid")
                 self.disconnect()  # Prevent wpa_supplicant from trying to connect and fail again
 
-                password, ok = request_network_password("<h4>Please enter the password for the \"%s\" network:</h4></br>Incorrect password. Please try again." % ssid if ssid else bssid)
+                password, ok = request_network_password(
+                    "<h4>Please enter the password for the \"%s\" network:</h4>"
+                    "</br>Incorrect password. Please try again." % ssid if ssid else bssid)
 
                 if not ok:
                     self.check_network_password = False
@@ -594,20 +620,25 @@ We don't know why this happened.")
                 p.waitForFinished()
 
                 self.reconnect()
-            elif "dhclient" in output:
-                if "New Routers" in output:
+            elif "dhclient" in output and "wlan" not in output:
+                default_route_interface = get_default_route_interface()
+
+                if "New Routers" in output and "wlan" in default_route_interface:
+                    # print(run_command_and_get_output("ifconfig", ["wlan0", "down"]))
+                    # self.disconnect()
+                    interface_name = output[output.rfind("(") + 1:output.rfind(")")]
                     gateway = output[output.rfind(":") + 1:].strip()
-                    print(run_command_and_get_output("ifconfig", ["wlan0", "down"]))
-                    print(run_command_and_get_output("route", ["add", "default", gateway]))
-                elif "Interface" and "no longer appears valid." in output:
-                    interface = output[output.find("Interface ") + 10:]
-                    lines = run_command_and_get_output("/sbin/resolvconf", ["-l", interface]).strip().splitlines()
+                    print(run_command_and_get_output("route", ["change", "default", gateway, "-ifp", interface_name]))
+                elif "no longer appears valid." in output:
+                    # TODO: Switch to another wired interface if available
+                    # interface = output[output.find("Interface ") + 10:output.find("no longer")]
+                    gateway = get_gateway_for_interface("wlan0")
 
-                    if lines:
-                        gateway = lines[1].split(' ')[1]
-                        print(run_command_and_get_output("route", ["delete", "default", gateway]))
+                    if gateway:
+                        print(run_command_and_get_output("route", ["change", "default", gateway, "-ifp", "wlan0"]))
+                        # self.reconnect()
 
-                    print(run_command_and_get_output("ifconfig", ["wlan0", "up"]))
+                    # print(run_command_and_get_output("ifconfig", ["wlan0", "up"]))
 
 
 # https://forum.qt.io/post/367830
@@ -623,6 +654,10 @@ class NetworkItem(QWidget):
         self.layout.setAlignment(Qt.AlignTrailing)
         self.layout.setContentsMargins(0, 0, 10, 0)
 
+        self.default_route_interface_label = QLabel()
+        self.default_route_interface_label.setPixmap(QIcon.fromTheme("web-browser-symbolic").pixmap(QSize(14, 14)))
+        self.default_route_interface_label.setVisible(False)
+        self.layout.addWidget(self.default_route_interface_label)
         self.lock_label = QLabel()
         self.lock_label.setPixmap(QIcon.fromTheme("network-wireless-encrypted-symbolic").pixmap(QSize(14, 14)))
         self.lock_label.setVisible(False)
@@ -633,6 +668,9 @@ class NetworkItem(QWidget):
 
         self.setLayout(self.layout)
         self.setMouseTracking(True)
+
+    def set_default_route_interface(self, default: bool):
+        self.default_route_interface_label.setVisible(default)
 
     def set_password_protected(self, password_protected: bool):
         self.lock_label.setVisible(password_protected)
@@ -673,6 +711,8 @@ class NetworkItem(QWidget):
         else:
             rgb_color = 0
 
+        self.default_route_interface_label.setPixmap(QPixmap.fromImage(set_monochrome_image_color(
+            self.default_route_interface_label.pixmap().toImage(), rgb_color)))
         self.lock_label.setPixmap(QPixmap.fromImage(set_monochrome_image_color(self.lock_label.pixmap().toImage(),
                                                                                rgb_color)))
         self.status_label.setPixmap(QPixmap.fromImage(set_monochrome_image_color(self.status_label.pixmap().toImage(),
