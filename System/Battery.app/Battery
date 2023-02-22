@@ -23,7 +23,7 @@ class BatteryApplet(QObject):
             bsuffix = "-charging"
             percentage = str(int(battery.percent // 1))
             if percentage != "-1":
-                self.tray_icon.setToolTip("Plugged in, %s charged" % percentage + "%")
+                self.tray_icon.setToolTip("Plugged in, %s charged" % (percentage + "%"))
             else:
                 self.tray_icon.setToolTip("Plugged in")
         else:
