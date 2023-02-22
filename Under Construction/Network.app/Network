@@ -104,17 +104,27 @@ def get_tray_icon_with_color(icon_name: str) -> QPixmap:
     return QPixmap.fromImage(set_monochrome_image_color(image, 100))
 
 
+def is_usb_tethered_interface(interface_name: str) -> bool:
+    if "ue" in interface_name:
+        number = interface_name[-1]
+        output = run_command_and_get_output("sysctl", ["net.ue.%s.%%parent" % number])
+        parent = output[output.rfind(":") + 2:].strip()
+        return parent[0:-1] in ["urndis", "cdce", "ipheth"]
+
+    return False
+
+
 def is_wired_interface_plugged_in(interface_name: str) -> bool:
     output = run_command_and_get_output("ifconfig", ["-v", interface_name])
-    status_index = output.find("status:")
 
     # Some interfaces (like the ones with the "urndis" driver) don't display status, media and parent interface
-    # rows. Is there a way to relate those two interfaces to provide a more reliable check?
-    return (status_index == -1 and "ue" in interface_name) or "status: active" in output
+    # rows (I assume this is the same for any USB Tethered interface), but unlike USB Ethernet adapters,
+    # if they are present that means that they are really "plugged in".
+    return "status: active" in output or is_usb_tethered_interface(interface_name)
 
 
 # https://github.com/helloSystem/Menu/blob/c13548d3866c3896d728d2388bd0d4cd636a3a91/plugin-statusnotifier/statusnotifierbutton.cpp#L108
-def set_monochrome_image_color(src_image: QImage, rgb_value: int=-1) -> QImage:
+def set_monochrome_image_color(src_image: QImage, rgb_value: int = -1) -> QImage:
     image: QImage = src_image.convertToFormat(QImage.Format_ARGB32 if src_image.hasAlphaChannel() else QImage.Format_RGB32)
     pointer: voidptr = image.bits()
     pixel_array = cast(pointer.__int__(), POINTER(c_uint32))
