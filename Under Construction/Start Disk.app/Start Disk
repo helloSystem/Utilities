@@ -4,7 +4,7 @@
 # Simple Start Disk switcher for FreeBSD in PyQt5
 
 
-# Copyright (c) 2020-2021, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-2023, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -66,9 +66,6 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
     def populateEntries(self):
         self.list_widget.clear()
         p = QtCore.QProcess()
-        env = QtCore.QProcessEnvironment.systemEnvironment()
-        # env.insert("SUDO_ASKPASS", os.path.dirname(__file__) + "/Resources/askpass.py")
-        p.setProcessEnvironment(env)
         p.setProgram("sudo")
         p.setArguments(["-A", "-E", "efibootmgr", "-v"])
         print("Starting " + p.program() + " " + " ".join(p.arguments()))
@@ -78,21 +75,36 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         print(lines)
         for line in lines:
             line = line.strip()
+            if "Boot to FW" in line:
+                if "true" in line:
+                    self.boot_to_firmware_checkbox.setChecked(True)
+                else:
+                    self.boot_to_firmware_checkbox.setChecked(False)
+                continue
             if line.startswith("Boot") or line.startswith("+Boot") and "(" in line:
                 if not line.startswith("BootCurrent") and not line.startswith("BootOrder") and not "MISSING!" in line:
                     print(line)
                     parts = line.split(" ")
-                    label = " ".join(parts[1:len(parts)-1]).strip()
+                    label = " ".join(parts[1:]).strip()
+                    # Remove anything after the first ")"
+                    if ")" in label:
+                        label = label.split(")")[0] + ")"
                     # print(label)
                     dev = parts[0].replace("*", "").replace("+", "").strip() # Boot0000,...
                     # print(dev)
                     done = [] # Only add each device once to the GUI
                     if dev not in done:
                         item = QtWidgets.QListWidgetItem(label)
-                        if parts[0].strip().startswith("+"):
-                            print(parts[0] + " is selected")
-                            item.setSelected(True) # FIXME: Why does this not work?
                         setattr(item, "dev", dev)
+                        # Set hard disk icon from icon theme if it's a hard disk
+                        if "Hard Drive" in label:
+                            item.setIcon(QtGui.QIcon.fromTheme("drive-harddisk"))
+                        elif "Network" in label: # use wired network icon
+                            item.setIcon(QtGui.QIcon.fromTheme("network-wired"))
+                        elif "CD" in label:
+                            item.setIcon(QtGui.QIcon.fromTheme("media-optical"))
+                        elif "USB" in label:
+                            item.setIcon(QtGui.QIcon.fromTheme("drive-removable-media-usb"))
                         self.list_widget.addItem(item)
                         done.append(label)
 
@@ -109,24 +121,47 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         self.list_widget = QtWidgets.QListWidget()
         self.list_widget.setAlternatingRowColors(True)
 
-        disks = self.populateEntries()
-
         self.list_widget.itemSelectionChanged.connect(self.onSomethingChanged)
         self.list_widget.setUniformItemSizes(True)
         layout.addWidget(self.list_widget)
         
         self.buttonbox = QtWidgets.QDialogButtonBox()
+
         reboot_button = self.buttonbox.addButton(QtWidgets.QDialogButtonBox.Ok)
         reboot_button.setText("Restart...")
         reboot_button.setDefault(True)
         reboot_button.clicked.connect(self.reboot)
+
+        # Add a "Boot to Firmware" checkbox
+        self.boot_to_firmware_checkbox = QtWidgets.QCheckBox("Boot to Firmware")
+        self.boot_to_firmware_checkbox.setChecked(False)
+        self.boot_to_firmware_checkbox.stateChanged.connect(self.bootToFirmwareToggled)
+        layout.addWidget(self.boot_to_firmware_checkbox)
+
         layout.addWidget(self.buttonbox)
 
         widget = QtWidgets.QWidget()
         widget.setLayout(layout)
         self.window.setCentralWidget(widget)
+
+        disks = self.populateEntries()
+
         self.window.show()
         sys.exit(app.exec_())
+
+    def bootToFirmwareToggled(self):
+        if self.boot_to_firmware_checkbox.isChecked():
+            command = "--fw-ui"
+        else:
+            command = "--no-fw-ui"
+        p = QtCore.QProcess()
+        p.setProgram("sudo")
+        p.setArguments(["-A", "-E", "efibootmgr", command])
+        print("Starting " + p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+        lines = str(p.readAll(), 'utf-8').strip().split("\n")
+        print(lines)
 
     def reboot(self):
         print("Reboot clicked")
@@ -158,9 +193,6 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         print("selected_entry", selected_entry)
 
         p = QtCore.QProcess()
-        env = QtCore.QProcessEnvironment.systemEnvironment()
-        env.insert("SUDO_ASKPASS", os.path.dirname(__file__) + "/Resources/askpass.py")
-        p.setProcessEnvironment(env)
         p.setProgram("sudo")
         p.setArguments(["-A", "-E", "efibootmgr", "-o", selected_entry.replace("Boot", "")])
         print("Starting " + p.program() + " " + " ".join(p.arguments()))
@@ -178,12 +210,11 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
 
         self.list_widget.itemSelectionChanged.connect(self.onSomethingChanged)
 
-
     def _showMenu(self):
         exitAct = QtWidgets.QAction('&Quit', self.window)
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
-        exitAct.triggered.connect(QtWidgets.QApplication.quit)
+        exitAct.triggered.connect(lambda: self.window.close())
         menubar = self.window.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAct)
@@ -192,7 +223,6 @@ class KeyboardSwitcher(QtWidgets.QMainWindow):
         aboutAct.triggered.connect(self._showAbout)
         helpMenu = menubar.addMenu('&Help')
         helpMenu.addAction(aboutAct)
-
 
     def _showAbout(self):
         print("showDialog")
