@@ -4,8 +4,9 @@
 import sys
 import os
 import re
+import getpass
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox, QPushButton, QDialog, QVBoxLayout, QListWidget, QListWidgetItem
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import QFile, pyqtSlot, QProcess, QProcessEnvironment, QObject, Qt
 from PyQt5.uic import loadUi
@@ -97,7 +98,7 @@ class Users(QMainWindow):
         # env.insert("SUDO_ASKPASS",  os.path.dirname(__file__) + "/askpass.py") # FIXME: This is not working
         p.setProcessEnvironment(env)
         p.setProgram("sudo")
-        p.setArguments(["-A", "-E", os.path.dirname(__file__) + "/adduser.sh", self.username.text(), self.password.text()])
+        p.setArguments(["-A", "-E", os.path.dirname(__file__) + "/adduser.sh", self.username.text(), self.fullName.text(), self.password.text()])
         p.start()
         p.waitForFinished()
 
@@ -117,23 +118,113 @@ class Users(QMainWindow):
             if "Successfully added" in out:
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Information)
-                msg.setText("Successfully added the user.")
+                msg.setText(tr("Successfully added the user."))
                 # msg.setInformativeText('More information')
                 msg.setWindowTitle(" ")
                 msg.exec_()
-                self.close()
+
         print("p.exitStatus():", p.exitStatus())
         if p.exitStatus() != 0:
-            print("An error occurred; TODO: Handle it in the GUI")
+            # Error dialog
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText(tr("Failed to add the user."))
+            # msg.setInformativeText('More information')
+            msg.setWindowTitle(tr("Error"))
+            msg.exec_()
+        
+        # Refresh the list of users
+        self.users = self.get_existing_users()
 
     @pyqtSlot()
     def removeUsers(self):
+
+        # Show a list of users in the system with UID 1000 and above
+        # and allow the user to select one user to remove
+
+        # Open a dialog with a list of users
+        # and a button to remove the selected user
+        # and a button to cancel
+
+        self.remove_user_dialog = QDialog()
+        self.remove_user_dialog.setWindowTitle(tr("Remove user"))
+        self.remove_user_dialog.setWindowModality(Qt.ApplicationModal)
+        self.remove_user_dialog.resize(400, 300)
+        layout = QVBoxLayout()
+        self.remove_user_dialog.setLayout(layout)
+
+        # Add a list of users
+        users = QListWidget()
+        for user in self.users:
+            if int(user.uid) >= 1000 and int(user.uid) < 65534:
+                item = QListWidgetItem(user.info + " (" + user.username + ")")
+                item.setToolTip(user.uid + " " + user.gid + " " + user.home + " " + user.shell)
+                item.setData(Qt.UserRole, user.username)
+
+                users.addItem(item)
+                # Disable if the user is the current user
+                if user.username == getpass.getuser():
+                    item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+
+        layout.addWidget(users)
+
+        # Add a button to remove the selected user
+        removeButton = QPushButton(tr("Remove"))
+        
+        removeButton.clicked.connect(lambda: self.removeUser(users.currentItem().data(Qt.UserRole)))
+        layout.addWidget(removeButton)
+        removeButton.setDisabled(True)
+        users.itemSelectionChanged.connect(lambda: removeButton.setDisabled(users.selectedItems() == []))
+
+        # Add a button to cancel
+        cancelButton = QPushButton(tr("Cancel"))
+        cancelButton.clicked.connect(self.remove_user_dialog.close)
+        layout.addWidget(cancelButton)
+
+        self.remove_user_dialog.exec_()
+
+    def removeUser(self, username):
+
+        # Ask for confirmation
         msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setText('Not yet implemented')
-        # msg.setInformativeText('Not yet implemented')
-        msg.setWindowTitle(" ")
-        msg.exec_()
+        msg.setIcon(QMessageBox.Question)
+        msg.setText(tr("Are you sure you want to remove the user %s?") % username)
+        msg.setInformativeText(tr("The user's home directory will be deleted. This cannot be undone."))
+        msg.setWindowTitle(tr("Remove user"))
+        msg.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        msg.setDefaultButton(QMessageBox.No)
+        ret = msg.exec_()
+        if ret == QMessageBox.No:
+            return
+            
+        print("Removing user", username)
+        p = QProcess()
+        p.setProgram("sudo")
+        p.setArguments(["-A", "-E", "pw", "userdel", "-n", username, "-r"])
+        print(p.program() + " " + " ".join(p.arguments()))
+        p.start()
+        p.waitForFinished()
+
+        err = p.readAllStandardError().data().decode()
+        if err and err != "":
+            self.remove_user_dialog.close()
+            print(err)
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Critical)
+            msg.setText(err)
+            msg.setWindowTitle(tr("Error"))
+            msg.exec_()
+        else:
+            self.remove_user_dialog.close()
+            print(tr("Successfully removed user %s") % username)
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText(tr("Successfully removed user %s") % username)
+            msg.setWindowTitle(" ")
+            msg.exec_()
+
+        # Refresh the list of users
+        self.users = self.get_existing_users()
 
     @pyqtSlot()
     def check(self):
