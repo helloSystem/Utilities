@@ -20,7 +20,7 @@ from PyQt5.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QAction, QHBox
 from PyQt5.QtGui import QIcon, QPixmap, QCursor, QPainter, QPaintEvent, QImage, qGray, qAlpha, qRgba
 from PyQt5.QtCore import Qt, QProcess, QObject, QTimer, QSize, QFileSystemWatcher
 from collections import namedtuple
-import sys, os, re
+import sys, os, re, netifaces
 
 
 def run_command_and_get_output(command: str, args, process = QProcess()) -> str:
@@ -300,6 +300,9 @@ class NetworkMenu(QObject):
                     network_info = get_network_info(getattr(action, "bssid"))
                     action.defaultWidget().set_signal_level(network_info.signal_level)
                     action.defaultWidget().set_password_protected("PSK" in network_info.flags)
+                elif hasattr(action, "wired_interface"):
+                    wired_status = get_wired_status(getattr(action, "wired_interface"))
+                    action.defaultWidget().set_wired_status(wired_status)
 
     def updateMenu(self):
     
@@ -333,6 +336,7 @@ class NetworkMenu(QObject):
                 name = name % i
 
                 action = QWidgetAction(self.menu)
+                action.__setattr__("wired_interface", i)
                 action.setCheckable(False)
                 action.setText(name)
 
