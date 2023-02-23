@@ -87,7 +87,27 @@ class LanguageSwitcher(QtWidgets.QMainWindow):
             "zh_TW.UTF-8",
             "jp_JP.UTF-8",
             "ko_KR.UTF-8"]
-            
+    
+        # https://github.com/helloSystem/hello/wiki/EFI-NVRAM
+        self.nvram_prev_lang_kbd = ["en_US:0", 
+        "fr:1", 
+        "de:3", 
+        "es:8", 
+        "it:4", 
+        "nl:26", 
+        "sv:224", 
+        "nb:12", 
+        "da:9", 
+        "fi:17", 
+        "ru:19456", 
+        "pl:30762", 
+        "pt_BR:71", 
+        "pt_PT:10", 
+        "zh-Hant:-16899", 
+        "en_US:0", 
+        "ja:16384", 
+        "ko:-17409"]
+
         cleartext = ["Use English for the main language",
             "Utiliser le français comme langue principale",
             "Deutsch als Standardsprache verwenden",
@@ -142,10 +162,75 @@ from which the language could be automatically detected.")
         self.window.show()
         app.exec_()
 
+    def readEfiVar(self, efi_variable_name):
+        eprint("Reading from EFI NVRAM: %s" % efi_variable_name)
+        command = "sudo -A -E efivar -p -A -N -n '%s'" % efi_variable_name
+        eprint(command)
+        read_prev_lang_kbd = ""
+        try:
+            read_prev_lang_kbd = os.popen(command).read()
+            if "%" in read_prev_lang_kbd:
+                read_prev_lang_kbd = read_prev_lang_kbd[:read_prev_lang_kbd.rfind("%")]
+            read_prev_lang_kbd = read_prev_lang_kbd.strip()
+            eprint("Read from EFI NVRAM: %s" % read_prev_lang_kbd)
+            return read_prev_lang_kbd
+        except:
+            pass
+        if read_prev_lang_kbd == "":
+            eprint("Reading from EFI NVRAM failed.")
+            return ""
+
     def onSomethingChanged(self):
         self.list_widget.setEnabled(False)
         selected_language = getattr(self.list_widget.selectedItems()[0], "language")
         print(selected_language)
+
+        # Get the corresponding prev_lang_kbd
+        selected_index = self.list_widget.currentRow()
+        prev_lang_kbd = self.nvram_prev_lang_kbd[selected_index]
+
+        efi_variable_name = "7c436110-ab2a-4bbb-a880-fe41995c9f82-prev-lang:kbd"
+
+        # Check if the FreeBSD system is running in EFI mode using sysctl  'machdep.bootmethod'; it is efi if the result is "machdep.bootmethod: UEFI"
+        command = "sysctl machdep.bootmethod | grep -q 'UEFI'"
+        result = os.system(command)
+        if result == 0:
+            eprint("The FreeBSD system is running in EFI mode.")
+
+            # Read the value of the EFI NVRAM variable
+            val = self.readEfiVar(efi_variable_name)
+            if val == "":
+                exit(1)
+
+            # Write to EFI NVRAM
+            eprint("Writing to EFI NVRAM: %s" % prev_lang_kbd)
+            command = "echo -n '%s' | sudo -A -E efivar -w -n '%s'" % (prev_lang_kbd, efi_variable_name)
+            print(command)
+            result = os.system(command)
+            if result != 0:
+                eprint("Writing to EFI NVRAM failed.")
+                exit(1)
+            else:
+                eprint("Writing to EFI NVRAM succeeded.")
+                val = self.readEfiVar(efi_variable_name)
+                if val == prev_lang_kbd:
+                    eprint("Read back EFI NVRAM variable matches what was intended to be written.")
+                else:
+                    eprint("Read back EFI NVRAM variable does not match what was intended to be written.")
+                    exit(1)
+            # Run the localize command as root so that the language is set upon the next login without the need to reboot
+            command = "sudo -A -E /usr/local/sbin/localize"
+            print(command)
+            result = os.system(command)
+            if result != 0:
+                eprint("Running the localize command failed.")
+                exit(1)
+            else:
+                eprint("Running the localize command succeeded.")
+        else:
+            eprint("The FreeBSD system is not running in EFI mode.")
+            eprint("Writing to EFI NVRAM skipped. Language will not be set on next boot.")
+
         exit(0)
 
 
