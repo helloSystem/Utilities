@@ -116,7 +116,12 @@ class IntroPage(QtWidgets.QWizardPage):
 if __name__ == "__main__":
     if os.getenv("VIRTUAL_MACHINE") is not None:
         show_message("It appears that this system is running inside a virtual machine.\n\nThis system has been optimized to run as a desktop system on real hardware.\n\nPlease consider running it on real hardware. A Live ISO is provided that can be written to a removable USB storage device to act as a boot medium.")
-
+        cmd = subprocess.run(['sysctl', 'machdep.bootmethod'], capture_output=True)
+        print(cmd.stdout)
+        if b'UEFI' in cmd.stdout:
+            print('Running in EFI mode')
+        else:
+            show_message("It appears that this virtual machine is not running in EFI mode.\n\nSome features, such as persisting keyboard and language settings, will not be available.\n\nPlease consider configuring the virtual machine to run in EFI mode.")
     wizard = Wizard()
     wizard.show()
     sys.exit(app.exec_())
