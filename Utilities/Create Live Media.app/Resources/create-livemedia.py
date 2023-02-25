@@ -203,6 +203,12 @@ class IntroPage(QtWidgets.QWizardPage, object):
         self.date_label.hide()
         self.disk_vlayout.addWidget(self.date_label)
 
+        # URL label
+        self.url_label = QtWidgets.QLabel()
+        self.url_label.setText(tr("URL"))
+        self.url_label.hide()
+        self.disk_vlayout.addWidget(self.url_label)
+        
         # Checkbox for Pre-release and Experimental builds
         self.prerelease_checkbox = QtWidgets.QCheckBox()
         self.prerelease_checkbox.setText(tr("Show Pre-release builds"))
@@ -265,31 +271,56 @@ class IntroPage(QtWidgets.QWizardPage, object):
         url = self.available_repos[self.repo_menu.currentIndex()]
         print("Getting releases from", url)
 
-        #try:
-        with urllib.request.urlopen(url) as url:
-            data = json.loads(url.read().decode())
-            # print(data)
-            for release in data:
-                if len(release["assets"]) > 0:
-                    # print(asset)
-                    for asset in release["assets"]:
-                        if asset["browser_download_url"].endswith(".iso"):
-                            # display_name = "%s (%s)" % (asset["name"], release["tag_name"])
-                            display_name = "%s %s" % (release["tag_name"], asset["name"])
-                            self.available_isos.append(asset)
-                            item = QtWidgets.QListWidgetItem(display_name)
-                            item.__setattr__("browser_download_url", asset["browser_download_url"]) # __setattr__() is the equivalent to setProperty() in Qt
-                            item.__setattr__("updated_at", asset["updated_at"])
-                            item.__setattr__("size", asset["size"])
-                            item.__setattr__("prerelease", release["prerelease"])
-                            if self.prerelease_checkbox.isChecked() == False:
-                                if release["prerelease"] == False:
+        self.date_label.hide()
+        self.url_label.hide()
+
+        result = None
+        try:
+            result = urllib.request.urlopen(url)
+
+        except urllib.error.HTTPError as e:
+            # Show error dialog box
+            dialog = QtWidgets.QMessageBox()
+            dialog.setWindowTitle("   ")
+            dialog.setText(tr("The list of available images could not be retrieved."))
+            if "rate limit exceeded" in str(e):
+                dialog.setInformativeText(tr("You have exceeded the GitHub rate limit.\nPlease try again later."))
+            else:
+                dialog.setInformativeText(str(e))
+            dialog.setIcon(QtWidgets.QMessageBox.Critical)
+            dialog.exec_()
+            sys.exit(1)
+            
+        data = json.loads(result.read().decode("utf-8"))
+        # print(data)
+        for release in data:
+            if len(release["assets"]) > 0:
+                # print(asset)
+                for asset in release["assets"]:
+                    if asset["browser_download_url"].endswith(".iso"):
+                        # display_name = "%s (%s)" % (asset["name"], release["tag_name"])
+                        display_name = "%s %s" % (release["tag_name"], asset["name"])
+                        self.available_isos.append(asset)
+                        item = QtWidgets.QListWidgetItem(display_name)
+                        # item.setIcon(QtGui.QIcon.fromTheme("media-optical"))
+                                                    
+                        item.__setattr__("browser_download_url", asset["browser_download_url"]) # __setattr__() is the equivalent to setProperty() in Qt
+                        item.__setattr__("updated_at", asset["updated_at"])
+                        item.__setattr__("size", asset["size"])
+                        item.__setattr__("prerelease", release["prerelease"])
+                        item.__setattr__("tag_name", release["tag_name"])
+                        item.__setattr__("name", asset["name"])
+                        item.__setattr__("body", release["body"])
+                        item.__setattr__("html_url", release["html_url"])
+                        item.__setattr__("release", release)
+                        if self.prerelease_checkbox.isChecked() == False:
+                            if release["prerelease"] == False:
+                                self.release_listwidget.addItem(item)
+                        else:
+                            if release["prerelease"] == True:
+                                # Show only prerelease builds that were updated within the last 6 months
+                                if datetime.strptime(asset["updated_at"], "%Y-%m-%dT%H:%M:%SZ") > datetime.now() - timedelta(days=180):
                                     self.release_listwidget.addItem(item)
-                            else:
-                                if release["prerelease"] == True:
-                                    # Show only prerelease builds that were updated within the last 6 months
-                                    if datetime.strptime(asset["updated_at"], "%Y-%m-%dT%H:%M:%SZ") > datetime.now() - timedelta(days=180):
-                                        self.release_listwidget.addItem(item)
 
         #except:
             #pass
@@ -314,6 +345,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
         date = QtCore.QDateTime.fromString(items[0].__getattribute__("updated_at"), "yyyy-MM-ddThh:mm:ssZ")
         self.date_label.setText(date.toLocalTime().toString(QtCore.Qt.SystemLocaleLongDate))
         self.date_label.show()
+        self.url_label.setText("<a href=\"%s\">%s</a>" % (items[0].__getattribute__("html_url"), items[0].__getattribute__("html_url")))
+        self.url_label.show()
         wizard.required_mib_on_disk = round(items[0].__getattribute__("size")/1024/1024, 1)
         # self.isComplete()  # Calling it like this does not make its result get used
         self.completeChanged.emit()  # But like this isComplete() gets called and its result gets used
