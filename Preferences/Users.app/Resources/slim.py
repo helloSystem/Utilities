@@ -52,6 +52,7 @@ def disable_autologin():
         return False
     if not run_with_sudo(["sed", "-i", "''", "-e", "s/^auto_login.*/#auto_login no/g", slim_config_file]):
         return False
+    QMessageBox.information(None, "Automatic login", "Automatic login has been disabled.")
     return True
 
 def get_default_user():

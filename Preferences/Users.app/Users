@@ -1,3 +1,493 @@
-#!/bin/sh
-HERE="$(dirname "$(readlink -f "${0}")")"
-exec "${HERE}/Resources/adduser.py" "$@"
+#!/usr/bin/env python3
+
+import re
+import sys
+import os
+import subprocess
+from PyQt5.QtCore import Qt, QEvent
+from PyQt5.QtWidgets import QMenuBar, QAction, QApplication, QWidget, QVBoxLayout, QHBoxLayout, QSizePolicy, QDialogButtonBox, QLabel, QListWidget, QPushButton, QLineEdit, QMessageBox, QDialog, QCheckBox, QListWidgetItem, QComboBox, QShortcut
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QKeyEvent
+
+sys.path.append(os.path.dirname(__file__) + "/Resources")
+import slim
+
+class UserListWidget(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+
+        self.setWindowTitle("Users")
+        
+        self.create_menu()
+
+        # Create the list widget to display the user list
+        self.user_list_widget = QListWidget()
+        self.user_list_widget.setAlternatingRowColors(True)
+
+        # Add a button to add a new user
+        self.add_user_button = QPushButton("New User")
+        self.add_user_button.clicked.connect(self.add_user_dialog)
+
+        # Add a button to delete the selected user
+        self.delete_user_button = QPushButton("Delete")
+        self.delete_user_button.clicked.connect(self.delete_user)
+        self.delete_user_button.setEnabled(False)
+
+        def selection_changed():
+            if self.user_list_widget.selectedItems():
+                # Enable the delete button if a user is selected
+                username = self.user_list_widget.selectedItems()[0].data(Qt.UserRole).get("username")
+                if username == os.environ['USER']:
+                    # Disable the delete button if the selected user is the current user
+                    self.delete_user_button.setEnabled(False)
+                    self.delete_user_action.setEnabled(False)
+                else:
+                    self.delete_user_button.setEnabled(True)
+                    self.delete_user_action.setEnabled(True)
+            else:
+                self.delete_user_button.setEnabled(False)
+                self.delete_user_action.setEnabled(False)
+        self.user_list_widget.itemSelectionChanged.connect(selection_changed)
+        self.user_list_widget.showIcons = True
+
+        # Create a horizontal layout for the add and delete buttons
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.add_user_button)
+        button_layout.addWidget(self.delete_user_button)
+
+        # Create a checkbox to show system users
+        self.show_system_users_checkbox = QCheckBox("Show System Users")
+        self.show_system_users_checkbox.stateChanged.connect(self.update_user_list)
+        self.show_system_users_checkbox.setChecked(False)
+
+        # Create a checkbox to enable automatic login
+        self.enable_automatic_login_checkbox = QCheckBox("Enable Automatic Login")
+        # Check if automatic login is enabled
+        if slim.check_autologin():
+            self.enable_automatic_login_checkbox.setChecked(True)
+            self.enable_automatic_login_action.setChecked(True)
+        else:
+            self.enable_automatic_login_checkbox.setChecked(False)
+            self.enable_automatic_login_action.setChecked(False)
+        self.enable_automatic_login_checkbox.stateChanged.connect(self.automatic_login)
+        
+        # Create a vertical layout for the entire widget
+        layout = QVBoxLayout()
+
+        layout.addWidget(self.menu_bar)
+
+        layout.addWidget(self.user_list_widget)
+        layout.addWidget(self.show_system_users_checkbox)
+        layout.addWidget(self.enable_automatic_login_checkbox)
+        layout.addLayout(button_layout)
+
+        # Set the layout for the widget
+        self.setLayout(layout)
+
+        # Populate the user list
+        self.update_user_list()
+
+        self.setWindowFlags(Qt.WindowCloseButtonHint)
+        self.shortcut = QShortcut(QKeySequence("Escape"), self)
+        self.shortcut.activated.connect(self.close)
+        self.shortcut = QShortcut(QKeySequence("Ctrl+W"), self)
+        self.shortcut.activated.connect(self.close)
+
+    def enable_automatic_login(self, dialog, userrole):
+        print("Enable automatic login for {}".format(userrole["username"]))
+        if slim.enable_autologin(userrole["username"]):
+            self.enable_automatic_login_checkbox.setChecked(True)
+            self.enable_automatic_login_action.setChecked(True)
+        else:
+            self.enable_automatic_login_checkbox.setChecked(False)
+            self.enable_automatic_login_action.setChecked(False)
+        dialog.close()
+
+    def disable_automatic_login(self):
+        # Remove default user
+        print("Removing default user")
+        try:
+            slim.remove_default_user()
+        except:
+            pass
+        # Disable automatic login
+        print("Disabling automatic login")
+        if slim.disable_autologin():
+            self.enable_automatic_login_checkbox.setChecked(False)
+        else:
+            self.enable_automatic_login_checkbox.setChecked(True)
+        
+    def automatic_login(self):
+        # If self.enable_automatic_login_checkbox is checked, enable automatic login
+        if not self.enable_automatic_login_checkbox.isChecked():
+            print("Disable automatic login")
+            self.disable_automatic_login()
+        else:
+            print("Enable automatic login")
+            # Ask for the username to enable automatic login for using a dropdown menu
+            dialog = QDialog(self)
+            label = QLabel("Which user should be logged in automatically?")
+            dropdown = QComboBox()
+            # Set minimum width of the dropdown menu to 200 pixels
+            dropdown.setMinimumWidth(200)
+            # Set minimum height of the dialog to 100 pixels
+            dialog.setMinimumHeight(100)
+            # Add items to the dropdown menu: one for each user as per the user list widget
+            for i in range(self.user_list_widget.count()):
+                # Get the user data from the item
+                item = self.user_list_widget.item(i)
+                user = item.data(Qt.UserRole)
+                dropdown.addItem(user["username"])
+                # Set the user data as the item data
+                dropdown.setItemData(i, user, Qt.UserRole)
+            # Put in a buttonbox with an the two standard buttons
+            ok_button = QPushButton("OK")
+            cancel_button = QPushButton("Cancel")
+            # Add the buttonbox to the dialog
+            buttonbox = QDialogButtonBox()
+            buttonbox.addButton(ok_button, QDialogButtonBox.AcceptRole)
+            buttonbox.addButton(cancel_button, QDialogButtonBox.RejectRole)
+            ok_button.clicked.connect(lambda: self.enable_automatic_login(dialog, dropdown.currentData(Qt.UserRole)))
+            cancel_button.clicked.connect(dialog.close)
+            layout = QVBoxLayout()
+            layout.addWidget(label)
+            layout.addWidget(dropdown)
+            layout.addStretch()
+            layout.addWidget(buttonbox)
+            dialog.setLayout(layout)
+            dialog.exec_()
+        # Check if automatic login is enabled and update the checkbox accordingly
+        # Disable stateChanged signal to prevent infinite recursion
+        self.enable_automatic_login_checkbox.stateChanged.disconnect()
+        if slim.check_autologin():
+            self.enable_automatic_login_checkbox.setChecked(True)
+            self.enable_automatic_login_action.setChecked(True)
+        else:
+            self.enable_automatic_login_checkbox.setChecked(False)
+            self.enable_automatic_login_action.setChecked(False)
+        # Reconnect the stateChanged signal
+        self.enable_automatic_login_checkbox.stateChanged.connect(self.automatic_login)
+
+    def update_user_list(self):
+        # Clear the user list widget
+        self.user_list_widget.clear()
+
+        # Synchronize the "Show System Users" checkbox with the menu bar
+        self.show_system_users_action.setChecked(self.show_system_users_checkbox.isChecked())
+            
+        # Get the list of users
+        lines = subprocess.run(["sudo", "-A", "-E", "pw", "usershow", "-a"], capture_output=True, text=True).stdout.splitlines()
+
+        users = []
+
+        # For each line, split the user information into fields
+        for line in lines:
+            print("line: {}".format(line))
+            # The password file in FreeBSD has the following fields:
+            # ['username', '*', 'uid', 'gid', '', '0', '0', 'Full Name', '/home/user', '/bin/csh']
+            fields = line.split(":")
+            username = fields[0]
+            uid = fields[2]
+            gid = fields[3]
+            fullname = fields[7].strip()
+            homedir = fields[5]
+            shell = fields[6]
+            user = {"username": username, "uid": uid, "gid": gid, "fullname": fullname, "homedir": homedir, "shell": shell}
+            users.append(user)
+        
+        # Sort users by username
+        users.sort(key=lambda user: user["username"])
+
+        for user in users:
+            if int(user["uid"]) > 1000 and int(user["uid"]) < 65534:
+                item = QListWidgetItem("{}".format(user["fullname"]))
+                item.setToolTip("{} ({})".format(user["username"], user["uid"]))
+                item.setData(Qt.UserRole, user)
+                # Set icon to user icon from xdg theme
+                icon = QIcon.fromTheme("user")
+                item.setIcon(icon)
+                self.user_list_widget.addItem(item)
+                if user["username"] == os.environ['USER']:
+                    # Disable the item if it is the current user
+                    item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+            else:
+                if self.show_system_users_checkbox.isChecked():
+                    item = QListWidgetItem("{}".format(user["fullname"]))
+                    item.setToolTip("{} ({})".format(user["username"], user["uid"]))
+                    # Set properties for the item
+                    item.setData(Qt.UserRole, user)
+                    icon = QIcon.fromTheme("user")
+                    item.setIcon(icon)
+                    item.setFlags(item.flags() & ~Qt.ItemIsEnabled)
+                    self.user_list_widget.addItem(item)
+
+
+    def add_user_dialog(self):
+        # Create a dialog to add a new user
+        dialog = QDialog(self)
+        dialog.setWindowTitle("New User")
+
+        # Set the minimum size of the dialog to 400x200 pixels
+        dialog.setMinimumSize(400, 200)
+
+        # Make it automatically resize to fit the contents when the contents change
+        dialog.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        # Add a label and line edit for the user's full name
+        fullname_label = QLabel("Full Name:")
+        fullname_edit = QLineEdit()
+
+        # Add a label and line edit for the username
+        username_label = QLabel("Username:")
+        username_edit = QLineEdit()
+
+        # Constuct a username from the full name
+        # using the first letter of the first word
+        # and the first 7 letters of the last word;
+        # if there is only one word, use the first 8 letters
+        def construct_username(fullname):
+            words = fullname.split()
+            if len(words) == 1:
+                return words[0][:8].lower()
+            elif len(words) == 0:
+                return ""
+            else:
+                return words[0][0].lower() + words[-1][:7].lower()
+        
+        # When the user edits the full name, update the username
+        fullname_edit.textChanged.connect(lambda: username_edit.setText(construct_username(fullname_edit.text())))
+
+        # Add a label and line edit for the user's password
+        password_label = QLabel("Password:")
+        password_edit = QLineEdit()
+        password_edit.setEchoMode(QLineEdit.Password)
+
+        # Add a checkbox to enable sudo access for the user
+        admin_checkbox = QCheckBox("Administative Privileges")
+        admin_checkbox.setToolTip("Allows sudo without password\nand adds the user to the wheel group")
+
+        buttonbox = QDialogButtonBox()
+        create_button = buttonbox.addButton("Create User", QDialogButtonBox.AcceptRole)
+        buttonbox.addButton("Cancel", QDialogButtonBox.RejectRole)
+        buttonbox.accepted.connect(dialog.accept)
+        buttonbox.rejected.connect(dialog.reject)
+        buttonbox.accepted.connect(lambda: self.create_user(dialog, username_edit.text(), fullname_edit.text(), admin_checkbox.isChecked(), password_edit.text()))
+        create_button.setEnabled(False)
+
+        # Create a vertical layout for the dialog
+        layout = QVBoxLayout()
+        
+        layout.addWidget(fullname_label)
+        layout.addWidget(fullname_edit)
+
+        layout.addWidget(username_label)
+        layout.addWidget(username_edit)
+
+        layout.addWidget(password_label)
+        layout.addWidget(password_edit)
+        layout.addWidget(admin_checkbox)
+
+        status_label = QLabel()
+        status_label.setWordWrap(True)
+        status_label.setMinimumHeight(80)
+        status_label.setAlignment(Qt.AlignTop)
+        status_label.setStyleSheet("QLabel { color: red; }")
+
+        layout.addWidget(status_label)
+
+        layout.addStretch()
+
+        layout.addWidget(create_button)
+        dialog.setLayout(layout)
+        
+        # Enable the create button only if all required fields are filled
+        def check_fields():
+            create_button.setEnabled(True)
+            status_label.setText("")
+            if not fullname_edit.text() and username_edit.text():
+                status_label.setText("Please enter a full name")
+                create_button.setEnabled(False)
+            # Full name must have at least one space and text before and after the space
+            if not re.match("^[a-zA-Z]+ [a-zA-Z]+$", fullname_edit.text()):
+                status_label.setText("Full name must be at least two words separated by a space")
+                create_button.setEnabled(False)
+            # Check if the username is valid
+            if not re.match("^[a-z][a-z0-9_]{0,7}$", username_edit.text()):
+                status_label.setText("Username must be between 1 and 8 characters long and contain only lowercase letters, numbers, and underscores")
+                create_button.setEnabled(False)
+            # Check if the password is valid
+            if password_edit.text():
+                if not re.match("^[a-zA-Z0-9!@#$%^&*()_+]{3,}$", password_edit.text()):
+                    status_label.setText("Password must be at least 3 characters long and contain only letters, numbers, and the following special characters: !@#$%^&*()_+")
+                    create_button.setEnabled(False)
+            # Check if the user already exists as per the output of pw usershow
+            lines = subprocess.run(["sudo", "-A", "-E", "pw", "usershow", "-a"], capture_output=True, text=True).stdout.splitlines()
+            for line in lines:
+                fields = line.split(":")
+                if username_edit.text() == fields[0]:
+                    status_label.setText("User already exists")
+                    create_button.setEnabled(False)
+        fullname_edit.textChanged.connect(check_fields)
+        username_edit.textChanged.connect(check_fields)
+        password_edit.textChanged.connect(check_fields)
+
+        # Show the dialog
+        dialog.exec_()
+
+    def create_user(self, dialog, username, fullname, is_admin, password=None):
+        if not password:
+            # Create the user without a password using adduser using pw
+            subprocess.run(["sudo", "-A", "-E", "pw", "useradd", username, "-c", fullname, "-m", "-s", "/bin/csh"], check=True)
+        else:
+            # Create the user with the specified password using pw
+            subprocess.run(["sudo", "-A", "-E", "pw", "useradd", username, "-c", fullname, "-m", "-s", "/bin/csh", "-h", "0"], input=password.encode(), check=True)
+
+        if is_admin:
+            # Add the user to the wheel group
+            subprocess.run(["sudo", "-A", "-E", "pw", "groupmod", "wheel", "-m", username], check=True)
+            # Add sudoers.d/<username> file
+            subprocess.run(["sudo", "-A", "-E", "sh", "-c", "echo \"{} ALL=(ALL) NOPASSWD: ALL\" > \'/usr/local/etc/sudoers.d/{}-sudoers\'".format(username, username)], check=True)
+
+        groups = ["audio", "dialer", "plugdev", "procmod", "procview", "sys", "tty", "uucp", "video", "webcamd", "vboxusers"]
+        # Add the user to the groups
+        for group in groups:
+            try:
+                subprocess.run(["sudo", "-A", "-E", "pw", "groupmod", group, "-m", username], check=True)
+            except subprocess.CalledProcessError:
+                pass
+
+        # Check if autologin is enabled and if so, disable it
+        if self.enable_automatic_login_checkbox.isChecked():
+            self.enable_automatic_login_checkbox.setChecked(False)
+
+        # Update the user list
+        self.update_user_list()
+
+        # Close the dialog
+        dialog.close()
+
+    def delete_user(self):
+        # Get the selected user
+        selected_items = self.user_list_widget.selectedItems()
+        if not selected_items:
+            return
+
+        username = selected_items[0].data(Qt.UserRole).get("username")
+
+        # Create a confirmation dialog
+        dialog = QMessageBox()
+        dialog.setWindowTitle("Delete User")
+        dialog.setText("Are you sure you want to delete user {}?\n\nAll data in the home directory of this user will be deleted.\nThis cannot be undone.".format(username))
+        dialog.setStandardButtons(QMessageBox.Yes | QMessageBox.No)
+        dialog.button(QMessageBox.Yes).setText("Delete")
+        dialog.button(QMessageBox.No).setText("Cancel")
+        dialog.setDefaultButton(QMessageBox.No)
+        dialog.setIcon(QMessageBox.Question)
+        dialog.button(QMessageBox.Yes).setStyleSheet("color: red")
+
+        # Delete the user if the user clicks "Yes"
+        if dialog.exec_() == QMessageBox.Yes:
+            # If there is a sudoers file for the user, delete it
+            if os.path.exists("/usr/local/etc/sudoers.d/{}-sudoers".format(username)):
+                subprocess.run(["sudo", "-A", "-E", "rm", "/usr/local/etc/sudoers.d/{}-sudoers".format(username)], check=True)
+            subprocess.run(["sudo", "-A", "-E", "pw", "userdel", username, "-r"], check=True)
+            self.update_user_list()
+
+    def create_menu(self):
+        # Create the menu bar
+        self.menu_bar = QMenuBar()
+        # Add the "File" menu
+        file_menu = self.menu_bar.addMenu("File")
+        # Add the "Create User" action to the "File" menu
+        create_user_action = QAction("New User", self)
+        file_menu.addAction(create_user_action)
+        create_user_action.setShortcut("Ctrl+N")
+        create_user_action.triggered.connect(self.add_user_dialog)
+        # Add the "Delete User" action to the "File" menu
+        self.delete_user_action = QAction("Delete User", self)
+        self.delete_user_action.setShortcut("Del")
+        self.delete_user_action.triggered.connect(self.delete_user)
+        self.delete_user_action.setEnabled(False)
+        file_menu.addAction(self.delete_user_action)
+        file_menu.addSeparator()
+        # Add the "Quit" action to the "File" menu
+        quit_action = QAction("Quit", self)
+        quit_action.triggered.connect(self.close)
+        quit_action.setShortcut("Ctrl+Q")
+        file_menu.addAction(quit_action)
+        # Add the "Edit" menu
+        edit_menu = self.menu_bar.addMenu("Edit")
+        # Add the "Undo" action to the "Edit" menu
+        undo_action = QAction("Undo", self)
+        # disable the "Undo" action
+        undo_action.setEnabled(False)
+        edit_menu.addAction(undo_action)
+        # separator
+        edit_menu.addSeparator()
+        # Add the "Cut" action to the "Edit" menu
+        cut_action = QAction("Cut", self)
+        cut_action.triggered.connect(lambda: self.keyPressEvent(QKeyEvent(QEvent.KeyPress, Qt.Key_X, Qt.ControlModifier)))
+        cut_action.setShortcut("Ctrl+X")
+        edit_menu.addAction(cut_action)
+        # Add the "Copy" action to the "Edit" menu
+        copy_action = QAction("Copy", self)
+        copy_action.triggered.connect(lambda: self.keyPressEvent(QKeyEvent(QEvent.KeyPress, Qt.Key_C, Qt.ControlModifier)))
+        copy_action.setShortcut("Ctrl+C")
+        edit_menu.addAction(copy_action)
+        # Add the "Paste" action to the "Edit" menu
+        paste_action = QAction("Paste", self)
+        paste_action.triggered.connect(lambda: self.keyPressEvent(QKeyEvent(QEvent.KeyPress, Qt.Key_V, Qt.ControlModifier)))
+        paste_action.setShortcut("Ctrl+V")
+        edit_menu.addAction(paste_action)
+        # Add the "Options" menu
+        options_menu = self.menu_bar.addMenu("Options")
+        # Add the "Show System Users" action to the "Options" menu
+        self.show_system_users_action = QAction("Show System Users", self)
+        self.show_system_users_action.setCheckable(True)
+        self.show_system_users_action.setChecked(False)
+        # When the "Show System Users" action is triggered, self.show_system_users_checkbox is updated and the user list is updated
+        self.show_system_users_action.triggered.connect(lambda: self.show_system_users_checkbox.setChecked(self.show_system_users_action.isChecked()))
+        options_menu.addAction(self.show_system_users_action)
+        options_menu.addSeparator()
+        self.enable_automatic_login_action = QAction("Enable Automatic Login", self)
+        self.enable_automatic_login_action.setCheckable(True)
+        self.enable_automatic_login_action.triggered.connect(lambda: self.enable_automatic_login_checkbox.setChecked(self.enable_automatic_login_action.isChecked()))
+        options_menu.addAction(self.enable_automatic_login_action)
+
+        # Add the "Help" menu
+        help_menu = self.menu_bar.addMenu("Help")
+        # Add the "About" action to the "Help" menu
+        about_action = QAction("About", self)
+        about_action.triggered.connect(self.show_about)
+        about_action.setShortcut("Ctrl+?")
+        help_menu.addAction(about_action)        
+        
+    def show_about(self):
+        print("showDialog")
+        msg = QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QPixmap(os.path.dirname(__file__) + "/Resources/Users.png"))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/Resources/" + candidate):
+                with open(os.path.dirname(__file__) + "/Resources/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Users</h3>")
+        msg.setInformativeText(
+            "A simple preferences application to add users using <a href='https://www.freebsd.org/cgi/man.cgi?adduser'>adduser</a>, <a href='https://www.freebsd.org/cgi/man.cgi?usermod'>usermod</a>, and <a href='https://www.freebsd.org/cgi/man.cgi?groupmod'>groupmod</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    # With sudo, check if we can become root. If not, show an error message and exit.
+    try:
+        subprocess.run(["sudo", "-A", "-E", "id"], check=True)
+    except subprocess.CalledProcessError:
+        QMessageBox.critical(None, "Users", "This application requires administrative privileges.")
+        sys.exit(1)
+    widget = UserListWidget()
+    widget.show()
+    sys.exit(app.exec_())
