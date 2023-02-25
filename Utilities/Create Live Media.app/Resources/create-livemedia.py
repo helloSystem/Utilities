@@ -34,7 +34,7 @@
 import socket # Before urllib so that we can set the timeout
 import sys, os, re, socket
 import shutil
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib.request, json
 from PyQt5 import QtWidgets, QtGui, QtCore, QtMultimedia # pkg install py37-qt5-widgets
 import disks # Privately bundled file
@@ -171,7 +171,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
         # Repo dropdown
 
         self.repo_menu = QtWidgets.QComboBox()
-        self.available_repos = ["https://api.github.com/repos/helloSystem/ISO/releases", "https://api.github.com/repos/ventoy/Ventoy/releases", "https://api.github.com/repos/mszoek/airyx/releases", "https://api.github.com/repos/probonopd/furybsd-livecd/releases", "https://api.github.com/repos/probonopd/ghostbsd-build/releases", "https://api.github.com/repos/andydotxyz/furybsd-livecd/releases"]
+        self.available_repos = ["https://api.github.com/repos/helloSystem/ISO/releases", "https://api.github.com/repos/ventoy/Ventoy/releases" ] #  "https://api.github.com/repos/mszoek/airyx/releases", "https://api.github.com/repos/probonopd/furybsd-livecd/releases", "https://api.github.com/repos/probonopd/ghostbsd-build/releases", "https://api.github.com/repos/andydotxyz/furybsd-livecd/releases"]
         for available_repo in self.available_repos:
             self.repo_menu.addItem("/".join(available_repo.split("/")[4:6]))
         self.other_iso = tr("Other...")
@@ -286,7 +286,11 @@ class IntroPage(QtWidgets.QWizardPage, object):
                                 if release["prerelease"] == False:
                                     self.release_listwidget.addItem(item)
                             else:
-                                self.release_listwidget.addItem(item)
+                                if release["prerelease"] == True:
+                                    # Show only prerelease builds that were updated within the last 6 months
+                                    if datetime.strptime(asset["updated_at"], "%Y-%m-%dT%H:%M:%SZ") > datetime.now() - timedelta(days=180):
+                                        self.release_listwidget.addItem(item)
+
         #except:
             #pass
             # wizard.showErrorPage("The list of available images could not be retrieved. GitHub rate limit exceeded?")
