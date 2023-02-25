@@ -5,7 +5,7 @@
 # for bectl(1)
 # https://www.freebsd.org/cgi/man.cgi?bectl
 
-# Copyright (c) 2020, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-2023, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -103,8 +103,8 @@ class BootEnvironmentsManager(object):
         # Label
         self.label = QtWidgets.QLabel()
         self.label.setText("Boot Environments are bootable clones of snapshots of the working system. \
-Create a safe failback Boot Environmnent before upgrading or making major changes to the system. \
-Note that Boot Environments by default may not cover all locations, such as /home.")
+Create a safe fallback Boot Environmnent before upgrading or making major changes to the system. \
+Note that Boot Environments do not include /home.")
         # TODO: Show here which paths may be not covered by the selected Boot Environment. How?
         # TODO: Offer to include EVERYTHING in Boot Environments. How?
         self.label.setWordWrap(True)
