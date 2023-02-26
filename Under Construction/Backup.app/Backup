@@ -1,0 +1,325 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+import time
+import math
+import os
+
+from PyQt5.QtGui import QPixmap
+from PyQt5.QtWidgets import QWizard, QWizardPage, QVBoxLayout, QLabel, QPushButton, QProgressBar, QApplication, QMessageBox, QLineEdit, QFileDialog
+from PyQt5.QtCore import QThread, pyqtSignal, QProcess, QStorageInfo
+
+class BackupThread(QThread):
+    progress_update = pyqtSignal(int)
+
+    def __init__(self, dataset, filename):
+        super().__init__()
+        self.filename = filename
+        self.dataset = dataset
+
+    def run(self):
+
+        # Get the size of the dataset to be backed up
+        command = ['zfs', 'get', '-H', '-p', '-o', 'value', 'used', self.dataset]
+        print(' '.join(command))
+        size_output = subprocess.check_output(command)
+        size = int(float(size_output.strip()))
+        print("Size: {}".format(size))
+
+        # Check if snapshot already exists
+        snapshot_exists = False
+        try:
+            subprocess.check_output(['zfs', 'list', '-H', '-t', 'snapshot', self.dataset + '@snapshotforbackup'])
+            snapshot_exists = True
+        except subprocess.CalledProcessError:
+            snapshot_exists = False
+
+        if snapshot_exists:
+            # Destroy the existing snapshot
+            command = ['sudo', '-A', '-E', 'zfs', 'destroy', self.dataset + '@snapshotforbackup']
+            print(' '.join(command))
+            result = subprocess.check_output(command)
+            print(result)
+
+        # Make a snapshot of the dataset so that we can send it while it is mounted
+        try:
+            command = ['sudo', '-A', '-E', 'zfs', 'snapshot', self.dataset + '@snapshotforbackup']
+            print(' '.join(command))
+            result = subprocess.check_output(command)
+            print(result)
+        except subprocess.CalledProcessError as e:
+            # Show error message in a QMessageBox
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Critical)
+            error_dialog.setText("Error creating snapshot")
+            error_dialog.setWindowTitle("Error")
+            error_dialog.exec_()
+
+        # Backup the dataset using zfs send
+        zfs_command = ['sudo', '-A', '-E', 'zfs', 'send', '-c', self.dataset + '@snapshotforbackup']
+        print(' '.join(zfs_command))
+        proc = subprocess.Popen(zfs_command, stdout=subprocess.PIPE)      
+
+        count = 0
+
+        start_time = time.time()
+
+        # Write the output to a file and update the progress bar
+        with open(self.filename, 'wb') as f:
+            while True:
+                data = proc.stdout.read(1024)
+                if not data:
+                    break
+                f.write(data)
+                count += len(data)
+                self.progress_update.emit(int(count / size * 100))
+                # Calculate the speed in MB per second taking into account how long it has been running
+                speed = count / 1024 / 1024 / (time.time() - start_time)
+                print("Speed: {} MB/s".format(speed))
+
+        proc.wait()
+
+
+class BackupWizard(QWizard):
+    def __init__(self):
+        super().__init__()
+
+        self.dataset = "zroot/usr/home"
+
+        self.setWizardStyle(QWizard.MacStyle)
+        self.setPixmap(QWizard.BackgroundPixmap, QPixmap(os.path.dirname(__file__) + '/Resources/background.png'))
+
+        self.setWindowTitle("Backup Wizard")
+        # Instantiate the pages with this wizard as the parent
+        welcome_page = WelcomePage(self)
+        save_file_page = SaveFilePage(self)
+        progress_page = ProgressPage(self)
+        summary_page = SummaryPage(self)
+        
+        self.addPage(WelcomePage())
+        self.addPage(SaveFilePage())
+        self.addPage(ProgressPage())
+        self.addPage(SummaryPage())
+
+        self.setFixedSize(600, 400)
+
+
+class WelcomePage(QWizardPage):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        
+    def initializePage(self):
+        self.setTitle("Welcome to the ZFS Backup Wizard")
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+
+        # Check if the dataset exists and how much space it takes up
+        try:
+            command = ['zfs', 'get', '-H', '-p', '-o', 'value', 'used', self.wizard().dataset]
+            print(' '.join(command))
+            size_output = subprocess.check_output(command)
+            size = int(float(size_output.strip()))
+            print("Size: {}".format(size))
+            self.wizard().disk_size_needed = size
+        except subprocess.CalledProcessError as e:
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Critical)
+            error_dialog.setText("The '%s' dataset dataset does not exist." % self.wizard().dataset)
+            error_dialog.setWindowTitle("Error")
+            error_dialog.exec_()
+            sys.exit(1)
+
+        label = QLabel("This wizard will help you create a backup of '%s' ZFS dataset." % self.wizard().dataset)
+        label.setWordWrap(True)
+        layout.addWidget(label)
+
+        gb_needed = self.wizard().disk_size_needed / 1024 / 1024 / 1024
+        gb_needed = math.ceil(gb_needed)
+        label = QLabel("You need a disk with at least %s GB of free space." % str(gb_needed))
+        layout.addWidget(label)
+
+        # Check if the output of "mount" contains "/media/.uzip" as an indication that we are running from a Live system
+        proc = QProcess()
+        command = 'mount'
+        args = []
+        print("Starting %s %s" % (command, args))
+        proc.start(command, args)
+        proc.waitForFinished()
+        if "/media/.uzip" in str(proc.readAllStandardOutput()):
+            print("Live system detected")
+            # Show error message in a QMessageBox
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Critical)
+            error_dialog.setText("This wizard is only available on helloSystem Live ISO.")
+            error_dialog.setWindowTitle("Error")
+            error_dialog.exec_()
+            sys.exit(1)
+
+
+class SaveFilePage(QWizardPage):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def initializePage(self):
+        
+        self.setTitle("Save backup file")
+        self.setSubTitle("Specify the location to save the backup file.")
+        
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        
+        self.file_edit = QLineEdit()
+        self.browse_button = QPushButton("Browse...")
+        self.browse_button.clicked.connect(self.browse)
+        
+        layout.addWidget(self.file_edit)
+        layout.addWidget(self.browse_button)
+        
+        self.registerField("file_path*", self.file_edit)
+    
+    def browse(self):
+        # Set QFileDialog::AnyFile
+        dialog = QFileDialog()
+        dialog.setFileMode(QFileDialog.AnyFile)
+        file_path, _ = dialog.getSaveFileName(self, "Save ZFS backup image file", "", "ZFS image files (*.zfs)")
+        if file_path:
+            self.file_edit.setText(file_path)
+
+    def validatePage(self):
+        # Path must not be in /home
+        file_path = self.field("file_path")
+        if file_path.startswith("/home"):
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Critical)
+            error_dialog.setText("The backup file must not be in /home")
+            error_dialog.setWindowTitle("Error")
+            error_dialog.exec_()
+            return False
+            
+        # If the path already exists, it must not be a directory
+        if os.path.exists(file_path):
+            if not os.path.isfile(file_path):
+                error_dialog = QMessageBox()
+                error_dialog.setIcon(QMessageBox.Critical)
+                error_dialog.setText("The backup file must not be an existing directory")
+                error_dialog.setWindowTitle("Error")
+                error_dialog.exec_()
+                return False
+
+        # Get the size of the destination disk
+        try:
+            # Find the mountpoint of the partition that contains the file using Qt
+            mountpoint = QStorageInfo(file_path).rootPath()
+            
+            print("Mountpoint: {}".format(mountpoint))
+            command = ['df', '-P', mountpoint]
+            print(' '.join(command))
+            df_output = subprocess.check_output(command)
+            df_output = df_output.decode("utf-8")
+            print(df_output)
+            df_output = df_output.splitlines()
+            df_output = df_output[1]
+            df_output = df_output.split()
+            print(df_output)
+            size = int(float(df_output[1]))
+            print("Size: {}".format(size))
+            self.wizard().disk_size_available = size
+        except subprocess.CalledProcessError as e:
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Critical)
+            error_dialog.setText("Could not determine the size of the destination disk.")
+            error_dialog.setWindowTitle("Error")
+            error_dialog.exec_()
+            return False
+        
+        # Check if the destination disk is large enough to hold the backup file
+        if self.wizard().disk_size_available < self.wizard().disk_size_needed:
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Critical)
+            error_dialog.setText("The destination disk is not large enough to hold the backup file.")
+            gb_needed = self.wizard().disk_size_needed / 1024 / 1024 / 1024
+            gb_needed = math.ceil(gb_needed)
+            # Find out how much space is available using Qt
+            gb_available = QStorageInfo(file_path).bytesAvailable() / 1024 / 1024 / 1024
+            gb_available = math.floor(gb_available)
+            # Set additional details
+            error_dialog.setInformativeText("The backup file needs %s GB, but the destination disk has only %s GB." % (gb_needed, gb_available))
+            error_dialog.setWindowTitle("Error")
+            error_dialog.exec_()
+            return False
+
+        return True
+    
+class ProgressPage(QWizardPage):
+    def __init__(self, parent=None):
+        super().__init__()
+
+        self.setTitle("Backup Progress")
+        self.setSubTitle("Please wait while the backup is in progress...")
+
+        layout = QVBoxLayout()
+
+        self.progress_label = QLabel()
+        layout.addWidget(self.progress_label)
+
+        self.progress_bar = QProgressBar()
+        layout.addWidget(self.progress_bar)
+
+        self.setLayout(layout)
+
+        self.backup_thread = None
+    
+    def initializePage(self):
+        filename = self.field("file_path")
+        self.start_backup(filename)
+
+    def start_backup(self, filename):
+        self.backup_thread = BackupThread(self.wizard().dataset, filename)
+        self.backup_thread.progress_update.connect(self.update_progress)
+        self.backup_thread.finished.connect(self.backup_finished)
+        
+        # Disallow going back to previous pages while the backup is in progress
+        self.backup_thread.started.connect(lambda: self.wizard().setOption(QWizard.NoBackButtonOnStartPage, True))
+        self.backup_thread.finished.connect(lambda: self.wizard().setOption(QWizard.NoBackButtonOnStartPage, False))
+        
+        self.backup_thread.start()
+
+    def update_progress(self, percent):
+        self.progress_bar.setValue(percent)
+        self.progress_label.setText("Backup in progress: {}%".format(percent))
+
+    def backup_finished(self):
+        self.completeChanged.emit()
+
+    def isComplete(self):
+        return self.backup_thread.isFinished()
+
+
+class SummaryPage(QWizardPage):
+    def __init__(self, parent=None):
+        super().__init__()
+
+        self.setTitle("Summary")
+        self.setSubTitle("The backup process has finished.")
+
+        self.label = QLabel()
+        self.layout = QVBoxLayout()
+        self.layout.addWidget(self.label)
+        self.setLayout(self.layout)
+
+    def initializePage(self):
+        backup_successful = self.field("backup_successful")
+        if backup_successful:
+            self.label.setText("Backup was successful.")
+        else:
+            self.label.setText("Backup failed.")
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+
+    wizard = BackupWizard()
+    wizard.show()
+
+    sys.exit(app.exec_())
