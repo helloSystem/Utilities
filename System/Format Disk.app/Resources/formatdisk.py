@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+Lets the user format a disk.
+"""
+
 # This Python file uses the following encoding: utf-8
 import sys
 import os
@@ -15,6 +19,7 @@ from PyQt5.uic import loadUi
 
 import filesystems # bundled
 import disks # bundled
+import selectdisk # bundled
 
 # Translate this application using Qt .ts files without the need for compilation
 import tstranslator
@@ -56,20 +61,17 @@ class User(object):
         return "User %s" % self.username
 
 class Window(QMainWindow):
-    def __init__(self):
+    def __init__(self, device):
         super(Window, self).__init__()
         self.commands = [] # Will hold the commands we are about to run, so that we can show them prior to running them
         self.ext_process = QProcess()
-        if len(sys.argv) < 2:
-            print("Usage: %s <device node or mount point>" % sys.argv[0])
-            exit(1)
         self.device = None
-        if sys.argv[1].startswith("/dev/"):
-            self.device = sys.argv[1]
-        elif sys.argv[1].startswith("computer:///"):
-            self.device = self.determineDeviceNode(self.determineMountPoint(sys.argv[1]))
+        if device.startswith("/dev/"):
+            self.device = device
+        elif device.startswith("computer:///"):
+            device = self.determineDeviceNode(self.determineMountPoint(sys.argv[1]))
         else:
-            self.device = self.determineDeviceNode(sys.argv[1])
+            device = self.determineDeviceNode(device)
 
         print(self.device)
         self.readable_capacity = None
@@ -425,7 +427,29 @@ class Window(QMainWindow):
 
 if __name__ == "__main__":
     app = QApplication([])
-    widget = Window()
+
+    device = None
+
+    if len(sys.argv) < 2:
+        # Show a dialog to select a disk
+        w = selectdisk.DiskSelectionWidget()
+        w.show()
+
+        # Wait for the user to click the OK button
+        app.exec_()
+
+        # Print the selected disk to stdout
+        if w.selected_disk != None:
+            print("/dev/%s" % w.selected_disk)
+            device = "/dev/%s" % w.selected_disk
+        else:
+            print("No disk selected")
+            sys.exit(1)
+    else:
+        # Use the disk passed on the command line
+        device = sys.argv[1]
+
+    widget = Window(device)
     widget.show()
 
     # Handle Python exceptions in the GUI; https://stackoverflow.com/a/47275100
