@@ -1,4 +1,4 @@
-# Utilities [![Translation status](https://hosted.weblate.org/widgets/hellosystem/-/svg-badge.svg)](https://hosted.weblate.org/engage/hellosystem/)
+# Utilities [![Translation status](https://hosted.weblate.org/widgets/hellosystem/-/svg-badge.svg)](https://hosted.weblate.org/engage/hellosystem/) [![Help Wanted Issues](https://img.shields.io/github/issues/helloSystem/Utilities/help%20wanted)](https://github.com/helloSystem/Utilities/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 
 Utilities written in PyQt5, meant for use with [helloSystem](https://hellosystem.github.io/).
 
