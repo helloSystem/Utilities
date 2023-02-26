@@ -15,7 +15,7 @@ from PyQt5.QtGui import QCursor, QIcon, QPixmap
 from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication,
                              QDesktopWidget, QGroupBox, QHBoxLayout, QMenu,
                              QMessageBox, QSlider, QSystemTrayIcon, QWidget)
-
+from PyQt5.QtCore import QRegularExpression
 
 # Show the slider UI when QSystemTrayIcon is left-clicked
 class Ui_Slider(QWidget):
@@ -211,27 +211,8 @@ class VolumeMenu(QObject):
         # self.actions.append(action)
         # self.menu.addAction(action)
 
-        result = subprocess.run(["dmesg"], stdout=subprocess.PIPE)
-        result = subprocess.run(["dmesg"], stdout=subprocess.PIPE)
-        result = result.stdout.decode("utf-8").split("\n")
-
-        # Get lookup table from pcmX to uaudioY
-        uaudios = [re.findall("(pcm[0-9])+: <.*> on (uaudio[0-9]+)", x) for x in result]
-        # Filter out empty elements
-        uaudios = [x for x in uaudios if x]
-        # Turn into a dict
-        uaudios = dict([item[0] for item in uaudios if item])
-        print(uaudios) # [('pcm3', 'uaudio0'), ('pcm4', 'uaudio1'), ('pcm5', 'uaudio2')]
-        
-        # Get the display names for the uaudioY devices
-        usbaudiodevicenames = subprocess.run(["dmesg"], stdout=subprocess.PIPE)
-        usbaudiodevicenames = usbaudiodevicenames.stdout.decode("utf-8").split("\n")
-        usbaudiodevicenames = [re.findall("^(uaudio[0-9])+: <(.*?)\,", x) for x in usbaudiodevicenames]
-        # Filter out empty elements
-        usbaudiodevicenames = [x for x in usbaudiodevicenames if x]
-        # Turn into a dict
-        usbaudiodevicenames = dict([item[0] for item in usbaudiodevicenames if item])
-        print(usbaudiodevicenames)
+        p = QProcess()
+        p.setProgram("sysctl")
 
         for line in lines:
             if not line.startswith("pcm"): # or not "play" in line:
@@ -242,10 +223,33 @@ class VolumeMenu(QObject):
             action.__setattr__("device", line.split(":")[0])
             action.triggered.connect(self.switchDevice)  # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
             
-            if label == "USB audio":
-                print("Get display name for " + line.split(":")[0])  
-                label = usbaudiodevicenames[uaudios[line.split(":")[0]]]
-            action.setText(label)
+            pcm = line.split(":")[0].replace("pcm", "")
+            # Get uaudioX from sysctl dev.pcm.pcmX.%parent
+            p.setArguments(["-n", "dev.pcm." + pcm + ".%parent"])
+            print(p.program() + " " + " ".join(p.arguments()))
+            p.start()
+            p.waitForFinished()
+            device = str(p.readAllStandardOutput(), 'utf-8').strip()
+            print ("device is " + device)
+            # Get the device name from dev.uaudio.1.%desc
+            # Separate the device name (which can be uaudio or other text) from the device number which follows it
+            re = QRegularExpression("([a-z]+)([0-9]+)")
+            match = re.match(device)
+            if match.hasMatch():
+                p.setArguments(["-n", "dev." + match.captured(1) + "." + match.captured(2) + ".%desc"])
+                print(p.program() + " " + " ".join(p.arguments()))
+                p.start()
+                p.waitForFinished()
+                deviceName = str(p.readAllStandardOutput(), 'utf-8').strip()
+                # If there is ", class" in the device name, only take the part before that string
+                if ", class" in deviceName:
+                    deviceName = deviceName.split(", class")[0]
+                print ("Shortened deviceName is " + deviceName)
+            else:
+                deviceName = device
+
+            action.setText(deviceName)
+
             action.setCheckable(True)
             if "default" in line:
                 action.setChecked(True)
