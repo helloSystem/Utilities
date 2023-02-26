@@ -201,7 +201,7 @@ class UserListWidget(QWidget):
         users.sort(key=lambda user: user["username"])
 
         for user in users:
-            if int(user["uid"]) > 1000 and int(user["uid"]) < 65534:
+            if int(user["uid"]) >= 1000 and int(user["uid"]) < 65534:
                 item = QListWidgetItem("{}".format(user["fullname"]))
                 item.setToolTip("{} ({})".format(user["username"], user["uid"]))
                 item.setData(Qt.UserRole, user)
