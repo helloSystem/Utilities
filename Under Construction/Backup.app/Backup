@@ -7,15 +7,15 @@ import math
 import os
 
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QWizard, QWizardPage, QVBoxLayout, QLabel, QPushButton, QProgressBar, QApplication, QMessageBox, QLineEdit, QFileDialog
+from PyQt5.QtWidgets import QWizard, QWizardPage, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QProgressBar, QApplication, QMessageBox, QLineEdit, QFileDialog
 from PyQt5.QtCore import QThread, pyqtSignal, QProcess, QStorageInfo
 
 class BackupThread(QThread):
     progress_update = pyqtSignal(int)
 
-    def __init__(self, dataset, filename):
+    def __init__(self, dataset, destination_pool_name):
         super().__init__()
-        self.filename = filename
+        self.destination_pool_name = destination_pool_name
         self.dataset = dataset
 
     def run(self):
@@ -32,31 +32,35 @@ class BackupThread(QThread):
         try:
             subprocess.check_output(['zfs', 'list', '-H', '-t', 'snapshot', self.dataset + '@snapshotforbackup'])
             snapshot_exists = True
+            print("Source snapshot '%s' already exists" % self.dataset + '@snapshotforbackup')
         except subprocess.CalledProcessError:
+            print("Source snapshot '%s' does not exist" % self.dataset + '@snapshotforbackup')
             snapshot_exists = False
 
         if snapshot_exists:
             # Destroy the existing snapshot
+            print("Destroying snapshot '%s'" % self.dataset + '@snapshotforbackup')
             command = ['sudo', '-A', '-E', 'zfs', 'destroy', self.dataset + '@snapshotforbackup']
             print(' '.join(command))
-            result = subprocess.check_output(command)
-            print(result)
+            try:
+                result = subprocess.check_output(command)
+                print(result)
+            except:
+                print("Error destroying snapshot '%s'" % self.dataset + '@snapshotforbackup')
+                return False
 
         # Make a snapshot of the dataset so that we can send it while it is mounted
+        print("Creating snapshot '%s'" % self.dataset + '@snapshotforbackup')
         try:
             command = ['sudo', '-A', '-E', 'zfs', 'snapshot', self.dataset + '@snapshotforbackup']
             print(' '.join(command))
             result = subprocess.check_output(command)
             print(result)
         except subprocess.CalledProcessError as e:
-            # Show error message in a QMessageBox
-            error_dialog = QMessageBox()
-            error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText("Error creating snapshot")
-            error_dialog.setWindowTitle("Error")
-            error_dialog.exec_()
+            print("Error creating snapshot '%s'" % self.dataset + '@snapshotforbackup')
+            return False
 
-        # Backup the dataset using zfs send
+        # Send the dataset using zfs send
         zfs_command = ['sudo', '-A', '-E', 'zfs', 'send', '-c', self.dataset + '@snapshotforbackup']
         print(' '.join(zfs_command))
         proc = subprocess.Popen(zfs_command, stdout=subprocess.PIPE)      
@@ -65,22 +69,78 @@ class BackupThread(QThread):
 
         start_time = time.time()
 
-        # Write the output to a file and update the progress bar
-        with open(self.filename, 'wb') as f:
-            while True:
-                data = proc.stdout.read(1024)
-                if not data:
-                    break
-                f.write(data)
-                count += len(data)
-                self.progress_update.emit(int(count / size * 100))
-                # Calculate the speed in MB per second taking into account how long it has been running
-                speed = count / 1024 / 1024 / (time.time() - start_time)
-                print("Speed: {} MB/s".format(speed))
+        # Check available space on the destination pool
+        try:
+            command = ['zfs', 'get', '-H', '-p', '-o', 'value', 'available', self.destination_pool_name]
+            print(' '.join(command))
+            available_output = subprocess.check_output(command)
+            available = int(float(available_output.strip()))
+            print("Available: {}".format(available))
+        except subprocess.CalledProcessError as e:
+            print("Error getting available space on pool '%s'" % self.destination_pool_name)
+            return False
 
-        proc.wait()
+        if available < size:
+            available_gb = math.floor(available / 1024 / 1024 / 1024)
+            size_gb = math.floor(size / 1024 / 1024 / 1024)
+            print("Not enough space on pool '%s'" % self.destination_pool_name)
+            print("Available: %d GB" % available_gb)
+            print("Size: %d GB" % size_gb)
+            return False
 
+        # zfs receive to the destination pool, overwriting any existing dataset with the same name
+        # zfs receive will read from stdin
+        # zfs receive will output progress to stdout
+        # zfs receive will output errors to stderr
+        # We will read stdout and stderr from zfs receive and parse the output to get the progress
+        zfs_receive_command = ['sudo', '-A', '-E', 'zfs', 'receive', '-v', '-F', self.destination_pool_name]
+        print(' '.join(zfs_receive_command))
+        receive_proc = subprocess.Popen(zfs_receive_command, stdin=proc.stdout)
 
+        while True:
+            line = receive_proc.stdout.readline()
+            if not line:
+                break
+            print(line)
+            if line.startswith(b'receiving'):
+                # This is the first line of the output
+                # We can now start displaying progress
+                print("Starting progress")
+                self.progress_update.emit(0)
+                # Start the timer
+                start_time = time.time()
+            elif line.startswith(b'bytes'):
+                # This is the progress line
+                # Get the number of bytes received
+                line = line.decode('utf-8')
+                print(line)
+                received_bytes = line.split(' ')[0]
+                print(received_bytes)
+                received_bytes = int(received_bytes)
+                print(received_bytes)
+                # Calculate the progress
+                progress = int(received_bytes / size * 100)
+                print(progress)
+                self.progress_update.emit(progress)
+                # Calculate the time remaining
+                elapsed_time = time.time() - start_time
+                print(elapsed_time)
+                bytes_per_second = received_bytes / elapsed_time
+                print(bytes_per_second)
+                bytes_remaining = size - received_bytes
+                print(bytes_remaining)
+                seconds_remaining = bytes_remaining / bytes_per_second
+                print(seconds_remaining)
+                # Update the progress bar
+                self.progress_update.emit(progress)
+
+        receive_proc.wait()
+
+        print("Receive finished with return code %d" % receive_proc.returncode)
+
+        return True
+
+        
 class BackupWizard(QWizard):
     def __init__(self):
         super().__init__()
@@ -93,12 +153,11 @@ class BackupWizard(QWizard):
         self.setWindowTitle("Backup Wizard")
         # Instantiate the pages with this wizard as the parent
         welcome_page = WelcomePage(self)
-        save_file_page = SaveFilePage(self)
         progress_page = ProgressPage(self)
         summary_page = SummaryPage(self)
         
         self.addPage(WelcomePage())
-        self.addPage(SaveFilePage())
+        # self.addPage(SaveFilePage())
         self.addPage(ProgressPage())
         self.addPage(SummaryPage())
 
@@ -165,8 +224,8 @@ class SaveFilePage(QWizardPage):
         
         self.setTitle("Save backup file")
         self.setSubTitle("Specify the location to save the backup file.")
-        
-        layout = QVBoxLayout()
+                
+        layout = QHBoxLayout()
         self.setLayout(layout)
         
         self.file_edit = QLineEdit()
@@ -189,10 +248,17 @@ class SaveFilePage(QWizardPage):
     def validatePage(self):
         # Path must not be in /home
         file_path = self.field("file_path")
-        if file_path.startswith("/home"):
+        # Get absolute normalized path
+        file_path = os.path.abspath(os.path.normpath(file_path))
+        print("User selected file path: {}".format(file_path))
+        # From the zroot, remove everything before the first slash
+        forbidden_path = "/" + "/".join(self.wizard().dataset.split("/")[1:])
+        print("Forbidden path: {}".format(forbidden_path))
+        if (file_path.startswith(forbidden_path)):
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Critical)
-            error_dialog.setText("The backup file must not be in /home")
+            error_dialog.setText("You cannot save the backup file in the dataset '%s' which is about to being backed up." % self.wizard().dataset)
+            error_dialog.setInformativeText("Please choose another disk.")
             error_dialog.setWindowTitle("Error")
             error_dialog.exec_()
             return False
@@ -212,19 +278,11 @@ class SaveFilePage(QWizardPage):
             # Find the mountpoint of the partition that contains the file using Qt
             mountpoint = QStorageInfo(file_path).rootPath()
             
-            print("Mountpoint: {}".format(mountpoint))
-            command = ['df', '-P', mountpoint]
-            print(' '.join(command))
-            df_output = subprocess.check_output(command)
-            df_output = df_output.decode("utf-8")
-            print(df_output)
-            df_output = df_output.splitlines()
-            df_output = df_output[1]
-            df_output = df_output.split()
-            print(df_output)
-            size = int(float(df_output[1]))
-            print("Size: {}".format(size))
-            self.wizard().disk_size_available = size
+            # Using Qt, find out the free space on the destination disk
+            disk_size_available = QStorageInfo(mountpoint).bytesAvailable()
+            print("Size: {}".format(disk_size_available))
+            self.wizard().disk_size_available = disk_size_available
+
         except subprocess.CalledProcessError as e:
             error_dialog = QMessageBox()
             error_dialog.setIcon(QMessageBox.Critical)
@@ -241,7 +299,7 @@ class SaveFilePage(QWizardPage):
             gb_needed = self.wizard().disk_size_needed / 1024 / 1024 / 1024
             gb_needed = math.ceil(gb_needed)
             # Find out how much space is available using Qt
-            gb_available = QStorageInfo(file_path).bytesAvailable() / 1024 / 1024 / 1024
+            gb_available = self.wizard().disk_size_available / 1024 / 1024 / 1024
             gb_available = math.floor(gb_available)
             # Set additional details
             error_dialog.setInformativeText("The backup file needs %s GB, but the destination disk has only %s GB." % (gb_needed, gb_available))
@@ -271,11 +329,10 @@ class ProgressPage(QWizardPage):
         self.backup_thread = None
     
     def initializePage(self):
-        filename = self.field("file_path")
-        self.start_backup(filename)
+        self.start_backup()
 
-    def start_backup(self, filename):
-        self.backup_thread = BackupThread(self.wizard().dataset, filename)
+    def start_backup(self):
+        self.backup_thread = BackupThread(self.wizard().dataset, "poolforbackup")
         self.backup_thread.progress_update.connect(self.update_progress)
         self.backup_thread.finished.connect(self.backup_finished)
         
