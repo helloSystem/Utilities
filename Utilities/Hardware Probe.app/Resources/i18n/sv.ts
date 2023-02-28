@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
-        <translation type="unfinished"></translation>
+        <translation>Uppladdning av en hårdvarusond omfattas av följande sekretessvillkor.</translation>
     </message>
     <message>
         <source>Please see %s for more information.</source>
