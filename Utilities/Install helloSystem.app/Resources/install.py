@@ -595,6 +595,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
         intro_vLayout.addStretch()
 
         logo = "/usr/local/share/icons/elementary-xfce/devices/128/computer-hello.png"
+        logo_label = None
         if os.path.exists(logo):
             logo_pixmap = QtGui.QPixmap("/usr/local/share/icons/elementary-xfce/devices/128/computer-hello.png").scaledToHeight(128, QtCore.Qt.SmoothTransformation)
             logo_label = QtWidgets.QLabel()
