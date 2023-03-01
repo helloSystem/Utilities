@@ -27,12 +27,12 @@ import selectdisk # bundled
 
 class BackupThread(QThread):
     progress_update = pyqtSignal(int)
+    operationSucceeded = pyqtSignal(bool)
 
     def __init__(self, dataset, destination_pool_name):
         super().__init__()
         self.destination_pool_name = destination_pool_name
         self.dataset = dataset
-        self.operationSucceeded = pyqtSignal(bool)
 
     def run(self):
 
@@ -46,40 +46,40 @@ class BackupThread(QThread):
         # Check if snapshot already exists
         snapshot_exists = False
         try:
-            subprocess.check_output(['zfs', 'list', '-H', '-t', 'snapshot', self.dataset + '@snapshotforbackup'])
+            subprocess.check_output(['zfs', 'list', '-H', '-t', 'snapshot', self.dataset + '@keepthisforincrementalbackup'])
             snapshot_exists = True
-            print("Source snapshot '%s' already exists" % (self.dataset + '@snapshotforbackup'))
+            print("Source snapshot '%s' already exists" % (self.dataset + '@keepthisforincrementalbackup'))
         except subprocess.CalledProcessError:
-            print("Source snapshot '%s' does not exist" % (self.dataset + '@snapshotforbackup'))
+            print("Source snapshot '%s' does not exist" % (self.dataset + '@keepthisforincrementalbackup'))
             snapshot_exists = False
 
         if snapshot_exists:
             # Destroy the existing snapshot
-            print("Destroying snapshot '%s'" % self.dataset + '@snapshotforbackup')
-            command = ['sudo', '-A', '-E', 'zfs', 'destroy', self.dataset + '@snapshotforbackup']
+            print("Destroying snapshot '%s'" % self.dataset + '@keepthisforincrementalbackup')
+            command = ['sudo', '-A', '-E', 'zfs', 'destroy', self.dataset + '@keepthisforincrementalbackup']
             print(' '.join(command))
             try:
                 result = subprocess.check_output(command)
                 print(result)
             except:
-                print("Error destroying snapshot '%s'" % (self.dataset + '@snapshotforbackup'))
+                print("Error destroying snapshot '%s'" % (self.dataset + '@keepthisforincrementalbackup'))
                 self.operationSucceeded.emit(False)
 
 
         # Make a snapshot of the dataset so that we can send it while it is mounted
-        print("Creating snapshot '%s'" % self.dataset + '@snapshotforbackup')
+        print("Creating snapshot '%s'" % self.dataset + '@keepthisforincrementalbackup')
         try:
-            command = ['sudo', '-A', '-E', 'zfs', 'snapshot', self.dataset + '@snapshotforbackup']
+            command = ['sudo', '-A', '-E', 'zfs', 'snapshot', self.dataset + '@keepthisforincrementalbackup']
             print(' '.join(command))
             result = subprocess.check_output(command)
             print(result)
         except subprocess.CalledProcessError as e:
-            print("Error creating snapshot '%s'" % (self.dataset + '@snapshotforbackup'))
+            print("Error creating snapshot '%s'" % (self.dataset + '@keepthisforincrementalbackup'))
             self.operationSucceeded.emit(False)
 
 
         # Start the send process using zfs send
-        zfs_command = ['sudo', '-A', '-E', 'zfs', 'send', '-c', self.dataset + '@snapshotforbackup']
+        zfs_command = ['sudo', '-A', '-E', 'zfs', 'send', '-c', self.dataset + '@keepthisforincrementalbackup']
         print(' '.join(zfs_command))
         send_proc = subprocess.Popen(zfs_command, stdout=subprocess.PIPE)      
 
@@ -149,7 +149,7 @@ class BackupThread(QThread):
         # TODO: Delete the snapshot on the source?
         # This would mean that the next incremental backup would be larger
         # Delete the snapshot
-        # command = ['sudo', '-A', '-E', 'zfs', 'destroy', self.dataset + '@snapshotforbackup']
+        # command = ['sudo', '-A', '-E', 'zfs', 'destroy', self.dataset + '@keepthisforincrementalbackup']
 
         self.operationSucceeded.emit(True)
         
@@ -276,6 +276,19 @@ class DestinationPoolPage(QWizardPage):
         self.create_pool_button.clicked.connect(self.createPool)
         layout.addWidget(self.create_pool_button)
 
+        # zfs import all pools; we can only backup to a pool that is already imported
+        try:
+            command = ['sudo', '-A', '-E', 'zpool', 'import', '-a']
+            print(' '.join(command))
+            subprocess.check_output(command)
+        except subprocess.CalledProcessError as e:
+            print("Error importing pools")
+            error_dialog = QMessageBox()
+            error_dialog.setIcon(QMessageBox.Critical)
+            error_dialog.setText("Error importing pools.")
+            error_dialog.setWindowTitle("Error")
+            error_dialog.exec_()
+
         # Periodically check for new pools
         self.pool_listwidget_timer = QTimer()
         self.pool_listwidget_timer.timeout.connect(self.showAvailablePools)
@@ -331,12 +344,92 @@ class DestinationPoolPage(QWizardPage):
                 error_dialog.setWindowTitle("Error")
                 error_dialog.exec_()
 
+        # # Check if we can do an incremental send to the destination pool
+        # # First, see whether the destination pool has any snapshots and if so, get the latest one
+        # try:
+        #     command = ['zfs', 'get', '-H', '-p', '-o', 'value', 'creation', '-t', 'snapshot', self.wizard().destination_pool_name]
+        #     print(' '.join(command))
+        #     snapshots = subprocess.check_output(command).strip().splitlines()
+        #     if snapshots:
+        #         latest_snapshot = snapshots[-1]
+        #     else:
+        #         latest_snapshot = None
+        # except subprocess.CalledProcessError as e:
+        #     print("Error getting snapshots on pool '%s'" % self.wizard().destination_pool_name)
+        #     # Show error message in a QMessageBox
+        #     error_dialog = QMessageBox()
+        #     error_dialog.setIcon(QMessageBox.Critical)
+        #     error_dialog.setText("Error getting snapshots on pool '%s'." % self.wizard().destination_pool_name)
+        #     error_dialog.setWindowTitle("Error")
+        #     error_dialog.exec_()
+        #     # Prevent the wizard from continuing
+        #     self.wizard().button(QWizard.NextButton).setEnabled(False)
+        #     return
+        #
+        # # Check if the latest snapshot is older than the oldest snapshot on the source pool
+        # if latest_snapshot:
+        #     try:
+        #         command = ['zfs', 'get', '-H', '-p', '-o', 'value', 'creation', '-t', 'snapshot', self.wizard().source_pool_name]
+        #         print(' '.join(command))
+        #         snapshots = subprocess.check_output(command).strip().splitlines()
+        #         if snapshots:
+        #             oldest_snapshot = snapshots[0]
+        #         else:
+        #             oldest_snapshot = None
+        #     except subprocess.CalledProcessError as e:
+        #         print("Error getting snapshots on pool '%s'" % self.wizard().source_pool_name)
+        #         # Show error message in a QMessageBox
+        #         error_dialog = QMessageBox()
+        #         error_dialog.setIcon(QMessageBox.Critical)
+        #         error_dialog.setText("Error getting snapshots on pool '%s'." % self.wizard().source_pool_name)
+        #         error_dialog.setWindowTitle("Error")
+        #         error_dialog.exec_()
+        #         # Prevent the wizard from continuing
+        #         self.wizard().button(QWizard.NextButton).setEnabled(False)
+        #         return
+
+        #     if oldest_snapshot:
+        #         try:
+        #             command = ['zfs', 'get', '-H', '-p', '-o', 'value', 'creation', '-t', 'snapshot', latest_snapshot]
+        #             print(' '.join(command))
+        #             latest_snapshot_creation = subprocess.check_output(command).strip()
+        #             command = ['zfs', 'get', '-H', '-p', '-o', 'value', 'creation', '-t', 'snapshot', oldest_snapshot]
+        #             print(' '.join(command))
+        #             oldest_snapshot_creation = subprocess.check_output(command).strip()
+        #             if latest_snapshot_creation < oldest_snapshot_creation:
+        #                 # The latest snapshot is older than the oldest snapshot on the source pool, so we can do an incremental send
+        #                 self.wizard().incremental_send = True
+        #                 self.wizard().latest_snapshot = latest_snapshot
+        #             else:
+        #                 self.wizard().incremental_send = False
+        #                 self.wizard().latest_snapshot = None
+        #         except subprocess.CalledProcessError as e:
+        #             print("Error getting creation time of snapshots")
+        #             # Show error message in a QMessageBox
+        #             error_dialog = QMessageBox()
+        #             error_dialog.setIcon(QMessageBox.Critical)
+        #             error_dialog.setText("Error getting creation time of snapshots.")
+        #             error_dialog.setWindowTitle("Error")
+        #             error_dialog.exec_()
+        #             # Prevent the wizard from continuing
+        #             self.wizard().button(QWizard.NextButton).setEnabled(False)
+        #             return
+        #     else:
+        #         self.wizard().incremental_send = False
+        #         self.wizard().latest_snapshot = None
+
         # Add the pools to the list widget
         self.pool_listwidget.clear()
         for pool in pool_list_with_space:
             item = QListWidgetItem(pool[0])
             item.setData(Qt.UserRole, pool[1])
             self.pool_listwidget.addItem(item)
+
+        # Disable pools in which the source is located
+        for i in range(self.pool_listwidget.count()):
+            if self.pool_listwidget.item(i).text() == self.wizard().dataset.split('/')[0]:
+                self.pool_listwidget.item(i).setFlags(Qt.NoItemFlags)
+                self.pool_listwidget.item(i).setToolTip("The pool contains the source dataset.")
         
         # Disable pools that do not have enough space
         for i in range(self.pool_listwidget.count()):
@@ -557,7 +650,8 @@ class DestinationPoolPage(QWizardPage):
             self.pool_space.setText("")
 
     def checkDestinationPool(self):
-    # Check available space on the destination pool
+
+        # Check available space on the destination pool
         try:
             command = ['zfs', 'get', '-H', '-p', '-o', 'value', 'available', self.wizard().destination_pool_name]
             print(' '.join(command))
@@ -711,12 +805,18 @@ class ProgressPage(QWizardPage):
     def start_backup(self):
         self.backup_thread = BackupThread(self.wizard().dataset, self.wizard().destination_pool_name)
         self.backup_thread.progress_update.connect(self.update_progress)
-        self.backup_thread.operationSucceeded.connect(self.on_thread_finished)
+        # self.backup_thread.operationSucceeded.connect(self.on_thread_finished) # AttributeError: 'PyQt5.QtCore.pyqtSignal' object has no attribute 'connect
+        # The correct way to connect a signal to a slot is to use the connect() method of the signal.
+        # Instead, do this:
+        # Connect the signal to the slot
+        self.backup_thread.operationSucceeded.connect(self.on_thread_finished) # This errors as shown above
+        # Connect the signal to the slot
+
         
         # Disallow going back to previous pages while the backup is in progress
         self.backup_thread.started.connect(lambda: self.wizard().setOption(QWizard.NoBackButtonOnStartPage, True))
         self.backup_thread.operationSucceeded.connect(lambda: self.wizard().setOption(QWizard.NoBackButtonOnStartPage, False))
-                
+                       
         self.backup_thread.start()
 
     def update_progress(self, percent):
@@ -753,11 +853,18 @@ class SummaryPage(QWizardPage):
         self.setLayout(self.layout)
 
     def initializePage(self):
-        backup_successful = self.field("backup_successful")
-        if backup_successful:
-            self.label.setText("Backup was successful.")
-        else:
-            self.label.setText("Backup failed.")
+        self.label.setText("Backup was successful.")
+        # Disable the Back button and don't allow the user to go back to previous pages
+        self.wizard().setOption(QWizard.NoBackButtonOnLastPage, True)
+        self.wizard().setOption(QWizard.NoBackButtonOnStartPage, True)
+        # Show the Finish button
+        self.wizard().setOption(QWizard.HaveFinishButtonOnEarlyPages, True)
+        # Don't show the Next button
+        self.wizard().setOption(QWizard.HaveNextButtonOnLastPage, False)
+        # Dont' show the Cancel button
+        self.wizard().setOption(QWizard.HaveCustomButton1, False)
+
+
 
 class ExplanationPage(QWizardPage):
     def __init__(self, parent=None):
