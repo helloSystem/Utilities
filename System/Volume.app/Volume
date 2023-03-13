@@ -18,14 +18,19 @@ from PyQt5.QtWidgets import (QAction, QActionGroup, QApplication,
 from PyQt5.QtCore import QRegularExpression
 
 # Show the slider UI when QSystemTrayIcon is left-clicked
+
+
 class Ui_Slider(QWidget):
 
     def __init__(self):
-    
+
         super().__init__()
 
         self.vol = 0
         self.mic = 0
+
+        self.has_mic = False
+        self.has_rec = False
 
         # self.resize(170, 282)
         self.setFixedHeight(200)
@@ -34,7 +39,8 @@ class Ui_Slider(QWidget):
         screen = QDesktopWidget().screenGeometry()
         widget = self.geometry()
 
-        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowSystemMenuHint)
+        self.setWindowFlags(Qt.Window | Qt.FramelessWindowHint |
+                            Qt.WindowStaysOnTopHint | Qt.WindowSystemMenuHint)
         self.move(QCursor.pos())
 
         self.horizontalLayout = QHBoxLayout(self)
@@ -68,7 +74,7 @@ class Ui_Slider(QWidget):
         self.installEventFilter(self)
         self.updateSliderValues()
         self.timer = QTimer()
-        self.timer.setInterval(1000) # Every second
+        self.timer.setInterval(1000)  # Every second
         self.timer.timeout.connect(self.updateSliderValues)
 
     def updateSliderValues(self):
@@ -82,7 +88,7 @@ class Ui_Slider(QWidget):
         print(results)
         self.play_slider.setValue(0)
         self.rec_slider.setValue(0)
-        self.groupBox_2.setHidden(True) # Except if we find a mic below
+        self.groupBox_2.setHidden(True)  # Except if we find a mic or rec below
         for result in results:
             print(result)
             parts = result.split(":")
@@ -91,6 +97,12 @@ class Ui_Slider(QWidget):
             if len(parts) == 3 and parts[0] == "mic":
                 self.rec_slider.setValue(int(parts[1]))
                 self.groupBox_2.setHidden(False)
+                self.has_mic = True
+            # On some devices, it is called "rec" instead of "mic"
+            elif len(parts) == 3 and parts[0] == "rec":
+                self.rec_slider.setValue(int(parts[1]))
+                self.groupBox_2.setHidden(False)
+                self.has_rec = True
 
     def eventFilter(self, obj, event):
         # Close the window if it is not the active window anymore
@@ -117,15 +129,17 @@ class Ui_Slider(QWidget):
         value = self.rec_slider.value()
         p = QProcess()
         p.setProgram("mixer")
-        # TODO: Check whether the output of 'mixer' has a line that starts with 'Mixer mic', otherwise not do this
-        p.setArguments(["mic", str(value) + ":" + str(value)])
+        if self.has_mic:
+            p.setArguments(["mic", str(value) + ":" + str(value)])
+        elif self.has_rec:
+            p.setArguments(["rec", str(value) + ":" + str(value)])
         print(p.program() + " " + " ".join(p.arguments()))
         p.startDetached()
 
     def sliderReleased(self):
         self.close()
-        
-        
+
+
 class VolumeMenu(QObject):
 
     def __init__(self):
@@ -133,17 +147,19 @@ class VolumeMenu(QObject):
         super().__init__()
 
         # icon = QIcon.fromTheme("audio-volume-high-symbolic") # FIXME: How to get dark rather than bright icon?
-        icon = QIcon(os.path.dirname(__file__) + '/Resources/audio-volume-high-symbolic.png')
+        icon = QIcon(os.path.dirname(__file__) +
+                     '/Resources/audio-volume-high-symbolic.png')
 
         self.tray = QSystemTrayIcon()
         self.tray.setIcon(icon)
         self.tray.setVisible(True)
         self.menu = QMenu()
-        
-        self.tray.activated.connect(self.onClicked) # Refresh each time the menu is clicked (left click)
+
+        # Refresh each time the menu is clicked (left click)
+        self.tray.activated.connect(self.onClicked)
         # Also refresh the list of devices when the context menu is requested (right click)
         self.menu.aboutToShow.connect(self.refreshMenu)
-        
+
         self.tray.setContextMenu(self.menu)
 
         # If we are on FreeBSD, ensure that sysctl hw.snd.verbose is 0
@@ -155,38 +171,41 @@ class VolumeMenu(QObject):
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
                 msg.setText("hw.snd.verbose is not 0")
-                msg.setInformativeText("This application will not work correctly unless hw.snd.verbose is 0")
+                msg.setInformativeText(
+                    "This application will not work correctly unless hw.snd.verbose is 0")
                 msg.setWindowTitle("Warning")
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.exec_()
 
         # If we are on FreeBSD, check that hw.snd.default_auto is 2
         if platform.system() == "FreeBSD":
-            default_auto = subprocess.check_output("sysctl hw.snd.default_auto", shell=True).decode('utf-8').split(" ")[-1]
+            default_auto = subprocess.check_output(
+                "sysctl hw.snd.default_auto", shell=True).decode('utf-8').split(" ")[-1]
             if int(default_auto) != 2:
                 print("hw.snd.default_auto is not 2 but it is " + default_auto)
                 # Show a warning dialog
                 msg = QMessageBox()
                 msg.setIcon(QMessageBox.Warning)
                 msg.setText("hw.snd.default_auto is not 2")
-                msg.setInformativeText("In order to switch automatically to the sound device plugged in most recently, set hw.snd.default_auto to 2")
+                msg.setInformativeText(
+                    "In order to switch automatically to the sound device plugged in most recently, set hw.snd.default_auto to 2")
                 msg.setWindowTitle("Warning")
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.exec_()
-        
+
         # NOTE:
         # https://forum.learnpyqt.com/t/qsystemtrayicon-example/689
         # Sneaky PyQt quirk! A reference to the actions must be kept around or the actions will be destroyed
         self.actions = []
         self.sliderWindow = None
-        
-        self.refreshMenu() # Initially populate the menu
+
+        self.refreshMenu()  # Initially populate the menu
 
     def onClicked(self, reason):
         # TODO: Is using customContextMenuRequested the proper way to do this? How?
         self.refreshMenu()
         S = Ui_Slider()
-        self.sliderWindow = S # Need to keep a reference around so that it does not get destroyed
+        self.sliderWindow = S  # Need to keep a reference around so that it does not get destroyed
         S.show()
 
     def refreshMenu(self):
@@ -202,10 +221,11 @@ class VolumeMenu(QObject):
         p.start()
         p.waitForFinished()
         lines = str(p.readAllStandardOutput(), 'utf-8').strip().split("\n")
-        
+
         # Add the devices to the menu
         # Playback devices
-        self.playbackGroup = QActionGroup(self.menu) # Only one of the actions added to this group can be active
+        # Only one of the actions added to this group can be active
+        self.playbackGroup = QActionGroup(self.menu)
         # action = QAction("Play")
         # action.setDisabled(True)
         # self.actions.append(action)
@@ -215,14 +235,15 @@ class VolumeMenu(QObject):
         p.setProgram("sysctl")
 
         for line in lines:
-            if not line.startswith("pcm"): # or not "play" in line:
+            if not line.startswith("pcm"):  # or not "play" in line:
                 continue
             print(line)
             label = line.split("<")[1].split(">")[0]
             action = QAction(line)
             action.__setattr__("device", line.split(":")[0])
-            action.triggered.connect(self.switchDevice)  # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
-            
+            # lambda could be used to pass an argument but the argument passed is taken at the time when this executes, which is not what we want
+            action.triggered.connect(self.switchDevice)
+
             pcm = line.split(":")[0].replace("pcm", "")
             # Get uaudioX from sysctl dev.pcm.pcmX.%parent
             p.setArguments(["-n", "dev.pcm." + pcm + ".%parent"])
@@ -230,13 +251,14 @@ class VolumeMenu(QObject):
             p.start()
             p.waitForFinished()
             device = str(p.readAllStandardOutput(), 'utf-8').strip()
-            print ("device is " + device)
+            print("device is " + device)
             # Get the device name from dev.uaudio.1.%desc
             # Separate the device name (which can be uaudio or other text) from the device number which follows it
             re = QRegularExpression("([a-z]+)([0-9]+)")
             match = re.match(device)
             if match.hasMatch():
-                p.setArguments(["-n", "dev." + match.captured(1) + "." + match.captured(2) + ".%desc"])
+                p.setArguments(
+                    ["-n", "dev." + match.captured(1) + "." + match.captured(2) + ".%desc"])
                 print(p.program() + " " + " ".join(p.arguments()))
                 p.start()
                 p.waitForFinished()
@@ -244,7 +266,7 @@ class VolumeMenu(QObject):
                 # If there is ", class" in the device name, only take the part before that string
                 if ", class" in deviceName:
                     deviceName = deviceName.split(", class")[0]
-                print ("Shortened deviceName is " + deviceName)
+                print("Shortened deviceName is " + deviceName)
             else:
                 deviceName = device
 
@@ -283,11 +305,12 @@ class VolumeMenu(QObject):
         action.triggered.connect(self._showAbout)
         self.actions.append(action)
         self.menu.addAction(action)
-        
+
     def switchDevice(self, line):
         # sysctl hw.snd.default_unit=1 switches to pcm1
         if getattr(self.playbackGroup.checkedAction(), "device").startswith("pcm"):
-            dev = getattr(self.playbackGroup.checkedAction(), "device").replace("pcm", "")
+            dev = getattr(self.playbackGroup.checkedAction(),
+                          "device").replace("pcm", "")
         else:
             return
         p = QProcess()
@@ -301,7 +324,8 @@ class VolumeMenu(QObject):
         print("showDialog")
         msg = QMessageBox()
         msg.setWindowTitle("Volume")
-        msg.setIconPixmap(QPixmap(os.path.dirname(__file__) + "/Resources/Volume.png").scaledToWidth(64, Qt.SmoothTransformation))
+        msg.setIconPixmap(QPixmap(os.path.dirname(
+            __file__) + "/Resources/Volume.png").scaledToWidth(64, Qt.SmoothTransformation))
         candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
         for candidate in candidates:
             if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
