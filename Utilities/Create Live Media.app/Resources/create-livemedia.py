@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # Create Live Media
-# Copyright (c) 2020-21, Simon Peter <probono@puredarwin.org>
+# Copyright (c) 2020-2023, Simon Peter <probono@puredarwin.org>
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,13 +31,18 @@
 # terms of use, available online in the following link:
 # http://www.freepik.com/terms_of_use
 
-import socket # Before urllib so that we can set the timeout
-import sys, os, re, socket
+import socket  # Before urllib so that we can set the timeout
+import sys
+import os
+import re
+import socket
 import shutil
 from datetime import datetime, timedelta
-import urllib.request, json
-from PyQt5 import QtWidgets, QtGui, QtCore, QtMultimedia # pkg install py37-qt5-widgets
-import disks # Privately bundled file
+import urllib.request
+import json
+# pkg install py37-qt5-widgets
+from PyQt5 import QtWidgets, QtGui, QtCore, QtMultimedia
+import disks  # Privately bundled file
 
 import ssl
 
@@ -47,8 +52,11 @@ import tstranslator
 # which currently is difficult because we have all translations for all applications
 # in the whole repository in the same .ts files
 tstr = tstranslator.TsTranslator(os.path.dirname(__file__) + "/i18n", "")
+
+
 def tr(input):
     return tstr.tr(input)
+
 
 # Since we are running the wizard on Live systems which more likely than not may have
 # the clock wrong, we cannot verify SSL certificates. Setting the following allows
@@ -89,6 +97,7 @@ def internetCheckConnected(host="8.8.8.8", port=53, timeout=3):
 
 app = QtWidgets.QApplication(sys.argv)
 
+
 class InstallWizard(QtWidgets.QWizard, object):
     def __init__(self):
 
@@ -108,7 +117,8 @@ class InstallWizard(QtWidgets.QWizard, object):
         self.error_message_nice = "An unknown error occurred."
 
         self.setWizardStyle(QtWidgets.QWizard.MacStyle)
-        self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/bgusb.png'))
+        self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(
+            os.path.dirname(__file__) + '/bgusb.png'))
 
         self.setWindowTitle("Create Live Media")
         self.setFixedSize(600, 400)
@@ -118,7 +128,6 @@ class InstallWizard(QtWidgets.QWizard, object):
         for e in self.findChildren(QtCore.QObject, None, QtCore.Qt.FindChildrenRecursively):
             if hasattr(e, 'text') and hasattr(e, 'setText'):
                 e.setText(tr(e.text()))
-
 
     def showErrorPage(self, message):
         print("Show error page")
@@ -141,7 +150,8 @@ class InstallWizard(QtWidgets.QWizard, object):
         soundfile = os.path.dirname(__file__) + '/success.mp3'
         if os.path.exists(soundfile):
             try:
-                subprocess.run(["mpg321", soundfile], stdout=subprocess.PIPE, text=True)
+                subprocess.run(["mpg321", soundfile],
+                               stdout=subprocess.PIPE, text=True)
             except:
                 pass
         else:
@@ -162,7 +172,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
         super().__init__()
 
         self.setTitle(tr('Create Live Media'))
-        self.setSubTitle(tr("This will download a Live image and will write it to an attached storage device."))
+        self.setSubTitle(
+            tr("This will download a Live image and will write it to an attached storage device."))
 
         self.releases_url = None
 
@@ -171,7 +182,9 @@ class IntroPage(QtWidgets.QWizardPage, object):
         # Repo dropdown
 
         self.repo_menu = QtWidgets.QComboBox()
-        self.available_repos = ["https://api.github.com/repos/helloSystem/ISO/releases", "https://api.github.com/repos/ventoy/Ventoy/releases" ] #  "https://api.github.com/repos/mszoek/airyx/releases", "https://api.github.com/repos/probonopd/furybsd-livecd/releases", "https://api.github.com/repos/probonopd/ghostbsd-build/releases", "https://api.github.com/repos/andydotxyz/furybsd-livecd/releases"]
+        # "https://api.github.com/repos/mszoek/airyx/releases", "https://api.github.com/repos/probonopd/furybsd-livecd/releases", "https://api.github.com/repos/probonopd/ghostbsd-build/releases", "https://api.github.com/repos/andydotxyz/furybsd-livecd/releases"]
+        self.available_repos = ["https://api.github.com/repos/helloSystem/ISO/releases",
+                                "https://api.github.com/repos/ventoy/Ventoy/releases"]
         for available_repo in self.available_repos:
             self.repo_menu.addItem("/".join(available_repo.split("/")[4:6]))
         self.other_iso = tr("Other...")
@@ -183,8 +196,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
         self.disk_vlayout.addWidget(self.repo_menu)
         self.repo_menu.currentTextChanged.connect(self.populateImageList)
-        #wizard.selected_iso_url = "file:///usr/home/user/Downloads/alpine-standard-3.13.0-x86_64.iso"
-        #urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
+        # wizard.selected_iso_url = "file:///usr/home/user/Downloads/alpine-standard-3.13.0-x86_64.iso"
+        # urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
 
         # Release label
         self.label = QtWidgets.QLabel()
@@ -194,8 +207,9 @@ class IntroPage(QtWidgets.QWizardPage, object):
         # Release ListWidget
         self.release_listwidget = QtWidgets.QListWidget()
         self.disk_vlayout.addWidget(self.release_listwidget)
-        self.release_listwidget.itemSelectionChanged.connect(self.onSelectionChanged)
-        self.release_listwidget.setAlternatingRowColors(True);
+        self.release_listwidget.itemSelectionChanged.connect(
+            self.onSelectionChanged)
+        self.release_listwidget.setAlternatingRowColors(True)
 
         # Date label
         self.date_label = QtWidgets.QLabel()
@@ -208,7 +222,7 @@ class IntroPage(QtWidgets.QWizardPage, object):
         self.url_label.setText(tr("URL"))
         self.url_label.hide()
         self.disk_vlayout.addWidget(self.url_label)
-        
+
         # Checkbox for Pre-release and Experimental builds
         self.prerelease_checkbox = QtWidgets.QCheckBox()
         self.prerelease_checkbox.setText(tr("Show Pre-release builds"))
@@ -227,24 +241,28 @@ class IntroPage(QtWidgets.QWizardPage, object):
 
         if self.available_repos[self.repo_menu.currentIndex()] == self.other_iso:
 
-            text, okPressed = QtWidgets.QInputDialog.getText(self, tr("Other"), tr("URL of the ISO"), QtWidgets.QLineEdit.Normal, "https://")
+            text, okPressed = QtWidgets.QInputDialog.getText(self, tr("Other"), tr(
+                "URL of the ISO"), QtWidgets.QLineEdit.Normal, "https://")
             if okPressed and text != '':
                 print(text)
 
             item = QtWidgets.QListWidgetItem(os.path.basename(text))
             item.__setattr__("browser_download_url",
                              text)  # __setattr__() is the equivalent to setProperty() in Qt
-            item.__setattr__("updated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
+            item.__setattr__(
+                "updated_at", datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"))
             item.__setattr__("size", 2*1024*1024*1024)
             item.__setattr__("prerelease", False)
-            self.release_listwidget.addItem(item) # FIXME: Can we at least attempt to get the real size from the URL?
+            # FIXME: Can we at least attempt to get the real size from the URL?
+            self.release_listwidget.addItem(item)
             return
 
         if self.available_repos[self.repo_menu.currentIndex()] == self.local_iso:
 
             filedialog = QtWidgets.QFileDialog()
             filedialog.setDefaultSuffix("iso")
-            filedialog.setNameFilter(tr("Disk images (*.iso *.img);;All files (*.*)"))
+            filedialog.setNameFilter(
+                tr("Disk images (*.iso *.img);;All files (*.*)"))
             filename = None
             if filedialog.exec_():
                 filename = filedialog.selectedFiles()[0]
@@ -254,15 +272,18 @@ class IntroPage(QtWidgets.QWizardPage, object):
             item.__setattr__("browser_download_url",
                              "file:///" + filename)  # __setattr__() is the equivalent to setProperty() in Qt
             info = QtCore.QFileInfo(filename)
-            item.__setattr__("updated_at", info.lastModified().toString("%Y-%m-%dT%H:%M:%SZ"))
+            item.__setattr__(
+                "updated_at", info.lastModified().toString("%Y-%m-%dT%H:%M:%SZ"))
             item.__setattr__("size", info.size())
             item.__setattr__("prerelease", False)
-            self.release_listwidget.addItem(item) # FIXME: Can we at least attempt to get the real size from the URL?
+            # FIXME: Can we at least attempt to get the real size from the URL?
+            self.release_listwidget.addItem(item)
             self.onSelectionChanged()
             return
 
         if internetCheckConnected() == False:
-            wizard.showErrorPage(tr("This requires an active internet connection."))
+            wizard.showErrorPage(
+                tr("This requires an active internet connection."))
             self.label.hide()  # FIXME: Why is this needed? Can we do without?
             self.repo_menu.hide()  # FIXME: Why is this needed? Can we do without?
             self.release_listwidget.hide()  # FIXME: Why is this needed? Can we do without?
@@ -282,15 +303,17 @@ class IntroPage(QtWidgets.QWizardPage, object):
             # Show error dialog box
             dialog = QtWidgets.QMessageBox()
             dialog.setWindowTitle("   ")
-            dialog.setText(tr("The list of available images could not be retrieved."))
+            dialog.setText(
+                tr("The list of available images could not be retrieved."))
             if "rate limit exceeded" in str(e):
-                dialog.setInformativeText(tr("You have exceeded the GitHub rate limit.\nPlease try again later."))
+                dialog.setInformativeText(
+                    tr("You have exceeded the GitHub rate limit.\nPlease try again later."))
             else:
                 dialog.setInformativeText(str(e))
             dialog.setIcon(QtWidgets.QMessageBox.Critical)
             dialog.exec_()
             sys.exit(1)
-            
+
         data = json.loads(result.read().decode("utf-8"))
         # print(data)
         for release in data:
@@ -299,12 +322,15 @@ class IntroPage(QtWidgets.QWizardPage, object):
                 for asset in release["assets"]:
                     if asset["browser_download_url"].endswith(".iso"):
                         # display_name = "%s (%s)" % (asset["name"], release["tag_name"])
-                        display_name = "%s %s" % (release["tag_name"], asset["name"])
+                        display_name = "%s %s" % (
+                            release["tag_name"], asset["name"])
                         self.available_isos.append(asset)
                         item = QtWidgets.QListWidgetItem(display_name)
                         # item.setIcon(QtGui.QIcon.fromTheme("media-optical"))
-                                                    
-                        item.__setattr__("browser_download_url", asset["browser_download_url"]) # __setattr__() is the equivalent to setProperty() in Qt
+
+                        # __setattr__() is the equivalent to setProperty() in Qt
+                        item.__setattr__("browser_download_url",
+                                         asset["browser_download_url"])
                         item.__setattr__("updated_at", asset["updated_at"])
                         item.__setattr__("size", asset["size"])
                         item.__setattr__("prerelease", release["prerelease"])
@@ -322,8 +348,8 @@ class IntroPage(QtWidgets.QWizardPage, object):
                                 if datetime.strptime(asset["updated_at"], "%Y-%m-%dT%H:%M:%SZ") > datetime.now() - timedelta(days=180):
                                     self.release_listwidget.addItem(item)
 
-        #except:
-            #pass
+        # except:
+            # pass
             # wizard.showErrorPage("The list of available images could not be retrieved. GitHub rate limit exceeded?")
             # self.label.hide()  # FIXME: Why is this needed? Can we do without?
             # self.repo_menu.hide()  # FIXME: Why is this needed? Can we do without?
@@ -333,24 +359,33 @@ class IntroPage(QtWidgets.QWizardPage, object):
         # Invalidate that the user already has selected something and we can proceed
         self.completeChanged.emit()
 
-
     def onSelectionChanged(self):
         print("onSelectionChanged")
         # print("selectedIndexes", self.release_listwidget.selectedIndexes())
         items = self.release_listwidget.selectedItems()
-        if len(items)<1:
+        if len(items) < 1:
             return
-        print("browser_download_url attribute:" + items[0].__getattribute__("browser_download_url")) # __getattribute__() is the equivalent to property() in Qt
-        wizard.selected_iso_url = items[0].__getattribute__("browser_download_url")
-        date = QtCore.QDateTime.fromString(items[0].__getattribute__("updated_at"), "yyyy-MM-ddThh:mm:ssZ")
-        self.date_label.setText(date.toLocalTime().toString(QtCore.Qt.SystemLocaleLongDate))
+        # __getattribute__() is the equivalent to property() in Qt
+        print("browser_download_url attribute:" +
+              items[0].__getattribute__("browser_download_url"))
+        wizard.selected_iso_url = items[0].__getattribute__(
+            "browser_download_url")
+        date = QtCore.QDateTime.fromString(
+            items[0].__getattribute__("updated_at"), "yyyy-MM-ddThh:mm:ssZ")
+        self.date_label.setText(date.toLocalTime().toString(
+            QtCore.Qt.SystemLocaleLongDate))
         self.date_label.show()
-        self.url_label.setText("<a href=\"%s\">%s</a>" % (items[0].__getattribute__("html_url"), items[0].__getattribute__("html_url")))
+        try:
+            self.url_label.setText("<a href=\"%s\">%s</a>" % (
+                items[0].__getattribute__("html_url"), items[0].__getattribute__("html_url")))
+        except:
+            self.url_label.setText("")
         self.url_label.show()
-        wizard.required_mib_on_disk = round(items[0].__getattribute__("size")/1024/1024, 1)
+        wizard.required_mib_on_disk = round(
+            items[0].__getattribute__("size")/1024/1024, 1)
         # self.isComplete()  # Calling it like this does not make its result get used
-        self.completeChanged.emit()  # But like this isComplete() gets called and its result gets used
-
+        # But like this isComplete() gets called and its result gets used
+        self.completeChanged.emit()
 
     def isComplete(self):
         if wizard.selected_iso_url != None and len(self.release_listwidget.selectedItems()) == 1:
@@ -362,21 +397,23 @@ class IntroPage(QtWidgets.QWizardPage, object):
 # Destination disk
 #############################################################################
 
+
 class DiskPage(QtWidgets.QWizardPage, object):
     def __init__(self):
 
         print("Preparing DiskPage")
         super().__init__()
 
-        self.timer = QtCore.QTimer() # Used to periodically check the available disks
-        self.old_ds = None # The disks we have recognized so far
+        self.timer = QtCore.QTimer()  # Used to periodically check the available disks
+        self.old_ds = None  # The disks we have recognized so far
         self.setTitle(tr('Select Destination Disk'))
         self.setSubTitle(tr('All data on the selected disk will be erased.'))
         self.disk_listwidget = QtWidgets.QListWidget()
         # self.disk_listwidget.setViewMode(QtWidgets.QListView.IconMode)
         self.disk_listwidget.setIconSize(QtCore.QSize(48, 48))
         # self.disk_listwidget.setSpacing(24)
-        self.disk_listwidget.itemSelectionChanged.connect(self.onSelectionChanged)
+        self.disk_listwidget.itemSelectionChanged.connect(
+            self.onSelectionChanged)
         disk_vlayout = QtWidgets.QVBoxLayout(self)
         disk_vlayout.addWidget(self.disk_listwidget)
         self.label = QtWidgets.QLabel()
@@ -385,17 +422,20 @@ class DiskPage(QtWidgets.QWizardPage, object):
     def initializePage(self):
         print("Displaying DiskPage")
 
-        self.disk_listwidget.clearSelection() # If the user clicked back and forth, start with nothing selected
+        # If the user clicked back and forth, start with nothing selected
+        self.disk_listwidget.clearSelection()
         self.periodically_list_disks()
 
         if wizard.required_mib_on_disk < 5:
             self.timer.stop()
-            wizard.showErrorPage(tr("Could not determine the required disk space."))
-            self.disk_listwidget.hide() # FIXME: Why is this needed? Can we do without?
+            wizard.showErrorPage(
+                tr("Could not determine the required disk space."))
+            self.disk_listwidget.hide()  # FIXME: Why is this needed? Can we do without?
             return
 
         print("Disk space required: %d MiB" % wizard.required_mib_on_disk)
-        self.label.setText(tr("Disk space required: %s MiB") % wizard.required_mib_on_disk)
+        self.label.setText(tr("Disk space required: %s MiB") %
+                           wizard.required_mib_on_disk)
 
     def cleanupPage(self):
         print("Leaving DiskPage")
@@ -425,14 +465,18 @@ class DiskPage(QtWidgets.QWizardPage, object):
                 # TODO: Identify the disk the Live system is running from, and don't offer that
                 if (available_bytes >= wizard.required_mib_on_disk) and di.get("geomname").startswith("cd") == False:
                     # item.setTextAlignment()
-                    title = "%s on %s (%s GiB)" % (di.get("descr"), di.get("geomname"), f"{(available_bytes // (2 ** 30)):,}")
+                    title = "%s on %s (%s GiB)" % (di.get("descr"), di.get(
+                        "geomname"), f"{(available_bytes // (2 ** 30)):,}")
                     if di.get("geomname").startswith("cd") == True:
                         # TODO: Add burning powers
-                        item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-optical'), title)
+                        item = QtWidgets.QListWidgetItem(
+                            QtGui.QIcon.fromTheme('drive-optical'), title)
                     elif di.get("geomname").startswith("da") == True:
-                        item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-removable-media'), title)
+                        item = QtWidgets.QListWidgetItem(
+                            QtGui.QIcon.fromTheme('drive-removable-media'), title)
                     else:
-                        item = QtWidgets.QListWidgetItem(QtGui.QIcon.fromTheme('drive-harddisk'), title)
+                        item = QtWidgets.QListWidgetItem(
+                            QtGui.QIcon.fromTheme('drive-harddisk'), title)
                         # Prevent from selecting non-removable drives; TODO: Maybe allow selecing them with an extra warning?
                         item.setFlags(QtCore.Qt.ItemIsSelectable)
 
@@ -465,7 +509,8 @@ class DiskPage(QtWidgets.QWizardPage, object):
             self.disk_listwidget.clearSelection()
             pass
         # self.isComplete() # Calling it like this does not make its result get used
-        self.completeChanged.emit() # But like this isComplete() gets called and its result gets used
+        # But like this isComplete() gets called and its result gets used
+        self.completeChanged.emit()
 
     def isComplete(self):
         if wizard.user_agreed_to_erase == True:
@@ -480,7 +525,7 @@ class DiskPage(QtWidgets.QWizardPage, object):
                     return False
                 if searchstring in self.disk_listwidget.selectedItems()[0].text():
                     wizard.selected_disk_device = str(di.get("geomname"))
-                    self.timer.stop() # FIXME: This does not belong here, but cleanupPage() gets called only
+                    self.timer.stop()  # FIXME: This does not belong here, but cleanupPage() gets called only
                     # if the user goes back, not when they go forward...
                     return True
 
@@ -494,20 +539,20 @@ class DiskPage(QtWidgets.QWizardPage, object):
 # Installation page
 #############################################################################
 
+
 class InstallationPage(QtWidgets.QWizardPage, object):
     def __init__(self):
 
         print("Preparing InstallationPage")
         super().__init__()
 
-
         self.setTitle(tr('Downloading and writing Live medium'))
-        self.setSubTitle(tr('The Live image is being downloaded and written to the medium.'))
+        self.setSubTitle(
+            tr('The Live image is being downloaded and written to the medium.'))
 
         self.layout = QtWidgets.QVBoxLayout(self)
         self.progress = QtWidgets.QProgressBar(self)
         self.layout.addWidget(self.progress, True)
-
 
     def initializePage(self):
         print("Displaying InstallationPage")
@@ -520,7 +565,6 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         workaroundtimer = QtCore.QTimer()
         workaroundtimer.singleShot(200, self.download)
 
-
     def handleProgress(self, blocknum, blocksize, totalsize):
 
         processed_data = blocknum * blocksize
@@ -528,8 +572,8 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         if totalsize > 0:
             download_percentage = processed_data * 100 / totalsize
             self.progress.setValue(download_percentage)
-            QtWidgets.QApplication.processEvents() # Important trick so that the app stays responsive without the need for threading!
-
+            # Important trick so that the app stays responsive without the need for threading!
+            QtWidgets.QApplication.processEvents()
 
     def download(self):
         print("Download started")
@@ -553,17 +597,18 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         socket.setdefaulttimeout(240)
         print("socket.getdefaulttimeout(): %s" % socket.getdefaulttimeout())
         try:
-            urllib.request.urlretrieve(wizard.selected_iso_url, self.save_loc, self.handleProgress)
+            urllib.request.urlretrieve(
+                wizard.selected_iso_url, self.save_loc, self.handleProgress)
         except BaseException as error:
             print('An error occurred: {}'.format(error))
             wizard.showErrorPage('{}'.format(error) + ".")
-
 
         wizard.next()
 
 #############################################################################
 # Success page
 #############################################################################
+
 
 class SuccessPage(QtWidgets.QWizardPage, object):
     def __init__(self):
@@ -582,7 +627,8 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         self.setTitle(tr('Live Medium Complete'))
         self.setSubTitle(tr('The Live image has been written to the device.'))
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/usbsuccess.svg').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(
+            __file__) + '/usbsuccess.svg').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
@@ -591,17 +637,19 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         center_layout.addWidget(logo_label)
         center_layout.addStretch()
 
-        center_widget =  QtWidgets.QWidget()
+        center_widget = QtWidgets.QWidget()
         center_widget.setLayout(center_layout)
         layout = QtWidgets.QVBoxLayout(self)
-        layout.addWidget(center_widget, True) # True = add stretch vertically
+        layout.addWidget(center_widget, True)  # True = add stretch vertically
 
         label = QtWidgets.QLabel()
-        label.setText(tr("You can now start your computer from the Live medium."))
+        label.setText(
+            tr("You can now start your computer from the Live medium."))
         label.setWordWrap(True)
         layout.addWidget(label)
         self.setButtonText(wizard.CancelButton, tr("Quit"))
-        wizard.setButtonLayout([QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
+        wizard.setButtonLayout(
+            [QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
 
         self.periodically_list_disks()
 
@@ -624,6 +672,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
 # Error page
 #############################################################################
 
+
 class ErrorPage(QtWidgets.QWizardPage, object):
     def __init__(self):
 
@@ -633,7 +682,8 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.setTitle(tr('Error'))
         self.setSubTitle(tr('The installation could not be performed.'))
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/cross.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(
+            __file__) + '/cross.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
@@ -642,12 +692,14 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         center_layout.addWidget(logo_label)
         center_layout.addStretch()
 
-        center_widget =  QtWidgets.QWidget()
+        center_widget = QtWidgets.QWidget()
         center_widget.setLayout(center_layout)
         self.layout = QtWidgets.QVBoxLayout(self)
-        self.layout.addWidget(center_widget, True) # True = add stretch vertically
+        # True = add stretch vertically
+        self.layout.addWidget(center_widget, True)
 
-        self.label = QtWidgets.QLabel()  # Putting it in initializePage would add another one each time the page is displayed when going back and forth
+        # Putting it in initializePage would add another one each time the page is displayed when going back and forth
+        self.label = QtWidgets.QLabel()
         self.layout.addWidget(self.label)
 
     def initializePage(self):
@@ -657,7 +709,8 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.label.clear()
         self.label.setText(wizard.error_message_nice)
         self.setButtonText(wizard.CancelButton, tr("Quit"))
-        wizard.setButtonLayout([QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
+        wizard.setButtonLayout(
+            [QtWidgets.QWizard.Stretch, QtWidgets.QWizard.CancelButton])
 
 #############################################################################
 # Pages flow in the wizard
@@ -669,11 +722,13 @@ class ErrorPage(QtWidgets.QWizardPage, object):
 
 # TODO: Check prerequisites and inspect /mnt, go straight to error page if needed
 
+
 if (len(sys.argv) == 2 and os.path.isfile(sys.argv[1])):
     # A file has been supplied on the command line
     filename = sys.argv[1]
-    wizard.selected_iso_url = "file://" + filename # TODO: Error checking
-    wizard.required_mib_on_disk = int(os.path.getsize(filename) / 1024 / 1024) # FIXME: get file size from the supplied path
+    wizard.selected_iso_url = "file://" + filename  # TODO: Error checking
+    # FIXME: get file size from the supplied path
+    wizard.required_mib_on_disk = int(os.path.getsize(filename) / 1024 / 1024)
     wizard.setWindowTitle(os.path.basename(filename))
 else:
     intro_page = IntroPage()
