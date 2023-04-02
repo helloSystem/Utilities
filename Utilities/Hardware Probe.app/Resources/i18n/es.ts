@@ -27,9 +27,9 @@
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
         &lt;p&gt;This can help users and operating system developers to collaboratively debug hardware related issues, check for operating system compatibility and find drivers.&lt;/p&gt;
         &lt;p&gt;You will get a permanent probe URL to view and share collected information.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</source>
-        <translation>&lt;p&gt; Esta utilidad recopila detalles de hardware de su computadora y puede subirlos de forma anónima a una base de datos pública..&lt;/p&gt;
-        &lt;p&gt; Esto puede ayudar a los usuarios y desarrolladores de sistemas operativos a depurar de forma colaborativa problemas relacionados con el hardware, comprobar la compatibilidad del sistema operativo y encontrar controladores. &lt;/p&gt;
-         &lt;p&gt; Obtendrá una URL de prueba permanente para ver y compartir la información recopilada. &lt;/p&gt; &lt;br&gt; &lt;br&gt; &lt;br&gt;</translation>
+        <translation>&lt;p&gt;Esta herramienta recopila los detalles del hardware de tú computadora y los carga de forma anónima en una base de datos pública.&lt;/p&gt;
+        &lt;p&gt;Esto ayuda a los usuarios y desarrolladores de sistemas operativos a trabajar juntos para depurar problemas relacionados con el hardware, verificar la compatibilidad del sistema operativo y encontrar controladores.&lt;/p&gt;
+        &lt;p&gt;Se le proporcionará una URL de sondeo permanente para ver y compartir la información recopilada. &lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>Show Hardware Probe</source>
