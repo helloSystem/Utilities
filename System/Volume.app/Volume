@@ -22,16 +22,15 @@ from PyQt5.QtCore import QRegularExpression
 
 class Ui_Slider(QWidget):
 
-    def __init__(self):
+    def __init__(self, tray):
 
         super().__init__()
 
         self.vol = 0
         self.mic = 0
-
+        self.tray = tray
         self.has_mic = False
         self.has_rec = False
-
         # self.resize(170, 282)
         self.setFixedHeight(200)
         self.setMaximumWidth(150)
@@ -117,6 +116,8 @@ class Ui_Slider(QWidget):
 
     def setPlayVolume(self):
         value = self.play_slider.value()
+        self.vol = value 
+        self.UpdateIconbyVolumen(self)
         p = QProcess()
         p.setProgram("mixer")
         # TODO: Actually there is Mixer vol and Mixer pcm. Which is which and what are they doing? Which one(s) should we set?
@@ -127,6 +128,7 @@ class Ui_Slider(QWidget):
     def setRecVolume(self):
         print(self.rec_slider.value())
         value = self.rec_slider.value()
+        self.rec = value
         p = QProcess()
         p.setProgram("mixer")
         if self.has_mic:
@@ -136,6 +138,19 @@ class Ui_Slider(QWidget):
         print(p.program() + " " + " ".join(p.arguments()))
         p.startDetached()
 
+        
+    def UpdateIconbyVolumen(self, Slider):
+        print("slider vol ", Slider.vol)
+        if Slider.vol == 0 :
+              icon = QIcon(os.path.dirname(__file__) +
+                     '/Resources/audio-volume-muted.png')
+        else:
+              print("slider vol not muted ", Slider.vol)             
+              icon = QIcon(os.path.dirname(__file__) +
+                     '/Resources/audio-volume-high-symbolic.png')
+        self.tray.setIcon(icon)
+        self.tray.setVisible(True)
+        
     def sliderReleased(self):
         self.close()
 
@@ -145,7 +160,6 @@ class VolumeMenu(QObject):
     def __init__(self):
 
         super().__init__()
-
         # icon = QIcon.fromTheme("audio-volume-high-symbolic") # FIXME: How to get dark rather than bright icon?
         icon = QIcon(os.path.dirname(__file__) +
                      '/Resources/audio-volume-high-symbolic.png')
@@ -198,14 +212,14 @@ class VolumeMenu(QObject):
         # Sneaky PyQt quirk! A reference to the actions must be kept around or the actions will be destroyed
         self.actions = []
         self.sliderWindow = None
-
         self.refreshMenu()  # Initially populate the menu
 
     def onClicked(self, reason):
         # TODO: Is using customContextMenuRequested the proper way to do this? How?
         self.refreshMenu()
-        S = Ui_Slider()
-        self.sliderWindow = S  # Need to keep a reference around so that it does not get destroyed
+        S = Ui_Slider(self.tray)
+        self.sliderWindow = S  # Need to keep a reference around so that it does
+        # not get destroyed
         S.show()
 
     def refreshMenu(self):
@@ -320,6 +334,7 @@ class VolumeMenu(QObject):
         print(p.program() + " " + " ".join(p.arguments()))
         p.startDetached()
 
+    
     def _showAbout(self):
         print("showDialog")
         msg = QMessageBox()
