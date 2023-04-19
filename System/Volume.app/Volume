@@ -143,7 +143,7 @@ class Ui_Slider(QWidget):
         print("slider vol ", Slider.vol)
         if Slider.vol == 0 :
               icon = QIcon(os.path.dirname(__file__) +
-                     '/Resources/audio-volume-muted.png')
+                     '/Resources/audio-volume-muted-symbolic.png')
         else:
               print("slider vol not muted ", Slider.vol)             
               icon = QIcon(os.path.dirname(__file__) +
