@@ -348,7 +348,7 @@ class VolumeMenu(QObject):
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Volume</h3>")
-        msg.setInformativeText("A simple QSystemTrayIcon application to select the audio device using <a href='https://www.freebsd.org/cgi/man.cgi?sysctl'>sysctl hw.snd.default_unit</a> and to set the volume using using <a href='https://www.freebsd.org/cgi/man.cgi?mixer'>mixer</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.setInformativeText("A simple QSystemTrayIcon application to select the audio device using <a href='https://www.freebsd.org/cgi/man.cgi?sysctl'>sysctl hw.snd.default_unit</a> and to set the volume using <a href='https://www.freebsd.org/cgi/man.cgi?mixer'>mixer</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
 
