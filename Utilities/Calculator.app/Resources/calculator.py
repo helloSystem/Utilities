@@ -71,10 +71,11 @@ class PyCalcUi(QMainWindow):
         super().__init__()
         # Set some main window's properties
         self.setWindowTitle("Calculator")
-        self.setFixedSize(
-                (TILE_WIDTH * 4) + ( TILE_SPACING * 9),
-                (TILE_HEIGHT * 7) + (TILE_SPACING * 9)
-                )
+        # Strange effect with hellosystem theme
+        # self.setFixedSize(
+        #         (TILE_WIDTH * 4) + ( TILE_SPACING * 9),
+        #         (TILE_HEIGHT * 7) + (TILE_SPACING * 9)
+        #         )
         # Set the central widget and the general layout
         self.generalLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
@@ -139,6 +140,7 @@ class PyCalcUi(QMainWindow):
             self.buttons[btnText].setMinimumHeight(TILE_HEIGHT)
             if btnText == "=":
                 self.buttons[btnText].setMinimumHeight((TILE_HEIGHT * 2) + TILE_SPACING)
+                # hellosystem can t make vertial padding on a button
                 buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1], 2, 1)
             elif btnText == "0":
                 self.buttons[btnText].setMinimumWidth(TILE_WIDTH * 2)
