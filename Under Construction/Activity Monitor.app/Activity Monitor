@@ -3,12 +3,10 @@
 import hashlib
 import os, sys, signal
 import psutil
-import math
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QGridLayout,
-    QTabBar,
     QTabWidget,
     QWidget,
     QTreeWidget,
