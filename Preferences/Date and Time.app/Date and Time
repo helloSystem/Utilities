@@ -11,10 +11,25 @@ import time
 from PyQt5.QtCore import Qt, QDateTime, QTimer
 from PyQt5.QtWidgets import (QApplication, QDateTimeEdit, QGridLayout,
                              QGroupBox, QLabel, QMainWindow, QMessageBox,
-                             QPushButton, QTabWidget, QVBoxLayout, QWidget)
+                             QPushButton, QTabWidget, QVBoxLayout, QWidget, QSizePolicy)
 from PyQt5.QtGui import QMovie, QKeyEvent, QPixmap
-from PyQt5.QtCore import QEvent
+from PyQt5.QtCore import QEvent, QObject, QThread, pyqtSignal
 
+class SetDateTimeAutoWorker(QObject):
+    finished = pyqtSignal()
+    returncode = pyqtSignal(object)
+    def run(self):
+        try:
+            time.sleep(1)
+            # Set the date and time automatically using NTP
+            subprocess.run(["sudo", "ntpdate", "-v", "-b",
+                           "-u", "pool.ntp.org"], check=True)
+            self.returncode.emit("OK")
+            self.finished.emit()
+            return
+        except subprocess.CalledProcessError as e:
+            self.returncode.emit(e.stderr)
+            self.finished.emit()
 
 class DateTimeWindow(QMainWindow):
     def __init__(self):
@@ -75,7 +90,7 @@ class DateTimeWindow(QMainWindow):
 
         self.edit_menu.addAction("Set Date and Time automatically",
                                  self.set_date_time_auto)
-        self.edit_menu.addAction("Set time zone automatically",
+        self.edit_menu.addAction("Set Time Zone automatically",
                                  self.set_time_zone_auto)
 
         # Help menu
@@ -86,16 +101,16 @@ class DateTimeWindow(QMainWindow):
         # Create spinner
         self.spinner = QLabel(self)
         # Generated using http://ajaxload.info/
+        self.spinner.setFixedSize(400, 250)
         self.spinner.setMovie(
             QMovie(os.path.dirname(__file__) + "/Resources/spinner.gif"))
         self.spinner.movie().start()
-        self.spinner.hide()
         self.spinner.setAlignment(Qt.AlignCenter)
-        # self.spinner.setFixedSize(16, 16)
-        self.spinner.move(0, self.height() - self.spinner.height())
+        self.spinner.move(0, 0)
+        self.spinner.hide()
         # Connect to the resizeEvent of the window to update the position of the spinner
         self.resizeEvent = lambda event: self.spinner.move(
-            -20, self.height() - self.spinner.height() - 10)
+            (self.width()//2)-200, (self.height()//2)-125)
 
     def send_shortcut(self, key_code, modifier):
         # Send shortcut to currently focused widget like Ctrl+C, Ctrl+V, etc.
@@ -127,7 +142,7 @@ class DateTimeWindow(QMainWindow):
         self.grp_set_date_time.setLayout(self.vbox_set_date_time)
 
         self.btn_set_date_time_auto = QPushButton(
-            "Set Date and Time automatically", self)
+            "Set Date and Time Automatically", self)
 
         self.grp_set_date_time_auto = QGroupBox("Date and Time options", self)
         self.vbox_set_date_time_auto = QVBoxLayout()
@@ -155,9 +170,9 @@ class DateTimeWindow(QMainWindow):
     def create_time_zone_tab(self):
         # Create widgets
         self.btn_set_time_zone_auto = QPushButton(
-            "Set time zone automatically", self)
+            "Set Time Zone Automatically", self)
 
-        self.grp_set_time_zone = QGroupBox("Set time zone", self)
+        self.grp_set_time_zone = QGroupBox("Set Time Zone", self)
         self.vbox_set_time_zone = QVBoxLayout()
         self.vbox_set_time_zone.addWidget(self.btn_set_time_zone_auto)
         self.grp_set_time_zone.setLayout(self.vbox_set_time_zone)
@@ -181,7 +196,7 @@ class DateTimeWindow(QMainWindow):
                                     capture_output=True, text=True, check=True)
             return QDateTime.fromString(result.stdout.strip(), "yyyy-MM-dd hh:mm:ss")
         except subprocess.CalledProcessError as e:
-            self.show_error_dialog("Error getting current Date and Time",
+            self.show_error_dialog("Error getting current Date and Time!",
                                    f"An error occurred while getting the current Date and Time: {e.stderr}")
             return QDateTime.currentDateTime()
 
@@ -197,36 +212,80 @@ class DateTimeWindow(QMainWindow):
             self.dt_set_date_time_manual.setDateTime(
                 self.get_current_datetime())
         except subprocess.CalledProcessError as e:
-            self.show_error_dialog("Error setting Date and Time",
+            self.show_error_dialog("Error setting Date and Time!",
                                    f"An error occurred while setting the Date and Time: {e.stderr}")
         self.spinner.hide()
 
-    def set_date_time_auto(self):
+    # show spinner wrapper
+    def show_spinner(self):
         self.spinner.show()
-        # Wait one second before setting the date and time automatically
-        time.sleep(1)
-        try:
-            # Set the date and time automatically using NTP
-            subprocess.run(["sudo", "ntpdate", "-v", "-b",
-                           "-u", "pool.ntp.org"], check=True)
-            self.dt_set_date_time_manual.setDateTime(
-                self.get_current_datetime())
-        except subprocess.CalledProcessError as e:
-            self.show_error_dialog("Error setting Date and Time automatically",
-                                   f"An error occurred while setting the Date and Time automatically: {e.stderr}")
+
+    # hide spinner wrapper
+    def hide_spinner(self):
+        self.spinner.hide()
+
+    # enable all widgets
+    def enable_window_widgets(self):
+        self.setEnabled(True)
+
+    # disable all widgets
+    def disable_window_widgets(self):
+        self.setEnabled(False)
+
+    def check_date_time_auto_result(self, ret_code):
+        if ret_code == "OK":
+            self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
+        else:
+            self.show_error_dialog("Error setting Date and Time automatically!",
+                                   f"An error occurred while setting the Date and Time automatically: {ret_code}")
         # Restart the timer if it is not running
         if not self.timer.isActive():
             self.timer.start()
-        self.spinner.hide()
 
+    def check_time_zone_auto_result(self, ret_code):
+        if ret_code != "OK":
+            self.show_error_dialog("Error setting Time Zone automatically!",
+                                   f"An error occurred while setting the Time Zone automatically: {ret_code}")
+    
+    def set_date_time_auto(self):
+        # create a QThread object
+        self.thread = QThread(parent=self)
+        # create a worker object
+        self.worker = SetDateTimeAutoWorker()
+        # move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        # set actions to execute when thread is done
+        self.worker.returncode.connect(self.hide_spinner)
+        self.worker.returncode.connect(self.enable_window_widgets)
+        self.worker.returncode.connect(self.check_date_time_auto_result)
+        # disable button and show spinner
+        self.disable_window_widgets()
+        self.show_spinner()
+        # start the thread
+        self.thread.start()
+        
     def set_time_zone_auto(self):
-        try:
-            # Set the time zone automatically using NTP
-            subprocess.run(["sudo", "ntpdate", "-v", "-b",
-                           "-u", "pool.ntp.org"], check=True)
-        except subprocess.CalledProcessError as e:
-            self.show_error_dialog("Error setting time zone automatically",
-                                   f"An error occurred while setting the time zone automatically: {e.stderr}")
+        # create a QThread object
+        self.thread = QThread(parent=self)
+        # create a worker object
+        self.worker = SetDateTimeAutoWorker()
+        # move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        # set actions to execute when thread is done
+        self.worker.returncode.connect(self.hide_spinner)
+        self.worker.returncode.connect(self.enable_window_widgets)
+        self.worker.returncode.connect(self.check_time_zone_auto_result)
+        # disable button and show spinner
+        self.disable_window_widgets()
+        self.show_spinner()
+        # start the thread
+        self.thread.start()
 
     def show_error_dialog(self, title, message):
         msg_box = QMessageBox()
@@ -249,7 +308,7 @@ class DateTimeWindow(QMainWindow):
                 msg.setDetailedText(data)
         msg.setText("<h3>Date and Time</h3>")
         msg.setInformativeText(
-            "A simple preferences application to set date and time using <a href='https://www.freebsd.org/cgi/man.cgi?ntpdate'>ntpdate</a> and <a href='https://www.freebsd.org/cgi/man.cgi?date'>date</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+            "A simple preferences application to set date and time usig <a href='https://www.freebsd.org/cgi/man.cgi?ntpdate'>ntpdate</a> and <a href='https://www.freebsd.org/cgi/man.cgi?date'>date</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
 
