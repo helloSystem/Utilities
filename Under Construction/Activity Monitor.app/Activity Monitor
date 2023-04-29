@@ -588,7 +588,6 @@ class ProcessMonitor(QWidget):
         layout.addWidget(self.process_tree)
         # layout.addWidget(self.processTree)
         layout.addWidget(self.tabs)
-        layout.addStretch()
 
         self.setLayout(layout)
         self.setStyleSheet(
