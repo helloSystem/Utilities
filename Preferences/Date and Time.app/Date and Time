@@ -329,7 +329,7 @@ class DateTimeWindow(QMainWindow):
                 msg.setDetailedText(data)
         msg.setText("<h3>Date and Time</h3>")
         msg.setInformativeText(
-            "A simple preferences application to set date and time usig <a href='https://www.freebsd.org/cgi/man.cgi?ntpdate'>ntpdate</a> and <a href='https://www.freebsd.org/cgi/man.cgi?date'>date</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+            "A simple preferences application to set date and time using <a href='https://www.freebsd.org/cgi/man.cgi?ntpdate'>ntpdate</a> and <a href='https://www.freebsd.org/cgi/man.cgi?date'>date</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
 
 
