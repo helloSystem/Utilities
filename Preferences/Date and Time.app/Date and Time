@@ -35,6 +35,20 @@ class DateTimeWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
+        # Create Date Time spinner
+        self.dt_spinner = QLabel()
+        self.dt_spinner.setMovie(QMovie(os.path.dirname(__file__) + "/Resources/spinner.gif"))
+        self.dt_spinner.movie().start()
+        self.dt_spinner.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.dt_spinner.hide()
+
+        # Create Time Zone spinner
+        self.tz_spinner = QLabel()
+        self.tz_spinner.setMovie(QMovie(os.path.dirname(__file__) + "/Resources/spinner.gif"))
+        self.tz_spinner.movie().start()
+        self.tz_spinner.setAlignment(Qt.AlignHCenter | Qt.AlignTop)
+        self.tz_spinner.hide()
+
         # Create tab widget
         self.tabs = QTabWidget()
 
@@ -53,7 +67,8 @@ class DateTimeWindow(QMainWindow):
 
         # Set window properties
         self.setWindowTitle("Date and Time")
-        self.setMinimumSize(400, 250)
+        #self.setMinimumSize(400, 320)
+        self.setFixedSize(400, 320)
 
         # File menu
         self.file_menu = self.menuBar().addMenu("File")
@@ -98,20 +113,6 @@ class DateTimeWindow(QMainWindow):
         about_action = self.help_menu.addAction("About", self.show_about)
         about_action.setShortcut("Ctrl+?")
 
-        # Create spinner
-        self.spinner = QLabel(self)
-        # Generated using http://ajaxload.info/
-        self.spinner.setFixedSize(400, 250)
-        self.spinner.setMovie(
-            QMovie(os.path.dirname(__file__) + "/Resources/spinner.gif"))
-        self.spinner.movie().start()
-        self.spinner.setAlignment(Qt.AlignCenter)
-        self.spinner.move(0, 0)
-        self.spinner.hide()
-        # Connect to the resizeEvent of the window to update the position of the spinner
-        self.resizeEvent = lambda event: self.spinner.move(
-            (self.width()//2)-200, (self.height()//2)-125)
-
     def send_shortcut(self, key_code, modifier):
         # Send shortcut to currently focused widget like Ctrl+C, Ctrl+V, etc.
         widget = self.focusWidget()
@@ -148,6 +149,12 @@ class DateTimeWindow(QMainWindow):
         self.vbox_set_date_time_auto = QVBoxLayout()
         self.vbox_set_date_time_auto.addWidget(self.btn_set_date_time_auto)
         self.grp_set_date_time_auto.setLayout(self.vbox_set_date_time_auto)
+        
+        self.grp_dt_spinner = QGroupBox("", self)
+        self.grp_dt_spinner.setStyleSheet("border : 0;")
+        self.vbox_dt_spinner = QVBoxLayout()
+        self.vbox_dt_spinner.addWidget(self.dt_spinner)
+        self.grp_dt_spinner.setLayout(self.vbox_dt_spinner)
 
         # Connect signals to slots
         self.btn_set_date_time_manual.clicked.connect(
@@ -157,10 +164,9 @@ class DateTimeWindow(QMainWindow):
         # Create grid layout for date/time tab
         self.grid_layout_date_time = QGridLayout()
 
-        self.grid_layout_date_time.addWidget(
-            self.grp_set_date_time, 2, 0, 1, 2)
-        self.grid_layout_date_time.addWidget(
-            self.grp_set_date_time_auto, 3, 0, 1, 2)
+        self.grid_layout_date_time.addWidget(self.grp_set_date_time, 2, 0, 1, 2)
+        self.grid_layout_date_time.addWidget(self.grp_set_date_time_auto, 3, 0, 1, 2)
+        self.grid_layout_date_time.addWidget(self.grp_dt_spinner, 4, 0, 1, 2)
         self.grid_layout_date_time.setRowStretch(4, 1)
 
         # Create date/time tab and set layout
@@ -177,12 +183,19 @@ class DateTimeWindow(QMainWindow):
         self.vbox_set_time_zone.addWidget(self.btn_set_time_zone_auto)
         self.grp_set_time_zone.setLayout(self.vbox_set_time_zone)
 
+        self.grp_tz_spinner = QGroupBox("", self)
+        self.grp_tz_spinner.setStyleSheet("border : 0;")
+        self.vbox_tz_spinner = QVBoxLayout()
+        self.vbox_tz_spinner.addWidget(self.tz_spinner)
+        self.grp_tz_spinner.setLayout(self.vbox_tz_spinner)
+
         # Connect signals to slots
         self.btn_set_time_zone_auto.clicked.connect(self.set_time_zone_auto)
 
         # Create grid layout for time zone tab
         self.grid_layout_time_zone = QGridLayout()
         self.grid_layout_time_zone.addWidget(self.grp_set_time_zone, 1, 0)
+        self.grid_layout_time_zone.addWidget(self.grp_tz_spinner, 2, 0)
         self.grid_layout_time_zone.setRowStretch(2, 1)
 
         # Create time zone tab and set layout
@@ -216,13 +229,21 @@ class DateTimeWindow(QMainWindow):
                                    f"An error occurred while setting the Date and Time: {e.stderr}")
         self.spinner.hide()
 
-    # show spinner wrapper
-    def show_spinner(self):
-        self.spinner.show()
+    # show date time spinner wrapper
+    def show_dt_spinner(self):
+        self.dt_spinner.show()
 
-    # hide spinner wrapper
-    def hide_spinner(self):
-        self.spinner.hide()
+    # show time zone spinner wrapper
+    def show_tz_spinner(self):
+        self.tz_spinner.show()
+
+    # hide date time spinner wrapper
+    def hide_dt_spinner(self):
+        self.dt_spinner.hide()
+
+    # hide date time spinner wrapper
+    def hide_tz_spinner(self):
+        self.tz_spinner.hide()
 
     # enable all widgets
     def enable_window_widgets(self):
@@ -258,12 +279,12 @@ class DateTimeWindow(QMainWindow):
         self.thread.started.connect(self.worker.run)
         self.worker.finished.connect(self.thread.quit)
         # set actions to execute when thread is done
-        self.worker.returncode.connect(self.hide_spinner)
+        self.worker.returncode.connect(self.hide_dt_spinner)
         self.worker.returncode.connect(self.enable_window_widgets)
         self.worker.returncode.connect(self.check_date_time_auto_result)
         # disable button and show spinner
         self.disable_window_widgets()
-        self.show_spinner()
+        self.show_dt_spinner()
         # start the thread
         self.thread.start()
         
@@ -278,12 +299,12 @@ class DateTimeWindow(QMainWindow):
         self.thread.started.connect(self.worker.run)
         self.worker.finished.connect(self.thread.quit)
         # set actions to execute when thread is done
-        self.worker.returncode.connect(self.hide_spinner)
+        self.worker.returncode.connect(self.hide_tz_spinner)
         self.worker.returncode.connect(self.enable_window_widgets)
         self.worker.returncode.connect(self.check_time_zone_auto_result)
         # disable button and show spinner
         self.disable_window_widgets()
-        self.show_spinner()
+        self.show_tz_spinner()
         # start the thread
         self.thread.start()
 
