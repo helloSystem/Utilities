@@ -3,6 +3,7 @@
 # Calculator Construction Set
 # for a fun story, see
 # https://www.folklore.org/StoryView.py?story=Calculator_Construction_Set.txt
+# https://doc.qt.io/qtforpython-5/overviews/qtwidgets-widgets-calculator-example.html#calculator-example
 
 # Based on PyCalc
 # https://github.com/realpython/materials/tree/master/pyqt-calculator-tutorial/pycalc
