@@ -1,27 +1,27 @@
-import os
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import (
     QDialog,
     QLabel,
-    QGridLayout,
     QVBoxLayout,
-    QSizePolicy,
 )
 
+
 class About(QDialog):
-    def __init__(self, parent=None):
-        QDialog.__init__(self, parent)
+    def __init__(self):
+        super().__init__()
+
         self.icon = None
         self.name = None
         self.version = None
         self.text = None
         self.credit = None
+        self.size = None
 
     def show(self):
-        layout = QVBoxLayout()
-        self.setLayout(layout)
         self.setWindowTitle(" ")
+        if self.size:
+            self.setFixedSize(self.size[0], self.size[1])
+        layout = QVBoxLayout()
 
         if self.icon:
             label_pixmap = QLabel()
@@ -45,4 +45,7 @@ class About(QDialog):
             label_credit.setWordWrap(True)
             layout.addWidget(label_credit)
 
+        layout.addStretch()
+        self.setLayout(layout)
         self.exec()
+

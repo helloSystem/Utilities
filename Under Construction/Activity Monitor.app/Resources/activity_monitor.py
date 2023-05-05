@@ -724,6 +724,7 @@ class ProcessMonitor(QWidget):
 
     def _showAbout(self):
         about = About()
+        about.size = 300, 340
         about.icon = QPixmap(
             os.path.join(
                 os.path.dirname(__file__),
