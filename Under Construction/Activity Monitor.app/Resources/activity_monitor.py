@@ -29,7 +29,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QSpacerItem,
     QSizePolicy,
-    QMessageBox,
+    QLineEdit,
 
 )
 
@@ -671,29 +671,41 @@ class ProcessMonitor(QWidget):
 
         self.filterComboBox = QComboBox()
         pos = 0
-        self.filterComboBox.addItem('All Processes')
-        self.filterComboBox.addItem('All Processes, Hierarchically')
-        self.filterComboBox.addItem('My Processes')
-        self.filterComboBox.addItem('System Processes')
-        self.filterComboBox.addItem('Other User Processes')
-        self.filterComboBox.addItem('Active Processes')
-        self.filterComboBox.addItem('Inactive Processes')
-        self.filterComboBox.addItem('Windowed Processes')
-        self.filterComboBox.addItem('Selected Processes')
-        self.filterComboBox.addItem('Application in last 12 hours')
+        for pos, text in self.filters.items():
+            if self.selected_filter_index == pos:
+                self.filterComboBox.addItem(f"√ {text}")
 
-        label = QLabel("Show")
-        label.setAlignment(Qt.AlignCenter)
+            else:
+                self.filterComboBox.addItem(f"  {text}")
 
-        hbox = QVBoxLayout()
-        hbox.addWidget(self.filterComboBox)
-        hbox.addWidget(label)
+        showLabel = QLabel("Show")
+        showLabel.setAlignment(Qt.AlignCenter)
 
-        widget = QWidget()
-        widget.setLayout(hbox)
+        showVBoxLayout = QVBoxLayout()
+        showVBoxLayout.addWidget(self.filterComboBox)
+        showVBoxLayout.addWidget(showLabel)
+
+        showWidget = QWidget()
+        showWidget.setLayout(showVBoxLayout)
 
         self.filter_process_action = QWidgetAction(self)
-        self.filter_process_action.setDefaultWidget(widget)
+        self.filter_process_action.setDefaultWidget(showWidget)
+
+        self.searchLineEdit = QLineEdit()
+
+        searchLabel = QLabel("Search")
+        searchLabel.setAlignment(Qt.AlignCenter)
+
+        searchVBoxLayout = QVBoxLayout()
+        searchVBoxLayout.addWidget(self.searchLineEdit)
+        searchVBoxLayout.addWidget(searchLabel)
+
+        searchWidget = QWidget()
+        searchWidget.setLayout(searchVBoxLayout)
+
+        self.search_process_action = QWidgetAction(self)
+        self.search_process_action.setDefaultWidget(searchWidget)
+
 
     def _createToolBars(self, parent):
         toolbar = QToolBar("Main ToolBar")
@@ -705,6 +717,7 @@ class ProcessMonitor(QWidget):
         toolbar.addAction(self.kill_process_action)
         toolbar.addAction(self.inspect_process_action)
         toolbar.addAction(self.filter_process_action)
+        toolbar.addAction(self.search_process_action)
 
         parent.addToolBar(toolbar)
 
@@ -765,7 +778,14 @@ class ProcessMonitor(QWidget):
                 item.setText(4, f'{p.num_threads()}')
                 item.setText(5, f'{bytes2human(p.memory_info().rss)}')
                 item.setText(6, f'{bytes2human(p.memory_info().vms)}')
-                self.process_tree.addTopLevelItem(item)
+
+                # Filter
+                if self.searchLineEdit.text():
+                    if self.searchLineEdit.text() in p.name():
+                        self.process_tree.addTopLevelItem(item)
+                else:
+                    self.process_tree.addTopLevelItem(item)
+
                 # if p.pid in self.selected_processes_id:
                 #     self.process_tree.setCurrentItem(item)
         # item.selectedIndexes(self.selected_processes_id)
