@@ -1,19 +1,72 @@
 #!/usr/bin/env python3
 
-# FIXME: The spinner is not shown; we need to fix this by using threading? Is there a better way?
-# TODO: Implement manual time zone setting in the time zone tab
-# TODO: Implement manual date and time setting in the date and time tab
-
 import subprocess
 import sys
 import os
 import time
+import pytz
+import geocoder
 from PyQt5.QtCore import Qt, QDateTime, QTimer
-from PyQt5.QtWidgets import (QApplication, QDateTimeEdit, QGridLayout,
+from PyQt5.QtWidgets import (QApplication, QDateTimeEdit, QGridLayout, QComboBox,
                              QGroupBox, QLabel, QMainWindow, QMessageBox,
                              QPushButton, QTabWidget, QVBoxLayout, QWidget, QSizePolicy)
 from PyQt5.QtGui import QMovie, QKeyEvent, QPixmap
 from PyQt5.QtCore import QEvent, QObject, QThread, pyqtSignal
+from timezonefinder import TimezoneFinder
+
+class SetTimeZoneAutoWorker(QObject):
+    finished = pyqtSignal()
+    returncode = pyqtSignal(object)
+    def run(self):
+        global new_time_zone
+        try:
+            time.sleep(1)
+            # Set the new time zone automatically
+            g = geocoder.ip('me')
+            lat, lng = g.latlng
+            tf = TimezoneFinder()
+            new_time_zone = tf.timezone_at(lng=lng, lat=lat)
+            subprocess.run(["sudo", "tzsetup", f"{new_time_zone}"])
+            subprocess.run(["sudo", "adjkerntz", "-a", f"{new_time_zone}"])
+            self.returncode.emit("OK")
+            self.finished.emit()
+            return
+        except subprocess.CalledProcessError as e:
+            self.returncode.emit(e.stderr)
+            self.finished.emit()
+
+class SetTimeZoneManualWorker(QObject):
+    global new_time_zone
+    finished = pyqtSignal()
+    returncode = pyqtSignal(object)
+    def run(self):
+        try:
+            time.sleep(1)
+            # Set the new time zone
+            subprocess.run(["sudo", "tzsetup", f"{new_time_zone}"])
+            subprocess.run(["sudo", "adjkerntz", "-a", f"{new_time_zone}"])
+            self.returncode.emit("OK")
+            self.finished.emit()
+            return
+        except subprocess.CalledProcessError as e:
+            self.returncode.emit(e.stderr)
+            self.finished.emit()
+
+class SetDateTimeManualWorker(QObject):
+    global new_date_time
+    finished = pyqtSignal()
+    returncode = pyqtSignal(object)
+    def run(self):
+        try:
+            time.sleep(1)
+            # Set the new date and time
+            subprocess.run(["sudo", "date", new_date_time], check=True)
+            self.returncode.emit("OK")
+            self.finished.emit()
+            return
+        except subprocess.CalledProcessError as e:
+            self.returncode.emit(e.stderr)
+            self.finished.emit()
 
 class SetDateTimeAutoWorker(QObject):
     finished = pyqtSignal()
@@ -174,11 +227,25 @@ class DateTimeWindow(QMainWindow):
         self.date_time_tab.setLayout(self.grid_layout_date_time)
 
     def create_time_zone_tab(self):
+        global new_time_zone
         # Create widgets
-        self.btn_set_time_zone_auto = QPushButton(
-            "Set Time Zone Automatically", self)
+        self.tz_set_time_zone_manual = QDateTimeEdit(self)
+        self.tz_set_time_zone_manual = QComboBox(self)
+        timezones = sorted(pytz.all_timezones)
+        new_time_zone = pytz.timezone(subprocess.check_output('cat /var/db/zoneinfo', shell=True).strip().decode())
+        self.tz_set_time_zone_manual.addItems(timezones)
+        self.tz_set_time_zone_manual.setCurrentText(f'{new_time_zone}')
+        self.tz_set_time_zone_manual.currentTextChanged.connect(self.update_time_zone_value)
 
-        self.grp_set_time_zone = QGroupBox("Set Time Zone", self)
+        self.btn_set_time_zone_manual = QPushButton("Set Time Zone", self)
+        self.grp_set_time_zone_manual = QGroupBox("Set Time Zone", self)
+        self.vbox_set_time_zone_manual = QVBoxLayout()
+        self.vbox_set_time_zone_manual.addWidget(self.tz_set_time_zone_manual)
+        self.vbox_set_time_zone_manual.addWidget(self.btn_set_time_zone_manual)
+        self.grp_set_time_zone_manual.setLayout(self.vbox_set_time_zone_manual)
+
+        self.btn_set_time_zone_auto = QPushButton("Set Time Zone Automatically", self)
+        self.grp_set_time_zone = QGroupBox("Time Zone Options", self)
         self.vbox_set_time_zone = QVBoxLayout()
         self.vbox_set_time_zone.addWidget(self.btn_set_time_zone_auto)
         self.grp_set_time_zone.setLayout(self.vbox_set_time_zone)
@@ -190,13 +257,15 @@ class DateTimeWindow(QMainWindow):
         self.grp_tz_spinner.setLayout(self.vbox_tz_spinner)
 
         # Connect signals to slots
+        self.btn_set_time_zone_manual.clicked.connect(self.set_time_zone_manual)
         self.btn_set_time_zone_auto.clicked.connect(self.set_time_zone_auto)
 
         # Create grid layout for time zone tab
         self.grid_layout_time_zone = QGridLayout()
-        self.grid_layout_time_zone.addWidget(self.grp_set_time_zone, 1, 0)
-        self.grid_layout_time_zone.addWidget(self.grp_tz_spinner, 2, 0)
-        self.grid_layout_time_zone.setRowStretch(2, 1)
+        self.grid_layout_time_zone.addWidget(self.grp_set_time_zone_manual, 1, 0)
+        self.grid_layout_time_zone.addWidget(self.grp_set_time_zone, 2, 0)
+        self.grid_layout_time_zone.addWidget(self.grp_tz_spinner, 3, 0)
+        self.grid_layout_time_zone.setRowStretch(3, 1)
 
         # Create time zone tab and set layout
         self.time_zone_tab = QWidget(self)
@@ -213,21 +282,71 @@ class DateTimeWindow(QMainWindow):
                                    f"An error occurred while getting the current Date and Time: {e.stderr}")
             return QDateTime.currentDateTime()
 
+    def check_date_time_manual_result(self, ret_code):
+        if ret_code == "OK":
+            self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
+        else:
+            self.show_error_dialog("Error setting Date and Time automatically!",
+                                   f"An error occurred while setting the Date and Time automatically: {ret_code}")
+
+    def update_time_zone_combo_value(self):
+        global new_time_zone
+        self.tz_set_time_zone_manual.setCurrentText(f'{new_time_zone}')
+
     def set_date_time_manual(self):
-        self.spinner.show()
+        global new_date_time
         # 202304151224.10 = Sa. 15 Apr. 2023 12:24:10 CEST
-        new_date_time = self.dt_set_date_time_manual.dateTime().toString(
-            "yyyyMMddhhmm.ss")
+        new_date_time = self.dt_set_date_time_manual.dateTime().toString("yyyyMMddhhmm.ss")
         print(new_date_time)
-        try:
-            # Set the new date and time
-            subprocess.run(["sudo", "date", new_date_time], check=True)
-            self.dt_set_date_time_manual.setDateTime(
-                self.get_current_datetime())
-        except subprocess.CalledProcessError as e:
-            self.show_error_dialog("Error setting Date and Time!",
-                                   f"An error occurred while setting the Date and Time: {e.stderr}")
-        self.spinner.hide()
+        # create a QThread object
+        self.thread = QThread(parent=self)
+        # create a worker object
+        self.worker = SetDateTimeManualWorker()
+        # move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        # set actions to execute when thread is done
+        self.worker.returncode.connect(self.hide_dt_spinner)
+        self.worker.returncode.connect(self.hide_tz_spinner)
+        self.worker.returncode.connect(self.enable_window_widgets)
+        self.worker.returncode.connect(self.check_date_time_manual_result)
+        # disable button and show spinner
+        self.disable_window_widgets()
+        self.show_dt_spinner()
+        # start the thread
+        self.thread.start()
+
+    def update_time_zone_value(self, timezone):
+        global new_time_zone
+        new_time_zone = timezone
+
+    def check_time_zone_manual_result(self, ret_code):
+        if ret_code != "OK":
+            self.show_error_dialog("Error setting Time Zone automatically!",
+                                   f"An error occurred while setting the Date and Time automatically: {ret_code}")
+
+    def set_time_zone_manual(self):
+        # create a QThread object
+        self.thread = QThread(parent=self)
+        # create a worker object
+        self.worker = SetTimeZoneManualWorker()
+        # move worker to the thread
+        self.worker.moveToThread(self.thread)
+        # connect signals and slots
+        self.thread.started.connect(self.worker.run)
+        self.worker.finished.connect(self.thread.quit)
+        # set actions to execute when thread is done
+        self.worker.returncode.connect(self.set_date_time_auto)
+        #self.worker.returncode.connect(self.hide_tz_spinner)
+        #self.worker.returncode.connect(self.enable_window_widgets)
+        self.worker.returncode.connect(self.check_time_zone_manual_result)
+        # disable button and show spinner
+        self.disable_window_widgets()
+        self.show_tz_spinner()
+        # start the thread
+        self.thread.start()
 
     # show date time spinner wrapper
     def show_dt_spinner(self):
@@ -267,7 +386,7 @@ class DateTimeWindow(QMainWindow):
         if ret_code != "OK":
             self.show_error_dialog("Error setting Time Zone automatically!",
                                    f"An error occurred while setting the Time Zone automatically: {ret_code}")
-    
+   
     def set_date_time_auto(self):
         # create a QThread object
         self.thread = QThread(parent=self)
@@ -280,6 +399,8 @@ class DateTimeWindow(QMainWindow):
         self.worker.finished.connect(self.thread.quit)
         # set actions to execute when thread is done
         self.worker.returncode.connect(self.hide_dt_spinner)
+        self.worker.returncode.connect(self.hide_tz_spinner)
+        self.worker.returncode.connect(self.update_time_zone_combo_value)
         self.worker.returncode.connect(self.enable_window_widgets)
         self.worker.returncode.connect(self.check_date_time_auto_result)
         # disable button and show spinner
@@ -287,20 +408,19 @@ class DateTimeWindow(QMainWindow):
         self.show_dt_spinner()
         # start the thread
         self.thread.start()
-        
+       
     def set_time_zone_auto(self):
         # create a QThread object
         self.thread = QThread(parent=self)
         # create a worker object
-        self.worker = SetDateTimeAutoWorker()
+        self.worker = SetTimeZoneAutoWorker()
         # move worker to the thread
         self.worker.moveToThread(self.thread)
         # connect signals and slots
         self.thread.started.connect(self.worker.run)
         self.worker.finished.connect(self.thread.quit)
         # set actions to execute when thread is done
-        self.worker.returncode.connect(self.hide_tz_spinner)
-        self.worker.returncode.connect(self.enable_window_widgets)
+        self.worker.returncode.connect(self.set_date_time_auto)
         self.worker.returncode.connect(self.check_time_zone_auto_result)
         # disable button and show spinner
         self.disable_window_widgets()
@@ -334,6 +454,8 @@ class DateTimeWindow(QMainWindow):
 
 
 if __name__ == "__main__":
+    new_date_time = ""
+    new_time_zone = ""
     app = QApplication(sys.argv)
     window = DateTimeWindow()
     window.show()
