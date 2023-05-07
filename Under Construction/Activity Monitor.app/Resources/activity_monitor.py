@@ -6,8 +6,8 @@ import signal
 import sys
 
 import psutil
-from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QThread
-from PyQt5.QtGui import QKeySequence, QIcon, QColor, QImage, QPixmap
+from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QModelIndex
+from PyQt5.QtGui import QKeySequence, QIcon, QColor, QImage, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -30,10 +30,12 @@ from PyQt5.QtWidgets import (
     QSpacerItem,
     QSizePolicy,
     QLineEdit,
+    QTreeView,
 
 )
 
 from activity_monitor.libs.about import About
+from activity_monitor.libs.model import CustomModel, CustomNode
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
@@ -528,57 +530,33 @@ class TabNetwork(QWidget):
 
 
 class ProcessMonitor(QWidget):
-    def __init__(self, parent):
-        super(ProcessMonitor, self).__init__(parent)
-        self.icon_size = 32
+    def __init__(self, LineEdit):
+        super(ProcessMonitor, self).__init__(LineEdit)
+        self.LineEdit = LineEdit
+
         self.selected_processes_id = [-1]
-        self.selected_filter_index = 1
-        self.filters = {
-            1: 'All Processes',
-            2: 'All Processes, Hierarchically',
-            3: 'My Processes',
-            4: 'System Processes',
-            5: 'Other User Processes',
-            6: 'Active Processes',
-            7: 'Inactive Processes',
-            8: 'Windowed Processes',
-            9: 'Selected Processes',
-            10: 'Application in last 12 hours',
-        }
+        self.selectedPid = -1
 
-        self.setupUi(parent)
+        self.treeview_model = QStandardItemModel()
+        self.setupUi()
 
-    def setupUi(self, parent):
-        self._createActions(parent)
-        self._createMenuBar(parent)
-        self._createToolBars(parent)
-
-        self.mainLayout = None
-
-        self.quitShortcut1 = QShortcut(QKeySequence("Ctrl+Q"), self)
-        self.quitShortcut1.activated.connect(self.close)
-
-        self.quitShortcut2 = QShortcut(QKeySequence("Ctrl+W"), self)
-        self.quitShortcut2.activated.connect(self.close)
-
-        self.process_tree = QTreeWidget()
+    def setupUi(self):
+        self.process_tree = QTreeView()
         # Set uniform row heights to avoid the treeview from jumping around when refreshing
         self.process_tree.setIconSize(QSize(16, 16))
         self.process_tree.setStyleSheet("QTreeWidget::item { height: 20px; }")
 
         self.process_tree.setUniformRowHeights(True)
-        self.process_tree.setColumnCount(7)
-        self.process_tree.setHeaderLabels(
-            ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"])
+
         self.process_tree.setSortingEnabled(True)
         self.process_tree.sortByColumn(3, Qt.DescendingOrder)
         self.process_tree.setAlternatingRowColors(True)
-        # self.process_tree.itemClicked.connect(self.onClicked)
+        self.process_tree.clicked.connect(self.onClicked)
         # self.process_tree.itemDoubleClicked.connect(self.killProcess)
         self.process_tree.setSelectionMode(QAbstractItemView.MultiSelection)
-        self.process_tree.selectionModel().selectionChanged.connect(self.getItems)
+        # self.process_tree.selectionChanged().connect(self.getItems)
 
-        self.processTree = QTreeWidget()
+        # self.processTree = QTreeWidget()
 
         # Set uniform row heights to avoid the treeview from jumping around when refreshing
         # self.processTree.setIconSize(QSize(16, 16))
@@ -592,176 +570,22 @@ class ProcessMonitor(QWidget):
         # self.processTree.setAlternatingRowColors(True)
         # self.processTree.itemClicked.connect(self.onClicked)
         # self.processTree.itemDoubleClicked.connect(self.killProcess)
-        self.processTree.setSelectionMode(QAbstractItemView.SingleSelection)
-
-        # Create a QThread object
-        self.system_memory_thread = QThread()
-        self.system_memory_widget = TabSystemMemory()
-        # Create a worker object
-        self.system_memory_worker = TabSystemMemoryWorker(self.system_memory_widget)
-        # Move worker to the thread
-        self.system_memory_worker.moveToThread(self.system_memory_thread)
-        # Step 5: Connect signals and slots
-        self.system_memory_thread.started.connect(self.system_memory_worker.run)
-        self.system_memory_worker.finished.connect(self.system_memory_thread.quit)
-        self.system_memory_worker.finished.connect(self.system_memory_worker.deleteLater)
-        self.system_memory_thread.finished.connect(self.system_memory_thread.deleteLater)
-        # Start the thread
-        self.system_memory_thread.start()
-
-        self.tabs = QTabWidget()
-        self.tabs.addTab(TabCpu(), "CPU")
-        self.tabs.addTab(TabSystemMemory(), "System Memory")
-        self.tabs.addTab(TabDiskActivity(), "Disk Activity")
-        self.tabs.addTab(TabDiskUsage(), "Disk Usage")
-        self.tabs.addTab(TabNetwork(), "Network")
-
-        self.selectedPid = -1
+        # self.processTree.setSelectionMode(QAbstractItemView.SingleSelection)
 
         layout = QVBoxLayout()
+        layout.setSpacing(0)
+        layout.setContentsMargins(0,0,0,0)
         layout.addWidget(self.process_tree)
-        # layout.addWidget(self.processTree)
-        layout.addWidget(self.tabs)
-
         self.setLayout(layout)
-        self.setStyleSheet(
-            """
-        QTabWidget::tab-bar {
-            alignment: center;
-        }"""
-        )
 
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.refresh)
-        self.timer.start(5000)
+
+
         self.refresh()
 
-    def _createActions(self, parent):
-        self.kill_process_action = QAction(
-            QIcon(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "activity_monitor",
-                    "ui",
-                    "KillProcess.png",
-                )
-            ),
-            "Quit Process",
-            self,
-        )
-        self.kill_process_action.setStatusTip("Kill process")
-        self.kill_process_action.setShortcut("Ctrl+k")
-        self.kill_process_action.triggered.connect(self.killSelectedProcess)
 
-        self.inspect_process_action = QAction(
-            QIcon(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "activity_monitor",
-                    "ui",
-                    "Inspect.png",
-                )
-            ),
-            "Inspect",
-            self,
-        )
-        self.inspect_process_action.setStatusTip("Inspect the selected process")
-        self.inspect_process_action.setShortcut("Ctrl+i")
-        self.inspect_process_action.triggered.connect(self.InspectSelectedProcess)
-
-        self.filterComboBox = QComboBox()
-        pos = 0
-        for pos, text in self.filters.items():
-            if self.selected_filter_index == pos:
-                self.filterComboBox.addItem(f"√ {text}")
-
-            else:
-                self.filterComboBox.addItem(f"  {text}")
-
-        showLabel = QLabel("Show")
-        showLabel.setAlignment(Qt.AlignCenter)
-
-        showVBoxLayout = QVBoxLayout()
-        showVBoxLayout.addWidget(self.filterComboBox)
-        showVBoxLayout.addWidget(showLabel)
-
-        showWidget = QWidget()
-        showWidget.setLayout(showVBoxLayout)
-
-        self.filter_process_action = QWidgetAction(self)
-        self.filter_process_action.setDefaultWidget(showWidget)
-
-        self.searchLineEdit = QLineEdit()
-
-        searchLabel = QLabel("Search")
-        searchLabel.setAlignment(Qt.AlignCenter)
-
-        searchVBoxLayout = QVBoxLayout()
-        searchVBoxLayout.addWidget(self.searchLineEdit)
-        searchVBoxLayout.addWidget(searchLabel)
-
-        searchWidget = QWidget()
-        searchWidget.setLayout(searchVBoxLayout)
-
-        self.search_process_action = QWidgetAction(self)
-        self.search_process_action.setDefaultWidget(searchWidget)
-
-
-    def _createToolBars(self, parent):
-        toolbar = QToolBar("Main ToolBar")
-        toolbar.setIconSize(QSize(self.icon_size, self.icon_size))
-        toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        toolbar.setMovable(False)
-        toolbar.setOrientation(Qt.Horizontal)
-
-        toolbar.addAction(self.kill_process_action)
-        toolbar.addAction(self.inspect_process_action)
-        toolbar.addAction(self.filter_process_action)
-        toolbar.addAction(self.search_process_action)
-
-        parent.addToolBar(toolbar)
-
-    def _createMenuBar(self, parent):
-        menuBar = QMenuBar()
-
-        fileMenu = menuBar.addMenu("&File")
-        editMenu = menuBar.addMenu("&Edit")
-
-        aboutAct = QAction('&About', parent)
-        aboutAct.setStatusTip('About this application')
-        aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menuBar.addMenu("&Help")
-        helpMenu.addAction(aboutAct)
-
-        parent.setMenuBar(menuBar)
-
-    def _showAbout(self):
-        about = About()
-        about.size = 300, 340
-        about.icon = QPixmap(
-            os.path.join(
-                os.path.dirname(__file__),
-                "activity_monitor",
-                "ui",
-                "Processes.png",
-            )).scaledToWidth(96, Qt.SmoothTransformation)
-        about.name = __app_name__
-        about.version = f"Version {__app_version__}"
-        about.text = f"This project is open source, contributions are welcomed.<br><br>" \
-                     f"Visit <a href='{__app_url__}'>{__app_url__}</a> for more information, " \
-                     f"report bug or to suggest a new feature<br>"
-        about.credit = "Copyright 2023-2023 helloSystem team. All rights reserved"
-        about.show()
-
-    def close(self):
-        print("Quitting...")
-        sys.exit(0)
 
     def refresh(self):
-        self.refresh_process_tree()
-        # self.refreshProcessList()
-        # Update active tab only
-        self.tabs.currentWidget().refresh()
+        self.refresh_process_model()
 
     def refresh_process_tree(self):
 
@@ -792,6 +616,37 @@ class ProcessMonitor(QWidget):
 
         for i in range(self.process_tree.columnCount()):
             self.process_tree.resizeColumnToContents(i)
+
+    def refresh_process_model(self):
+        header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
+        self.treeview_model = QStandardItemModel()
+        for p in psutil.process_iter():
+            with p.oneshot():
+                row = [
+                    QStandardItem(f'{p.pid}'),
+                    QStandardItem(f'{p.name()}'),
+                    QStandardItem(f'{p.username()}'),
+                    QStandardItem(f'{p.cpu_percent()}'),
+                    QStandardItem(f'{p.num_threads()}'),
+                    QStandardItem(f'{bytes2human(p.memory_info().rss)}'),
+                    QStandardItem(f'{bytes2human(p.memory_info().vms)}'),
+                ]
+
+                # Filter
+                if self.LineEdit.text():
+                    if self.LineEdit.text() in p.name():
+                        self.treeview_model.appendRow(row)
+                else:
+                    self.treeview_model.appendRow(row)
+
+        for pos, title in enumerate(header):
+            self.treeview_model.setHeaderData(pos, Qt.Horizontal, title)
+
+            self.process_tree.resizeColumnToContents(pos)
+
+        self.process_tree.setModel(self.treeview_model)
+        for pos in range(len(header) - 1):
+            self.process_tree.resizeColumnToContents(pos)
 
     def refreshProcessList(self):
 
@@ -882,11 +737,13 @@ class ProcessMonitor(QWidget):
 
     def getItems(self):
         selected = self.process_tree.selectionModel().selectedIndexes()
-        for index in selected:
-            print(index)
 
-    def onClicked(self, item):
-        print(item.getIndexes())
+        print(selected.model().itemFromIndex(selected))
+
+    def onClicked(self, selectedItem: QModelIndex):
+
+        text = self.treeview_model.data(selectedItem)
+        print(text)
 
         # if item and hasattr(item, "text"):
         #     if item.text(0) in self.selected_processes_id:
@@ -930,7 +787,31 @@ class Window(QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
 
+        self.icon_size = 32
+        self.selected_filter_index = 1
+        self.filters = {
+            1: 'All Processes',
+            2: 'All Processes, Hierarchically',
+            3: 'My Processes',
+            4: 'System Processes',
+            5: 'Other User Processes',
+            6: 'Active Processes',
+            7: 'Inactive Processes',
+            8: 'Windowed Processes',
+            9: 'Selected Processes',
+            10: 'Application in last 12 hours',
+        }
+
+        # vars
+        self.searchLineEdit = None
+        self.process_monitor = None
+        self.tabs = None
+
         self.setupUi()
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.refresh)
+        self.timer.start(5000)
 
     def setupUi(self):
         self.setWindowTitle("Activity Monitor")
@@ -945,9 +826,166 @@ class Window(QMainWindow):
                 )
             )
         )
-        self.centralWidget = ProcessMonitor(self)
-        self.setCentralWidget(self.centralWidget)
+        self.searchLineEdit = QLineEdit()
+        self.process_monitor = ProcessMonitor(self.searchLineEdit)
 
+        self._createMenuBar()
+        self._createActions()
+        self._createToolBars()
+
+        self.setStyleSheet(
+            """
+        QTabWidget::tab-bar {
+            alignment: center;
+        }"""
+        )
+
+        QShortcut(QKeySequence("Ctrl+Q"), self).activated.connect(self.close)
+        QShortcut(QKeySequence("Ctrl+W"), self).activated.connect(self.close)
+
+        self.tabs = QTabWidget()
+        self.tabs.addTab(TabCpu(), "CPU")
+        self.tabs.addTab(TabSystemMemory(), "System Memory")
+        self.tabs.addTab(TabDiskActivity(), "Disk Activity")
+        self.tabs.addTab(TabDiskUsage(), "Disk Usage")
+        self.tabs.addTab(TabNetwork(), "Network")
+
+        layout = QVBoxLayout()
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(self.process_monitor, 1)
+        layout.addWidget(QLabel(""))
+        layout.addWidget(self.tabs)
+        self.central_widget = QWidget()
+        self.central_widget.setLayout(layout)
+
+
+        self.setCentralWidget(self.central_widget)
+
+
+    def refresh(self):
+        self.process_monitor.refresh()
+        self.tabs.currentWidget().refresh()
+
+
+    def _createMenuBar(self):
+        menuBar = QMenuBar()
+
+        fileMenu = menuBar.addMenu("&File")
+        editMenu = menuBar.addMenu("&Edit")
+
+        aboutAct = QAction('&About', self)
+        aboutAct.setStatusTip('About this application')
+        aboutAct.triggered.connect(self._showAbout)
+        helpMenu = menuBar.addMenu("&Help")
+        helpMenu.addAction(aboutAct)
+
+        self.setMenuBar(menuBar)
+
+    def _createActions(self):
+        self.kill_process_action = QAction(
+            QIcon(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "activity_monitor",
+                    "ui",
+                    "KillProcess.png",
+                )
+            ),
+            "Quit Process",
+            self,
+        )
+        self.kill_process_action.setStatusTip("Kill process")
+        self.kill_process_action.triggered.connect(self.process_monitor.killSelectedProcess)
+
+        self.inspect_process_action = QAction(
+            QIcon(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "activity_monitor",
+                    "ui",
+                    "Inspect.png",
+                )
+            ),
+            "Inspect",
+            self,
+        )
+        self.inspect_process_action.setStatusTip("Inspect the selected process")
+        self.inspect_process_action.setShortcut("Ctrl+i")
+        # self.inspect_process_action.triggered.connect(self.InspectSelectedProcess)
+
+        self.filterComboBox = QComboBox()
+        pos = 0
+        for pos, text in self.filters.items():
+            if self.selected_filter_index == pos:
+                self.filterComboBox.addItem(f"√ {text}")
+
+            else:
+                self.filterComboBox.addItem(f"  {text}")
+
+        showLabel = QLabel("Show")
+        showLabel.setAlignment(Qt.AlignCenter)
+
+        showVBoxLayout = QVBoxLayout()
+        showVBoxLayout.addWidget(self.filterComboBox)
+        showVBoxLayout.addWidget(showLabel)
+
+        showWidget = QWidget()
+        showWidget.setLayout(showVBoxLayout)
+
+        self.filter_process_action = QWidgetAction(self)
+        self.filter_process_action.setDefaultWidget(showWidget)
+
+
+
+        searchLabel = QLabel("Search")
+        searchLabel.setAlignment(Qt.AlignCenter)
+
+        searchVBoxLayout = QVBoxLayout()
+        searchVBoxLayout.addWidget(self.searchLineEdit)
+        searchVBoxLayout.addWidget(searchLabel)
+
+        searchWidget = QWidget()
+        searchWidget.setLayout(searchVBoxLayout)
+
+        self.search_process_action = QWidgetAction(self)
+        self.search_process_action.setDefaultWidget(searchWidget)
+
+    def _createToolBars(self):
+        toolbar = QToolBar("Main ToolBar")
+        toolbar.setIconSize(QSize(self.icon_size, self.icon_size))
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+        toolbar.setMovable(False)
+        toolbar.setOrientation(Qt.Horizontal)
+
+        toolbar.addAction(self.kill_process_action)
+        toolbar.addAction(self.inspect_process_action)
+        toolbar.addAction(self.filter_process_action)
+        toolbar.addAction(self.search_process_action)
+
+        self.addToolBar(toolbar)
+
+    def _showAbout(self):
+        about = About()
+        about.size = 300, 340
+        about.icon = QPixmap(
+            os.path.join(
+                os.path.dirname(__file__),
+                "activity_monitor",
+                "ui",
+                "Processes.png",
+            )).scaledToWidth(96, Qt.SmoothTransformation)
+        about.name = __app_name__
+        about.version = f"Version {__app_version__}"
+        about.text = f"This project is open source, contributions are welcomed.<br><br>" \
+                     f"Visit <a href='{__app_url__}'>{__app_url__}</a> for more information, " \
+                     f"report bug or to suggest a new feature<br>"
+        about.credit = "Copyright 2023-2023 helloSystem team. All rights reserved"
+        about.show()
+
+    # def close(self):
+    #     print("Quitting...")
+    #     sys.exit(0)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
