@@ -4,6 +4,7 @@ import hashlib
 import os
 import signal
 import sys
+from pwd import getpwnam
 
 import psutil
 from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QModelIndex
@@ -14,7 +15,6 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QTabWidget,
     QWidget,
-    QTreeWidget,
     QTreeWidgetItem,
     QToolBar,
     QVBoxLayout,
@@ -35,7 +35,6 @@ from PyQt5.QtWidgets import (
 )
 
 from activity_monitor.libs.about import About
-from activity_monitor.libs.model import CustomModel, CustomNode
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
@@ -530,14 +529,16 @@ class TabNetwork(QWidget):
 
 
 class ProcessMonitor(QWidget):
-    def __init__(self, LineEdit):
-        super(ProcessMonitor, self).__init__(LineEdit)
+    def __init__(self, LineEdit, filterComboBox):
+        QWidget.__init__(self)
         self.LineEdit = LineEdit
+        self.filterComboBox = filterComboBox
 
         self.selected_processes_id = [-1]
         self.selectedPid = -1
 
         self.treeview_model = QStandardItemModel()
+        self.my_username = os.getlogin()
         self.setupUi()
 
     def setupUi(self):
@@ -574,18 +575,12 @@ class ProcessMonitor(QWidget):
 
         layout = QVBoxLayout()
         layout.setSpacing(0)
-        layout.setContentsMargins(0,0,0,0)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.process_tree)
         self.setLayout(layout)
 
-
-
         self.refresh()
 
-
-
-    def refresh(self):
-        self.refresh_process_model()
 
     def refresh_process_tree(self):
 
@@ -617,8 +612,18 @@ class ProcessMonitor(QWidget):
         for i in range(self.process_tree.columnCount()):
             self.process_tree.resizeColumnToContents(i)
 
-    def refresh_process_model(self):
+    def filter_by_line(self, row, text):
+        if self.LineEdit.text():
+            if self.LineEdit.text() in text:
+                return row
+            else:
+                return None
+        else:
+            return row
+
+    def refresh(self):
         header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
+
         self.treeview_model = QStandardItemModel()
         for p in psutil.process_iter():
             with p.oneshot():
@@ -633,11 +638,64 @@ class ProcessMonitor(QWidget):
                 ]
 
                 # Filter
+                filtered_row = None
                 if self.LineEdit.text():
                     if self.LineEdit.text() in p.name():
-                        self.treeview_model.appendRow(row)
+                        filtered_row = row
                 else:
-                    self.treeview_model.appendRow(row)
+                    filtered_row = row
+
+                #             0: 'All Processes',
+                #             1: 'All Processes, Hierarchically',
+                #             2: 'My Processes',
+                #             3: 'System Processes',
+                #             4: 'Other User Processes',
+                #             5: 'Active Processes',
+                #             6: 'Inactive Processes',
+                #             7: 'Windowed Processes',
+                #             8: 'Selected Processes',
+                #             9: 'Application in last 12 hours',
+
+                if self.filterComboBox.currentIndex() == 0:
+                    pass
+
+                if self.filterComboBox.currentIndex() == 1:
+                    pass
+                else:
+                    pass
+
+                if self.filterComboBox.currentIndex() == 2:
+                    if p.username() == self.my_username:
+                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                    else:
+                        filtered_row = None
+
+                if self.filterComboBox.currentIndex() == 3:
+                    if p.uids().real < 1000:
+                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                    else:
+                        filtered_row = None
+
+                if self.filterComboBox.currentIndex() == 4:
+                    if p.username() != self.my_username:
+                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                    else:
+                        filtered_row = None
+
+                if self.filterComboBox.currentIndex() == 5:
+                    pass
+                elif self.filterComboBox.currentIndex() == 6:
+                    pass
+                elif self.filterComboBox.currentIndex() == 7:
+                    pass
+                elif self.filterComboBox.currentIndex() == 8:
+                    pass
+                elif self.filterComboBox.currentIndex() == 9:
+                    pass
+                else:
+                    pass
+                if filtered_row:
+                    self.treeview_model.appendRow(filtered_row)
 
         for pos, title in enumerate(header):
             self.treeview_model.setHeaderData(pos, Qt.Horizontal, title)
@@ -803,6 +861,7 @@ class Window(QMainWindow):
         }
 
         # vars
+        self.filterComboBox = None
         self.searchLineEdit = None
         self.process_monitor = None
         self.tabs = None
@@ -827,7 +886,8 @@ class Window(QMainWindow):
             )
         )
         self.searchLineEdit = QLineEdit()
-        self.process_monitor = ProcessMonitor(self.searchLineEdit)
+        self.filterComboBox = QComboBox()
+        self.process_monitor = ProcessMonitor(self.searchLineEdit, self.filterComboBox)
 
         self._createMenuBar()
         self._createActions()
@@ -856,17 +916,15 @@ class Window(QMainWindow):
         layout.addWidget(self.process_monitor, 1)
         layout.addWidget(QLabel(""))
         layout.addWidget(self.tabs)
-        self.central_widget = QWidget()
-        self.central_widget.setLayout(layout)
 
+        central_widget = QWidget()
+        central_widget.setLayout(layout)
 
-        self.setCentralWidget(self.central_widget)
-
+        self.setCentralWidget(central_widget)
 
     def refresh(self):
         self.process_monitor.refresh()
         self.tabs.currentWidget().refresh()
-
 
     def _createMenuBar(self):
         menuBar = QMenuBar()
@@ -914,7 +972,6 @@ class Window(QMainWindow):
         self.inspect_process_action.setShortcut("Ctrl+i")
         # self.inspect_process_action.triggered.connect(self.InspectSelectedProcess)
 
-        self.filterComboBox = QComboBox()
         pos = 0
         for pos, text in self.filters.items():
             if self.selected_filter_index == pos:
@@ -935,8 +992,6 @@ class Window(QMainWindow):
 
         self.filter_process_action = QWidgetAction(self)
         self.filter_process_action.setDefaultWidget(showWidget)
-
-
 
         searchLabel = QLabel("Search")
         searchLabel.setAlignment(Qt.AlignCenter)
@@ -986,6 +1041,7 @@ class Window(QMainWindow):
     # def close(self):
     #     print("Quitting...")
     #     sys.exit(0)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
