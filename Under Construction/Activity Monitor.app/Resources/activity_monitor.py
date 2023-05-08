@@ -715,12 +715,11 @@ class ProcessMonitor(QWidget):
         for pos in range(len(header) - 1):
             self.process_tree.resizeColumnToContents(pos)
 
-    def onClicked(self, selectedItem: QModelIndex):
+    def onClicked(self):
         self.selectedPid = int(self.treeview_model.itemData(self.process_tree.selectedIndexes()[0])[0])
 
-    def killProcess(self, item):
+    def killProcess(self):
         if self.selectedPid:
-        # The text in the 2nd column
             os.kill(self.selectedPid, signal.SIGKILL)
 
     def killSelectedProcess(self):
