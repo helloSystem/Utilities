@@ -802,9 +802,6 @@ class ProcessMonitor(QWidget):
         for i in range(self.processTree.columnCount()):
             self.processTree.resizeColumnToContents(i)
 
-    def getItems(self):
-        index = self.process_tree.currentItem()
-        print(index.data(0, 0).toString())
 
     def onClicked(self, selectedItem: QModelIndex):
         index = self.process_tree.selectedIndexes()[0]
