@@ -4,7 +4,6 @@ import hashlib
 import os
 import signal
 import sys
-from pwd import getpwnam
 
 import psutil
 from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QModelIndex
@@ -529,10 +528,10 @@ class TabNetwork(QWidget):
 
 
 class ProcessMonitor(QWidget):
-    def __init__(self, LineEdit, filterComboBox):
+    def __init__(self):
         QWidget.__init__(self)
-        self.LineEdit = LineEdit
-        self.filterComboBox = filterComboBox
+        self.searchLineEdit = None
+        self.filterComboBox = None
 
         self.selected_processes_id = [-1]
         self.selectedPid = -1
@@ -581,7 +580,6 @@ class ProcessMonitor(QWidget):
 
         self.refresh()
 
-
     def refresh_process_tree(self):
 
         self.process_tree.clear()
@@ -613,8 +611,8 @@ class ProcessMonitor(QWidget):
             self.process_tree.resizeColumnToContents(i)
 
     def filter_by_line(self, row, text):
-        if self.LineEdit.text():
-            if self.LineEdit.text() in text:
+        if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
+            if self.searchLineEdit.text() in text:
                 return row
             else:
                 return None
@@ -639,8 +637,8 @@ class ProcessMonitor(QWidget):
 
                 # Filter
                 filtered_row = None
-                if self.LineEdit.text():
-                    if self.LineEdit.text() in p.name():
+                if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
+                    if self.searchLineEdit.text() in p.name():
                         filtered_row = row
                 else:
                     filtered_row = row
@@ -655,45 +653,45 @@ class ProcessMonitor(QWidget):
                 #             7: 'Windowed Processes',
                 #             8: 'Selected Processes',
                 #             9: 'Application in last 12 hours',
+                if hasattr(self.filterComboBox, "currentIndex"):
+                    if self.filterComboBox.currentIndex() == 0:
+                        pass
 
-                if self.filterComboBox.currentIndex() == 0:
-                    pass
-
-                if self.filterComboBox.currentIndex() == 1:
-                    pass
-                else:
-                    pass
-
-                if self.filterComboBox.currentIndex() == 2:
-                    if p.username() == self.my_username:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                    if self.filterComboBox.currentIndex() == 1:
+                        pass
                     else:
-                        filtered_row = None
+                        pass
 
-                if self.filterComboBox.currentIndex() == 3:
-                    if p.uids().real < 1000:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                    if self.filterComboBox.currentIndex() == 2:
+                        if p.username() == self.my_username:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
+                    if self.filterComboBox.currentIndex() == 3:
+                        if p.uids().real < 1000:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
+                    if self.filterComboBox.currentIndex() == 4:
+                        if p.username() != self.my_username:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
+                    if self.filterComboBox.currentIndex() == 5:
+                        pass
+                    elif self.filterComboBox.currentIndex() == 6:
+                        pass
+                    elif self.filterComboBox.currentIndex() == 7:
+                        pass
+                    elif self.filterComboBox.currentIndex() == 8:
+                        pass
+                    elif self.filterComboBox.currentIndex() == 9:
+                        pass
                     else:
-                        filtered_row = None
-
-                if self.filterComboBox.currentIndex() == 4:
-                    if p.username() != self.my_username:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
-                    else:
-                        filtered_row = None
-
-                if self.filterComboBox.currentIndex() == 5:
-                    pass
-                elif self.filterComboBox.currentIndex() == 6:
-                    pass
-                elif self.filterComboBox.currentIndex() == 7:
-                    pass
-                elif self.filterComboBox.currentIndex() == 8:
-                    pass
-                elif self.filterComboBox.currentIndex() == 9:
-                    pass
-                else:
-                    pass
+                        pass
                 if filtered_row:
                     self.treeview_model.appendRow(filtered_row)
 
@@ -847,18 +845,30 @@ class Window(QMainWindow):
 
         self.icon_size = 32
         self.selected_filter_index = 1
-        self.filters = {
-            1: 'All Processes',
-            2: 'All Processes, Hierarchically',
-            3: 'My Processes',
-            4: 'System Processes',
-            5: 'Other User Processes',
-            6: 'Active Processes',
-            7: 'Inactive Processes',
-            8: 'Windowed Processes',
-            9: 'Selected Processes',
-            10: 'Application in last 12 hours',
-        }
+        # self.filters = {
+        #     1: 'All Processes',
+        #     2: 'All Processes, Hierarchically',
+        #     3: 'My Processes',
+        #     4: 'System Processes',
+        #     5: 'Other User Processes',
+        #     6: 'Active Processes',
+        #     7: 'Inactive Processes',
+        #     8: 'Windowed Processes',
+        #     9: 'Selected Processes',
+        #     10: 'Application in last 12 hours',
+        # }
+        self.filters = [
+            'All Processes',
+            'All Processes, Hierarchically',
+            'My Processes',
+            'System Processes',
+            'Other User Processes',
+            'Active Processes',
+            'Inactive Processes',
+            'Windowed Processes',
+            'Selected Processes',
+            'Application in last 12 hours',
+        ]
 
         # vars
         self.filterComboBox = None
@@ -887,7 +897,12 @@ class Window(QMainWindow):
         )
         self.searchLineEdit = QLineEdit()
         self.filterComboBox = QComboBox()
-        self.process_monitor = ProcessMonitor(self.searchLineEdit, self.filterComboBox)
+        self.process_monitor = ProcessMonitor()
+        self.process_monitor.filterComboBox = self.filterComboBox
+        self.process_monitor.searchLineEdit = self.searchLineEdit
+        self.searchLineEdit.textChanged.connect(self.process_monitor.refresh)
+        self.filterComboBox.currentIndexChanged.connect(self.process_monitor.refresh)
+
 
         self._createMenuBar()
         self._createActions()
@@ -897,7 +912,12 @@ class Window(QMainWindow):
             """
         QTabWidget::tab-bar {
             alignment: center;
-        }"""
+        }
+        QTabWidget::pane { /* The tab widget frame */
+            position: absolute;
+            top: -0.9em;
+        }
+        """
         )
 
         QShortcut(QKeySequence("Ctrl+Q"), self).activated.connect(self.close)
@@ -972,18 +992,17 @@ class Window(QMainWindow):
         self.inspect_process_action.setShortcut("Ctrl+i")
         # self.inspect_process_action.triggered.connect(self.InspectSelectedProcess)
 
-        pos = 0
-        for pos, text in self.filters.items():
-            if self.selected_filter_index == pos:
-                self.filterComboBox.addItem(f"√ {text}")
-
-            else:
-                self.filterComboBox.addItem(f"  {text}")
-
         showLabel = QLabel("Show")
         showLabel.setAlignment(Qt.AlignCenter)
 
         showVBoxLayout = QVBoxLayout()
+        # self.filterComboBox = QComboBox()
+        # for pos, text in enumerate(self.filters):
+        #     self.filterComboBox.addItem(text)
+        self.filterComboBox.addItems(self.filters)
+
+        self.filterComboBox.setCurrentIndex(0)
+
         showVBoxLayout.addWidget(self.filterComboBox)
         showVBoxLayout.addWidget(showLabel)
 
@@ -1041,6 +1060,13 @@ class Window(QMainWindow):
     # def close(self):
     #     print("Quitting...")
     #     sys.exit(0)
+    def _filter_ComboBox_refresh(self):
+        print(self.filterComboBox.currentIndex())
+        for pos, text in enumerate(self.filters):
+            if self.filterComboBox.currentIndex() == pos:
+                self.filterComboBox.setItemText(pos, f"√ {text}")
+            else:
+                self.filterComboBox.setItemText(pos, f" {text}")
 
 
 if __name__ == "__main__":
