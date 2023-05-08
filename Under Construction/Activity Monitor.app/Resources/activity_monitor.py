@@ -6,7 +6,7 @@ import signal
 import sys
 
 import psutil
-from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QModelIndex, QItemSelectionModel
+from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QModelIndex, QItemSelectionModel, QItemSelection
 from PyQt5.QtGui import QKeySequence, QIcon, QColor, QImage, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
@@ -544,7 +544,9 @@ class ProcessMonitor(QWidget):
 
     def setupUi(self):
         self.tree_view_model = QStandardItemModel()
+
         self.process_tree = QTreeView()
+        self.process_tree.setModel(self.tree_view_model)
         self.process_tree.setIconSize(QSize(16, 16))
         self.process_tree.setUniformRowHeights(True)
         self.process_tree.setSortingEnabled(True)
@@ -562,36 +564,32 @@ class ProcessMonitor(QWidget):
 
         self.refresh()
 
-    def refresh_process_tree(self):
+    def save_selection(self):
+        selection = self.process_tree.selectionModel().selectedRows()
+        blocks = []
+        for count, index in enumerate(sorted(selection)):
+            row = index.row()
 
-        self.process_tree.clear()
-        for p in psutil.process_iter():
-            with p.oneshot():
-                # print(p.info["pid"])
-                # print(p.info["name"])
-                item = QTreeWidgetItem()
-                item.setText(0, f'{p.pid}')
-                item.setText(1, f'{p.name()}')
-                item.setText(2, f'{p.username()}')
-                item.setText(3, f'{p.cpu_percent()}')
-                item.setText(4, f'{p.num_threads()}')
-                item.setText(5, f'{bytes2human(p.memory_info().rss)}')
-                item.setText(6, f'{bytes2human(p.memory_info().vms)}')
+            if count > 0 and row == block[1] + 1:
+                block[1] = row
+            else:
+                block = [row, row]
+                blocks.append(block)
+        return blocks
 
-                # Filter
-                if self.searchLineEdit.text():
-                    if self.searchLineEdit.text() in p.name():
-                        self.process_tree.addTopLevelItem(item)
-                else:
-                    self.process_tree.addTopLevelItem(item)
-
-                # if p.pid in self.selectedPid:
-                #     self.process_tree.setCurrentIndex(somemodelindex);
-                #     self.process_tree.setCurrentItem(item)
-        # item.selectedIndexes(self.selected_processes_id)
-
-        for i in range(self.process_tree.columnCount()):
-            self.process_tree.resizeColumnToContents(i)
+    def create_selection(self, blocks):
+        mod = self.process_tree.model()
+        columns = mod.columnCount() - 1
+        flags = QItemSelectionModel.Select
+        selection = QItemSelection()
+        for start, end in blocks:
+            start, end = mod.index(start, 0), mod.index(end, columns)
+            if selection.indexes():
+                selection.merge(QItemSelection(start, end), flags)
+            else:
+                selection.select(start, end)
+        self.process_tree.selectionModel().clear()
+        self.process_tree.selectionModel().select(selection, flags)
 
     def filter_by_line(self, row, text):
         if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
@@ -606,7 +604,7 @@ class ProcessMonitor(QWidget):
         header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
 
         self.tree_view_model = QStandardItemModel()
-        pos = 0
+        line = 0
         for p in psutil.process_iter():
             with p.oneshot():
                 row = [
@@ -679,11 +677,8 @@ class ProcessMonitor(QWidget):
 
                 if filtered_row:
                     self.tree_view_model.appendRow(filtered_row)
-                    if self.selected_pid == p.pid:
-                        print(f"select: {p.pid} {p.name()}")
-                        # index = self.treeview_model.index(pos, pos)
-                        # self.treeview_model.setCurrentIndex(index, QItemSelectionModel.NoUpdate)
-            pos += 1
+
+            line += 1
 
         for pos, title in enumerate(header):
             self.tree_view_model.setHeaderData(pos, Qt.Horizontal, title)
@@ -691,8 +686,27 @@ class ProcessMonitor(QWidget):
             self.process_tree.resizeColumnToContents(pos)
 
         self.process_tree.setModel(self.tree_view_model)
+        if self.selected_pid > 0:
+            self.selectItem(str(self.selected_pid))
+
         for pos in range(len(header) - 1):
             self.process_tree.resizeColumnToContents(pos)
+
+    def selectItem(self, itemOrText):
+        oldIndex = self.process_tree.selectionModel().currentIndex()
+        try:  # an item is given--------------------------------------------
+            newIndex = self.process_tree.model().indexFromItem(itemOrText)
+        except:  # a text is given and we are looking for the first match---
+            # for toto in self.process_tree.model().index(0, 0):
+            #     print(toto)
+            listIndexes = self.process_tree.model().match(self.process_tree.model().index(0, 0),
+                                               Qt.DisplayRole,
+                                               itemOrText,
+                                               Qt.MatchStartsWith)
+            newIndex = listIndexes[0]
+        self.process_tree.selectionModel().select(  # programmatical selection---------
+            newIndex,
+            QItemSelectionModel.ClearAndSelect)
 
     def onClicked(self):
         self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
@@ -785,7 +799,6 @@ class Window(QMainWindow):
         self.process_monitor.searchLineEdit = self.searchLineEdit
         self.searchLineEdit.textChanged.connect(self.process_monitor.refresh)
         self.filterComboBox.currentIndexChanged.connect(self.process_monitor.refresh)
-
 
         self._createMenuBar()
         self._createActions()
