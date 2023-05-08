@@ -533,47 +533,26 @@ class ProcessMonitor(QWidget):
         QWidget.__init__(self)
         self.searchLineEdit = None
         self.filterComboBox = None
+        self.tree_view_model = None
+        self.process_tree = None
+        self.tree_view_model = None
 
-        self.selected_processes_id = [-1]
-        self.selectedPid = -1
-
-        self.treeview_model = QStandardItemModel()
-
+        self.selected_pid = -1
         self.my_username = os.getlogin()
+
         self.setupUi()
 
     def setupUi(self):
+        self.tree_view_model = QStandardItemModel()
         self.process_tree = QTreeView()
-        # Set uniform row heights to avoid the treeview from jumping around when refreshing
         self.process_tree.setIconSize(QSize(16, 16))
-        # self.process_tree.setStyleSheet("QTreeWidget::item { height: 20px; }")
-
         self.process_tree.setUniformRowHeights(True)
-
         self.process_tree.setSortingEnabled(True)
         self.process_tree.sortByColumn(3, Qt.DescendingOrder)
         self.process_tree.setAlternatingRowColors(True)
         self.process_tree.clicked.connect(self.onClicked)
-        # self.process_tree.itemDoubleClicked.connect(self.killProcess)
         self.process_tree.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.process_tree.setSelectionMode(QAbstractItemView.SingleSelection)
-        # self.process_tree.selectionChanged().connect(self.getItems)
-
-        # self.processTree = QTreeWidget()
-
-        # Set uniform row heights to avoid the treeview from jumping around when refreshing
-        # self.processTree.setIconSize(QSize(16, 16))
-        # self.processTree.setStyleSheet("QTreeWidget::item { height: 20px; }")
-        #
-        # self.processTree.setUniformRowHeights(True)
-        # self.processTree.setColumnCount(4)
-        # self.processTree.setHeaderLabels(["Process Name", "Process ID", "Memory", "CPU"])
-        # self.processTree.setSortingEnabled(True)
-        # self.processTree.sortByColumn(3, Qt.DescendingOrder)
-        # self.processTree.setAlternatingRowColors(True)
-        # self.processTree.itemClicked.connect(self.onClicked)
-        # self.processTree.itemDoubleClicked.connect(self.killProcess)
-        # self.processTree.setSelectionMode(QAbstractItemView.SingleSelection)
 
         layout = QVBoxLayout()
         layout.setSpacing(0)
@@ -626,7 +605,7 @@ class ProcessMonitor(QWidget):
     def refresh(self):
         header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
 
-        self.treeview_model = QStandardItemModel()
+        self.tree_view_model = QStandardItemModel()
         pos = 0
         for p in psutil.process_iter():
             with p.oneshot():
@@ -699,34 +678,34 @@ class ProcessMonitor(QWidget):
                         pass
 
                 if filtered_row:
-                    self.treeview_model.appendRow(filtered_row)
-                    if self.selectedPid == p.pid:
+                    self.tree_view_model.appendRow(filtered_row)
+                    if self.selected_pid == p.pid:
                         print(f"select: {p.pid} {p.name()}")
                         # index = self.treeview_model.index(pos, pos)
                         # self.treeview_model.setCurrentIndex(index, QItemSelectionModel.NoUpdate)
             pos += 1
 
         for pos, title in enumerate(header):
-            self.treeview_model.setHeaderData(pos, Qt.Horizontal, title)
+            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, title)
 
             self.process_tree.resizeColumnToContents(pos)
 
-        self.process_tree.setModel(self.treeview_model)
+        self.process_tree.setModel(self.tree_view_model)
         for pos in range(len(header) - 1):
             self.process_tree.resizeColumnToContents(pos)
 
     def onClicked(self):
-        self.selectedPid = int(self.treeview_model.itemData(self.process_tree.selectedIndexes()[0])[0])
+        self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
 
     def killProcess(self):
-        if self.selectedPid:
-            os.kill(self.selectedPid, signal.SIGKILL)
+        if self.selected_pid:
+            os.kill(self.selected_pid, signal.SIGKILL)
 
     def killSelectedProcess(self):
-        if self.selectedPid and self.selectedPid != -1:
+        if self.selected_pid and self.selected_pid != -1:
             try:
-                os.kill(self.selectedPid, signal.SIGKILL)
-                self.selectedPid = -1
+                os.kill(self.selected_pid, signal.SIGKILL)
+                self.selected_pid = -1
                 self.process_tree.clearSelection()
                 self.process_tree.refresh()
             except (Exception, BaseException):
@@ -738,7 +717,7 @@ class ProcessMonitor(QWidget):
         if selected is not None:
             pid = int(selected.text(0))
             try:
-                self.selectedPid = -1
+                self.selected_pid = -1
             except:
                 pass
 
