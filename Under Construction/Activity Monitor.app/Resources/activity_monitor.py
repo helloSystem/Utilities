@@ -6,7 +6,7 @@ import signal
 import sys
 
 import psutil
-from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QModelIndex
+from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QModelIndex, QItemSelectionModel
 from PyQt5.QtGui import QKeySequence, QIcon, QColor, QImage, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
     QLineEdit,
     QTreeView,
+
 
 )
 
@@ -537,6 +538,7 @@ class ProcessMonitor(QWidget):
         self.selectedPid = -1
 
         self.treeview_model = QStandardItemModel()
+
         self.my_username = os.getlogin()
         self.setupUi()
 
@@ -544,7 +546,7 @@ class ProcessMonitor(QWidget):
         self.process_tree = QTreeView()
         # Set uniform row heights to avoid the treeview from jumping around when refreshing
         self.process_tree.setIconSize(QSize(16, 16))
-        self.process_tree.setStyleSheet("QTreeWidget::item { height: 20px; }")
+        # self.process_tree.setStyleSheet("QTreeWidget::item { height: 20px; }")
 
         self.process_tree.setUniformRowHeights(True)
 
@@ -553,7 +555,8 @@ class ProcessMonitor(QWidget):
         self.process_tree.setAlternatingRowColors(True)
         self.process_tree.clicked.connect(self.onClicked)
         # self.process_tree.itemDoubleClicked.connect(self.killProcess)
-        self.process_tree.setSelectionMode(QAbstractItemView.MultiSelection)
+        self.process_tree.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.process_tree.setSelectionMode(QAbstractItemView.SingleSelection)
         # self.process_tree.selectionChanged().connect(self.getItems)
 
         # self.processTree = QTreeWidget()
@@ -603,7 +606,8 @@ class ProcessMonitor(QWidget):
                 else:
                     self.process_tree.addTopLevelItem(item)
 
-                # if p.pid in self.selected_processes_id:
+                # if p.pid in self.selectedPid:
+                #     self.process_tree.setCurrentIndex(somemodelindex);
                 #     self.process_tree.setCurrentItem(item)
         # item.selectedIndexes(self.selected_processes_id)
 
@@ -623,6 +627,7 @@ class ProcessMonitor(QWidget):
         header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
 
         self.treeview_model = QStandardItemModel()
+        pos = 0
         for p in psutil.process_iter():
             with p.oneshot():
                 row = [
@@ -692,8 +697,14 @@ class ProcessMonitor(QWidget):
                         pass
                     else:
                         pass
+
                 if filtered_row:
                     self.treeview_model.appendRow(filtered_row)
+                    if self.selectedPid == p.pid:
+                        print(f"select: {p.pid} {p.name()}")
+                        # index = self.treeview_model.index(pos, pos)
+                        # self.treeview_model.setCurrentIndex(index, QItemSelectionModel.NoUpdate)
+            pos += 1
 
         for pos, title in enumerate(header):
             self.treeview_model.setHeaderData(pos, Qt.Horizontal, title)
@@ -792,40 +803,26 @@ class ProcessMonitor(QWidget):
             self.processTree.resizeColumnToContents(i)
 
     def getItems(self):
-        selected = self.process_tree.selectionModel().selectedIndexes()
-
-        print(selected.model().itemFromIndex(selected))
+        index = self.process_tree.currentItem()
+        print(index.data(0, 0).toString())
 
     def onClicked(self, selectedItem: QModelIndex):
-
-        text = self.treeview_model.data(selectedItem)
-        print(text)
-
-        # if item and hasattr(item, "text"):
-        #     if item.text(0) in self.selected_processes_id:
-        #         del self.selected_processes_id[item.text(0)]
-        #     else:
-        #         self.selected_processes_id.append(item.text(0))
-
-        #
-        # print(item)
-        # print(item.text(0))
-        # pid = int(item.text(0))  # The text in the 2nd column
-        # self.selectedPid = item.data(0, 0)
+        index = self.process_tree.selectedIndexes()[0]
+        self.selectedPid = int(self.treeview_model.itemData(index)[0])
 
     def killProcess(self, item):
-        pid = int(item.text(0))  # The text in the 2nd column
-        os.kill(pid, signal.SIGKILL)
+        if self.selectedPid:
+        # The text in the 2nd column
+            os.kill(self.selectedPid, signal.SIGKILL)
 
     def killSelectedProcess(self):
-        selected = self.process_tree.currentItem()
-        print(selected)
-        if selected is not None:
-            pid = int(selected.text(0))
+        if self.selectedPid and self.selectedPid != -1:
             try:
-                os.kill(pid, signal.SIGKILL)
+                os.kill(self.selectedPid, signal.SIGKILL)
                 self.selectedPid = -1
-            except:
+                self.process_tree.clearSelection()
+                self.process_tree.refresh()
+            except (Exception, BaseException):
                 pass
 
     def InspectSelectedProcess(self):
