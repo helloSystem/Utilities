@@ -673,7 +673,7 @@ class ProcessMonitor(QWidget):
                         pass
 
                     if combo_box_current_index == 9:
-                        if (time.time() - p.create_time()) % 60 < 12:
+                        if (time.time() - p.create_time()) % 60 <= 43200:
                             filtered_row = self.filter_by_line(filtered_row, p.name())
                         else:
                             filtered_row = None
