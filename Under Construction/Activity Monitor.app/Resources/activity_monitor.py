@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-import hashlib
 import os
 import signal
 import sys
 
 import psutil
-from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QModelIndex, QItemSelectionModel, QItemSelection
+from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QItemSelectionModel, QItemSelection
 from PyQt5.QtGui import QKeySequence, QIcon, QColor, QImage, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
@@ -14,7 +13,6 @@ from PyQt5.QtWidgets import (
     QGridLayout,
     QTabWidget,
     QWidget,
-    QTreeWidgetItem,
     QToolBar,
     QVBoxLayout,
     QPushButton,
@@ -30,7 +28,6 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
     QLineEdit,
     QTreeView,
-
 
 )
 
@@ -700,9 +697,10 @@ class ProcessMonitor(QWidget):
             # for toto in self.process_tree.model().index(0, 0):
             #     print(toto)
             listIndexes = self.process_tree.model().match(self.process_tree.model().index(0, 0),
-                                               Qt.DisplayRole,
-                                               itemOrText,
-                                               Qt.MatchStartsWith)
+                                                          Qt.DisplayRole,
+                                                          itemOrText,
+                                                          Qt.MatchStartsWith)
+
             newIndex = listIndexes[0]
         self.process_tree.selectionModel().select(  # programmatical selection---------
             newIndex,
@@ -845,13 +843,101 @@ class Window(QMainWindow):
     def _createMenuBar(self):
         menuBar = QMenuBar()
 
+        # File Menu
         fileMenu = menuBar.addMenu("&File")
+
+        quitAct = QAction('&Quit', self)
+        quitAct.setStatusTip('Quit this application')
+        quitAct.triggered.connect(self.close)
+
+        fileMenu.addAction(quitAct)
+
+        # Edit Menu
         editMenu = menuBar.addMenu("&Edit")
+
+        # View Menu
+        viewMenu = menuBar.addMenu("&View")
+
+        viewMenu.addMenu("Columns")
+        viewMenu.addMenu("Dock Icon")
+        viewMenu.addMenu("Update Frequency")
+
+        viewMenu.addSeparator()
+
+        viewAllProcesses = QAction('All Processes', self)
+        viewAllProcessesHierarchically = QAction('All Processes, Hierarchically', self)
+        viewMyProcesses = QAction('My Processes', self)
+        viewSystemProcesses = QAction('System Processes', self)
+        viewOtherUserProcesses = QAction('Other User Processes', self)
+        viewActiveProcesses = QAction('Active Processes', self)
+        viewInactiveProcesses = QAction('Inactive Processes', self)
+        viewWindowedProcesses = QAction('Windowed Processes', self)
+        viewSelectedProcesses = QAction('Selected Processes', self)
+        viewApplicationInLast12Hours = QAction('Application in last 12 hours', self)
+
+        viewMenu.addActions([viewAllProcesses,
+                             viewAllProcessesHierarchically,
+                             viewMyProcesses,
+                             viewSystemProcesses,
+                             viewOtherUserProcesses,
+                             viewActiveProcesses,
+                             viewInactiveProcesses,
+                             viewWindowedProcesses,
+                             viewSelectedProcesses,
+                             viewApplicationInLast12Hours,
+                             ])
+
+        viewMenu.addSeparator()
+
+        viewFilterProcesses = QAction('Filter Processes', self)
+        viewFilterProcesses.setShortcut("Shit+Ctrl+F")
+
+        viewInspectProcess = QAction('Inspect Process', self)
+        viewInspectProcess.setShortcut("Ctrl+I")
+
+        viewSampleProcess = QAction('Sample Process', self)
+        viewSampleProcess.setShortcut("Shift+Ctrl+S")
+
+        viewRunSpindump = QAction('Run Spindump', self)
+        viewRunSpindump.setShortcut("Alt+Shift+Ctrl+S")
+
+        viewRunSystemDiagnostics = QAction('Run system Diagnostics', self)
+        viewQuitProcess = QAction('Quit Process', self)
+        viewSendSignalToProcesses = QAction('Send Signal to Processes', self)
+        viewShowDeltasForProcess = QAction('Show Deltas for PRocess', self)
+
+        viewMenu.addActions([
+            viewFilterProcesses,
+            viewInspectProcess,
+            viewSampleProcess,
+            viewRunSpindump,
+            viewRunSystemDiagnostics,
+            viewQuitProcess,
+            viewSendSignalToProcesses,
+            viewShowDeltasForProcess,
+        ])
+
+        viewMenu.addSeparator()
+
+        viewClearCPUHistory = QAction('Clear CPU History', self)
+        viewClearCPUHistory.setShortcut("Ctrl+K")
+        viewEnterFullScreen = QAction('Enter Full Screen', self)
+
+        viewMenu.addActions([
+            viewClearCPUHistory,
+            viewEnterFullScreen,
+        ])
+
+        # Window Menu
+        windowMenu = menuBar.addMenu("&Window")
+
+        # Help Menu
+        helpMenu = menuBar.addMenu("&Help")
 
         aboutAct = QAction('&About', self)
         aboutAct.setStatusTip('About this application')
         aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menuBar.addMenu("&Help")
+
         helpMenu.addAction(aboutAct)
 
         self.setMenuBar(menuBar)
