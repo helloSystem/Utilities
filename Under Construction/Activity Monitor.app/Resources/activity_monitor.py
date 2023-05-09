@@ -3,6 +3,7 @@
 import os
 import signal
 import sys
+import time
 
 import psutil
 from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QItemSelectionModel, QItemSelection
@@ -602,7 +603,7 @@ class ProcessMonitor(QWidget):
         header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
 
         self.tree_view_model = QStandardItemModel()
-        line = 0
+
         for p in psutil.process_iter():
             with p.oneshot():
                 row = [
@@ -615,7 +616,7 @@ class ProcessMonitor(QWidget):
                     QStandardItem(f'{bytes2human(p.memory_info().vms)}'),
                 ]
 
-                # Filter
+                # Filter Line
                 filtered_row = None
                 if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
                     if self.searchLineEdit.text() in p.name():
@@ -623,6 +624,7 @@ class ProcessMonitor(QWidget):
                 else:
                     filtered_row = row
 
+                # Filter by ComboBox index
                 #             0: 'All Processes',
                 #             1: 'All Processes, Hierarchically',
                 #             2: 'My Processes',
@@ -634,49 +636,50 @@ class ProcessMonitor(QWidget):
                 #             8: 'Selected Processes',
                 #             9: 'Application in last 12 hours',
                 if hasattr(self.filterComboBox, "currentIndex"):
-                    if self.filterComboBox.currentIndex() == 0:
+                    combo_box_current_index = self.filterComboBox.currentIndex()
+                    if combo_box_current_index == 0:
                         pass
 
-                    if self.filterComboBox.currentIndex() == 1:
+                    if combo_box_current_index == 1:
                         pass
                     else:
                         pass
 
-                    if self.filterComboBox.currentIndex() == 2:
+                    if combo_box_current_index == 2:
                         if p.username() == self.my_username:
                             filtered_row = self.filter_by_line(filtered_row, p.name())
                         else:
                             filtered_row = None
 
-                    if self.filterComboBox.currentIndex() == 3:
+                    if combo_box_current_index == 3:
                         if p.uids().real < 1000:
                             filtered_row = self.filter_by_line(filtered_row, p.name())
                         else:
                             filtered_row = None
 
-                    if self.filterComboBox.currentIndex() == 4:
+                    if combo_box_current_index == 4:
                         if p.username() != self.my_username:
                             filtered_row = self.filter_by_line(filtered_row, p.name())
                         else:
                             filtered_row = None
 
-                    if self.filterComboBox.currentIndex() == 5:
+                    if combo_box_current_index == 5:
                         pass
-                    elif self.filterComboBox.currentIndex() == 6:
+                    elif combo_box_current_index == 6:
                         pass
-                    elif self.filterComboBox.currentIndex() == 7:
+                    elif combo_box_current_index == 7:
                         pass
-                    elif self.filterComboBox.currentIndex() == 8:
+                    elif combo_box_current_index == 8:
                         pass
-                    elif self.filterComboBox.currentIndex() == 9:
-                        pass
-                    else:
-                        pass
+
+                    if combo_box_current_index == 9:
+                        if (time.time() - p.create_time()) % 60 < 12:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
 
                 if filtered_row:
                     self.tree_view_model.appendRow(filtered_row)
-
-            line += 1
 
         for pos, title in enumerate(header):
             self.tree_view_model.setHeaderData(pos, Qt.Horizontal, title)
