@@ -695,6 +695,7 @@ class ProcessMonitor(QWidget):
 
     def selectItem(self, itemOrText):
         oldIndex = self.process_tree.selectionModel().currentIndex()
+        newIndex = None
         try:  # an item is given--------------------------------------------
             newIndex = self.process_tree.model().indexFromItem(itemOrText)
         except:  # a text is given and we are looking for the first match---
@@ -704,11 +705,12 @@ class ProcessMonitor(QWidget):
                                                           Qt.DisplayRole,
                                                           itemOrText,
                                                           Qt.MatchStartsWith)
-
-            newIndex = listIndexes[0]
-        self.process_tree.selectionModel().select(  # programmatical selection---------
-            newIndex,
-            QItemSelectionModel.ClearAndSelect)
+            if listIndexes:
+                newIndex = listIndexes[0]
+        if newIndex:
+            self.process_tree.selectionModel().select(  # programmatical selection---------
+                newIndex,
+                QItemSelectionModel.ClearAndSelect)
 
     def onClicked(self):
         self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
@@ -761,12 +763,13 @@ class Window(QMainWindow):
         self.searchLineEdit = None
         self.process_monitor = None
         self.tabs = None
+        self.timer = QTimer()
 
         self.setupUi()
 
-        self.timer = QTimer()
+        self._timer_change_for_5_secs()
         self.timer.timeout.connect(self.refresh)
-        self.timer.start(5000)
+
 
     def setupUi(self):
         self.setWindowTitle("Activity Monitor")
@@ -827,6 +830,15 @@ class Window(QMainWindow):
     def _close(self):
         self.close()
         return 0
+
+    def _timer_change_for_1_sec(self):
+        self.timer.start(1000)
+
+    def _timer_change_for_3_secs(self):
+        self.timer.start(3000)
+
+    def _timer_change_for_5_secs(self):
+        self.timer.start(5000)
 
     def _filter_by_changed(self):
         #             0: 'All Processes',
@@ -918,7 +930,30 @@ class Window(QMainWindow):
 
         viewMenu.addMenu("Columns")
         viewMenu.addMenu("Dock Icon")
-        viewMenu.addMenu("Update Frequency")
+        viewMenuUpdateFrequency = viewMenu.addMenu("Update Frequency")
+
+        ActionMenuViewUpdateFrequency5Secs = QAction('5 Secs', self)
+        ActionMenuViewUpdateFrequency5Secs.setCheckable(True)
+        ActionMenuViewUpdateFrequency5Secs.triggered.connect(self._timer_change_for_5_secs)
+
+        ActionMenuViewUpdateFrequency3Secs = QAction('3 Secs', self)
+        ActionMenuViewUpdateFrequency3Secs.setCheckable(True)
+        ActionMenuViewUpdateFrequency3Secs.triggered.connect(self._timer_change_for_3_secs)
+
+        ActionMenuViewUpdateFrequency1Sec = QAction('1 Secs', self)
+        ActionMenuViewUpdateFrequency1Sec.setCheckable(True)
+        ActionMenuViewUpdateFrequency1Sec.triggered.connect(self._timer_change_for_1_sec)
+
+        update_frequency_group = QActionGroup(self)
+        update_frequency_group.addAction(ActionMenuViewUpdateFrequency1Sec)
+        update_frequency_group.addAction(ActionMenuViewUpdateFrequency3Secs)
+        update_frequency_group.addAction(ActionMenuViewUpdateFrequency5Secs)
+
+        ActionMenuViewUpdateFrequency5Secs.setChecked(True)
+
+        viewMenuUpdateFrequency.addAction(ActionMenuViewUpdateFrequency1Sec)
+        viewMenuUpdateFrequency.addAction(ActionMenuViewUpdateFrequency3Secs)
+        viewMenuUpdateFrequency.addAction(ActionMenuViewUpdateFrequency5Secs)
 
         viewMenu.addSeparator()
 
