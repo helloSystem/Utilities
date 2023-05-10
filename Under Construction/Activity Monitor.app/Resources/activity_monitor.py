@@ -278,21 +278,17 @@ class TabSystemMemory(QWidget):
             "wired": hasattr(__virtual_memory, "wired"),
         }
 
-        self.layout = QGridLayout()
-        # self.layout.setAlignment(Qt.AlignTop)
-
-        self.setLayout(self.layout)
+        layout = QGridLayout()
 
         # widget Position management
         grid_col = 0
         grid_row = 0
         if self.memory_os_capability["free"]:
             # Free label
-            self.lbl_free = QLabel("Free:")
-            self.lbl_free.setAlignment(Qt.AlignRight)
+            lbl_free = QLabel("Free:")
+            lbl_free.setAlignment(Qt.AlignRight)
             # Free label value
             self.lbl_free_value = QLabel("")
-            self.lbl_free_value.setAlignment(Qt.AlignRight)
             self.lbl_free_value.setAlignment(Qt.AlignRight)
             self.lbl_free_value.setToolTip(
                 "Memory not being used at all (zeroed) that is readily available; note that this doesn’t reflect the "
@@ -301,17 +297,17 @@ class TabSystemMemory(QWidget):
             # Free Color button
             self.color_button_free = ColorButton(color="green")
             # Insert Free labels on the right position
-            self.layout.addWidget(self.lbl_free, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_free_value, grid_row, grid_col + 1, 1, 1)
-            self.layout.addWidget(self.color_button_free, grid_row, grid_col + 2, 1, 1)
+            layout.addWidget(lbl_free, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_free_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(self.color_button_free, grid_row, grid_col + 2, 1, 1)
 
-            self.layout.setRowStretch(grid_col, 0)
+            layout.setRowStretch(grid_col, 0)
             grid_row += 1
 
         if self.memory_os_capability["wired"]:
             # Wired label
-            self.lbl_wired = QLabel("Wired:")
-            self.lbl_wired.setAlignment(Qt.AlignRight)
+            lbl_wired = QLabel("Wired:")
+            lbl_wired.setAlignment(Qt.AlignRight)
             # Free label value
             self.lbl_wired_value = QLabel("")
             self.lbl_wired_value.setAlignment(Qt.AlignRight)
@@ -319,17 +315,17 @@ class TabSystemMemory(QWidget):
             # Free Color button
             self.color_button_wired = ColorButton(color="red")
             # Insert Free labels on the right position
-            self.layout.addWidget(self.lbl_wired, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_wired_value, grid_row, grid_col + 1, 1, 1)
-            self.layout.addWidget(self.color_button_wired, grid_row, grid_col + 2, 1, 1)
+            layout.addWidget(lbl_wired, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_wired_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(self.color_button_wired, grid_row, grid_col + 2, 1, 1)
 
             grid_row += 1
 
         # PSUtil can return active
         if self.memory_os_capability["active"]:
             # Active label
-            self.lbl_active = QLabel("Active:")
-            self.lbl_active.setAlignment(Qt.AlignRight)
+            lbl_active = QLabel("Active:")
+            lbl_active.setAlignment(Qt.AlignRight)
             # Active label value
             self.lbl_active_value = QLabel("")
             self.lbl_active_value.setAlignment(Qt.AlignRight)
@@ -337,16 +333,16 @@ class TabSystemMemory(QWidget):
             # Active Color button
             self.color_button_active = ColorButton(color="orange")
             # Insert Active labels on the right position
-            self.layout.addWidget(self.lbl_active, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_active_value, grid_row, grid_col + 1, 1, 1)
-            self.layout.addWidget(self.color_button_active, grid_row, grid_col + 2, 1, 1)
+            layout.addWidget(lbl_active, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_active_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(self.color_button_active, grid_row, grid_col + 2, 1, 1)
             grid_row += 1
 
         # PSUtil can return inactive
         if self.memory_os_capability["inactive"]:
             # Inactive label
-            self.lbl_inactive = QLabel("Inactive:")
-            self.lbl_inactive.setAlignment(Qt.AlignRight)
+            lbl_inactive = QLabel("Inactive:")
+            lbl_inactive.setAlignment(Qt.AlignRight)
             # Inactive label value
             self.lbl_inactive_value = QLabel("")
             self.lbl_inactive_value.setAlignment(Qt.AlignRight)
@@ -354,16 +350,16 @@ class TabSystemMemory(QWidget):
             # Inactive Color button
             self.color_button_inactive = ColorButton(color="blue")
             # Insert Inactive labels on the right position
-            self.layout.addWidget(self.lbl_inactive, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_inactive_value, grid_row, grid_col + 1, 1, 1)
-            self.layout.addWidget(self.color_button_inactive, grid_row, grid_col + 2, 1, 1)
+            layout.addWidget(lbl_inactive, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_inactive_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(self.color_button_inactive, grid_row, grid_col + 2, 1, 1)
             grid_row += 1
 
         # PSUtil can return used
         if self.memory_os_capability["used"]:
             # Used label
-            self.lbl_used = QLabel("Used:")
-            self.lbl_used.setAlignment(Qt.AlignRight)
+            lbl_used = QLabel("Used:")
+            lbl_used.setAlignment(Qt.AlignRight)
             # Used label value
             self.lbl_used_value = QLabel("")
             self.lbl_used_value.setAlignment(Qt.AlignRight)
@@ -371,8 +367,8 @@ class TabSystemMemory(QWidget):
                 "Memory used, calculated differently depending on the platform and designed for informational purposes only. <b>total - free</b> does not necessarily match <b>used</b>."
             )
             # Insert Used labels on the right position
-            self.layout.addWidget(self.lbl_used, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_used_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(lbl_used, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_used_value, grid_row, grid_col + 1, 1, 1)
 
         # Position management
         # Set col and row to the second widget Position
@@ -382,8 +378,8 @@ class TabSystemMemory(QWidget):
         # PSUtil can return available
         if self.memory_os_capability["available"]:
             # Used label
-            self.lbl_available = QLabel("Available:")
-            self.lbl_available.setAlignment(Qt.AlignRight)
+            lbl_available = QLabel("Available:")
+            lbl_available.setAlignment(Qt.AlignRight)
             # Used label value
             self.lbl_available_value = QLabel("")
             self.lbl_available_value.setAlignment(Qt.AlignRight)
@@ -391,124 +387,109 @@ class TabSystemMemory(QWidget):
                 "The memory that can be given instantly to processes without the system going into swap. <br>"
             )
             # Insert Used labels on the right position
-            self.layout.addWidget(self.lbl_available, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_available_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(lbl_available, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_available_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return buffers
         if self.memory_os_capability["buffers"]:
             # Used label
-            self.lbl_buffers = QLabel("Buffers:")
-            self.lbl_buffers.setAlignment(Qt.AlignRight)
+            lbl_buffers = QLabel("Buffers:")
+            lbl_buffers.setAlignment(Qt.AlignRight)
             # Used label value
             self.lbl_buffers_value = QLabel("")
             self.lbl_buffers_value.setAlignment(Qt.AlignRight)
             self.lbl_buffers_value.setToolTip("Cache for things like file system metadata.<br>")
             # Insert Used labels on the right position
-            self.layout.addWidget(self.lbl_buffers, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_buffers_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(lbl_buffers, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_buffers_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return cached
         if self.memory_os_capability["cached"]:
             # Used label
-            self.lbl_cached = QLabel("Cached:")
-            self.lbl_cached.setAlignment(Qt.AlignRight)
+            lbl_cached = QLabel("Cached:")
+            lbl_cached.setAlignment(Qt.AlignRight)
             # Used label value
             self.lbl_cached_value = QLabel("")
             self.lbl_cached_value.setAlignment(Qt.AlignRight)
             self.lbl_cached_value.setToolTip("Cache for various things.")
             # Insert Used labels on the right position
-            self.layout.addWidget(self.lbl_cached, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_cached_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(lbl_cached, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_cached_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return shared
         if self.memory_os_capability["shared"]:
             # Used label
-            self.lbl_shared = QLabel("Shared:")
-            self.lbl_shared.setAlignment(Qt.AlignRight)
+            lbl_shared = QLabel("Shared:")
+            lbl_shared.setAlignment(Qt.AlignRight)
             # Used label value
             self.lbl_shared_value = QLabel("")
             self.lbl_shared_value.setAlignment(Qt.AlignRight)
             self.lbl_shared_value.setToolTip("Memory that may be simultaneously accessed by multiple processes.")
             # Insert Used labels on the right position
-            self.layout.addWidget(self.lbl_shared, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_shared_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(lbl_shared, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_shared_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return lab
         if self.memory_os_capability["slab"]:
             # Used label
-            self.lbl_slab = QLabel("Slab:")
-            self.lbl_slab.setAlignment(Qt.AlignRight)
+            lbl_slab = QLabel("Slab:")
+            lbl_slab.setAlignment(Qt.AlignRight)
             # Used label value
             self.lbl_slab_value = QLabel("")
             self.lbl_slab_value.setAlignment(Qt.AlignRight)
             self.lbl_slab_value.setToolTip("in-kernel data structures cache.")
             # Insert Used labels on the right position
-            self.layout.addWidget(self.lbl_slab, grid_row, grid_col, 1, 1)
-            self.layout.addWidget(self.lbl_slab_value, grid_row, grid_col + 1, 1, 1)
+            layout.addWidget(lbl_slab, grid_row, grid_col, 1, 1)
+            layout.addWidget(self.lbl_slab_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
-        grid_col += 2
-        self.layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        self.setLayout(layout)
         self.refresh()
 
     def refresh(self):
-        # >>> psutil.virtual_memory()
-        # svmem(total=10367352832, available=6472179712, percent=37.6, used=8186245120,
-        # free=2181107712, active=4748992512, inactive=2758115328, buffers=790724608,
-        # cached=3500347392, shared=787554304)
         if psutil_data:
-            vm = psutil_data["virtual_memory"]
-            # Free
             if self.memory_os_capability["free"]:
                 self.lbl_free_value.setText(
-                    f"<font color={self.color_button_free.color()}>{bytes2human(vm.free)}</font>"
+                    f"<font color={self.color_button_free.color()}>{bytes2human(psutil_data['virtual_memory'].free)}</font>"
                 )
 
-            # Wired
             if self.memory_os_capability["wired"]:
                 self.lbl_wired_value.setText(
-                    f"<font color={self.color_button_wired.color()}>{bytes2human(vm.wired)}</font>"
+                    f"<font color={self.color_button_wired.color()}>{bytes2human(psutil_data['virtual_memory'].wired)}</font>"
                 )
 
-            # Active
             if self.memory_os_capability["active"]:
                 self.lbl_active_value.setText(
-                    f"<font color={self.color_button_active.color()}>{bytes2human(vm.active)}</font>"
+                    f"<font color={self.color_button_active.color()}>{bytes2human(psutil_data['virtual_memory'].active)}</font>"
                 )
 
-            # Inactive
             if self.memory_os_capability["inactive"]:
                 self.lbl_inactive_value.setText(
-                    f"<font color={self.color_button_inactive.color()}>{bytes2human(vm.inactive)}</font>"
+                    f"<font color={self.color_button_inactive.color()}>{bytes2human(psutil_data['virtual_memory'].inactive)}</font>"
                 )
 
-            # Used
             if self.memory_os_capability["used"]:
-                self.lbl_used_value.setText(bytes2human(vm.used))
+                self.lbl_used_value.setText(bytes2human(psutil_data["virtual_memory"].used))
 
-            # Available
             if self.memory_os_capability["available"]:
-                self.lbl_available_value.setText(bytes2human(vm.available))
+                self.lbl_available_value.setText(bytes2human(psutil_data["virtual_memory"].available))
 
-            # Buffers
             if self.memory_os_capability["buffers"]:
-                self.lbl_buffers_value.setText(bytes2human(vm.buffers))
+                self.lbl_buffers_value.setText(bytes2human(psutil_data["virtual_memory"].buffers))
 
-            # Cached
             if self.memory_os_capability["cached"]:
-                self.lbl_cached_value.setText(bytes2human(vm.cached))
+                self.lbl_cached_value.setText(bytes2human(psutil_data["virtual_memory"].cached))
 
-            # Shared
             if self.memory_os_capability["shared"]:
-                self.lbl_shared_value.setText(bytes2human(vm.shared))
+                self.lbl_shared_value.setText(bytes2human(psutil_data["virtual_memory"].shared))
 
-            # Slab
             if self.memory_os_capability["slab"]:
-                self.lbl_slab_value.setText(bytes2human(vm.slab))
+                self.lbl_slab_value.setText(bytes2human(psutil_data["virtual_memory"].slab))
 
 
 class TabDiskActivity(QWidget):
