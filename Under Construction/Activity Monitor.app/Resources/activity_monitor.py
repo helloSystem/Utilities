@@ -1011,6 +1011,7 @@ class Window(QMainWindow):
 
         self.ActionMenuViewSelectedProcesses = QAction('Selected Processes', self)
         self.ActionMenuViewSelectedProcesses.setCheckable(True)
+        self.ActionMenuViewSelectedProcesses.setEnabled(False)
         self.ActionMenuViewSelectedProcesses.triggered.connect(self._filter_by_selected_processes)
 
         self.ActionMenuViewApplicationInLast12Hours = QAction('Application in last 12 hours', self)
@@ -1046,7 +1047,7 @@ class Window(QMainWindow):
         viewMenu.addSeparator()
 
         viewFilterProcesses = QAction('Filter Processes', self)
-        viewFilterProcesses.setShortcut("Shit+Ctrl+F")
+        viewFilterProcesses.setShortcut("Ctrl+Meta+F")
 
         viewInspectProcess = QAction('Inspect Process', self)
         viewInspectProcess.setShortcut("Ctrl+I")
@@ -1079,7 +1080,7 @@ class Window(QMainWindow):
         viewClearCPUHistory.setShortcut("Ctrl+K")
 
         viewEnterFullScreen = QAction('Enter Full Screen', self)
-        viewEnterFullScreen.setShortcut(QKeySequence.FullScreen)
+        viewEnterFullScreen.setEnabled(False)
 
         viewMenu.addActions([
             viewClearCPUHistory,
@@ -1147,7 +1148,6 @@ class Window(QMainWindow):
             self,
         )
         self.inspect_process_action.setStatusTip("Inspect the selected process")
-        self.inspect_process_action.setShortcut("Ctrl+i")
         self.inspect_process_action.setEnabled(False)
         # self.inspect_process_action.triggered.connect(self.InspectSelectedProcess)
 
