@@ -6,7 +6,19 @@ import sys
 import time
 
 import psutil
-from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QItemSelectionModel, QItemSelection, QMutex, QObject, QThread
+from PyQt5.QtCore import (
+    QTimer,
+    Qt,
+    QSize,
+    pyqtSignal as Signal,
+    QPoint,
+    QObject,
+    QItemSelectionModel,
+    QItemSelection,
+    QMutex,
+    QObject,
+    QThread,
+)
 from PyQt5.QtGui import QKeySequence, QIcon, QColor, QImage, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
@@ -30,7 +42,6 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
     QLineEdit,
     QTreeView,
-
 )
 
 from activity_monitor.libs.about import About
@@ -42,7 +53,8 @@ __app_description__ = "View CPU, Memory, Network, Disk activities and interact w
 __app_url__ = "https://github.com/helloSystem/Utilities"
 
 psutil_data = None
-#mutex = QMutex()
+mutex = QMutex()
+
 
 def bytes2human(n):
     # http://code.activestate.com/recipes/578019
@@ -66,21 +78,23 @@ class PSUtilsWorker(QObject):
 
     def refresh(self):
         global psutil_data
-        #mutex.lock()
+        mutex.lock()
         psutil_data = {
             "process_iter": psutil.process_iter(),
             "cpu_times_percent": psutil.cpu_times_percent(),
             "virtual_memory": psutil.virtual_memory(),
         }
         self.updated.emit()
-        #mutex.unlock()
+        mutex.unlock()
         self.finished.emit()
+
 
 class ColorButton(QPushButton):
     """
     Custom Qt Widget to show a chosen color.
+
     Left-clicking the button shows the color-chooser, while
-    right-clicking resets the color to the default color (None by default).
+    right-clicking resets the color to None (no-color).
     """
 
     colorChanged = Signal(object)
@@ -94,22 +108,6 @@ class ColorButton(QPushButton):
 
         # Set the initial/default state.
         self.setColor(self._default)
-        self.setContentsMargins(3, 3, 3, 3)
-
-        self.image = QImage(self.size(), QImage.Format_RGB32)
-        self.image.fill(Qt.white)
-
-        self.drawing = False
-        self.brushSize = 28
-        self.brushColor = Qt.black
-        self.lastPoint = QPoint()
-
-    def resizeEvent(self, event):
-        # Create a square base size of 10x10 and scale it to the new size
-        # maintaining aspect ratio.
-        new_size = QSize(10, 10)
-        new_size.scale(event.size(), Qt.KeepAspectRatio)
-        self.resize(new_size)
 
     def setColor(self, color):
         if color != self._color:
@@ -127,7 +125,9 @@ class ColorButton(QPushButton):
     def onColorPicker(self):
         """
         Show color-picker dialog to select color.
+
         Qt will use the native dialog by default.
+
         """
         dlg = QColorDialog(self)
         if self._color:
@@ -169,7 +169,9 @@ class TabCpu(QWidget):
         self.lbl_system_value = QLabel("")
         self.lbl_system_value.setAlignment(Qt.AlignRight)
         # User system button
-        self.color_button_system = ColorButton(color="red")
+        self.color_button_system = ColorButton(color="blue")
+        # self.color_button_system.clicked.connect(self._set_color_button_system())
+
         # Insert system labels on the right position
         self.layout.addWidget(self.lbl_system, 2, 0, 1, 1)
         self.layout.addWidget(self.lbl_system_value, 2, 1, 1, 1)
@@ -215,14 +217,28 @@ class TabCpu(QWidget):
 
         self.layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
+    def _set_color_button_system(self):
+        color = QColorDialog.getColor()  # OpenColorDialog
+        if color.isValid():
+            print(color.name())  # ff5b87
+            print(color.red(), color.green(), color.blue())  # 255 91 135
+
+        r, g, b = color.red(), color.green(), color.blue()
+        strRGB = "{:^3d}, {:^3d}, {:^3d}".format(r, g, b)
+
+        self.color_button_system.setStyleSheet("background-color:rgb({});".format(strRGB))
+
     def refresh(self):
         if psutil_data:
-            cpu_times_percent = psutil_data["cpu_times_percent"]
-            self.lbl_user_value.setText(f'<font color="{self.color_button_user.color()}">{cpu_times_percent.user} %</font>')
-            self.lbl_system_value.setText(
-                f'<font color="{self.color_button_system.color()}">{cpu_times_percent.system} %</font>'
+            self.lbl_user_value.setText(
+                f'<font color="{self.color_button_user.color()}">{psutil_data["cpu_times_percent"].user} %</font>'
             )
-            self.lbl_idle_value.setText(f'<font color="{self.color_button_idle.color()}">{cpu_times_percent.idle} %</font>')
+            self.lbl_system_value.setText(
+                f'<font color="{self.color_button_system.color()}">{psutil_data["cpu_times_percent"].system} %</font>'
+            )
+            self.lbl_idle_value.setText(
+                f'<font color="{self.color_button_idle.color()}">{psutil_data["cpu_times_percent"].idle} %</font>'
+            )
 
             cumulative_threads = 0
             process_number = 0
@@ -240,7 +256,6 @@ class TabCpu(QWidget):
 
             self.lbl_processes_value.setText(f"{process_number}")
             self.lbl_threads_value.setText(f"{cumulative_threads}")
-
 
 
 class TabSystemMemory(QWidget):
@@ -280,7 +295,8 @@ class TabSystemMemory(QWidget):
             self.lbl_free_value.setAlignment(Qt.AlignRight)
             self.lbl_free_value.setAlignment(Qt.AlignRight)
             self.lbl_free_value.setToolTip(
-                "Memory not being used at all (zeroed) that is readily available; note that this doesn’t reflect the actual memory available (use available instead). total - used does not necessarily match free."
+                "Memory not being used at all (zeroed) that is readily available; note that this doesn’t reflect the "
+                "actual memory available (use available instead). total - used does not necessarily match free. "
             )
             # Free Color button
             self.color_button_free = ColorButton(color="green")
@@ -448,7 +464,9 @@ class TabSystemMemory(QWidget):
             vm = psutil_data["virtual_memory"]
             # Free
             if self.memory_os_capability["free"]:
-                self.lbl_free_value.setText(f"<font color={self.color_button_free.color()}>{bytes2human(vm.free)}</font>")
+                self.lbl_free_value.setText(
+                    f"<font color={self.color_button_free.color()}>{bytes2human(vm.free)}</font>"
+                )
 
             # Wired
             if self.memory_os_capability["wired"]:
@@ -538,6 +556,7 @@ class ProcessMonitor(QWidget):
         self.inspect_process_action = None
         self.selected_pid = -1
         self.my_username = os.getlogin()
+        self.header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
 
         self.setupUi()
 
@@ -600,22 +619,18 @@ class ProcessMonitor(QWidget):
             return row
 
     def refresh(self):
-        if not psutil_data:
-            return
-        header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
-
         self.tree_view_model = QStandardItemModel()
 
-        for p in psutil_data["process_iter"]:
+        for p in psutil.process_iter():
             with p.oneshot():
                 row = [
-                    QStandardItem(f'{p.pid}'),
-                    QStandardItem(f'{p.name()}'),
-                    QStandardItem(f'{p.username()}'),
-                    QStandardItem(f'{p.cpu_percent()}'),
-                    QStandardItem(f'{p.num_threads()}'),
-                    QStandardItem(f'{bytes2human(p.memory_info().rss)}'),
-                    QStandardItem(f'{bytes2human(p.memory_info().vms)}'),
+                    QStandardItem(f"{p.pid}"),
+                    QStandardItem(f"{p.name()}"),
+                    QStandardItem(f"{p.username()}"),
+                    QStandardItem(f"{p.cpu_percent()}"),
+                    QStandardItem(f"{p.num_threads()}"),
+                    QStandardItem(f"{bytes2human(p.memory_info().rss)}"),
+                    QStandardItem(f"{bytes2human(p.memory_info().vms)}"),
                 ]
 
                 # Filter Line
@@ -683,17 +698,17 @@ class ProcessMonitor(QWidget):
                 if filtered_row:
                     self.tree_view_model.appendRow(filtered_row)
 
-        for pos, title in enumerate(header):
+        for pos, title in enumerate(self.header):
             self.tree_view_model.setHeaderData(pos, Qt.Horizontal, title)
-
             self.process_tree.resizeColumnToContents(pos)
 
         self.process_tree.setModel(self.tree_view_model)
-        if self.selected_pid > 0:
+
+        if self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
 
-        for pos in range(len(header) - 1):
-            self.process_tree.resizeColumnToContents(pos)
+        # for pos in range(len(self.header) - 1):
+        #     self.process_tree.resizeColumnToContents(pos)
 
     def selectClear(self):
         self.selected_pid = -1
@@ -710,16 +725,15 @@ class ProcessMonitor(QWidget):
         except:  # a text is given and we are looking for the first match---
             # for toto in self.process_tree.model().index(0, 0):
             #     print(toto)
-            listIndexes = self.process_tree.model().match(self.process_tree.model().index(0, 0),
-                                                          Qt.DisplayRole,
-                                                          itemOrText,
-                                                          Qt.MatchStartsWith)
+            listIndexes = self.process_tree.model().match(
+                self.process_tree.model().index(0, 0), Qt.DisplayRole, itemOrText, Qt.MatchStartsWith
+            )
             if listIndexes:
                 newIndex = listIndexes[0]
         if newIndex:
             self.process_tree.selectionModel().select(  # programmatical selection---------
-                newIndex,
-                QItemSelectionModel.ClearAndSelect)
+                newIndex, QItemSelectionModel.ClearAndSelect
+            )
 
     def onClicked(self):
         self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
@@ -759,16 +773,16 @@ class Window(QMainWindow):
 
         self.icon_size = 32
         self.filters = [
-            'All Processes',
-            'All Processes, Hierarchically',
-            'My Processes',
-            'System Processes',
-            'Other User Processes',
-            'Active Processes',
-            'Inactive Processes',
-            'Windowed Processes',
-            'Selected Processes',
-            'Application in last 12 hours',
+            "All Processes",
+            "All Processes, Hierarchically",
+            "My Processes",
+            "System Processes",
+            "Other User Processes",
+            "Active Processes",
+            "Inactive Processes",
+            "Windowed Processes",
+            "Selected Processes",
+            "Application in last 12 hours",
         ]
 
         # vars
@@ -816,7 +830,7 @@ class Window(QMainWindow):
 
         self.process_monitor.kill_process_action = self.kill_process_action
         self.process_monitor.inspect_process_action = self.inspect_process_action
-        self.quitShortcut1 = QShortcut(QKeySequence('Escape'), self)
+        self.quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
         self.quitShortcut1.activated.connect(self.process_monitor.selectClear)
 
         self.setStyleSheet(
@@ -830,7 +844,6 @@ class Window(QMainWindow):
             }
             """
         )
-
 
         self.tabs = QTabWidget()
         self.tabs.addTab(self.tab_cpu, "CPU")
@@ -854,24 +867,22 @@ class Window(QMainWindow):
 
     def createThread(self):
         thread = QThread()
-
         worker = PSUtilsWorker()
         worker.moveToThread(thread)
         thread.started.connect(lambda: worker.refresh())
-        worker.updated.connect(self.process_monitor.refresh)
         worker.updated.connect(self.tab_cpu.refresh)
         worker.updated.connect(self.tab_system_memory.refresh)
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
         thread.finished.connect(thread.deleteLater)
+
         return thread
 
     def refresh(self):
-        self.threads.clear()
+        self.process_monitor.refresh()
 
-        self.threads = [
-            self.createThread()
-        ]
+        self.threads.clear()
+        self.threads = [self.createThread()]
         for thread in self.threads:
             thread.start()
 
@@ -962,8 +973,8 @@ class Window(QMainWindow):
         # File Menu
         fileMenu = self.menuBar.addMenu("&File")
 
-        quitAct = QAction('Quit', self)
-        quitAct.setStatusTip('Quit this application')
+        quitAct = QAction("Quit", self)
+        quitAct.setStatusTip("Quit this application")
         quitAct.setShortcut(QKeySequence.Quit)
         quitAct.triggered.connect(self._close)
 
@@ -984,15 +995,15 @@ class Window(QMainWindow):
         # Update Frequency Menu
         viewMenuUpdateFrequency = viewMenu.addMenu("Update Frequency")
 
-        ActionMenuViewUpdateFrequency5Secs = QAction('5 Secs', self)
+        ActionMenuViewUpdateFrequency5Secs = QAction("5 Secs", self)
         ActionMenuViewUpdateFrequency5Secs.setCheckable(True)
         ActionMenuViewUpdateFrequency5Secs.triggered.connect(self._timer_change_for_5_secs)
 
-        ActionMenuViewUpdateFrequency3Secs = QAction('3 Secs', self)
+        ActionMenuViewUpdateFrequency3Secs = QAction("3 Secs", self)
         ActionMenuViewUpdateFrequency3Secs.setCheckable(True)
         ActionMenuViewUpdateFrequency3Secs.triggered.connect(self._timer_change_for_3_secs)
 
-        ActionMenuViewUpdateFrequency1Sec = QAction('1 Secs', self)
+        ActionMenuViewUpdateFrequency1Sec = QAction("1 Secs", self)
         ActionMenuViewUpdateFrequency1Sec.setCheckable(True)
         ActionMenuViewUpdateFrequency1Sec.triggered.connect(self._timer_change_for_1_sec)
 
@@ -1009,44 +1020,44 @@ class Window(QMainWindow):
 
         viewMenu.addSeparator()
 
-        self.ActionMenuViewAllProcesses = QAction('All Processes', self)
+        self.ActionMenuViewAllProcesses = QAction("All Processes", self)
         self.ActionMenuViewAllProcesses.setCheckable(True)
         self.ActionMenuViewAllProcesses.triggered.connect(self._filter_by_all_processes)
 
-        self.ActionMenuViewAllProcessesHierarchically = QAction('All Processes, Hierarchically', self)
+        self.ActionMenuViewAllProcessesHierarchically = QAction("All Processes, Hierarchically", self)
         self.ActionMenuViewAllProcessesHierarchically.setCheckable(True)
         self.ActionMenuViewAllProcessesHierarchically.triggered.connect(self._filter_by_all_process_hierarchically)
 
-        self.ActionMenuViewMyProcesses = QAction('My Processes', self)
+        self.ActionMenuViewMyProcesses = QAction("My Processes", self)
         self.ActionMenuViewMyProcesses.setCheckable(True)
         self.ActionMenuViewMyProcesses.triggered.connect(self._filter_by_my_processes)
 
-        self.ActionMenuViewSystemProcesses = QAction('System Processes', self)
+        self.ActionMenuViewSystemProcesses = QAction("System Processes", self)
         self.ActionMenuViewSystemProcesses.setCheckable(True)
         self.ActionMenuViewSystemProcesses.triggered.connect(self._filter_by_system_processes)
 
-        self.ActionMenuViewOtherUserProcesses = QAction('Other User Processes', self)
+        self.ActionMenuViewOtherUserProcesses = QAction("Other User Processes", self)
         self.ActionMenuViewOtherUserProcesses.setCheckable(True)
         self.ActionMenuViewOtherUserProcesses.triggered.connect(self._filter_by_other_user_processes)
 
-        self.ActionMenuViewActiveProcesses = QAction('Active Processes', self)
+        self.ActionMenuViewActiveProcesses = QAction("Active Processes", self)
         self.ActionMenuViewActiveProcesses.setCheckable(True)
         self.ActionMenuViewActiveProcesses.triggered.connect(self._filter_by_active_processes)
 
-        self.ActionMenuViewInactiveProcesses = QAction('Inactive Processes', self)
+        self.ActionMenuViewInactiveProcesses = QAction("Inactive Processes", self)
         self.ActionMenuViewInactiveProcesses.setCheckable(True)
         self.ActionMenuViewInactiveProcesses.triggered.connect(self._filter_by_inactive_processes)
 
-        self.ActionMenuViewWindowedProcesses = QAction('Windowed Processes', self)
+        self.ActionMenuViewWindowedProcesses = QAction("Windowed Processes", self)
         self.ActionMenuViewWindowedProcesses.setCheckable(True)
         self.ActionMenuViewWindowedProcesses.triggered.connect(self._filter_by_windowed_processes)
 
-        self.ActionMenuViewSelectedProcesses = QAction('Selected Processes', self)
+        self.ActionMenuViewSelectedProcesses = QAction("Selected Processes", self)
         self.ActionMenuViewSelectedProcesses.setCheckable(True)
         self.ActionMenuViewSelectedProcesses.setEnabled(False)
         self.ActionMenuViewSelectedProcesses.triggered.connect(self._filter_by_selected_processes)
 
-        self.ActionMenuViewApplicationInLast12Hours = QAction('Application in last 12 hours', self)
+        self.ActionMenuViewApplicationInLast12Hours = QAction("Application in last 12 hours", self)
         self.ActionMenuViewApplicationInLast12Hours.setCheckable(True)
         self.ActionMenuViewApplicationInLast12Hours.triggered.connect(self._filter_by_application_in_last_12_hours)
 
@@ -1064,90 +1075,97 @@ class Window(QMainWindow):
 
         self.ActionMenuViewAllProcesses.setChecked(True)
 
-        viewMenu.addActions([self.ActionMenuViewAllProcesses,
-                             self.ActionMenuViewAllProcessesHierarchically,
-                             self.ActionMenuViewMyProcesses,
-                             self.ActionMenuViewSystemProcesses,
-                             self.ActionMenuViewOtherUserProcesses,
-                             self.ActionMenuViewActiveProcesses,
-                             self.ActionMenuViewInactiveProcesses,
-                             self.ActionMenuViewWindowedProcesses,
-                             self.ActionMenuViewSelectedProcesses,
-                             self.ActionMenuViewApplicationInLast12Hours,
-                             ])
+        viewMenu.addActions(
+            [
+                self.ActionMenuViewAllProcesses,
+                self.ActionMenuViewAllProcessesHierarchically,
+                self.ActionMenuViewMyProcesses,
+                self.ActionMenuViewSystemProcesses,
+                self.ActionMenuViewOtherUserProcesses,
+                self.ActionMenuViewActiveProcesses,
+                self.ActionMenuViewInactiveProcesses,
+                self.ActionMenuViewWindowedProcesses,
+                self.ActionMenuViewSelectedProcesses,
+                self.ActionMenuViewApplicationInLast12Hours,
+            ]
+        )
 
         viewMenu.addSeparator()
 
-        viewFilterProcesses = QAction('Filter Processes', self)
+        viewFilterProcesses = QAction("Filter Processes", self)
         viewFilterProcesses.setShortcut("Ctrl+Meta+F")
         viewFilterProcesses.setEnabled(False)
 
-        viewInspectProcess = QAction('Inspect Process', self)
+        viewInspectProcess = QAction("Inspect Process", self)
         viewInspectProcess.setShortcut("Ctrl+I")
         viewInspectProcess.setEnabled(False)
 
-        viewSampleProcess = QAction('Sample Process', self)
+        viewSampleProcess = QAction("Sample Process", self)
         viewSampleProcess.setShortcut("Ctrl+Meta+S")
         viewSampleProcess.setEnabled(False)
 
-        viewRunSpindump = QAction('Run Spindump', self)
+        viewRunSpindump = QAction("Run Spindump", self)
         viewRunSpindump.setShortcut("Alt+Ctrl+Meta+S")
         viewRunSpindump.setEnabled(False)
 
-        viewRunSystemDiagnostics = QAction('Run system Diagnostics', self)
+        viewRunSystemDiagnostics = QAction("Run system Diagnostics", self)
         viewRunSystemDiagnostics.setEnabled(False)
 
-        viewQuitProcess = QAction('Quit Process', self)
+        viewQuitProcess = QAction("Quit Process", self)
         viewQuitProcess.setShortcut("Ctrl+Meta+Q")
         viewQuitProcess.setEnabled(False)
 
-        viewSendSignalToProcesses = QAction('Send Signal to Processes', self)
+        viewSendSignalToProcesses = QAction("Send Signal to Processes", self)
         viewSendSignalToProcesses.setEnabled(False)
 
-        viewShowDeltasForProcess = QAction('Show Deltas for Process', self)
+        viewShowDeltasForProcess = QAction("Show Deltas for Process", self)
         viewShowDeltasForProcess.setShortcut("Ctrl+Meta+J")
         viewShowDeltasForProcess.setEnabled(False)
 
-        viewMenu.addActions([
-            viewFilterProcesses,
-            viewInspectProcess,
-            viewSampleProcess,
-            viewRunSpindump,
-            viewRunSystemDiagnostics,
-            viewQuitProcess,
-            viewSendSignalToProcesses,
-            viewShowDeltasForProcess,
-        ])
+        viewMenu.addActions(
+            [
+                viewFilterProcesses,
+                viewInspectProcess,
+                viewSampleProcess,
+                viewRunSpindump,
+                viewRunSystemDiagnostics,
+                viewQuitProcess,
+                viewSendSignalToProcesses,
+                viewShowDeltasForProcess,
+            ]
+        )
 
         viewMenu.addSeparator()
 
-        viewClearCPUHistory = QAction('Clear CPU History', self)
+        viewClearCPUHistory = QAction("Clear CPU History", self)
         viewClearCPUHistory.setShortcut("Ctrl+K")
         viewClearCPUHistory.setEnabled(False)
 
-        viewEnterFullScreen = QAction('Enter Full Screen', self)
+        viewEnterFullScreen = QAction("Enter Full Screen", self)
         viewEnterFullScreen.setEnabled(False)
 
-        viewMenu.addActions([
-            viewClearCPUHistory,
-            viewEnterFullScreen,
-        ])
+        viewMenu.addActions(
+            [
+                viewClearCPUHistory,
+                viewEnterFullScreen,
+            ]
+        )
 
         # Window Menu
         windowMenu = self.menuBar.addMenu("Window")
 
-        ActionMenuWindowMinimize = QAction('Minimize', self)
+        ActionMenuWindowMinimize = QAction("Minimize", self)
         ActionMenuWindowMinimize.setShortcut("Ctrl+M")
         ActionMenuWindowMinimize.triggered.connect(self._window_minimize)
 
-        self.ActionMenuWindowZoom = QAction('Zoom', self)
+        self.ActionMenuWindowZoom = QAction("Zoom", self)
         self.ActionMenuWindowZoom.setEnabled(False)
 
         windowMenu.addAction(ActionMenuWindowMinimize)
         windowMenu.addAction(self.ActionMenuWindowZoom)
         windowMenu.addSeparator()
 
-        ActionMenuWindowActivityMonitor = QAction('Activity Monitor', self)
+        ActionMenuWindowActivityMonitor = QAction("Activity Monitor", self)
         ActionMenuWindowActivityMonitor.setShortcut("Ctrl+1")
         ActionMenuWindowActivityMonitor.setEnabled(False)
 
@@ -1156,8 +1174,8 @@ class Window(QMainWindow):
         # Help Menu
         helpMenu = self.menuBar.addMenu("&Help")
 
-        aboutAct = QAction('&About', self)
-        aboutAct.setStatusTip('About this application')
+        aboutAct = QAction("&About", self)
+        aboutAct.setStatusTip("About this application")
         aboutAct.triggered.connect(self._showAbout)
 
         helpMenu.addAction(aboutAct)
@@ -1252,25 +1270,17 @@ class Window(QMainWindow):
                 "activity_monitor",
                 "ui",
                 "Processes.png",
-            )).scaledToWidth(96, Qt.SmoothTransformation)
+            )
+        ).scaledToWidth(96, Qt.SmoothTransformation)
         about.name = __app_name__
         about.version = f"Version {__app_version__}"
-        about.text = f"This project is open source, contributions are welcomed.<br><br>" \
-                     f"Visit <a href='{__app_url__}'>{__app_url__}</a> for more information, " \
-                     f"report bug or to suggest a new feature<br>"
+        about.text = (
+            f"This project is open source, contributions are welcomed.<br><br>"
+            f"Visit <a href='{__app_url__}'>{__app_url__}</a> for more information, "
+            f"report bug or to suggest a new feature<br>"
+        )
         about.credit = "Copyright 2023-2023 helloSystem team. All rights reserved"
         about.show()
-
-    # def close(self):
-    #     print("Quitting...")
-    #     sys.exit(0)
-    def _filter_ComboBox_refresh(self):
-        print(self.filterComboBox.currentIndex())
-        for pos, text in enumerate(self.filters):
-            if self.filterComboBox.currentIndex() == pos:
-                self.filterComboBox.setItemText(pos, f"√ {text}")
-            else:
-                self.filterComboBox.setItemText(pos, f" {text}")
 
 
 if __name__ == "__main__":
