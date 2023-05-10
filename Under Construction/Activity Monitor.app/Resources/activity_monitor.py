@@ -948,8 +948,12 @@ class Window(QMainWindow):
         # View Menu
         viewMenu = self.menuBar.addMenu("&View")
 
-        viewMenu.addMenu("Columns")
-        viewMenu.addMenu("Dock Icon")
+        view_columns = viewMenu.addMenu("Columns")
+        view_columns.setEnabled(False)
+
+        view_dock = viewMenu.addMenu("Dock Icon")
+        view_dock.setEnabled(False)
+
         viewMenuUpdateFrequency = viewMenu.addMenu("Update Frequency")
 
         ActionMenuViewUpdateFrequency5Secs = QAction('5 Secs', self)
@@ -1048,20 +1052,33 @@ class Window(QMainWindow):
 
         viewFilterProcesses = QAction('Filter Processes', self)
         viewFilterProcesses.setShortcut("Ctrl+Meta+F")
+        viewFilterProcesses.setEnabled(False)
 
         viewInspectProcess = QAction('Inspect Process', self)
         viewInspectProcess.setShortcut("Ctrl+I")
+        viewInspectProcess.setEnabled(False)
 
         viewSampleProcess = QAction('Sample Process', self)
-        viewSampleProcess.setShortcut("Shift+Ctrl+S")
+        viewSampleProcess.setShortcut("Ctrl+Meta+S")
+        viewSampleProcess.setEnabled(False)
 
         viewRunSpindump = QAction('Run Spindump', self)
-        viewRunSpindump.setShortcut("Alt+Shift+Ctrl+S")
+        viewRunSpindump.setShortcut("Alt+Ctrl+Meta+S")
+        viewRunSpindump.setEnabled(False)
 
         viewRunSystemDiagnostics = QAction('Run system Diagnostics', self)
+        viewRunSystemDiagnostics.setEnabled(False)
+
         viewQuitProcess = QAction('Quit Process', self)
+        viewQuitProcess.setShortcut("Ctrl+Meta+Q")
+        viewQuitProcess.setEnabled(False)
+
         viewSendSignalToProcesses = QAction('Send Signal to Processes', self)
+        viewSendSignalToProcesses.setEnabled(False)
+
         viewShowDeltasForProcess = QAction('Show Deltas for Process', self)
+        viewShowDeltasForProcess.setShortcut("Ctrl+Meta+J")
+        viewShowDeltasForProcess.setEnabled(False)
 
         viewMenu.addActions([
             viewFilterProcesses,
