@@ -535,7 +535,8 @@ class ProcessMonitor(QWidget):
         self.tree_view_model = None
         self.process_tree = None
         self.tree_view_model = None
-
+        self.kill_process_action = None
+        self.inspect_process_action = None
         self.selected_pid = -1
         self.my_username = os.getlogin()
 
@@ -693,6 +694,12 @@ class ProcessMonitor(QWidget):
         for pos in range(len(header) - 1):
             self.process_tree.resizeColumnToContents(pos)
 
+    def selectClear(self):
+        self.selected_pid = -1
+        self.process_tree.clearSelection()
+        self.kill_process_action.setEnabled(False)
+        self.inspect_process_action.setEnabled(False)
+
     def selectItem(self, itemOrText):
         oldIndex = self.process_tree.selectionModel().currentIndex()
         newIndex = None
@@ -714,6 +721,9 @@ class ProcessMonitor(QWidget):
 
     def onClicked(self):
         self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
+        if self.selected_pid:
+            self.kill_process_action.setEnabled(True)
+            self.inspect_process_action.setEnabled(True)
 
     def killProcess(self):
         if self.selected_pid:
@@ -789,12 +799,18 @@ class Window(QMainWindow):
         self.process_monitor = ProcessMonitor()
         self.process_monitor.filterComboBox = self.filterComboBox
         self.process_monitor.searchLineEdit = self.searchLineEdit
+
         self.searchLineEdit.textChanged.connect(self.process_monitor.refresh)
         self.filterComboBox.currentIndexChanged.connect(self._filter_by_changed)
 
         self._createMenuBar()
         self._createActions()
         self._createToolBars()
+
+        self.process_monitor.kill_process_action = self.kill_process_action
+        self.process_monitor.inspect_process_action = self.inspect_process_action
+        self.quitShortcut1 = QShortcut(QKeySequence('Escape'), self)
+        self.quitShortcut1.activated.connect(self.process_monitor.selectClear)
 
         self.setStyleSheet(
             """
@@ -826,10 +842,14 @@ class Window(QMainWindow):
         central_widget.setLayout(layout)
 
         self.setCentralWidget(central_widget)
+        self.window_minimized = False
 
     def _close(self):
         self.close()
         return 0
+
+    def _window_minimize(self):
+        self.showMinimized()
 
     def _timer_change_for_1_sec(self):
         self.timer.start(1000)
@@ -915,7 +935,7 @@ class Window(QMainWindow):
         # File Menu
         fileMenu = self.menuBar.addMenu("&File")
 
-        quitAct = QAction('&Quit', self)
+        quitAct = QAction('Quit', self)
         quitAct.setStatusTip('Quit this application')
         quitAct.setShortcut(QKeySequence.Quit)
         quitAct.triggered.connect(self._close)
@@ -1067,7 +1087,24 @@ class Window(QMainWindow):
         ])
 
         # Window Menu
-        windowMenu = self.menuBar.addMenu("&Window")
+        windowMenu = self.menuBar.addMenu("Window")
+
+        ActionMenuWindowMinimize = QAction('Minimize', self)
+        ActionMenuWindowMinimize.setShortcut("Ctrl+M")
+        ActionMenuWindowMinimize.triggered.connect(self._window_minimize)
+
+        self.ActionMenuWindowZoom = QAction('Zoom', self)
+        self.ActionMenuWindowZoom.setEnabled(False)
+
+        windowMenu.addAction(ActionMenuWindowMinimize)
+        windowMenu.addAction(self.ActionMenuWindowZoom)
+        windowMenu.addSeparator()
+
+        ActionMenuWindowActivityMonitor = QAction('Activity Monitor', self)
+        ActionMenuWindowActivityMonitor.setShortcut("Ctrl+1")
+        ActionMenuWindowActivityMonitor.setEnabled(False)
+
+        windowMenu.addAction(ActionMenuWindowActivityMonitor)
 
         # Help Menu
         helpMenu = self.menuBar.addMenu("&Help")
@@ -1095,6 +1132,7 @@ class Window(QMainWindow):
         )
         self.kill_process_action.setStatusTip("Kill process")
         self.kill_process_action.triggered.connect(self.process_monitor.killSelectedProcess)
+        self.kill_process_action.setEnabled(False)
 
         self.inspect_process_action = QAction(
             QIcon(
@@ -1110,6 +1148,7 @@ class Window(QMainWindow):
         )
         self.inspect_process_action.setStatusTip("Inspect the selected process")
         self.inspect_process_action.setShortcut("Ctrl+i")
+        self.inspect_process_action.setEnabled(False)
         # self.inspect_process_action.triggered.connect(self.InspectSelectedProcess)
 
         showLabel = QLabel("Show")
