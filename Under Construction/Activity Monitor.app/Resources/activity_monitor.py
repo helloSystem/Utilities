@@ -6,7 +6,7 @@ import sys
 import time
 
 import psutil
-from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QItemSelectionModel, QItemSelection
+from PyQt5.QtCore import QTimer, Qt, QSize, pyqtSignal as Signal, QPoint, QObject, QItemSelectionModel, QItemSelection, QMutex, QObject, QThread
 from PyQt5.QtGui import QKeySequence, QIcon, QColor, QImage, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
@@ -41,6 +41,8 @@ __app_authors__ = ["Hierosme Alias Tuuux", "Contributors ..."]
 __app_description__ = "View CPU, Memory, Network, Disk activities and interact with processes"
 __app_url__ = "https://github.com/helloSystem/Utilities"
 
+psutil_data = None
+#mutex = QMutex()
 
 def bytes2human(n):
     # http://code.activestate.com/recipes/578019
@@ -57,6 +59,22 @@ def bytes2human(n):
             return f"{round(float(n) / prefix[s], 2):.2f} {s}B"
     return f"{n} B"
 
+
+class PSUtilsWorker(QObject):
+    finished = Signal()
+    updated = Signal()
+
+    def refresh(self):
+        global psutil_data
+        #mutex.lock()
+        psutil_data = {
+            "process_iter": psutil.process_iter(),
+            "cpu_times_percent": psutil.cpu_times_percent(),
+            "virtual_memory": psutil.virtual_memory(),
+        }
+        self.updated.emit()
+        #mutex.unlock()
+        self.finished.emit()
 
 class ColorButton(QPushButton):
     """
@@ -198,36 +216,31 @@ class TabCpu(QWidget):
         self.layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
     def refresh(self):
-        cpu_times_percent = psutil.cpu_times_percent()
-        self.lbl_user_value.setText(f'<font color="{self.color_button_user.color()}">{cpu_times_percent.user} %</font>')
-        self.lbl_system_value.setText(
-            f'<font color="{self.color_button_system.color()}">{cpu_times_percent.system} %</font>'
-        )
-        self.lbl_idle_value.setText(f'<font color="{self.color_button_idle.color()}">{cpu_times_percent.idle} %</font>')
+        if psutil_data:
+            cpu_times_percent = psutil_data["cpu_times_percent"]
+            self.lbl_user_value.setText(f'<font color="{self.color_button_user.color()}">{cpu_times_percent.user} %</font>')
+            self.lbl_system_value.setText(
+                f'<font color="{self.color_button_system.color()}">{cpu_times_percent.system} %</font>'
+            )
+            self.lbl_idle_value.setText(f'<font color="{self.color_button_idle.color()}">{cpu_times_percent.idle} %</font>')
 
-        cumulative_threads = 0
-        process_number = 0
-        # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.oneshot
-        p = psutil.Process()
-        with p.oneshot():
-            # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.process_iter
-            for proc in psutil.process_iter():
-                try:
-                    # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.cpu_times
-                    cumulative_threads += proc.num_threads()
-                    process_number += 1
-                except psutil.NoSuchProcess:
-                    pass
+            cumulative_threads = 0
+            process_number = 0
+            # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.oneshot
+            p = psutil.Process()
+            with p.oneshot():
+                # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.process_iter
+                for proc in psutil_data["process_iter"]:
+                    try:
+                        # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.cpu_times
+                        cumulative_threads += proc.num_threads()
+                        process_number += 1
+                    except psutil.NoSuchProcess:
+                        pass
 
-        self.lbl_processes_value.setText(f"{process_number}")
-        self.lbl_threads_value.setText(f"{cumulative_threads}")
+            self.lbl_processes_value.setText(f"{process_number}")
+            self.lbl_threads_value.setText(f"{cumulative_threads}")
 
-
-class TabSystemMemoryWorker(QObject):
-    finished = Signal()
-
-    def run(self):
-        self.finished.emit()
 
 
 class TabSystemMemory(QWidget):
@@ -431,67 +444,53 @@ class TabSystemMemory(QWidget):
         # svmem(total=10367352832, available=6472179712, percent=37.6, used=8186245120,
         # free=2181107712, active=4748992512, inactive=2758115328, buffers=790724608,
         # cached=3500347392, shared=787554304)
-        vm = psutil.virtual_memory()
-        # Free
-        if self.memory_os_capability["free"]:
-            self.lbl_free_value.setText(f"<font color={self.color_button_free.color()}>{bytes2human(vm.free)}</font>")
+        if psutil_data:
+            vm = psutil_data["virtual_memory"]
+            # Free
+            if self.memory_os_capability["free"]:
+                self.lbl_free_value.setText(f"<font color={self.color_button_free.color()}>{bytes2human(vm.free)}</font>")
 
-        # Wired
-        if self.memory_os_capability["wired"]:
-            self.lbl_wired_value.setText(
-                f"<font color={self.color_button_wired.color()}>{bytes2human(vm.wired)}</font>"
-            )
+            # Wired
+            if self.memory_os_capability["wired"]:
+                self.lbl_wired_value.setText(
+                    f"<font color={self.color_button_wired.color()}>{bytes2human(vm.wired)}</font>"
+                )
 
-        # Active
-        if self.memory_os_capability["active"]:
-            self.lbl_active_value.setText(
-                f"<font color={self.color_button_active.color()}>{bytes2human(vm.active)}</font>"
-            )
+            # Active
+            if self.memory_os_capability["active"]:
+                self.lbl_active_value.setText(
+                    f"<font color={self.color_button_active.color()}>{bytes2human(vm.active)}</font>"
+                )
 
-        # Inactive
-        if self.memory_os_capability["inactive"]:
-            self.lbl_inactive_value.setText(
-                f"<font color={self.color_button_inactive.color()}>{bytes2human(vm.inactive)}</font>"
-            )
+            # Inactive
+            if self.memory_os_capability["inactive"]:
+                self.lbl_inactive_value.setText(
+                    f"<font color={self.color_button_inactive.color()}>{bytes2human(vm.inactive)}</font>"
+                )
 
-        # Used
-        if self.memory_os_capability["used"]:
-            self.lbl_used_value.setText(bytes2human(vm.used))
+            # Used
+            if self.memory_os_capability["used"]:
+                self.lbl_used_value.setText(bytes2human(vm.used))
 
-        # Available
-        if self.memory_os_capability["available"]:
-            self.lbl_available_value.setText(bytes2human(vm.available))
+            # Available
+            if self.memory_os_capability["available"]:
+                self.lbl_available_value.setText(bytes2human(vm.available))
 
-        # Buffers
-        if self.memory_os_capability["buffers"]:
-            self.lbl_buffers_value.setText(bytes2human(vm.buffers))
+            # Buffers
+            if self.memory_os_capability["buffers"]:
+                self.lbl_buffers_value.setText(bytes2human(vm.buffers))
 
-        # Cached
-        if self.memory_os_capability["cached"]:
-            self.lbl_cached_value.setText(bytes2human(vm.cached))
+            # Cached
+            if self.memory_os_capability["cached"]:
+                self.lbl_cached_value.setText(bytes2human(vm.cached))
 
-        # Shared
-        if self.memory_os_capability["shared"]:
-            self.lbl_shared_value.setText(bytes2human(vm.shared))
+            # Shared
+            if self.memory_os_capability["shared"]:
+                self.lbl_shared_value.setText(bytes2human(vm.shared))
 
-        # Slab
-        if self.memory_os_capability["slab"]:
-            self.lbl_slab_value.setText(bytes2human(vm.slab))
-
-        # # VM Size
-        # vm_size = 0
-        # # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.oneshot
-        # p = psutil.Process()
-        # with p.oneshot():
-        #     # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.process_iter
-        #     for proc in psutil.process_iter():
-        #         # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.memory_info
-        #         vm_size += proc.memory_info().vms
-        #
-        # self.lbl_vm_size_value.setText(bytes2human(vm_size))
-
-        # Swap used
-        # self.lbl_swap_used_value.setText(bytes2human(psutil.swap_memory().used))
+            # Slab
+            if self.memory_os_capability["slab"]:
+                self.lbl_slab_value.setText(bytes2human(vm.slab))
 
 
 class TabDiskActivity(QWidget):
@@ -601,11 +600,13 @@ class ProcessMonitor(QWidget):
             return row
 
     def refresh(self):
+        if not psutil_data:
+            return
         header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
 
         self.tree_view_model = QStandardItemModel()
 
-        for p in psutil.process_iter():
+        for p in psutil_data["process_iter"]:
             with p.oneshot():
                 row = [
                     QStandardItem(f'{p.pid}'),
@@ -699,6 +700,7 @@ class ProcessMonitor(QWidget):
         self.process_tree.clearSelection()
         self.kill_process_action.setEnabled(False)
         self.inspect_process_action.setEnabled(False)
+        self.filterComboBox.model().item(8).setEnabled(False)
 
     def selectItem(self, itemOrText):
         oldIndex = self.process_tree.selectionModel().currentIndex()
@@ -724,6 +726,7 @@ class ProcessMonitor(QWidget):
         if self.selected_pid:
             self.kill_process_action.setEnabled(True)
             self.inspect_process_action.setEnabled(True)
+            self.filterComboBox.model().item(8).setEnabled(True)
 
     def killProcess(self):
         if self.selected_pid:
@@ -769,6 +772,7 @@ class Window(QMainWindow):
         ]
 
         # vars
+        self.threads = []
         self.filterComboBox = None
         self.searchLineEdit = None
         self.process_monitor = None
@@ -779,7 +783,7 @@ class Window(QMainWindow):
 
         self._timer_change_for_5_secs()
         self.timer.timeout.connect(self.refresh)
-
+        self.refresh()
 
     def setupUi(self):
         self.setWindowTitle("Activity Monitor")
@@ -794,12 +798,15 @@ class Window(QMainWindow):
                 )
             )
         )
+        self.tab_cpu = TabCpu()
+        self.tab_system_memory = TabSystemMemory()
         self.searchLineEdit = QLineEdit()
         self.filterComboBox = QComboBox()
         self.process_monitor = ProcessMonitor()
         self.process_monitor.filterComboBox = self.filterComboBox
         self.process_monitor.searchLineEdit = self.searchLineEdit
 
+        # Ping / Pong for ComboBox
         self.searchLineEdit.textChanged.connect(self.process_monitor.refresh)
         self.filterComboBox.currentIndexChanged.connect(self._filter_by_changed)
 
@@ -824,9 +831,10 @@ class Window(QMainWindow):
             """
         )
 
+
         self.tabs = QTabWidget()
-        self.tabs.addTab(TabCpu(), "CPU")
-        self.tabs.addTab(TabSystemMemory(), "System Memory")
+        self.tabs.addTab(self.tab_cpu, "CPU")
+        self.tabs.addTab(self.tab_system_memory, "System Memory")
         self.tabs.addTab(TabDiskActivity(), "Disk Activity")
         self.tabs.addTab(TabDiskUsage(), "Disk Usage")
         self.tabs.addTab(TabNetwork(), "Network")
@@ -843,6 +851,29 @@ class Window(QMainWindow):
 
         self.setCentralWidget(central_widget)
         self.window_minimized = False
+
+    def createThread(self):
+        thread = QThread()
+
+        worker = PSUtilsWorker()
+        worker.moveToThread(thread)
+        thread.started.connect(lambda: worker.refresh())
+        worker.updated.connect(self.process_monitor.refresh)
+        worker.updated.connect(self.tab_cpu.refresh)
+        worker.updated.connect(self.tab_system_memory.refresh)
+        worker.finished.connect(thread.quit)
+        worker.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+        return thread
+
+    def refresh(self):
+        self.threads.clear()
+
+        self.threads = [
+            self.createThread()
+        ]
+        for thread in self.threads:
+            thread.start()
 
     def _close(self):
         self.close()
@@ -924,10 +955,6 @@ class Window(QMainWindow):
 
     def _filter_by_application_in_last_12_hours(self):
         self.filterComboBox.setCurrentIndex(9)
-
-    def refresh(self):
-        self.process_monitor.refresh()
-        self.tabs.currentWidget().refresh()
 
     def _createMenuBar(self):
         self.menuBar = QMenuBar()
@@ -1174,10 +1201,9 @@ class Window(QMainWindow):
         showLabel.setAlignment(Qt.AlignCenter)
 
         showVBoxLayout = QVBoxLayout()
-        # self.filterComboBox = QComboBox()
-        # for pos, text in enumerate(self.filters):
-        #     self.filterComboBox.addItem(text)
+
         self.filterComboBox.addItems(self.filters)
+        self.filterComboBox.model().item(8).setEnabled(False)
 
         self.filterComboBox.setCurrentIndex(0)
 
