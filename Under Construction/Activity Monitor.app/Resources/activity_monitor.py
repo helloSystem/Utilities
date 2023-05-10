@@ -954,6 +954,7 @@ class Window(QMainWindow):
         view_dock = viewMenu.addMenu("Dock Icon")
         view_dock.setEnabled(False)
 
+        # Update Frequency Menu
         viewMenuUpdateFrequency = viewMenu.addMenu("Update Frequency")
 
         ActionMenuViewUpdateFrequency5Secs = QAction('5 Secs', self)
@@ -1095,6 +1096,7 @@ class Window(QMainWindow):
 
         viewClearCPUHistory = QAction('Clear CPU History', self)
         viewClearCPUHistory.setShortcut("Ctrl+K")
+        viewClearCPUHistory.setEnabled(False)
 
         viewEnterFullScreen = QAction('Enter Full Screen', self)
         viewEnterFullScreen.setEnabled(False)
