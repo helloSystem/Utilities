@@ -45,6 +45,7 @@ from PyQt5.QtWidgets import (
 )
 
 from activity_monitor.libs.about import About
+from activity_monitor.libs.utils import bytes2human
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
@@ -52,40 +53,41 @@ __app_authors__ = ["Hierosme Alias Tuuux", "Contributors ..."]
 __app_description__ = "View CPU, Memory, Network, Disk activities and interact with processes"
 __app_url__ = "https://github.com/helloSystem/Utilities"
 
-psutil_data = None
-mutex = QMutex()
-
-
-def bytes2human(n):
-    # http://code.activestate.com/recipes/578019
-    # >>> bytes2human(10000)
-    # '9.80 KB'
-    # >>> bytes2human(100001221)
-    # '95.40 MB'
-    symbols = ("K", "M", "G", "T", "P", "E", "Z", "Y")
-    prefix = {}
-    for i, s in enumerate(symbols):
-        prefix[s] = 1 << (i + 1) * 10
-    for s in reversed(symbols):
-        if n >= prefix[s]:
-            return f"{round(float(n) / prefix[s], 2):.2f} {s}B"
-    return f"{n} B"
-
 
 class PSUtilsWorker(QObject):
     finished = Signal()
     updated = Signal()
+    updated_virtual_memory = Signal(object)
+
+    updated_cpu_user = Signal(float)
+    updated_cpu_system = Signal(float)
+    updated_cpu_idle = Signal(float)
+    updated_cpu_cumulative_threads = Signal(int)
+    updated_cpu_process_number = Signal(int)
 
     def refresh(self):
-        global psutil_data
-        mutex.lock()
-        psutil_data = {
-            "process_iter": psutil.process_iter(),
-            "cpu_times_percent": psutil.cpu_times_percent(),
-            "virtual_memory": psutil.virtual_memory(),
-        }
+        cpu_times_percent = psutil.cpu_times_percent()
+        self.updated_cpu_user.emit(cpu_times_percent.user)
+        self.updated_cpu_system.emit(cpu_times_percent.system)
+        self.updated_cpu_idle.emit(cpu_times_percent.idle)
+        cumulative_threads = 0
+        process_number = 0
+        # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.oneshot
+        p = psutil.Process()
+        with p.oneshot():
+            # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.process_iter
+            for proc in psutil.process_iter():
+                try:
+                    cumulative_threads += proc.num_threads()
+                    process_number += 1
+                except psutil.NoSuchProcess:
+                    pass
+        self.updated_cpu_cumulative_threads.emit(cumulative_threads)
+        self.updated_cpu_process_number.emit(process_number)
+
+        self.updated_virtual_memory.emit(psutil.virtual_memory())
+
         self.updated.emit()
-        mutex.unlock()
         self.finished.emit()
 
 
@@ -146,25 +148,27 @@ class ColorButton(QPushButton):
 class TabCpu(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-        self.layout = QGridLayout()
-        self.setLayout(self.layout)
+        self.setupUI()
+
+    def setupUI(self):
+        layout = QGridLayout()
 
         # User label
-        self.lbl_user = QLabel("User:")
-        self.lbl_user.setAlignment(Qt.AlignRight)
+        lbl_user = QLabel("User:")
+        lbl_user.setAlignment(Qt.AlignRight)
         # User label value
         self.lbl_user_value = QLabel("")
         self.lbl_user_value.setAlignment(Qt.AlignRight)
         # User Color button
         self.color_button_user = ColorButton(color="green")
         # Insert user labels on the right position
-        self.layout.addWidget(self.lbl_user, 1, 0, 1, 1)
-        self.layout.addWidget(self.lbl_user_value, 1, 1, 1, 1)
-        self.layout.addWidget(self.color_button_user, 1, 2, 1, 1)
+        layout.addWidget(lbl_user, 1, 0, 1, 1)
+        layout.addWidget(self.lbl_user_value, 1, 1, 1, 1)
+        layout.addWidget(self.color_button_user, 1, 2, 1, 1)
 
         # System label
-        self.lbl_system = QLabel("System:")
-        self.lbl_system.setAlignment(Qt.AlignRight)
+        lbl_system = QLabel("System:")
+        lbl_system.setAlignment(Qt.AlignRight)
         # System label value
         self.lbl_system_value = QLabel("")
         self.lbl_system_value.setAlignment(Qt.AlignRight)
@@ -173,13 +177,13 @@ class TabCpu(QWidget):
         # self.color_button_system.clicked.connect(self._set_color_button_system())
 
         # Insert system labels on the right position
-        self.layout.addWidget(self.lbl_system, 2, 0, 1, 1)
-        self.layout.addWidget(self.lbl_system_value, 2, 1, 1, 1)
-        self.layout.addWidget(self.color_button_system, 2, 2, 1, 1)
+        layout.addWidget(lbl_system, 2, 0, 1, 1)
+        layout.addWidget(self.lbl_system_value, 2, 1, 1, 1)
+        layout.addWidget(self.color_button_system, 2, 2, 1, 1)
 
         # Label Idle
-        self.lbl_idle = QLabel("Idle:")
-        self.lbl_idle.setAlignment(Qt.AlignRight)
+        lbl_idle = QLabel("Idle:")
+        lbl_idle.setAlignment(Qt.AlignRight)
         # Label Idle value
         self.lbl_idle_value = QLabel("")
         self.lbl_idle_value.setAlignment(Qt.AlignRight)
@@ -187,35 +191,37 @@ class TabCpu(QWidget):
         self.color_button_idle = ColorButton(color="black")
 
         # Insert idle labels on the right position
-        self.layout.addWidget(self.lbl_idle, 3, 0, 1, 1)
-        self.layout.addWidget(self.lbl_idle_value, 3, 1, 1, 1)
-        self.layout.addWidget(self.color_button_idle, 3, 2, 1, 1)
+        layout.addWidget(lbl_idle, 3, 0, 1, 1)
+        layout.addWidget(self.lbl_idle_value, 3, 1, 1, 1)
+        layout.addWidget(self.color_button_idle, 3, 2, 1, 1)
 
         # Label threads
-        self.lbl_threads = QLabel("Threads:")
-        self.lbl_threads.setAlignment(Qt.AlignRight)
+        lbl_threads = QLabel("Threads:")
+        lbl_threads.setAlignment(Qt.AlignRight)
         # Label threads value
         self.lbl_threads_value = QLabel("")
         self.lbl_threads_value.setAlignment(Qt.AlignLeft)
         # Insert threads labels on the right position
-        self.layout.addWidget(self.lbl_threads, 1, 3, 1, 1)
-        self.layout.addWidget(self.lbl_threads_value, 1, 4, 1, 1)
+        layout.addWidget(lbl_threads, 1, 3, 1, 1)
+        layout.addWidget(self.lbl_threads_value, 1, 4, 1, 1)
 
         # Label Processes
-        self.lbl_processes = QLabel("Processes:")
-        self.lbl_processes.setAlignment(Qt.AlignRight)
+        lbl_processes = QLabel("Processes:")
+        lbl_processes.setAlignment(Qt.AlignRight)
         # Label Processes value
         self.lbl_processes_value = QLabel("")
         self.lbl_processes_value.setAlignment(Qt.AlignLeft)
         # Insert Processes labels on the right position
-        self.layout.addWidget(self.lbl_processes, 2, 3, 1, 1)
-        self.layout.addWidget(self.lbl_processes_value, 2, 4, 1, 1)
+        layout.addWidget(lbl_processes, 2, 3, 1, 1)
+        layout.addWidget(self.lbl_processes_value, 2, 4, 1, 1)
 
-        self.lbl_cpu_usage = QLabel("CPU Usage")
-        self.lbl_cpu_usage.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(self.lbl_cpu_usage, 0, 6, 1, 1)
+        lbl_cpu_usage = QLabel("CPU Usage")
+        lbl_cpu_usage.setAlignment(Qt.AlignCenter)
+        layout.addWidget(lbl_cpu_usage, 0, 6, 1, 1)
 
-        self.layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+        self.setLayout(layout)
 
     def _set_color_button_system(self):
         color = QColorDialog.getColor()  # OpenColorDialog
@@ -228,34 +234,26 @@ class TabCpu(QWidget):
 
         self.color_button_system.setStyleSheet("background-color:rgb({});".format(strRGB))
 
-    def refresh(self):
-        if psutil_data:
-            self.lbl_user_value.setText(
-                f'<font color="{self.color_button_user.color()}">{psutil_data["cpu_times_percent"].user} %</font>'
-            )
-            self.lbl_system_value.setText(
-                f'<font color="{self.color_button_system.color()}">{psutil_data["cpu_times_percent"].system} %</font>'
-            )
-            self.lbl_idle_value.setText(
-                f'<font color="{self.color_button_idle.color()}">{psutil_data["cpu_times_percent"].idle} %</font>'
-            )
+    def refresh_user(self, user):
+        self.lbl_user_value.setText(
+            f'<font color="{self.color_button_user.color()}">{user} %</font>'
+        )
 
-            cumulative_threads = 0
-            process_number = 0
-            # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.oneshot
-            p = psutil.Process()
-            with p.oneshot():
-                # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.process_iter
-                for proc in psutil_data["process_iter"]:
-                    try:
-                        # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.cpu_times
-                        cumulative_threads += proc.num_threads()
-                        process_number += 1
-                    except psutil.NoSuchProcess:
-                        pass
+    def refresh_system(self, system):
+        self.lbl_system_value.setText(
+            f'<font color="{self.color_button_system.color()}">{system} %</font>'
+        )
 
-            self.lbl_processes_value.setText(f"{process_number}")
-            self.lbl_threads_value.setText(f"{cumulative_threads}")
+    def refresh_idle(self, idle):
+        self.lbl_idle_value.setText(
+            f'<font color="{self.color_button_idle.color()}">{idle} %</font>'
+        )
+
+    def refresh_process_number(self, process_number):
+        self.lbl_processes_value.setText(f"{process_number}")
+
+    def refresh_cumulative_threads(self, cumulative_threads):
+        self.lbl_threads_value.setText(f"{cumulative_threads}")
 
 
 class TabSystemMemory(QWidget):
@@ -449,47 +447,47 @@ class TabSystemMemory(QWidget):
 
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
         self.setLayout(layout)
-        self.refresh()
+        self.refresh(__virtual_memory)
 
-    def refresh(self):
-        if psutil_data:
+    def refresh(self, vm):
+        if vm:
             if self.memory_os_capability["free"]:
                 self.lbl_free_value.setText(
-                    f"<font color={self.color_button_free.color()}>{bytes2human(psutil_data['virtual_memory'].free)}</font>"
+                    f"<font color={self.color_button_free.color()}>{bytes2human(vm.free)}</font>"
                 )
 
             if self.memory_os_capability["wired"]:
                 self.lbl_wired_value.setText(
-                    f"<font color={self.color_button_wired.color()}>{bytes2human(psutil_data['virtual_memory'].wired)}</font>"
+                    f"<font color={self.color_button_wired.color()}>{bytes2human(vm.wired)}</font>"
                 )
 
             if self.memory_os_capability["active"]:
                 self.lbl_active_value.setText(
-                    f"<font color={self.color_button_active.color()}>{bytes2human(psutil_data['virtual_memory'].active)}</font>"
+                    f"<font color={self.color_button_active.color()}>{bytes2human(vm.active)}</font>"
                 )
 
             if self.memory_os_capability["inactive"]:
                 self.lbl_inactive_value.setText(
-                    f"<font color={self.color_button_inactive.color()}>{bytes2human(psutil_data['virtual_memory'].inactive)}</font>"
+                    f"<font color={self.color_button_inactive.color()}>{bytes2human(vm.inactive)}</font>"
                 )
 
             if self.memory_os_capability["used"]:
-                self.lbl_used_value.setText(bytes2human(psutil_data["virtual_memory"].used))
+                self.lbl_used_value.setText(bytes2human(vm.used))
 
             if self.memory_os_capability["available"]:
-                self.lbl_available_value.setText(bytes2human(psutil_data["virtual_memory"].available))
+                self.lbl_available_value.setText(bytes2human(vm.available))
 
             if self.memory_os_capability["buffers"]:
-                self.lbl_buffers_value.setText(bytes2human(psutil_data["virtual_memory"].buffers))
+                self.lbl_buffers_value.setText(bytes2human(vm.buffers))
 
             if self.memory_os_capability["cached"]:
-                self.lbl_cached_value.setText(bytes2human(psutil_data["virtual_memory"].cached))
+                self.lbl_cached_value.setText(bytes2human(vm.cached))
 
             if self.memory_os_capability["shared"]:
-                self.lbl_shared_value.setText(bytes2human(psutil_data["virtual_memory"].shared))
+                self.lbl_shared_value.setText(bytes2human(vm.shared))
 
             if self.memory_os_capability["slab"]:
-                self.lbl_slab_value.setText(bytes2human(psutil_data["virtual_memory"].slab))
+                self.lbl_slab_value.setText(bytes2human(vm.slab))
 
 
 class TabDiskActivity(QWidget):
@@ -526,8 +524,10 @@ class TabNetwork(QWidget):
 
 
 class ProcessMonitor(QWidget):
-    def __init__(self):
-        QWidget.__init__(self)
+    def __init__(self, parent=None):
+        QWidget.__init__(self, parent)
+        layout = QGridLayout()
+
         self.searchLineEdit = None
         self.filterComboBox = None
         self.tree_view_model = None
@@ -826,33 +826,39 @@ class Window(QMainWindow):
             """
         )
 
-        self.tabs = QTabWidget()
-        self.tabs.addTab(self.tab_cpu, "CPU")
-        self.tabs.addTab(self.tab_system_memory, "System Memory")
-        self.tabs.addTab(TabDiskActivity(), "Disk Activity")
-        self.tabs.addTab(TabDiskUsage(), "Disk Usage")
-        self.tabs.addTab(TabNetwork(), "Network")
+        tabs = QTabWidget()
+        tabs.addTab(self.tab_cpu, "CPU")
+        tabs.addTab(self.tab_system_memory, "System Memory")
+        tabs.addTab(TabDiskActivity(), "Disk Activity")
+        tabs.addTab(TabDiskUsage(), "Disk Usage")
+        tabs.addTab(TabNetwork(), "Network")
 
         layout = QVBoxLayout()
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.process_monitor, 1)
         layout.addWidget(QLabel(""))
-        layout.addWidget(self.tabs)
+        layout.addWidget(tabs)
 
         central_widget = QWidget()
         central_widget.setLayout(layout)
 
         self.setCentralWidget(central_widget)
-        self.window_minimized = False
 
     def createThread(self):
         thread = QThread()
         worker = PSUtilsWorker()
         worker.moveToThread(thread)
         thread.started.connect(lambda: worker.refresh())
-        worker.updated.connect(self.tab_cpu.refresh)
-        worker.updated.connect(self.tab_system_memory.refresh)
+
+        worker.updated_virtual_memory.connect(self.tab_system_memory.refresh)
+
+        worker.updated_cpu_user.connect(self.tab_cpu.refresh_user)
+        worker.updated_cpu_system.connect(self.tab_cpu.refresh_system)
+        worker.updated_cpu_idle.connect(self.tab_cpu.refresh_idle)
+        worker.updated_cpu_cumulative_threads.connect(self.tab_cpu.refresh_cumulative_threads)
+        worker.updated_cpu_process_number.connect(self.tab_cpu.refresh_process_number)
+
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
         thread.finished.connect(thread.deleteLater)
@@ -860,6 +866,8 @@ class Window(QMainWindow):
         return thread
 
     def refresh(self):
+
+        # For h
         self.process_monitor.refresh()
 
         self.threads.clear()
