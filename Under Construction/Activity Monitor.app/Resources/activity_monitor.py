@@ -56,20 +56,34 @@ __app_url__ = "https://github.com/helloSystem/Utilities"
 
 class PSUtilsWorker(QObject):
     finished = Signal()
-    updated = Signal()
-    updated_virtual_memory = Signal(object)
-
+    # CPU
     updated_cpu_user = Signal(float)
     updated_cpu_system = Signal(float)
     updated_cpu_idle = Signal(float)
     updated_cpu_cumulative_threads = Signal(int)
     updated_cpu_process_number = Signal(int)
 
+    # System Memory
+    updated_system_memory_total = Signal(str)
+    updated_system_memory_available = Signal(str)
+    updated_system_memory_percent = Signal(str)
+    updated_system_memory_used = Signal(str)
+    updated_system_memory_free = Signal(str)
+    updated_system_memory_active = Signal(str)
+    updated_system_memory_inactive = Signal(str)
+    updated_system_memory_buffers = Signal(str)
+    updated_system_memory_cached = Signal(str)
+    updated_system_memory_shared = Signal(str)
+    updated_system_memory_slab = Signal(str)
+    updated_system_memory_wired = Signal(str)
+
     def refresh(self):
         cpu_times_percent = psutil.cpu_times_percent()
         self.updated_cpu_user.emit(cpu_times_percent.user)
         self.updated_cpu_system.emit(cpu_times_percent.system)
         self.updated_cpu_idle.emit(cpu_times_percent.idle)
+
+        # CPU
         cumulative_threads = 0
         process_number = 0
         # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.oneshot
@@ -85,9 +99,33 @@ class PSUtilsWorker(QObject):
         self.updated_cpu_cumulative_threads.emit(cumulative_threads)
         self.updated_cpu_process_number.emit(process_number)
 
-        self.updated_virtual_memory.emit(psutil.virtual_memory())
+        # System Memory
+        virtual_memory = psutil.virtual_memory()
+        if hasattr(virtual_memory, "total"):
+            self.updated_system_memory_total.emit(bytes2human(virtual_memory.total))
+        if hasattr(virtual_memory, "available"):
+            self.updated_system_memory_available.emit(bytes2human(virtual_memory.available))
+        if hasattr(virtual_memory, "percent"):
+            self.updated_system_memory_percent.emit(bytes2human(virtual_memory.percent))
+        if hasattr(virtual_memory, "used"):
+            self.updated_system_memory_used.emit(bytes2human(virtual_memory.used))
+        if hasattr(virtual_memory, "free"):
+            self.updated_system_memory_free.emit(bytes2human(virtual_memory.free))
+        if hasattr(virtual_memory, "active"):
+            self.updated_system_memory_active.emit(bytes2human(virtual_memory.active))
+        if hasattr(virtual_memory, "inactive"):
+            self.updated_system_memory_inactive.emit(bytes2human(virtual_memory.inactive))
+        if hasattr(virtual_memory, "buffers"):
+            self.updated_system_memory_buffers.emit(bytes2human(virtual_memory.buffers))
+        if hasattr(virtual_memory, "cached"):
+            self.updated_system_memory_cached.emit(bytes2human(virtual_memory.cached))
+        if hasattr(virtual_memory, "shared"):
+            self.updated_system_memory_shared.emit(bytes2human(virtual_memory.shared))
+        if hasattr(virtual_memory, "slab"):
+            self.updated_system_memory_slab.emit(bytes2human(virtual_memory.slab))
+        if hasattr(virtual_memory, "wired"):
+            self.updated_system_memory_wired.emit(bytes2human(virtual_memory.wired))
 
-        self.updated.emit()
         self.finished.emit()
 
 
@@ -234,25 +272,19 @@ class TabCpu(QWidget):
 
         self.color_button_system.setStyleSheet("background-color:rgb({});".format(strRGB))
 
-    def refresh_user(self, user):
-        self.lbl_user_value.setText(
-            f'<font color="{self.color_button_user.color()}">{user} %</font>'
-        )
+    def refresh_user(self, user: float):
+        self.lbl_user_value.setText(f'<font color="{self.color_button_user.color()}">{user} %</font>')
 
-    def refresh_system(self, system):
-        self.lbl_system_value.setText(
-            f'<font color="{self.color_button_system.color()}">{system} %</font>'
-        )
+    def refresh_system(self, system: float):
+        self.lbl_system_value.setText(f'<font color="{self.color_button_system.color()}">{system} %</font>')
 
-    def refresh_idle(self, idle):
-        self.lbl_idle_value.setText(
-            f'<font color="{self.color_button_idle.color()}">{idle} %</font>'
-        )
+    def refresh_idle(self, idle: float):
+        self.lbl_idle_value.setText(f'<font color="{self.color_button_idle.color()}">{idle} %</font>')
 
-    def refresh_process_number(self, process_number):
+    def refresh_process_number(self, process_number: int):
         self.lbl_processes_value.setText(f"{process_number}")
 
-    def refresh_cumulative_threads(self, cumulative_threads):
+    def refresh_cumulative_threads(self, cumulative_threads: int):
         self.lbl_threads_value.setText(f"{cumulative_threads}")
 
 
@@ -447,48 +479,36 @@ class TabSystemMemory(QWidget):
 
         layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
         self.setLayout(layout)
-        self.refresh(__virtual_memory)
 
-    def refresh(self, vm):
-        if vm:
-            if self.memory_os_capability["free"]:
-                self.lbl_free_value.setText(
-                    f"<font color={self.color_button_free.color()}>{bytes2human(vm.free)}</font>"
-                )
+    def refresh_free(self, free):
+        self.lbl_free_value.setText(f"<font color={self.color_button_free.color()}>{free}</font>")
 
-            if self.memory_os_capability["wired"]:
-                self.lbl_wired_value.setText(
-                    f"<font color={self.color_button_wired.color()}>{bytes2human(vm.wired)}</font>"
-                )
+    def refresh_wired(self, wired):
+        self.lbl_wired_value.setText(f"<font color={self.color_button_wired.color()}>{wired}</font>")
 
-            if self.memory_os_capability["active"]:
-                self.lbl_active_value.setText(
-                    f"<font color={self.color_button_active.color()}>{bytes2human(vm.active)}</font>"
-                )
+    def refresh_active(self, active):
+        self.lbl_active_value.setText(f"<font color={self.color_button_active.color()}>{active}</font>")
 
-            if self.memory_os_capability["inactive"]:
-                self.lbl_inactive_value.setText(
-                    f"<font color={self.color_button_inactive.color()}>{bytes2human(vm.inactive)}</font>"
-                )
+    def refresh_inactive(self, inactive):
+        self.lbl_inactive_value.setText(f"<font color={self.color_button_inactive.color()}>{inactive}</font>")
 
-            if self.memory_os_capability["used"]:
-                self.lbl_used_value.setText(bytes2human(vm.used))
+    def refresh_used(self, used):
+        self.lbl_used_value.setText(used)
 
-            if self.memory_os_capability["available"]:
-                self.lbl_available_value.setText(bytes2human(vm.available))
+    def refresh_available(self, available):
+        self.lbl_available_value.setText(available)
 
-            if self.memory_os_capability["buffers"]:
-                self.lbl_buffers_value.setText(bytes2human(vm.buffers))
+    def refresh_buffers(self, buffers):
+        self.lbl_buffers_value.setText(buffers)
 
-            if self.memory_os_capability["cached"]:
-                self.lbl_cached_value.setText(bytes2human(vm.cached))
+    def refresh_cached(self, cached):
+        self.lbl_cached_value.setText(cached)
 
-            if self.memory_os_capability["shared"]:
-                self.lbl_shared_value.setText(bytes2human(vm.shared))
+    def refresh_shared(self, shared):
+        self.lbl_shared_value.setText(shared)
 
-            if self.memory_os_capability["slab"]:
-                self.lbl_slab_value.setText(bytes2human(vm.slab))
-
+    def refresh_slab(self, slab):
+        self.lbl_slab_value.setText(slab)
 
 class TabDiskActivity(QWidget):
     def __init__(self, parent=None):
@@ -851,13 +871,25 @@ class Window(QMainWindow):
         worker.moveToThread(thread)
         thread.started.connect(lambda: worker.refresh())
 
-        worker.updated_virtual_memory.connect(self.tab_system_memory.refresh)
-
+        # CPU
         worker.updated_cpu_user.connect(self.tab_cpu.refresh_user)
         worker.updated_cpu_system.connect(self.tab_cpu.refresh_system)
         worker.updated_cpu_idle.connect(self.tab_cpu.refresh_idle)
         worker.updated_cpu_cumulative_threads.connect(self.tab_cpu.refresh_cumulative_threads)
         worker.updated_cpu_process_number.connect(self.tab_cpu.refresh_process_number)
+
+        # System MEmory
+        # worker.updated_system_memory_total.connect(self.tab_system_memory.refresh_total)
+        worker.updated_system_memory_available.connect(self.tab_system_memory.refresh_available)
+        worker.updated_system_memory_used.connect(self.tab_system_memory.refresh_used)
+        worker.updated_system_memory_free.connect(self.tab_system_memory.refresh_free)
+        worker.updated_system_memory_active.connect(self.tab_system_memory.refresh_active)
+        worker.updated_system_memory_inactive.connect(self.tab_system_memory.refresh_inactive)
+        worker.updated_system_memory_buffers.connect(self.tab_system_memory.refresh_buffers)
+        worker.updated_system_memory_cached.connect(self.tab_system_memory.refresh_cached)
+        worker.updated_system_memory_shared.connect(self.tab_system_memory.refresh_shared)
+        worker.updated_system_memory_slab.connect(self.tab_system_memory.refresh_slab)
+        worker.updated_system_memory_wired.connect(self.tab_system_memory.refresh_wired)
 
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
@@ -866,8 +898,6 @@ class Window(QMainWindow):
         return thread
 
     def refresh(self):
-
-        # For h
         self.process_monitor.refresh()
 
         self.threads.clear()
