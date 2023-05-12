@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtGui import QColor
+from PyQt5.QtGui import QColor, QPaintEvent
 from PyQt5.QtCore import (
     Qt,
     pyqtSignal,
@@ -11,10 +11,11 @@ from PyQt5.QtWidgets import (
     QColorDialog,
     QVBoxLayout,
     QLabel,
+    QAbstractButton,
 )
 
 
-class ColorButton(QPushButton):
+class ColorButton(QAbstractButton):
     """
     Custom Qt Widget to show a chosen color.
 
@@ -40,9 +41,11 @@ class ColorButton(QPushButton):
         layout.setSpacing(0)
 
         self.setLayout(layout)
-        self.setStyleSheet("border: none;")
+        # self.setStyleSheet("border: none;")
         self.setToolTip('Change color')
 
+    def paintEvent(self, e: QPaintEvent) -> None:
+        pass
 
     def resizeEvent(self, event):
         # Create a square base size of 10x10 and scale it to the new size
