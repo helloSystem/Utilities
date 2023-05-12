@@ -29,6 +29,7 @@ class ColorButton(QAbstractButton):
         super(ColorButton, self).__init__(*args, **kwargs)
         self.label = QLabel()
         self.label.setText("⬛")
+        self.label.setAlignment(Qt.AlignVCenter | Qt.AlignHCenter)
 
         self._color = None
         self._default = color
