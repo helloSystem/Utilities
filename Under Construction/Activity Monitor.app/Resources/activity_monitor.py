@@ -11,15 +11,12 @@ from PyQt5.QtCore import (
     Qt,
     QSize,
     pyqtSignal as Signal,
-    QPoint,
-    QObject,
     QItemSelectionModel,
     QItemSelection,
-    QMutex,
     QObject,
     QThread,
 )
-from PyQt5.QtGui import QKeySequence, QIcon, QColor, QImage, QPixmap, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QKeySequence, QIcon, QColor, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -321,7 +318,7 @@ class TabSystemMemory(QWidget):
             self.lbl_free_value = QLabel("")
             self.lbl_free_value.setAlignment(Qt.AlignRight)
             self.lbl_free_value.setToolTip(
-                "Memory not being used at all (zeroed) that is readily available; note that this doesn’t reflect the "
+                "Memory not being used at all (zeroed) that is readily available; note that this doesn't reflect the "
                 "actual memory available (use available instead). total - used does not necessarily match free. "
             )
             # Free Color button
@@ -394,7 +391,8 @@ class TabSystemMemory(QWidget):
             self.lbl_used_value = QLabel("")
             self.lbl_used_value.setAlignment(Qt.AlignRight)
             self.lbl_used_value.setToolTip(
-                "Memory used, calculated differently depending on the platform and designed for informational purposes only. <b>total - free</b> does not necessarily match <b>used</b>."
+                "Memory used, calculated differently depending on the platform and designed for informational "
+                "purposes only. <b>total - free</b> does not necessarily match <b>used</b>. "
             )
             # Insert Used labels on the right position
             layout.addWidget(lbl_used, grid_row, grid_col, 1, 1)
@@ -509,6 +507,7 @@ class TabSystemMemory(QWidget):
 
     def refresh_slab(self, slab):
         self.lbl_slab_value.setText(slab)
+
 
 class TabDiskActivity(QWidget):
     def __init__(self, parent=None):
@@ -687,8 +686,13 @@ class ProcessMonitor(QWidget):
                         pass
                     elif combo_box_current_index == 7:
                         pass
-                    elif combo_box_current_index == 8:
-                        pass
+
+                    if combo_box_current_index == 8:
+                        if p.pid == self.selected_pid:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
 
                     if combo_box_current_index == 9:
                         if (time.time() - p.create_time()) % 60 <= 43200:
@@ -716,7 +720,10 @@ class ProcessMonitor(QWidget):
         self.process_tree.clearSelection()
         self.kill_process_action.setEnabled(False)
         self.inspect_process_action.setEnabled(False)
+        if self.filterComboBox.currentIndex() == 8:
+            self.filterComboBox.setCurrentIndex(0)
         self.filterComboBox.model().item(8).setEnabled(False)
+
 
     def selectItem(self, itemOrText):
         oldIndex = self.process_tree.selectionModel().currentIndex()
@@ -732,7 +739,7 @@ class ProcessMonitor(QWidget):
             if listIndexes:
                 newIndex = listIndexes[0]
         if newIndex:
-            self.process_tree.selectionModel().select(  # programmatical selection---------
+            self.process_tree.selectionModel().select(  # programmatically selection---------
                 newIndex, QItemSelectionModel.ClearAndSelect
             )
 
@@ -764,7 +771,7 @@ class ProcessMonitor(QWidget):
             pid = int(selected.text(0))
             try:
                 self.selected_pid = -1
-            except:
+            except (Exception, BaseException):
                 pass
 
 
@@ -791,12 +798,16 @@ class Window(QMainWindow):
         self.filterComboBox = None
         self.searchLineEdit = None
         self.process_monitor = None
-        self.tabs = None
-        self.timer = QTimer()
+
+        self.tab_cpu = None
+        self.tab_system_memory = None
+        self.tab_disk_activity = None
+        self.tab_disk_usage = None
+        self.tab_network = None
+        self.timer = None
 
         self.setupUi()
 
-        self._timer_change_for_5_secs()
         self.timer.timeout.connect(self.refresh)
         self.refresh()
 
@@ -813,10 +824,16 @@ class Window(QMainWindow):
                 )
             )
         )
+        self.timer = QTimer()
+        self._timer_change_for_5_secs()
         self.tab_cpu = TabCpu()
         self.tab_system_memory = TabSystemMemory()
+        self.tab_disk_usage = TabDiskUsage()
+        self.tab_disk_activity = TabDiskActivity()
+        self.tab_network = TabNetwork()
         self.searchLineEdit = QLineEdit()
         self.filterComboBox = QComboBox()
+
         self.process_monitor = ProcessMonitor()
         self.process_monitor.filterComboBox = self.filterComboBox
         self.process_monitor.searchLineEdit = self.searchLineEdit
@@ -831,8 +848,9 @@ class Window(QMainWindow):
 
         self.process_monitor.kill_process_action = self.kill_process_action
         self.process_monitor.inspect_process_action = self.inspect_process_action
-        self.quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-        self.quitShortcut1.activated.connect(self.process_monitor.selectClear)
+
+        quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+        quitShortcut1.activated.connect(self.process_monitor.selectClear)
 
         self.setStyleSheet(
             """
@@ -849,9 +867,9 @@ class Window(QMainWindow):
         tabs = QTabWidget()
         tabs.addTab(self.tab_cpu, "CPU")
         tabs.addTab(self.tab_system_memory, "System Memory")
-        tabs.addTab(TabDiskActivity(), "Disk Activity")
-        tabs.addTab(TabDiskUsage(), "Disk Usage")
-        tabs.addTab(TabNetwork(), "Network")
+        tabs.addTab(self.tab_disk_activity, "Disk Activity")
+        tabs.addTab(self.tab_disk_usage, "Disk Usage")
+        tabs.addTab(self.tab_network, "Network")
 
         layout = QVBoxLayout()
         layout.setSpacing(0)
@@ -1280,7 +1298,8 @@ class Window(QMainWindow):
 
         self.addToolBar(toolbar)
 
-    def _showAbout(self):
+    @staticmethod
+    def _showAbout():
         about = About()
         about.size = 300, 340
         about.icon = QPixmap(
