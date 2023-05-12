@@ -16,7 +16,7 @@ from PyQt5.QtCore import (
     QObject,
     QThread,
 )
-from PyQt5.QtGui import QKeySequence, QIcon, QColor, QPixmap, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -25,7 +25,6 @@ from PyQt5.QtWidgets import (
     QWidget,
     QToolBar,
     QVBoxLayout,
-    QPushButton,
     QAbstractItemView,
     QShortcut,
     QLabel,
@@ -41,6 +40,7 @@ from PyQt5.QtWidgets import (
     QTreeView,
 )
 
+from activity_monitor.libs.buttons import ColorButton
 from activity_monitor.libs.about import About
 from activity_monitor.libs.utils import bytes2human
 
@@ -124,60 +124,6 @@ class PSUtilsWorker(QObject):
             self.updated_system_memory_wired.emit(bytes2human(virtual_memory.wired))
 
         self.finished.emit()
-
-
-class ColorButton(QPushButton):
-    """
-    Custom Qt Widget to show a chosen color.
-
-    Left-clicking the button shows the color-chooser, while
-    right-clicking resets the color to None (no-color).
-    """
-
-    colorChanged = Signal(object)
-
-    def __init__(self, *args, color=None, **kwargs):
-        super(ColorButton, self).__init__(*args, **kwargs)
-
-        self._color = None
-        self._default = color
-        self.pressed.connect(self.onColorPicker)
-
-        # Set the initial/default state.
-        self.setColor(self._default)
-
-    def setColor(self, color):
-        if color != self._color:
-            self._color = color
-            self.colorChanged.emit(color)
-
-        if self._color:
-            self.setStyleSheet("background-color: %s;" % self._color)
-        else:
-            self.setStyleSheet("")
-
-    def color(self):
-        return self._color
-
-    def onColorPicker(self):
-        """
-        Show color-picker dialog to select color.
-
-        Qt will use the native dialog by default.
-
-        """
-        dlg = QColorDialog(self)
-        if self._color:
-            dlg.setCurrentColor(QColor(self._color))
-
-        if dlg.exec_():
-            self.setColor(dlg.currentColor().name())
-
-    def mousePressEvent(self, e):
-        if e.button() == Qt.RightButton:
-            self.setColor(self._default)
-
-        return super(ColorButton, self).mousePressEvent(e)
 
 
 class TabCpu(QWidget):
