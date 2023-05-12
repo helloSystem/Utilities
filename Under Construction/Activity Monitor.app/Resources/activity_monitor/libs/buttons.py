@@ -9,6 +9,8 @@ from PyQt5.QtCore import (
 from PyQt5.QtWidgets import (
     QPushButton,
     QColorDialog,
+    QVBoxLayout,
+    QLabel,
 )
 
 
@@ -24,12 +26,23 @@ class ColorButton(QPushButton):
 
     def __init__(self, *args, color=None, **kwargs):
         super(ColorButton, self).__init__(*args, **kwargs)
+        self.label = QLabel()
+        self.label.setText("⬛")
 
         self._color = None
         self._default = color
         self.pressed.connect(self.onColorPicker)
         self.setColor(self._default)
-        self.setText("⬛")
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        self.setLayout(layout)
+        self.setStyleSheet("border: none;")
+        self.setToolTip('Change color')
+
 
     def resizeEvent(self, event):
         # Create a square base size of 10x10 and scale it to the new size
@@ -43,7 +56,7 @@ class ColorButton(QPushButton):
             self._color = color
             self.colorChanged.emit(color)
         if self._color:
-            self.setStyleSheet(f"border: 1px solid; border-color: lightGray; color: {self._color};")
+            self.label.setStyleSheet(f"border: 1px solid; border-color: lightGray; color: {self._color};")
         else:
             self.setStyleSheet("")
 
