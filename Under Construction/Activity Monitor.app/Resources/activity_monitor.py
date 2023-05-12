@@ -183,10 +183,16 @@ class ColorButton(QPushButton):
 class TabCpu(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        self.lbl_user_value = None
+        self.color_button_user = None
+        self.lbl_system_value = None
+        self.color_button_system = None
+        self.lbl_idle_value = None
+
         self.setupUI()
 
     def setupUI(self):
-        layout = QGridLayout()
+        layout_grid = QGridLayout()
 
         # User label
         lbl_user = QLabel("User:")
@@ -197,9 +203,9 @@ class TabCpu(QWidget):
         # User Color button
         self.color_button_user = ColorButton(color="green")
         # Insert user labels on the right position
-        layout.addWidget(lbl_user, 1, 0, 1, 1)
-        layout.addWidget(self.lbl_user_value, 1, 1, 1, 1)
-        layout.addWidget(self.color_button_user, 1, 2, 1, 1)
+        layout_grid.addWidget(lbl_user, 1, 0, 1, 1)
+        layout_grid.addWidget(self.lbl_user_value, 1, 1, 1, 1)
+        layout_grid.addWidget(self.color_button_user, 1, 2, 1, 1)
 
         # System label
         lbl_system = QLabel("System:")
@@ -212,9 +218,9 @@ class TabCpu(QWidget):
         # self.color_button_system.clicked.connect(self._set_color_button_system())
 
         # Insert system labels on the right position
-        layout.addWidget(lbl_system, 2, 0, 1, 1)
-        layout.addWidget(self.lbl_system_value, 2, 1, 1, 1)
-        layout.addWidget(self.color_button_system, 2, 2, 1, 1)
+        layout_grid.addWidget(lbl_system, 2, 0, 1, 1)
+        layout_grid.addWidget(self.lbl_system_value, 2, 1, 1, 1)
+        layout_grid.addWidget(self.color_button_system, 2, 2, 1, 1)
 
         # Label Idle
         lbl_idle = QLabel("Idle:")
@@ -226,9 +232,9 @@ class TabCpu(QWidget):
         self.color_button_idle = ColorButton(color="black")
 
         # Insert idle labels on the right position
-        layout.addWidget(lbl_idle, 3, 0, 1, 1)
-        layout.addWidget(self.lbl_idle_value, 3, 1, 1, 1)
-        layout.addWidget(self.color_button_idle, 3, 2, 1, 1)
+        layout_grid.addWidget(lbl_idle, 3, 0, 1, 1)
+        layout_grid.addWidget(self.lbl_idle_value, 3, 1, 1, 1)
+        layout_grid.addWidget(self.color_button_idle, 3, 2, 1, 1)
 
         # Label threads
         lbl_threads = QLabel("Threads:")
@@ -237,8 +243,8 @@ class TabCpu(QWidget):
         self.lbl_threads_value = QLabel("")
         self.lbl_threads_value.setAlignment(Qt.AlignLeft)
         # Insert threads labels on the right position
-        layout.addWidget(lbl_threads, 1, 3, 1, 1)
-        layout.addWidget(self.lbl_threads_value, 1, 4, 1, 1)
+        layout_grid.addWidget(lbl_threads, 1, 3, 1, 1)
+        layout_grid.addWidget(self.lbl_threads_value, 1, 4, 1, 1)
 
         # Label Processes
         lbl_processes = QLabel("Processes:")
@@ -247,16 +253,27 @@ class TabCpu(QWidget):
         self.lbl_processes_value = QLabel("")
         self.lbl_processes_value.setAlignment(Qt.AlignLeft)
         # Insert Processes labels on the right position
-        layout.addWidget(lbl_processes, 2, 3, 1, 1)
-        layout.addWidget(self.lbl_processes_value, 2, 4, 1, 1)
+        layout_grid.addWidget(lbl_processes, 2, 3, 1, 1)
+        layout_grid.addWidget(self.lbl_processes_value, 2, 4, 1, 1)
 
         lbl_cpu_usage = QLabel("CPU Usage")
         lbl_cpu_usage.setAlignment(Qt.AlignCenter)
-        layout.addWidget(lbl_cpu_usage, 0, 6, 1, 1)
+        layout_grid.addWidget(lbl_cpu_usage, 0, 6, 1, 1)
 
-        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
-        self.setLayout(layout)
+        # Add spacing on the Tab
+        widget_grid = QWidget()
+        widget_grid.setLayout(layout_grid)
+
+        space_label = QLabel("")
+        layout_vbox = QVBoxLayout()
+        layout_vbox.addWidget(space_label)
+        layout_vbox.addWidget(widget_grid)
+        layout_vbox.setSpacing(0)
+        layout_vbox.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(layout_vbox)
 
     def _set_color_button_system(self):
         color = QColorDialog.getColor()  # OpenColorDialog
@@ -304,8 +321,10 @@ class TabSystemMemory(QWidget):
             "slab": hasattr(__virtual_memory, "slab"),
             "wired": hasattr(__virtual_memory, "wired"),
         }
+        self.setupUI()
 
-        layout = QGridLayout()
+    def setupUI(self):
+        layout_grid = QGridLayout()
 
         # widget Position management
         grid_col = 0
@@ -324,11 +343,11 @@ class TabSystemMemory(QWidget):
             # Free Color button
             self.color_button_free = ColorButton(color="green")
             # Insert Free labels on the right position
-            layout.addWidget(lbl_free, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_free_value, grid_row, grid_col + 1, 1, 1)
-            layout.addWidget(self.color_button_free, grid_row, grid_col + 2, 1, 1)
+            layout_grid.addWidget(lbl_free, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_free_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(self.color_button_free, grid_row, grid_col + 2, 1, 1)
 
-            layout.setRowStretch(grid_col, 0)
+            layout_grid.setRowStretch(grid_col, 0)
             grid_row += 1
 
         if self.memory_os_capability["wired"]:
@@ -342,9 +361,9 @@ class TabSystemMemory(QWidget):
             # Free Color button
             self.color_button_wired = ColorButton(color="red")
             # Insert Free labels on the right position
-            layout.addWidget(lbl_wired, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_wired_value, grid_row, grid_col + 1, 1, 1)
-            layout.addWidget(self.color_button_wired, grid_row, grid_col + 2, 1, 1)
+            layout_grid.addWidget(lbl_wired, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_wired_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(self.color_button_wired, grid_row, grid_col + 2, 1, 1)
 
             grid_row += 1
 
@@ -360,9 +379,9 @@ class TabSystemMemory(QWidget):
             # Active Color button
             self.color_button_active = ColorButton(color="orange")
             # Insert Active labels on the right position
-            layout.addWidget(lbl_active, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_active_value, grid_row, grid_col + 1, 1, 1)
-            layout.addWidget(self.color_button_active, grid_row, grid_col + 2, 1, 1)
+            layout_grid.addWidget(lbl_active, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_active_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(self.color_button_active, grid_row, grid_col + 2, 1, 1)
             grid_row += 1
 
         # PSUtil can return inactive
@@ -377,9 +396,9 @@ class TabSystemMemory(QWidget):
             # Inactive Color button
             self.color_button_inactive = ColorButton(color="blue")
             # Insert Inactive labels on the right position
-            layout.addWidget(lbl_inactive, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_inactive_value, grid_row, grid_col + 1, 1, 1)
-            layout.addWidget(self.color_button_inactive, grid_row, grid_col + 2, 1, 1)
+            layout_grid.addWidget(lbl_inactive, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_inactive_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(self.color_button_inactive, grid_row, grid_col + 2, 1, 1)
             grid_row += 1
 
         # PSUtil can return used
@@ -395,8 +414,8 @@ class TabSystemMemory(QWidget):
                 "purposes only. <b>total - free</b> does not necessarily match <b>used</b>. "
             )
             # Insert Used labels on the right position
-            layout.addWidget(lbl_used, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_used_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_used, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_used_value, grid_row, grid_col + 1, 1, 1)
 
         # Position management
         # Set col and row to the second widget Position
@@ -415,8 +434,8 @@ class TabSystemMemory(QWidget):
                 "The memory that can be given instantly to processes without the system going into swap. <br>"
             )
             # Insert Used labels on the right position
-            layout.addWidget(lbl_available, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_available_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_available, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_available_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return buffers
@@ -429,8 +448,8 @@ class TabSystemMemory(QWidget):
             self.lbl_buffers_value.setAlignment(Qt.AlignRight)
             self.lbl_buffers_value.setToolTip("Cache for things like file system metadata.<br>")
             # Insert Used labels on the right position
-            layout.addWidget(lbl_buffers, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_buffers_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_buffers, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_buffers_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return cached
@@ -443,8 +462,8 @@ class TabSystemMemory(QWidget):
             self.lbl_cached_value.setAlignment(Qt.AlignRight)
             self.lbl_cached_value.setToolTip("Cache for various things.")
             # Insert Used labels on the right position
-            layout.addWidget(lbl_cached, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_cached_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_cached, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_cached_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return shared
@@ -457,8 +476,8 @@ class TabSystemMemory(QWidget):
             self.lbl_shared_value.setAlignment(Qt.AlignRight)
             self.lbl_shared_value.setToolTip("Memory that may be simultaneously accessed by multiple processes.")
             # Insert Used labels on the right position
-            layout.addWidget(lbl_shared, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_shared_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_shared, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_shared_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return lab
@@ -471,12 +490,24 @@ class TabSystemMemory(QWidget):
             self.lbl_slab_value.setAlignment(Qt.AlignRight)
             self.lbl_slab_value.setToolTip("in-kernel data structures cache.")
             # Insert Used labels on the right position
-            layout.addWidget(lbl_slab, grid_row, grid_col, 1, 1)
-            layout.addWidget(self.lbl_slab_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_slab, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_slab_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
-        layout.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
-        self.setLayout(layout)
+        layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
+
+        # Add spacing on the Tab
+        widget_grid = QWidget()
+        widget_grid.setLayout(layout_grid)
+
+        space_label = QLabel("")
+        layout_vbox = QVBoxLayout()
+        layout_vbox.addWidget(space_label)
+        layout_vbox.addWidget(widget_grid)
+        layout_vbox.setSpacing(0)
+        layout_vbox.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(layout_vbox)
 
     def refresh_free(self, free):
         self.lbl_free_value.setText(f"<font color={self.color_button_free.color()}>{free}</font>")
@@ -513,8 +544,23 @@ class TabDiskActivity(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
-        self.layout = QGridLayout()
-        self.setLayout(self.layout)
+        self.setupUI()
+
+    def setupUI(self):
+        layout_grid = QGridLayout()
+
+        # Add spacing on the Tab
+        widget_grid = QWidget()
+        widget_grid.setLayout(layout_grid)
+
+        space_label = QLabel("")
+        layout_vbox = QVBoxLayout()
+        layout_vbox.addWidget(space_label)
+        layout_vbox.addWidget(widget_grid)
+        layout_vbox.setSpacing(0)
+        layout_vbox.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(layout_vbox)
 
     def refresh(self):
         pass
@@ -524,8 +570,23 @@ class TabDiskUsage(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
-        self.layout = QGridLayout()
-        self.setLayout(self.layout)
+        self.setupUI()
+
+    def setupUI(self):
+        layout_grid = QGridLayout()
+
+        # Add spacing on the Tab
+        widget_grid = QWidget()
+        widget_grid.setLayout(layout_grid)
+
+        space_label = QLabel("")
+        layout_vbox = QVBoxLayout()
+        layout_vbox.addWidget(space_label)
+        layout_vbox.addWidget(widget_grid)
+        layout_vbox.setSpacing(0)
+        layout_vbox.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(layout_vbox)
 
     def refresh(self):
         pass
@@ -535,8 +596,23 @@ class TabNetwork(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
-        self.layout = QGridLayout()
-        self.setLayout(self.layout)
+        self.setupUI()
+
+    def setupUI(self):
+        layout_grid = QGridLayout()
+
+        # Add spacing on the Tab
+        widget_grid = QWidget()
+        widget_grid.setLayout(layout_grid)
+
+        space_label = QLabel("")
+        layout_vbox = QVBoxLayout()
+        layout_vbox.addWidget(space_label)
+        layout_vbox.addWidget(widget_grid)
+        layout_vbox.setSpacing(0)
+        layout_vbox.setContentsMargins(0, 0, 0, 0)
+
+        self.setLayout(layout_vbox)
 
     def refresh(self):
         pass
@@ -692,7 +768,6 @@ class ProcessMonitor(QWidget):
                             filtered_row = self.filter_by_line(filtered_row, p.name())
                         else:
                             filtered_row = None
-
 
                     if combo_box_current_index == 9:
                         if (time.time() - p.create_time()) % 60 <= 43200:
