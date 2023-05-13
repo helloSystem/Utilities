@@ -14,7 +14,8 @@ from PyQt5.QtCore import (
     QItemSelectionModel,
     QItemSelection,
     QObject,
-    QThread,
+    QThread
+
 )
 from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
@@ -38,10 +39,12 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
     QLineEdit,
     QTreeView,
+    QFileIconProvider,
+
 )
 
-from activity_monitor.libs.buttons import ColorButton
 from activity_monitor.libs.about import About
+from activity_monitor.libs.buttons import ColorButton
 from activity_monitor.libs.utils import bytes2human
 
 __app_name__ = "Activity Monitor"
@@ -73,6 +76,8 @@ class PSUtilsWorker(QObject):
     updated_system_memory_shared = Signal(str)
     updated_system_memory_slab = Signal(str)
     updated_system_memory_wired = Signal(str)
+
+    updated_mounted_disk_partitions = Signal(dict)
 
     def refresh(self):
         cpu_times_percent = psutil.cpu_times_percent()
@@ -122,6 +127,32 @@ class PSUtilsWorker(QObject):
             self.updated_system_memory_slab.emit(bytes2human(virtual_memory.slab))
         if hasattr(virtual_memory, "wired"):
             self.updated_system_memory_wired.emit(bytes2human(virtual_memory.wired))
+
+        # Disks usage
+        data = {}
+        item_number = 0
+        for part in psutil.disk_partitions(all=False):
+            if os.name == 'nt':
+                if 'cdrom' in part.opts or part.fstype == '':
+                    # skip cd-rom drives with no disk in it; they may raise
+                    # ENOENT, pop-up a Windows GUI error for a non-ready
+                    # partition or just hang.
+                    continue
+            usage = psutil.disk_usage(part.mountpoint)
+            data[item_number] = {
+                "device": part.device,
+                "total": bytes2human(usage.total),
+                "used": bytes2human(usage.used),
+                "used_in_bytes": f"{'{:,}'.format(usage.used)} bytes",
+                "free": bytes2human(usage.free),
+                "free_in_bytes": f"{'{:,}'.format(usage.free)} bytes",
+                "percent": int(usage.percent),
+                "fstype": part.fstype,
+                "mountpoint": part.mountpoint,
+
+            }
+            item_number += 1
+        self.updated_mounted_disk_partitions.emit(data)
 
         self.finished.emit()
 
@@ -267,6 +298,8 @@ class TabSystemMemory(QWidget):
             "slab": hasattr(__virtual_memory, "slab"),
             "wired": hasattr(__virtual_memory, "wired"),
         }
+        self.lbl_free_value = None
+        self.lbl_buffers_value = None
         self.setupUI()
 
     def setupUI(self):
@@ -513,13 +546,130 @@ class TabDiskActivity(QWidget):
 
 
 class TabDiskUsage(QWidget):
+    mounted_disk_partitions_changed = Signal()
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        self.__mounted_disk_partitions = None
+        self.mounted_disk_partitions = None
+        self.combobox_devices = None
+        self.label_space_utilized_value = None
+        self.label_space_utilized_value_in_bytes = None
+        self.color_button_space_utilized = None
+        self.label_space_free_value = None
+        self.label_space_free_value_in_bytes = None
+        self.color_button_space_free = None
+        self.label_space_total_value = None
+        # self.mounted_disk_partitions = self.scan_mounted_disk_partitions()
 
         self.setupUI()
+        # self.combobox_refresh()
+        # self.combobox_index_changed()
+
+        self.combobox_devices.currentIndexChanged.connect(self.combobox_index_changed)
+        # self.combobox_devices.activated.connect(self.combobox_index_changed)
+        # self.combobox_devices.activated.connect(lambda: self.mounted_disk_partitions(self.combobox_refresh))
+
+        self.mounted_disk_partitions_changed.connect(self.combobox_refresh)
+
+    @property
+    def mounted_disk_partitions(self):
+        return self.__mounted_disk_partitions
+
+    @mounted_disk_partitions.setter
+    def mounted_disk_partitions(self, value: dict):
+        if value is None:
+            value = {}
+        if self.mounted_disk_partitions != value:
+            self.__mounted_disk_partitions = value
+            self.mounted_disk_partitions_changed.emit()
+
+    def setMoutedDiskPartitions(self, value):
+        self.mounted_disk_partitions = value
+
+    def combobox_refresh(self):
+        index = self.combobox_devices.currentIndex()
+        if index == -1:
+            index = 0
+        self.combobox_devices.clear()
+        for item_number, data in self.mounted_disk_partitions.items():
+            self.combobox_devices.addItem(QFileIconProvider().icon(QFileIconProvider.Drive), data["mountpoint"])
+        self.combobox_devices.setCurrentIndex(index)
+
+    def combobox_index_changed(self):
+        index = self.combobox_devices.currentIndex()
+        if index == -1:
+            index = 0
+            self.combobox_devices.setCurrentIndex(index)
+
+        self.label_space_utilized_value.setText(
+            f"<font color='{self.color_button_space_utilized.color()}'>"
+            f"{self.mounted_disk_partitions[index]['used']}"
+            f"</font>"
+        )
+        self.label_space_utilized_value_in_bytes.setText(
+            f"<font color='{self.color_button_space_utilized.color()}'>"
+            f"{self.mounted_disk_partitions[index]['used_in_bytes']}"
+            f"</font>"
+        )
+        self.label_space_free_value.setText(
+            f"<font color='{self.color_button_space_free.color()}'>"
+            f"{self.mounted_disk_partitions[index]['free']}"
+            f"</font>"
+        )
+        self.label_space_free_value_in_bytes.setText(
+            f"<font color='{self.color_button_space_free.color()}'>"
+            f"{self.mounted_disk_partitions[index]['free_in_bytes']}"
+            f"</font>"
+        )
+        self.label_space_total_value.setText(
+            f"{self.mounted_disk_partitions[index]['total']}"
+        )
 
     def setupUI(self):
         layout_grid = QGridLayout()
+
+        self.combobox_devices = QComboBox()
+        layout_grid.addWidget(self.combobox_devices, 0, 0, 1, 2)
+
+        label_space_utilized = QLabel("Space utilized:")
+        label_space_utilized.setAlignment(Qt.AlignRight)
+        # Used label value
+        self.label_space_utilized_value = QLabel("")
+        self.label_space_utilized_value.setAlignment(Qt.AlignRight)
+
+        self.label_space_utilized_value_in_bytes = QLabel("")
+        self.label_space_utilized_value_in_bytes.setAlignment(Qt.AlignRight)
+
+        self.color_button_space_utilized = ColorButton(color="blue")
+
+        # Insert Space utilized labels on the right position
+        layout_grid.addWidget(label_space_utilized, 1, 0, 1, 1)
+        layout_grid.addWidget(self.label_space_utilized_value, 1, 1, 1, 1)
+        layout_grid.addWidget(self.label_space_utilized_value_in_bytes, 1, 2, 1, 1)
+        layout_grid.addWidget(self.color_button_space_utilized, 1, 3, 1, 1)
+
+        label_space_free = QLabel("Space free:")
+        label_space_free.setAlignment(Qt.AlignRight)
+        # Used label value
+        self.label_space_free_value = QLabel("")
+        self.label_space_free_value.setAlignment(Qt.AlignRight)
+
+        self.label_space_free_value_in_bytes = QLabel("")
+        self.label_space_free_value_in_bytes.setAlignment(Qt.AlignRight)
+
+        self.color_button_space_free = ColorButton(color="green")
+
+        # Insert Space utilized labels on the right position
+        layout_grid.addWidget(label_space_free, 2, 0, 1, 1)
+        layout_grid.addWidget(self.label_space_free_value, 2, 1, 1, 1)
+        layout_grid.addWidget(self.label_space_free_value_in_bytes, 2, 2, 1, 1)
+        layout_grid.addWidget(self.color_button_space_free, 2, 3, 1, 1)
+
+        self.label_space_total_value = QLabel("")
+        layout_grid.addWidget(self.label_space_total_value, 3, 4, 1, 3)
+
+        layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Add spacing on the Tab
         widget_grid = QWidget()
@@ -745,7 +895,6 @@ class ProcessMonitor(QWidget):
             self.filterComboBox.setCurrentIndex(0)
         self.filterComboBox.model().item(8).setEnabled(False)
 
-
     def selectItem(self, itemOrText):
         oldIndex = self.process_tree.selectionModel().currentIndex()
         newIndex = None
@@ -787,7 +936,6 @@ class ProcessMonitor(QWidget):
 
     def InspectSelectedProcess(self):
         selected = self.process_tree.currentItem()
-        print(selected)
         if selected is not None:
             pid = int(selected.text(0))
             try:
@@ -886,6 +1034,7 @@ class Window(QMainWindow):
         )
 
         tabs = QTabWidget()
+
         tabs.addTab(self.tab_cpu, "CPU")
         tabs.addTab(self.tab_system_memory, "System Memory")
         tabs.addTab(self.tab_disk_activity, "Disk Activity")
@@ -929,6 +1078,9 @@ class Window(QMainWindow):
         worker.updated_system_memory_shared.connect(self.tab_system_memory.refresh_shared)
         worker.updated_system_memory_slab.connect(self.tab_system_memory.refresh_slab)
         worker.updated_system_memory_wired.connect(self.tab_system_memory.refresh_wired)
+
+        # Disk Usage
+        worker.updated_mounted_disk_partitions.connect(self.tab_disk_usage.setMoutedDiskPartitions)
 
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)

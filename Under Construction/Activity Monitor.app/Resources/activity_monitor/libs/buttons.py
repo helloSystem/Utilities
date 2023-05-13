@@ -7,11 +7,10 @@ from PyQt5.QtCore import (
     QSize
 )
 from PyQt5.QtWidgets import (
-    QPushButton,
     QColorDialog,
     QVBoxLayout,
     QLabel,
-    QAbstractButton,
+    QAbstractButton, QFrame
 )
 
 
@@ -43,7 +42,6 @@ class ColorButton(QAbstractButton):
 
         self.setLayout(layout)
         # self.setStyleSheet("border: none;")
-        self.setToolTip('Change color')
 
     def paintEvent(self, e: QPaintEvent) -> None:
         pass
@@ -60,7 +58,7 @@ class ColorButton(QAbstractButton):
             self._color = color
             self.colorChanged.emit(color)
         if self._color:
-            self.label.setStyleSheet(f"border: 1px solid; border-color: lightGray; color: {self._color};")
+            self.label.setStyleSheet(f"border: 1px solid; border-color: Gray; color: {self._color};")
         else:
             self.setStyleSheet("")
 
