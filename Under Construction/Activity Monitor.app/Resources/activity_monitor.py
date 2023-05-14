@@ -47,7 +47,7 @@ from PyQt5.QtWidgets import (
 from activity_monitor.libs.about import About
 from activity_monitor.libs.buttons import ColorButton
 from activity_monitor.libs.utils import bytes2human
-from activity_monitor.libs.progress import QRoundProgressBar
+from activity_monitor.libs.chartpie import ChartPieItem, ChartPie
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
@@ -79,6 +79,13 @@ class PSUtilsWorker(QObject):
     updated_system_memory_slab = Signal(str)
     updated_system_memory_wired = Signal(str)
 
+    # System Memory Chart Pie
+    updated_system_memory_free_raw = Signal(int)
+    updated_system_memory_wired_raw = Signal(int)
+    updated_system_memory_active_raw = Signal(int)
+    updated_system_memory_inactive_raw = Signal(int)
+
+    # Disk Usage
     updated_mounted_disk_partitions = Signal(dict)
 
     def refresh(self):
@@ -115,10 +122,13 @@ class PSUtilsWorker(QObject):
             self.updated_system_memory_used.emit(bytes2human(virtual_memory.used))
         if hasattr(virtual_memory, "free"):
             self.updated_system_memory_free.emit(bytes2human(virtual_memory.free))
+            self.updated_system_memory_free_raw.emit(virtual_memory.free)
         if hasattr(virtual_memory, "active"):
             self.updated_system_memory_active.emit(bytes2human(virtual_memory.active))
+            self.updated_system_memory_active_raw.emit(virtual_memory.active)
         if hasattr(virtual_memory, "inactive"):
             self.updated_system_memory_inactive.emit(bytes2human(virtual_memory.inactive))
+            self.updated_system_memory_inactive_raw.emit(virtual_memory.inactive)
         if hasattr(virtual_memory, "buffers"):
             self.updated_system_memory_buffers.emit(bytes2human(virtual_memory.buffers))
         if hasattr(virtual_memory, "cached"):
@@ -129,6 +139,7 @@ class PSUtilsWorker(QObject):
             self.updated_system_memory_slab.emit(bytes2human(virtual_memory.slab))
         if hasattr(virtual_memory, "wired"):
             self.updated_system_memory_wired.emit(bytes2human(virtual_memory.wired))
+            self.updated_system_memory_wired_raw.emit(virtual_memory.wired)
 
         # Disks usage
         data = {}
@@ -144,12 +155,13 @@ class PSUtilsWorker(QObject):
             data[item_number] = {
                 "device": part.device,
                 "total": bytes2human(usage.total),
-                "total_raw": usage.total,
+
                 "used": bytes2human(usage.used),
                 "used_in_bytes": f"{'{:,}'.format(usage.used)} bytes",
                 "used_raw": usage.used,
                 "free": bytes2human(usage.free),
                 "free_in_bytes": f"{'{:,}'.format(usage.free)} bytes",
+                "free_raw": usage.free,
                 "percent": int(usage.percent),
                 "fstype": part.fstype,
                 "mountpoint": part.mountpoint,
@@ -243,6 +255,7 @@ class TabCpu(QWidget):
         lbl_cpu_usage.setAlignment(Qt.AlignCenter)
         layout_grid.addWidget(lbl_cpu_usage, 0, 6, 1, 1)
 
+
         layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Add spacing on the Tab
@@ -306,7 +319,16 @@ class TabSystemMemory(QWidget):
             "wired": hasattr(__virtual_memory, "wired"),
         }
         self.lbl_free_value = None
+        self.color_button_free = None
         self.lbl_buffers_value = None
+
+        # System Memory Chart Pie
+        self.chart_pie = None
+        self.chart_pie_item_free = None
+        self.chart_pie_item_wired = None
+        self.chart_pie_item_active= None
+        self.chart_pie_item_inactive = None
+
         self.setupUI()
 
     def setupUI(self):
@@ -327,6 +349,9 @@ class TabSystemMemory(QWidget):
         # widget Position management
         grid_col = 0
         grid_row = 0
+
+        self.chart_pie = ChartPie()
+
         if self.memory_os_capability["free"]:
             # Free label
             lbl_free = QLabel("Free:")
@@ -340,10 +365,17 @@ class TabSystemMemory(QWidget):
             )
             # Free Color button
             self.color_button_free = ColorButton(color="green")
+            self.color_button_free.setToolTip("Change Free color display")
             # Insert Free labels on the right position
             layout_grid.addWidget(lbl_free, grid_row, grid_col, 1, 1)
             layout_grid.addWidget(self.lbl_free_value, grid_row, grid_col + 1, 1, 1)
             layout_grid.addWidget(self.color_button_free, grid_row, grid_col + 2, 1, 1)
+
+            self.chart_pie_item_free = ChartPieItem()
+            self.chart_pie_item_free.setColor(self.color_button_free.color())
+            self.chart_pie_item_free.data = 0
+
+            self.chart_pie.addItem(self.chart_pie_item_free)
 
             # layout_grid.setRowStretch(grid_col, 0)
             grid_row += 1
@@ -363,6 +395,12 @@ class TabSystemMemory(QWidget):
             layout_grid.addWidget(self.lbl_wired_value, grid_row, grid_col + 1, 1, 1)
             layout_grid.addWidget(self.color_button_wired, grid_row, grid_col + 2, 1, 1)
 
+            self.chart_pie_item_wired = ChartPieItem()
+            self.chart_pie_item_wired.setColor(self.color_button_wired.color())
+            self.chart_pie_item_wired.setData(0)
+
+            self.chart_pie.addItem(self.chart_pie_item_wired)
+
             grid_row += 1
 
         # PSUtil can return active
@@ -380,6 +418,13 @@ class TabSystemMemory(QWidget):
             layout_grid.addWidget(lbl_active, grid_row, grid_col, 1, 1)
             layout_grid.addWidget(self.lbl_active_value, grid_row, grid_col + 1, 1, 1)
             layout_grid.addWidget(self.color_button_active, grid_row, grid_col + 2, 1, 1)
+
+            self.chart_pie_item_active = ChartPieItem()
+            self.chart_pie_item_active.setColor(self.color_button_active.color())
+            self.chart_pie_item_active.setData(0)
+
+            self.chart_pie.addItem(self.chart_pie_item_active)
+
             grid_row += 1
 
         # PSUtil can return inactive
@@ -397,6 +442,13 @@ class TabSystemMemory(QWidget):
             layout_grid.addWidget(lbl_inactive, grid_row, grid_col, 1, 1)
             layout_grid.addWidget(self.lbl_inactive_value, grid_row, grid_col + 1, 1, 1)
             layout_grid.addWidget(self.color_button_inactive, grid_row, grid_col + 2, 1, 1)
+
+            self.chart_pie_item_inactive = ChartPieItem()
+            self.chart_pie_item_inactive.setColor(self.color_button_inactive.color())
+            self.chart_pie_item_inactive.setData(0)
+
+            self.chart_pie.addItem(self.chart_pie_item_inactive)
+
             grid_row += 1
 
         # PSUtil can return used
@@ -499,9 +551,9 @@ class TabSystemMemory(QWidget):
         widgets_col2 = QWidget()
         widgets_col2.setLayout(layout_col2)
 
-        widgets_col3 = QWidget()
+        widgets_col3 = self.chart_pie
 
-        space_label = QLabel("")
+
         layout_vbox = QHBoxLayout()
         layout_vbox.addWidget(widget_grid, 1)
         layout_vbox.addWidget(widgets_col2, 1)
@@ -511,14 +563,34 @@ class TabSystemMemory(QWidget):
 
         self.setLayout(layout_vbox)
 
+    def refresh_free_raw(self, free_raw):
+        self.chart_pie_item_free.setData(free_raw)
+        self.chart_pie_item_free.setColor(self.color_button_free.color())
+        self.chart_pie.repaint()
+
     def refresh_free(self, free):
         self.lbl_free_value.setText(f"<font color={self.color_button_free.color()}>{free}</font>")
+
+    def refresh_wired_raw(self, wired_raw):
+        self.chart_pie_item_free.setData(wired_raw)
+        self.chart_pie_item_free.setColor(self.color_button_wired.color())
+        self.chart_pie.repaint()
 
     def refresh_wired(self, wired):
         self.lbl_wired_value.setText(f"<font color={self.color_button_wired.color()}>{wired}</font>")
 
+    def refresh_active_raw(self, active_raw):
+        self.chart_pie_item_active.setData(active_raw)
+        self.chart_pie_item_active.setColor(self.color_button_active.color())
+        self.chart_pie.repaint()
+
     def refresh_active(self, active):
         self.lbl_active_value.setText(f"<font color={self.color_button_active.color()}>{active}</font>")
+
+    def refresh_inactive_raw(self, inactive_raw):
+        self.chart_pie_item_inactive.setData(inactive_raw)
+        self.chart_pie_item_inactive.setColor(self.color_button_inactive.color())
+        self.chart_pie.repaint()
 
     def refresh_inactive(self, inactive):
         self.lbl_inactive_value.setText(f"<font color={self.color_button_inactive.color()}>{inactive}</font>")
@@ -585,6 +657,9 @@ class TabDiskUsage(QWidget):
         self.label_space_free_value_in_bytes = None
         self.color_button_space_free = None
         self.label_space_total_value = None
+        self.chartpie = None
+        self.chartpie_item_utilized = None
+        self.chartpie_item_free = None
         # self.mounted_disk_partitions = self.scan_mounted_disk_partitions()
 
         self.setupUI()
@@ -652,8 +727,10 @@ class TabDiskUsage(QWidget):
             f"{self.mounted_disk_partitions[index]['total']}"
         )
 
-        self.bar.setRange(0, self.mounted_disk_partitions[index]['total_raw'])
-        self.bar.setValue(self.mounted_disk_partitions[index]['used_raw'])
+        self.chartpie_item_utilized.color = self.color_button_space_utilized.color()
+        self.chartpie_item_utilized.data = self.mounted_disk_partitions[index]['used_raw']
+        self.chartpie_item_free.color = self.color_button_space_free.color()
+        self.chartpie_item_free.data = self.mounted_disk_partitions[index]['free_raw']
 
     def setupUI(self):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -672,7 +749,7 @@ class TabDiskUsage(QWidget):
         self.label_space_utilized_value_in_bytes = QLabel("")
         self.label_space_utilized_value_in_bytes.setAlignment(Qt.AlignRight)
 
-        self.color_button_space_utilized = ColorButton(color="blue")
+        self.color_button_space_utilized = ColorButton(color="red")
 
         # Insert Space utilized labels on the right position
         layout_grid.addWidget(label_space_utilized, 1, 0, 1, 1)
@@ -702,23 +779,21 @@ class TabDiskUsage(QWidget):
         self.label_space_total_value.setContentsMargins(10, 0, 0, 0)
         layout_grid.addWidget(self.label_space_total_value, 3, 4, 1, 3)
 
-        self.bar = QRoundProgressBar()
-        self.bar.setFixedSize(64, 64)
-        self.bar.setContentsMargins(0, 0, 0, 0 )
+        self.chartpie_item_utilized = ChartPieItem()
+        self.chartpie_item_utilized.color = self.color_button_space_utilized.color()
+        self.chartpie_item_utilized.data = 0
 
-        self.bar.setDataPenWidth(1)
-        self.bar.setOutlinePenWidth(1)
-        self.bar.setDonutThicknessRatio(0.85)
-        self.bar.setDecimals(1)
-        self.bar.setFormat('%v | %p %')
-        # self.bar.resetFormat()
-        self.bar.setNullPosition(90)
-        self.bar.setBarStyle(QRoundProgressBar.StyleDonut)
-        self.bar.setDataColors([(0., QColor.fromRgb(255,0,0)), (0.5, QColor.fromRgb(255,255,0)), (1., QColor.fromRgb(0,255,0))])
+        self.chartpie_item_free = ChartPieItem()
+        self.chartpie_item_free.color = self.color_button_space_free.color()
+        self.chartpie_item_free.data = 0
 
-        self.bar.setRange(0, 300)
-        self.bar.setValue(260)
-        layout_grid.addWidget(self.bar, 0, 4, 3, 1)
+        self.chartpie = ChartPie()
+        self.chartpie.addItems([
+            self.chartpie_item_utilized,
+            self.chartpie_item_free,
+
+        ])
+        layout_grid.addWidget(self.chartpie, 0, 4, 3, 1)
 
 
         layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -1135,6 +1210,12 @@ class Window(QMainWindow):
         worker.updated_system_memory_shared.connect(self.tab_system_memory.refresh_shared)
         worker.updated_system_memory_slab.connect(self.tab_system_memory.refresh_slab)
         worker.updated_system_memory_wired.connect(self.tab_system_memory.refresh_wired)
+
+        # System Memory Chart Pie
+        worker.updated_system_memory_free_raw.connect(self.tab_system_memory.refresh_free_raw)
+        worker.updated_system_memory_wired_raw.connect(self.tab_system_memory.refresh_wired_raw)
+        worker.updated_system_memory_active_raw.connect(self.tab_system_memory.refresh_active_raw)
+        worker.updated_system_memory_inactive_raw.connect(self.tab_system_memory.refresh_inactive_raw)
 
         # Disk Usage
         worker.updated_mounted_disk_partitions.connect(self.tab_disk_usage.setMoutedDiskPartitions)
