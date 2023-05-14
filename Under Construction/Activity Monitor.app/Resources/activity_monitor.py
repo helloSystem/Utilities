@@ -579,7 +579,7 @@ class TabSystemMemory(QWidget):
             wired_raw = abs(wired_raw)
         self.chart_pie_item_wired.setData(wired_raw)
         self.chart_pie_item_wired.setColor(self.color_button_wired.color())
-        self.chart_pie.repaint()
+        # self.chart_pie.repaint()
 
     def refresh_wired(self, wired):
         self.lbl_wired_value.setText(f"<font color={self.color_button_wired.color()}>{wired}</font>")
@@ -589,7 +589,7 @@ class TabSystemMemory(QWidget):
             active_raw = abs(active_raw)
         self.chart_pie_item_active.setData(active_raw)
         self.chart_pie_item_active.setColor(self.color_button_active.color())
-        self.chart_pie.repaint()
+        # self.chart_pie.repaint()
 
     def refresh_active(self, active):
         self.lbl_active_value.setText(f"<font color={self.color_button_active.color()}>{active}</font>")
@@ -599,7 +599,7 @@ class TabSystemMemory(QWidget):
             inactive_raw = abs(inactive_raw)
         self.chart_pie_item_inactive.setData(inactive_raw)
         self.chart_pie_item_inactive.setColor(self.color_button_inactive.color())
-        self.chart_pie.repaint()
+        # self.chart_pie.repaint()
 
     def refresh_inactive(self, inactive):
         self.lbl_inactive_value.setText(f"<font color={self.color_button_inactive.color()}>{inactive}</font>")
