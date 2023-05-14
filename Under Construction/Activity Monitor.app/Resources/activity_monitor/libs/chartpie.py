@@ -80,6 +80,7 @@ class ChartPie(QWidget):
 
     def setupUI(self):
         self.setContentsMargins(0, 0, 0, 0)
+        self.setMaximumWidth(self.height())
         self.show()
 
     def paintEvent(self, e):

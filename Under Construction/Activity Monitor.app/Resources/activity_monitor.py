@@ -320,6 +320,7 @@ class TabSystemMemory(QWidget):
         self.lbl_free_value = None
         self.color_button_free = None
         self.lbl_buffers_value = None
+        self.lbl_wired_value = None
 
         # System Memory Chart Pie
         self.chart_pie = None
@@ -334,16 +335,11 @@ class TabSystemMemory(QWidget):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         layout_grid = QGridLayout()
-        layout_grid.setRowStretch(0 | 1 | 2 | 3 | 4 | 5, 25)
-        layout_grid.setColumnStretch(0 | 1 | 2 , 25)
+        # layout_grid.setRowStretch(0 | 1 | 2 | 3 | 4 | 5 | 6, 25)
+        #
+        # layout_grid.setColumnStretch(0 | 1 | 2 | 3, 25)
         layout_grid.setHorizontalSpacing(10)
         layout_grid.setVerticalSpacing(5)
-
-        layout_col2 = QGridLayout()
-        layout_col2.setRowStretch(0 | 1 | 2 | 3 | 4 | 5, 25)
-        layout_col2.setColumnStretch(0 | 1 , 25)
-        layout_col2.setHorizontalSpacing(10)
-        layout_col2.setVerticalSpacing(5)
 
         # widget Position management
         grid_col = 0
@@ -483,8 +479,8 @@ class TabSystemMemory(QWidget):
                 "The memory that can be given instantly to processes without the system going into swap. <br>"
             )
             # Insert Used labels on the right position
-            layout_col2.addWidget(lbl_available, grid_row, grid_col, 1, 1)
-            layout_col2.addWidget(self.lbl_available_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_available, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_available_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return buffers
@@ -497,8 +493,8 @@ class TabSystemMemory(QWidget):
             self.lbl_buffers_value.setAlignment(Qt.AlignRight)
             self.lbl_buffers_value.setToolTip("Cache for things like file system metadata.<br>")
             # Insert Used labels on the right position
-            layout_col2.addWidget(lbl_buffers, grid_row, grid_col, 1, 1)
-            layout_col2.addWidget(self.lbl_buffers_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_buffers, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_buffers_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return cached
@@ -511,8 +507,8 @@ class TabSystemMemory(QWidget):
             self.lbl_cached_value.setAlignment(Qt.AlignRight)
             self.lbl_cached_value.setToolTip("Cache for various things.")
             # Insert Used labels on the right position
-            layout_col2.addWidget(lbl_cached, grid_row, grid_col, 1, 1)
-            layout_col2.addWidget(self.lbl_cached_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_cached, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_cached_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return shared
@@ -525,8 +521,8 @@ class TabSystemMemory(QWidget):
             self.lbl_shared_value.setAlignment(Qt.AlignRight)
             self.lbl_shared_value.setToolTip("Memory that may be simultaneously accessed by multiple processes.")
             # Insert Used labels on the right position
-            layout_col2.addWidget(lbl_shared, grid_row, grid_col, 1, 1)
-            layout_col2.addWidget(self.lbl_shared_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_shared, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_shared_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
 
         # PSUtil can return lab
@@ -539,26 +535,32 @@ class TabSystemMemory(QWidget):
             self.lbl_slab_value.setAlignment(Qt.AlignRight)
             self.lbl_slab_value.setToolTip("in-kernel data structures cache.")
             # Insert Used labels on the right position
-            layout_col2.addWidget(lbl_slab, grid_row, grid_col, 1, 1)
-            layout_col2.addWidget(self.lbl_slab_value, grid_row, grid_col + 1, 1, 1)
+            layout_grid.addWidget(lbl_slab, grid_row, grid_col, 1, 1)
+            layout_grid.addWidget(self.lbl_slab_value, grid_row, grid_col + 1, 1, 1)
             grid_row += 1
+
+        grid_col = 5
+        # self.chart_pie.setFixedHeight(100)
+
+        self.lbl_total_value = QLabel("coucou")
+        self.lbl_total_value.setAlignment(Qt.AlignCenter)
+        layout_grid.addWidget(self.chart_pie, 0, 5, 4, 1)
+        layout_grid.addWidget(self.lbl_total_value, 4, 5, 1, 1)
+        grid_row += 1
 
         # Add spacing on the Tab
         widget_grid = QWidget()
         widget_grid.setLayout(layout_grid)
 
-        widgets_col2 = QWidget()
-        widgets_col2.setLayout(layout_col2)
-
-        widgets_col3 = self.chart_pie
-
+        # widgets_col2 = QWidget()
+        # widgets_col2.setLayout(layout_col2)
 
         layout_vbox = QHBoxLayout()
         layout_vbox.addWidget(widget_grid, 1)
-        layout_vbox.addWidget(widgets_col2, 1)
-        layout_vbox.addWidget(widgets_col3, 1)
+        # layout_vbox.addWidget(widgets_col2, 1)
+
         layout_vbox.setSpacing(0)
-        layout_vbox.setContentsMargins(20, 30, 0, 0)
+        layout_vbox.setContentsMargins(20, 30, 20, 30)
 
         self.setLayout(layout_vbox)
 
