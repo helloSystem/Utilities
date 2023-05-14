@@ -560,7 +560,7 @@ class TabSystemMemory(QWidget):
         # layout_vbox.addWidget(widgets_col2, 1)
 
         layout_vbox.setSpacing(0)
-        layout_vbox.setContentsMargins(20, 30, 20, 30)
+        layout_vbox.setContentsMargins(0, 30, 80, 0)
 
         self.setLayout(layout_vbox)
 
