@@ -17,7 +17,7 @@ from PyQt5.QtCore import (
     QThread
 
 )
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QStandardItemModel, QStandardItem, QColor
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -47,6 +47,7 @@ from PyQt5.QtWidgets import (
 from activity_monitor.libs.about import About
 from activity_monitor.libs.buttons import ColorButton
 from activity_monitor.libs.utils import bytes2human
+from activity_monitor.libs.progress import QRoundProgressBar
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
@@ -143,8 +144,10 @@ class PSUtilsWorker(QObject):
             data[item_number] = {
                 "device": part.device,
                 "total": bytes2human(usage.total),
+                "total_raw": usage.total,
                 "used": bytes2human(usage.used),
                 "used_in_bytes": f"{'{:,}'.format(usage.used)} bytes",
+                "used_raw": usage.used,
                 "free": bytes2human(usage.free),
                 "free_in_bytes": f"{'{:,}'.format(usage.free)} bytes",
                 "percent": int(usage.percent),
@@ -170,7 +173,9 @@ class TabCpu(QWidget):
         self.setupUI()
 
     def setupUI(self):
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         layout_grid = QGridLayout()
+
 
         # User label
         lbl_user = QLabel("User:")
@@ -242,6 +247,7 @@ class TabCpu(QWidget):
 
         # Add spacing on the Tab
         widget_grid = QWidget()
+        widget_grid.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         widget_grid.setLayout(layout_grid)
 
         space_label = QLabel("")
@@ -304,6 +310,8 @@ class TabSystemMemory(QWidget):
         self.setupUI()
 
     def setupUI(self):
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
         layout_grid = QGridLayout()
         layout_grid.setRowStretch(0 | 1 | 2 | 3 | 4 | 5, 25)
         layout_grid.setColumnStretch(0 | 1 | 2 , 25)
@@ -541,6 +549,8 @@ class TabDiskActivity(QWidget):
         self.setupUI()
 
     def setupUI(self):
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
         layout_grid = QGridLayout()
 
         # Add spacing on the Tab
@@ -597,6 +607,7 @@ class TabDiskUsage(QWidget):
             value = {}
         if self.mounted_disk_partitions != value:
             self.__mounted_disk_partitions = value
+
             self.mounted_disk_partitions_changed.emit()
 
     def setMoutedDiskPartitions(self, value):
@@ -641,7 +652,12 @@ class TabDiskUsage(QWidget):
             f"{self.mounted_disk_partitions[index]['total']}"
         )
 
+        self.bar.setRange(0, self.mounted_disk_partitions[index]['total_raw'])
+        self.bar.setValue(self.mounted_disk_partitions[index]['used_raw'])
+
     def setupUI(self):
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
         layout_grid = QGridLayout()
 
         self.combobox_devices = QComboBox()
@@ -682,7 +698,28 @@ class TabDiskUsage(QWidget):
         layout_grid.addWidget(self.color_button_space_free, 2, 3, 1, 1)
 
         self.label_space_total_value = QLabel("")
+        self.label_space_total_value.setAlignment(Qt.AlignLeft)
+        self.label_space_total_value.setContentsMargins(10, 0, 0, 0)
         layout_grid.addWidget(self.label_space_total_value, 3, 4, 1, 3)
+
+        self.bar = QRoundProgressBar()
+        self.bar.setFixedSize(64, 64)
+        self.bar.setContentsMargins(0, 0, 0, 0 )
+
+        self.bar.setDataPenWidth(1)
+        self.bar.setOutlinePenWidth(1)
+        self.bar.setDonutThicknessRatio(0.85)
+        self.bar.setDecimals(1)
+        self.bar.setFormat('%v | %p %')
+        # self.bar.resetFormat()
+        self.bar.setNullPosition(90)
+        self.bar.setBarStyle(QRoundProgressBar.StyleDonut)
+        self.bar.setDataColors([(0., QColor.fromRgb(255,0,0)), (0.5, QColor.fromRgb(255,255,0)), (1., QColor.fromRgb(0,255,0))])
+
+        self.bar.setRange(0, 300)
+        self.bar.setValue(260)
+        layout_grid.addWidget(self.bar, 0, 4, 3, 1)
+
 
         layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
@@ -710,6 +747,8 @@ class TabNetwork(QWidget):
         self.setupUI()
 
     def setupUI(self):
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
         layout_grid = QGridLayout()
 
         # Add spacing on the Tab
@@ -1016,6 +1055,8 @@ class Window(QMainWindow):
         self.tab_disk_activity = TabDiskActivity()
         self.tab_network = TabNetwork()
         self.searchLineEdit = QLineEdit()
+        # self.searchLineEdit.setStyleSheet("QLineEdit {  border: 2px inner gray;"
+        #                                 "border-radius: 30px}")
         self.filterComboBox = QComboBox()
 
         self.process_monitor = ProcessMonitor()
@@ -1049,6 +1090,7 @@ class Window(QMainWindow):
         )
 
         tabs = QTabWidget()
+        tabs.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         tabs.addTab(self.tab_cpu, "CPU")
         tabs.addTab(self.tab_system_memory, "System Memory")

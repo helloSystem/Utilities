@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtGui import QColor, QPaintEvent
 from PyQt5.QtCore import (
     Qt,
-    pyqtSignal,
-    QSize
+    pyqtSignal
 )
+from PyQt5.QtGui import QPaintEvent, QPainter, QPen, QColor, QBrush, QFontMetrics, QFont
 from PyQt5.QtWidgets import (
     QColorDialog,
     QVBoxLayout,
-    QLabel,
-    QAbstractButton, QFrame
+    QAbstractButton
 )
 
 
@@ -26,41 +24,46 @@ class ColorButton(QAbstractButton):
 
     def __init__(self, *args, color=None, **kwargs):
         super(ColorButton, self).__init__(*args, **kwargs)
-        self.label = QLabel()
-        self.label.setText("■")
-        self.label.setAlignment(Qt.AlignVCenter | Qt.AlignHCenter)
 
         self._color = None
         self._default = color
+        self._height = None
         self.pressed.connect(self.onColorPicker)
         self.setColor(self._default)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.label)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(0)
+        self.setupUI()
 
+    def setupUI(self):
+        font = QFont()
+        font_metric = QFontMetrics(font)
+        self._height = font_metric.height()
+        self.setFixedHeight(self._height)
+        self.setFixedWidth(self._height)
+
+        layout = QVBoxLayout()
         self.setLayout(layout)
-        # self.setStyleSheet("border: none;")
 
     def paintEvent(self, e: QPaintEvent) -> None:
-        pass
+        qp = QPainter()
+        qp.begin(self)
+        self.draw_square(qp)
+        qp.end()
 
-    def resizeEvent(self, event):
-        # Create a square base size of 10x10 and scale it to the new size
-        # maintaining aspect ratio.
-        new_size = QSize(1, 1)
-        new_size.scale(event.size(), Qt.KeepAspectRatio)
-        self.resize(new_size)
+    def draw_square(self, qp):
+        spacing = int(self._height * 0.45)
+        pen_size = 1
+
+        qp.setPen(QPen(Qt.gray, pen_size))
+        qp.drawRect(0, 0, self._height - pen_size, self._height - pen_size)
+
+        qp.setPen(QPen(Qt.gray, pen_size))
+        qp.setBrush(QBrush(QColor(self._color), Qt.SolidPattern))
+        qp.drawRect(spacing / 2, spacing / 2, self._height - pen_size - spacing, self._height - pen_size - spacing)
 
     def setColor(self, color):
         if color != self._color:
             self._color = color
             self.colorChanged.emit(color)
-        if self._color:
-            self.label.setStyleSheet(f"border: 1px solid; border-color: Gray; color: {self._color};")
-        else:
-            self.setStyleSheet("")
 
     def color(self):
         return self._color
