@@ -140,7 +140,6 @@ class PSUtilsWorker(QObject):
         if hasattr(virtual_memory, "wired"):
             self.updated_system_memory_wired.emit(bytes2human(virtual_memory.wired))
             self.updated_system_memory_wired_raw.emit(virtual_memory.wired)
-
         # Disks usage
         data = {}
         item_number = 0
@@ -564,6 +563,8 @@ class TabSystemMemory(QWidget):
         self.setLayout(layout_vbox)
 
     def refresh_free_raw(self, free_raw):
+        if free_raw < 0:
+            free_raw = abs(free_raw)
         self.chart_pie_item_free.setData(free_raw)
         self.chart_pie_item_free.setColor(self.color_button_free.color())
         self.chart_pie.repaint()
@@ -572,14 +573,18 @@ class TabSystemMemory(QWidget):
         self.lbl_free_value.setText(f"<font color={self.color_button_free.color()}>{free}</font>")
 
     def refresh_wired_raw(self, wired_raw):
-        self.chart_pie_item_free.setData(wired_raw)
-        self.chart_pie_item_free.setColor(self.color_button_wired.color())
+        if wired_raw < 0:
+            wired_raw = abs(wired_raw)
+        self.chart_pie_item_wired.setData(wired_raw)
+        self.chart_pie_item_wired.setColor(self.color_button_wired.color())
         self.chart_pie.repaint()
 
     def refresh_wired(self, wired):
         self.lbl_wired_value.setText(f"<font color={self.color_button_wired.color()}>{wired}</font>")
 
     def refresh_active_raw(self, active_raw):
+        if active_raw < 0:
+            active_raw = abs(active_raw)
         self.chart_pie_item_active.setData(active_raw)
         self.chart_pie_item_active.setColor(self.color_button_active.color())
         self.chart_pie.repaint()
@@ -588,6 +593,8 @@ class TabSystemMemory(QWidget):
         self.lbl_active_value.setText(f"<font color={self.color_button_active.color()}>{active}</font>")
 
     def refresh_inactive_raw(self, inactive_raw):
+        if inactive_raw < 0:
+            inactive_raw = abs(inactive_raw)
         self.chart_pie_item_inactive.setData(inactive_raw)
         self.chart_pie_item_inactive.setColor(self.color_button_inactive.color())
         self.chart_pie.repaint()
