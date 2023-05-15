@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QVBoxLayout,
     QLabel,
+    QSpacerItem,
     QSizePolicy,
 )
 
@@ -47,13 +48,17 @@ class TabSystemMemory(QWidget):
         self.chart_pie_item_wired = None
         self.chart_pie_item_active = None
         self.chart_pie_item_inactive = None
+        self.color_button_wired = None
+        self.lbl_active_value = None
+        self.color_button_active = None
 
         self.setupUI()
 
     def setupUI(self):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-
         layout_grid = QGridLayout()
+        self.chart_pie = ChartPie()
+
         # layout_grid.setRowStretch(0 | 1 | 2 | 3 | 4, 1)
         # #
         # layout_grid.setColumnStretch(0 | 1 | 2, 1)
@@ -63,8 +68,6 @@ class TabSystemMemory(QWidget):
         # widget Position management
         grid_col = 0
         grid_row = 0
-
-        self.chart_pie = ChartPie()
 
         if self.memory_os_capability["free"]:
             # Free label
@@ -91,7 +94,6 @@ class TabSystemMemory(QWidget):
 
             self.chart_pie.addItem(self.chart_pie_item_free)
 
-            # layout_grid.setRowStretch(grid_col, 0)
             grid_row += 1
 
         if self.memory_os_capability["wired"]:
@@ -259,7 +261,6 @@ class TabSystemMemory(QWidget):
             grid_row += 1
 
         grid_col = 5
-        # self.chart_pie.setFixedHeight(100)
 
         self.lbl_total_value = QLabel(f"{bytes2human(self.__virtual_memory.total)}")
         self.lbl_total_value.setAlignment(Qt.AlignLeft)
@@ -267,6 +268,8 @@ class TabSystemMemory(QWidget):
         layout_grid.addWidget(self.chart_pie, 0, 5, 5, 1, Qt.AlignCenter)
         layout_grid.addWidget(self.lbl_total_value, 5, 5, 1, 1, Qt.AlignCenter)
         grid_row += 1
+
+        layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Add spacing on the Tab
         widget_grid = QWidget()

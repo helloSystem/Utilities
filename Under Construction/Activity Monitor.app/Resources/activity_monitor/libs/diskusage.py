@@ -39,8 +39,6 @@ class TabDiskUsage(QWidget):
         # self.mounted_disk_partitions = self.scan_mounted_disk_partitions()
 
         self.setupUI()
-        # self.combobox_refresh()
-        # self.combobox_index_changed()
 
         self.combobox_devices.currentIndexChanged.connect(self.combobox_index_changed)
         # self.combobox_devices.activated.connect(self.combobox_index_changed)
@@ -110,11 +108,12 @@ class TabDiskUsage(QWidget):
 
     def setupUI(self):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-
         layout_grid = QGridLayout()
 
         self.combobox_devices = QComboBox()
-        layout_grid.addWidget(self.combobox_devices, 0, 0, 1, 2)
+        layout_grid.addWidget(self.combobox_devices, 0, 1, 1, 2)
+
+        label_spacing = QLabel()
 
         label_space_utilized = QLabel("Space utilized:")
         label_space_utilized.setAlignment(Qt.AlignRight)
@@ -127,11 +126,12 @@ class TabDiskUsage(QWidget):
 
         self.color_button_space_utilized = ColorButton(color="red")
 
+        layout_grid.addWidget(label_spacing, 1, 0, 1, 1)
         # Insert Space utilized labels on the right position
-        layout_grid.addWidget(label_space_utilized, 1, 0, 1, 1)
-        layout_grid.addWidget(self.label_space_utilized_value, 1, 1, 1, 1)
-        layout_grid.addWidget(self.label_space_utilized_value_in_bytes, 1, 2, 1, 1)
-        layout_grid.addWidget(self.color_button_space_utilized, 1, 3, 1, 1)
+        layout_grid.addWidget(label_space_utilized, 2, 0, 1, 1)
+        layout_grid.addWidget(self.label_space_utilized_value, 2, 1, 1, 1)
+        layout_grid.addWidget(self.label_space_utilized_value_in_bytes, 2, 2, 1, 1)
+        layout_grid.addWidget(self.color_button_space_utilized, 2, 3, 1, 1)
 
         label_space_free = QLabel("Space free:")
         label_space_free.setAlignment(Qt.AlignRight)
@@ -145,15 +145,14 @@ class TabDiskUsage(QWidget):
         self.color_button_space_free = ColorButton(color="green")
 
         # Insert Space utilized labels on the right position
-        layout_grid.addWidget(label_space_free, 2, 0, 1, 1)
-        layout_grid.addWidget(self.label_space_free_value, 2, 1, 1, 1)
-        layout_grid.addWidget(self.label_space_free_value_in_bytes, 2, 2, 1, 1)
-        layout_grid.addWidget(self.color_button_space_free, 2, 3, 1, 1)
+        layout_grid.addWidget(label_space_free, 3, 0, 1, 1)
+        layout_grid.addWidget(self.label_space_free_value, 3, 1, 1, 1)
+        layout_grid.addWidget(self.label_space_free_value_in_bytes, 3, 2, 1, 1)
+        layout_grid.addWidget(self.color_button_space_free, 3, 3, 1, 1)
 
         self.label_space_total_value = QLabel("")
         self.label_space_total_value.setAlignment(Qt.AlignLeft)
-        self.label_space_total_value.setContentsMargins(10, 0, 0, 0)
-        layout_grid.addWidget(self.label_space_total_value, 3, 4, 1, 3)
+        # self.label_space_total_value.setContentsMargins(10, 0, 0, 0)
 
         self.chartpie_item_utilized = ChartPieItem()
         self.chartpie_item_utilized.color = self.color_button_space_utilized.color()
@@ -169,12 +168,14 @@ class TabDiskUsage(QWidget):
             self.chartpie_item_free,
 
         ])
-        layout_grid.addWidget(self.chartpie, 0, 4, 3, 1)
+        layout_grid.addWidget(self.chartpie, 0, 4, 4, 1, Qt.AlignCenter)
+        layout_grid.addWidget(self.label_space_total_value, 4, 4, 1, 1, Qt.AlignCenter)
 
         layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         # Add spacing on the Tab
         widget_grid = QWidget()
+        widget_grid.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         widget_grid.setLayout(layout_grid)
 
         space_label = QLabel("")
