@@ -41,9 +41,9 @@ from PyQt5.QtWidgets import (
 
 from activity_monitor.libs.about import About
 from activity_monitor.libs.utils import bytes2human
-from activity_monitor.libs.diskusage import TabDiskUsage
-from activity_monitor.libs.systemmemory import TabSystemMemory
-from activity_monitor.libs.cpu import TabCpu
+from activity_monitor.libs.tab_cpu import TabCpu
+from activity_monitor.libs.tab_system_memory import TabSystemMemory
+from activity_monitor.libs.tab_disk_usage import TabDiskUsage
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
