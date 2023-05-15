@@ -1,7 +1,9 @@
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtGui import QPainter, QPen, QColor, QBrush
 from PyQt5.QtWidgets import (
     QWidget,
+    QVBoxLayout,
+    QSizePolicy,
 )
 
 
@@ -41,15 +43,24 @@ class ChartPieItem(object):
 
 class ChartPie(QWidget):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.__data = None
-        self.__shadow = None
 
         self.data = None
-        self.shadow = None
+        self._circular_size = 100
+        self._thickness = 1
+        self.qp = None
 
         self.setupUI()
+
+    def sizeHint(self):
+        return QSize(100, 100)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._circular_size = (self.width() - (self._thickness * 2)) if self.width() < self.height() else (
+                self.height() - (self._thickness * 2))
 
     @property
     def data(self):
@@ -78,55 +89,50 @@ class ChartPie(QWidget):
     def clear(self):
         self.data = None
 
-    @property
-    def shadow(self):
-        return self.__shadow
-
-    @shadow.setter
-    def shadow(self, value):
-        if value is None:
-            value = True
-        if type(value) != bool:
-            raise TypeError("'shadow' property value must be a QColor instance")
-        if self.shadow != value:
-            self.__shadow = value
-
-    def setShadow(self, shadow):
-        self.shadow = shadow
 
     def setupUI(self):
         self.setContentsMargins(0, 0, 0, 0)
+        self.setBaseSize(100, 100)
+        self.setSizePolicy(
+            QSizePolicy.MinimumExpanding,
+            QSizePolicy.MinimumExpanding
+        )
         # self.setMaximumWidth(self.height())
+
+        self.setLayout(QVBoxLayout())
         self.show()
 
     def paintEvent(self, e):
-        qp = QPainter()
-        qp.begin(self)
-        qp.setRenderHint(QPainter.Antialiasing)
-        qp.setRenderHint(QPainter.HighQualityAntialiasing)
-        self.draw_pie(qp)
-        qp.end()
+        self.qp = QPainter()
+        self.qp.begin(self)
+        self.qp.setRenderHint(QPainter.Antialiasing)
+        self.qp.setRenderHint(QPainter.HighQualityAntialiasing)
+        self.draw_pie()
+        self.qp.end()
 
-    def draw_pie(self, qp):
+    def draw_pie(self):
         pen_size = 1
         off_set = 2
 
         # x: int, y: int, w: int, h: int, a: int, alen: int
+        d_height = self.height()
+        d_width = self.width()
+        self._circular_size = (self.height() - (self._thickness * 2)) if self.width() < self.height() else (
+                self.height() - (self._thickness * 2))
 
-        x = int(self.width() / 2) - int((self.height() - (pen_size * 2)) / 2)
+        x = int(d_width / 2) - int((d_height - (pen_size * 2)) / 2)
         y = pen_size
-        w = self.height() - (pen_size * 2)
-        h = self.height() - (pen_size * 2)
+        w = self._circular_size
+        h = self._circular_size
 
         # Micro Drop Shadow
-
-        qp.setPen(QPen(Qt.gray, pen_size))
-        qp.setBrush(QBrush(Qt.gray, Qt.SolidPattern))
-        qp.drawPie(
+        self.qp.setPen(QPen(Qt.gray, pen_size))
+        self.qp.setBrush(QBrush(Qt.gray, Qt.SolidPattern))
+        self.qp.drawPie(
             x + int(off_set / 2),
             y + int(off_set / 2),
-            w - int(off_set / 2),
-            h - int(off_set / 2),
+            self._circular_size - int(off_set / 2),
+            self._circular_size - int(off_set / 2),
             0 * 16, 360 * 16
         )
 
@@ -137,10 +143,9 @@ class ChartPie(QWidget):
                 total += item.data
         set_angle = 0
         for item in self.data:
-            qp.setPen(QPen(QColor(item.color), pen_size))
-            qp.setBrush(QBrush(QColor(item.color), Qt.SolidPattern))
+            self.qp.setPen(QPen(QColor(item.color), pen_size))
+            self.qp.setBrush(QBrush(QColor(item.color), Qt.SolidPattern))
             if total > 0:
                 angle = round(float(item.data * 5760) / total)
-                qp.drawPie(x, y, w - off_set, h - off_set, set_angle, angle)
+                self.qp.drawPie(x, y, w - off_set, h - off_set, set_angle, angle)
                 set_angle += angle
-

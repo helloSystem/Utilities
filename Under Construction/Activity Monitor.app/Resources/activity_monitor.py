@@ -302,20 +302,20 @@ class TabSystemMemory(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         # Internal class settings
-        __virtual_memory = psutil.virtual_memory()
+        self.__virtual_memory = psutil.virtual_memory()
         self.memory_os_capability = {
-            "total": hasattr(__virtual_memory, "total"),
-            "available": hasattr(__virtual_memory, "available"),
-            "percent": hasattr(__virtual_memory, "percent"),
-            "used": hasattr(__virtual_memory, "used"),
-            "free": hasattr(__virtual_memory, "free"),
-            "active": hasattr(__virtual_memory, "active"),
-            "inactive": hasattr(__virtual_memory, "inactive"),
-            "buffers": hasattr(__virtual_memory, "buffers"),
-            "cached": hasattr(__virtual_memory, "cached"),
-            "shared": hasattr(__virtual_memory, "shared"),
-            "slab": hasattr(__virtual_memory, "slab"),
-            "wired": hasattr(__virtual_memory, "wired"),
+            "total": hasattr(self.__virtual_memory, "total"),
+            "available": hasattr(self.__virtual_memory, "available"),
+            "percent": hasattr(self.__virtual_memory, "percent"),
+            "used": hasattr(self.__virtual_memory, "used"),
+            "free": hasattr(self.__virtual_memory, "free"),
+            "active": hasattr(self.__virtual_memory, "active"),
+            "inactive": hasattr(self.__virtual_memory, "inactive"),
+            "buffers": hasattr(self.__virtual_memory, "buffers"),
+            "cached": hasattr(self.__virtual_memory, "cached"),
+            "shared": hasattr(self.__virtual_memory, "shared"),
+            "slab": hasattr(self.__virtual_memory, "slab"),
+            "wired": hasattr(self.__virtual_memory, "wired"),
         }
         self.lbl_free_value = None
         self.color_button_free = None
@@ -335,11 +335,11 @@ class TabSystemMemory(QWidget):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         layout_grid = QGridLayout()
-        # layout_grid.setRowStretch(0 | 1 | 2 | 3 | 4 | 5 | 6, 25)
-        #
-        # layout_grid.setColumnStretch(0 | 1 | 2 | 3, 25)
-        layout_grid.setHorizontalSpacing(10)
-        layout_grid.setVerticalSpacing(5)
+        # layout_grid.setRowStretch(0 | 1 | 2 | 3 | 4, 1)
+        # #
+        # layout_grid.setColumnStretch(0 | 1 | 2, 1)
+        # layout_grid.setColumnStretch(3 | 4, 2)
+        # layout_grid.setColumnStretch(5, 2)
 
         # widget Position management
         grid_col = 0
@@ -542,25 +542,24 @@ class TabSystemMemory(QWidget):
         grid_col = 5
         # self.chart_pie.setFixedHeight(100)
 
-        self.lbl_total_value = QLabel("coucou")
-        self.lbl_total_value.setAlignment(Qt.AlignCenter)
-        layout_grid.addWidget(self.chart_pie, 0, 5, 4, 1)
-        layout_grid.addWidget(self.lbl_total_value, 4, 5, 1, 1)
+        self.lbl_total_value = QLabel(f"{bytes2human(self.__virtual_memory.total)}")
+        self.lbl_total_value.setAlignment(Qt.AlignLeft)
+
+        layout_grid.addWidget(self.chart_pie, 0, 5, 5, 1, Qt.AlignCenter)
+        layout_grid.addWidget(self.lbl_total_value, 5, 5, 1, 1, Qt.AlignCenter)
         grid_row += 1
 
         # Add spacing on the Tab
         widget_grid = QWidget()
+        widget_grid.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         widget_grid.setLayout(layout_grid)
 
-        # widgets_col2 = QWidget()
-        # widgets_col2.setLayout(layout_col2)
-
-        layout_vbox = QHBoxLayout()
-        layout_vbox.addWidget(widget_grid, 1)
-        # layout_vbox.addWidget(widgets_col2, 1)
-
+        space_label = QLabel("")
+        layout_vbox = QVBoxLayout()
+        layout_vbox.addWidget(space_label)
+        layout_vbox.addWidget(widget_grid)
         layout_vbox.setSpacing(0)
-        layout_vbox.setContentsMargins(0, 30, 80, 0)
+        layout_vbox.setContentsMargins(0, 0, 0, 0)
 
         self.setLayout(layout_vbox)
 
@@ -1014,15 +1013,15 @@ class ProcessMonitor(QWidget):
 
         for pos, title in enumerate(self.header):
             self.tree_view_model.setHeaderData(pos, Qt.Horizontal, title)
-            self.process_tree.resizeColumnToContents(pos)
 
         self.process_tree.setModel(self.tree_view_model)
+
+        for pos, title in enumerate(self.header):
+            self.process_tree.resizeColumnToContents(pos)
 
         if self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
 
-        # for pos in range(len(self.header) - 1):
-        #     self.process_tree.resizeColumnToContents(pos)
 
     def selectClear(self):
         self.selected_pid = -1
@@ -1085,6 +1084,7 @@ class ProcessMonitor(QWidget):
 class Window(QMainWindow):
     def __init__(self):
         super(Window, self).__init__()
+        self.hide()
 
         self.icon_size = 32
         self.filters = [
@@ -1119,6 +1119,7 @@ class Window(QMainWindow):
         self.refresh()
 
     def setupUi(self):
+
         self.setWindowTitle("Activity Monitor")
         self.resize(800, 600)
         self.setWindowIcon(
