@@ -1,30 +1,22 @@
 #!/usr/bin/env python3
 
 import os
-import signal
 import sys
-import time
 
-import psutil
 from PyQt5.QtCore import (
     QTimer,
     Qt,
     QSize,
-    QItemSelectionModel,
-    QItemSelection,
     QThread
-
 )
-from PyQt5.QtGui import QKeySequence, QIcon, QPixmap, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QKeySequence, QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
-    QGridLayout,
     QTabWidget,
     QWidget,
     QToolBar,
     QVBoxLayout,
-    QAbstractItemView,
     QShortcut,
     QLabel,
     QAction,
@@ -34,11 +26,8 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QSizePolicy,
     QLineEdit,
-    QTreeView,
 )
 
-
-from activity_monitor.libs.utils import bytes2human
 # In charge to background long time process
 from activity_monitor.libs.worker import PSUtilsWorker
 # Load each tab class
@@ -48,14 +37,13 @@ from activity_monitor.libs.tab_disk_usage import TabDiskUsage
 from activity_monitor.libs.tab_disk_activity import TabDiskActivity
 from activity_monitor.libs.tab_network import TabNetwork
 from activity_monitor.libs.treeview_processes import TreeViewProcess
+from activity_monitor.libs.about import About
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
 __app_authors__ = ["Hierosme Alias Tuuux", "Contributors ..."]
 __app_description__ = "View CPU, Memory, Network, Disk activities and interact with processes"
 __app_url__ = "https://github.com/helloSystem/Utilities"
-
-
 
 
 class Window(QMainWindow):
@@ -207,27 +195,17 @@ class Window(QMainWindow):
         worker.updated_mounted_disk_partitions.connect(self.tab_disk_usage.setMoutedDiskPartitions)
 
         # Disk Activity
-        #         self.updated_disk_activity_reads_in.emit(activity.read_count)
-        #         self.updated_disk_activity_writes_out.emit(activity.write_count)
-        #         self.updated_disk_activity_reads_in_sec.emit(activity_per_sec["read_count_per_sec"])
-        #         self.updated_disk_activity_writes_out_sec.emit(activity_per_sec["write_count_per_sec"])
-        #
-        #         self.updated_disk_activity_data_read.emit(bytes2human(activity.read_bytes))
-        #         self.updated_disk_activity_data_written.emit(bytes2human(activity.write_bytes))
-        #         self.updated_disk_activity_data_read_sec.emit(bytes2human(activity_per_sec["read_bytes_per_sec"]))
-        #         self.updated_disk_activity_data_written_sec.emit(bytes2human(activity_per_sec["write_bytes_per_sec"]))
-
         worker.updated_disk_activity_reads_in.connect(self.tab_disk_activity.refresh_reads_in)
         worker.updated_disk_activity_writes_out.connect(self.tab_disk_activity.refresh_writes_out)
-        worker.updated_disk_activity_reads_in_sec.connect(self.tab_disk_activity.refresh_reads_in_sec)
-        worker.updated_disk_activity_writes_out_sec.connect(self.tab_disk_activity.refresh_writes_out_sec)
+        # worker.updated_disk_activity_reads_in_sec.connect(self.tab_disk_activity.refresh_reads_in_sec)
+        # worker.updated_disk_activity_writes_out_sec.connect(self.tab_disk_activity.refresh_writes_out_sec)
 
         worker.updated_disk_activity_data_read.connect(self.tab_disk_activity.refresh_data_read)
         worker.updated_disk_activity_data_written.connect(self.tab_disk_activity.refresh_data_written)
-        worker.updated_disk_activity_data_read_sec.connect(self.tab_disk_activity.refresh_data_read_sec)
-        worker.updated_disk_activity_data_written_sec.connect(self.tab_disk_activity.refresh_data_written_sec)
+        # worker.updated_disk_activity_data_read_sec.connect(self.tab_disk_activity.refresh_data_read_sec)
+        # worker.updated_disk_activity_data_written_sec.connect(self.tab_disk_activity.refresh_data_written_sec)
 
-        worker.updated_disk_activity_bandwidth_value.connect(self.tab_disk_activity.refresh_bandwidth)
+        # worker.updated_disk_activity_bandwidth_value.connect(self.tab_disk_activity.refresh_bandwidth)
 
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
@@ -252,12 +230,18 @@ class Window(QMainWindow):
 
     def _timer_change_for_1_sec(self):
         self.timer.start(1000)
+        if self.tab_disk_activity:
+            self.tab_disk_activity.timer_value = 1
 
     def _timer_change_for_3_secs(self):
         self.timer.start(3000)
+        if self.tab_disk_activity:
+            self.tab_disk_activity.timer_value = 3
 
     def _timer_change_for_5_secs(self):
         self.timer.start(5000)
+        if self.tab_disk_activity:
+            self.tab_disk_activity.timer_value = 5
 
     def _filter_by_changed(self):
         #             0: 'All Processes',

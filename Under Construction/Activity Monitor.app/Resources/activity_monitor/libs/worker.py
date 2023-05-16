@@ -44,15 +44,15 @@ class PSUtilsWorker(QObject):
     # Disk Activity
     updated_disk_activity_reads_in = Signal(int)
     updated_disk_activity_writes_out = Signal(int)
-    updated_disk_activity_reads_in_sec = Signal(int)
-    updated_disk_activity_writes_out_sec = Signal(int)
+    # updated_disk_activity_reads_in_sec = Signal(int)
+    # updated_disk_activity_writes_out_sec = Signal(int)
 
-    updated_disk_activity_data_read = Signal(str)
-    updated_disk_activity_data_written = Signal(str)
-    updated_disk_activity_data_read_sec = Signal(str)
-    updated_disk_activity_data_written_sec = Signal(str)
+    updated_disk_activity_data_read = Signal(int)
+    updated_disk_activity_data_written = Signal(int)
+    # updated_disk_activity_data_read_sec = Signal(str)
+    # updated_disk_activity_data_written_sec = Signal(str)
 
-    updated_disk_activity_bandwidth_value = Signal(str)
+    # updated_disk_activity_bandwidth_value = Signal(str)
 
     # Disk Usage
     updated_mounted_disk_partitions = Signal(dict)
@@ -134,55 +134,10 @@ class PSUtilsWorker(QObject):
 
         # Disk Activity A last because it need to wait 1 entire second
         activity = psutil.disk_io_counters()
-        activity_per_sec = disks_statistics_per_sec()
 
         self.updated_disk_activity_reads_in.emit(activity.read_count)
         self.updated_disk_activity_writes_out.emit(activity.write_count)
-        self.updated_disk_activity_reads_in_sec.emit(activity_per_sec["read_count_per_sec"])
-        self.updated_disk_activity_writes_out_sec.emit(activity_per_sec["write_count_per_sec"])
-
-        self.updated_disk_activity_data_read.emit(bytes2human(activity.read_bytes))
-        self.updated_disk_activity_data_written.emit(bytes2human(activity.write_bytes))
-        self.updated_disk_activity_data_read_sec.emit(bytes2human(activity_per_sec["read_bytes_per_sec"], short=False))
-        self.updated_disk_activity_data_written_sec.emit(
-            bytes2human(activity_per_sec["write_bytes_per_sec"], short=False)
-        )
-
-        self.updated_disk_activity_bandwidth_value.emit(
-            f"{bytes2human(activity_per_sec['read_bytes_per_sec'] + activity_per_sec['write_bytes_per_sec'])}/sec"
-        )
+        self.updated_disk_activity_data_read.emit(activity.read_bytes)
+        self.updated_disk_activity_data_written.emit(activity.write_bytes)
 
         self.finished.emit()
-
-
-def disks_statistics_per_sec():
-    """
-    Calculate IO usage by comparing IO statistics before and
-    after 1 sec interval.
-
-     {
-     'read_bytes_per_sec': 0,
-     'write_bytes_per_sec': 0,
-     'read_count_per_sec': 0,
-     'write_count_per_sec': 0
-     }
-
-    :return: Return a dict including total disks I/O activity.
-    :rtype: dict
-    """
-    # first get disk io counters
-    disks_before = psutil.disk_io_counters()
-
-    # sleep 1 sec (yes easy trick)
-    time.sleep(1)
-
-    # then retrieve the same info again
-    disks_after = psutil.disk_io_counters()
-
-    # finally return calculated results by comparing data before and
-    return {
-        "read_bytes_per_sec": disks_after.read_bytes - disks_before.read_bytes,
-        "write_bytes_per_sec": disks_after.write_bytes - disks_before.write_bytes,
-        "read_count_per_sec": disks_after.read_count - disks_before.read_count,
-        "write_count_per_sec": disks_after.write_count - disks_before.write_count,
-    }
