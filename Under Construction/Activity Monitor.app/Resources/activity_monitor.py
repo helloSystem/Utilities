@@ -44,6 +44,7 @@ from activity_monitor.libs.utils import bytes2human
 from activity_monitor.libs.tab_cpu import TabCpu
 from activity_monitor.libs.tab_system_memory import TabSystemMemory
 from activity_monitor.libs.tab_disk_usage import TabDiskUsage
+from activity_monitor.libs.tab_disk_activity import TabDiskActivity
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
@@ -168,32 +169,6 @@ class PSUtilsWorker(QObject):
         self.finished.emit()
 
 
-class TabDiskActivity(QWidget):
-    def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
-
-        self.setupUI()
-
-    def setupUI(self):
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-
-        layout_grid = QGridLayout()
-
-        # Add spacing on the Tab
-        widget_grid = QWidget()
-        widget_grid.setLayout(layout_grid)
-
-        space_label = QLabel("")
-        layout_vbox = QVBoxLayout()
-        layout_vbox.addWidget(space_label)
-        layout_vbox.addWidget(widget_grid)
-        layout_vbox.setSpacing(0)
-        layout_vbox.setContentsMargins(0, 0, 0, 0)
-
-        self.setLayout(layout_vbox)
-
-    def refresh(self):
-        pass
 
 
 class TabNetwork(QWidget):
