@@ -109,8 +109,8 @@ class PSUtilsWorker(QObject):
         data = {}
         item_number = 0
         for part in psutil.disk_partitions(all=False):
-            if os.name == 'nt':
-                if 'cdrom' in part.opts or part.fstype == '':
+            if os.name == "nt":
+                if "cdrom" in part.opts or part.fstype == "":
                     # skip cd-rom drives with no disk in it; they may raise
                     # ENOENT, pop-up a Windows GUI error for a non-ready
                     # partition or just hang.
@@ -119,7 +119,6 @@ class PSUtilsWorker(QObject):
             data[item_number] = {
                 "device": part.device,
                 "total": bytes2human(usage.total),
-
                 "used": bytes2human(usage.used),
                 "used_in_bytes": f"{'{:,}'.format(usage.used)} bytes",
                 "used_raw": usage.used,
@@ -129,7 +128,6 @@ class PSUtilsWorker(QObject):
                 "percent": int(usage.percent),
                 "fstype": part.fstype,
                 "mountpoint": part.mountpoint,
-
             }
             item_number += 1
         self.updated_mounted_disk_partitions.emit(data)
@@ -147,7 +145,8 @@ class PSUtilsWorker(QObject):
         self.updated_disk_activity_data_written.emit(bytes2human(activity.write_bytes))
         self.updated_disk_activity_data_read_sec.emit(bytes2human(activity_per_sec["read_bytes_per_sec"], short=False))
         self.updated_disk_activity_data_written_sec.emit(
-            bytes2human(activity_per_sec["write_bytes_per_sec"], short=False))
+            bytes2human(activity_per_sec["write_bytes_per_sec"], short=False)
+        )
 
         self.updated_disk_activity_bandwidth_value.emit(
             f"{bytes2human(activity_per_sec['read_bytes_per_sec'] + activity_per_sec['write_bytes_per_sec'])}/sec"
