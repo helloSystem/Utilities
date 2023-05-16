@@ -197,15 +197,8 @@ class Window(QMainWindow):
         # Disk Activity
         worker.updated_disk_activity_reads_in.connect(self.tab_disk_activity.refresh_reads_in)
         worker.updated_disk_activity_writes_out.connect(self.tab_disk_activity.refresh_writes_out)
-        # worker.updated_disk_activity_reads_in_sec.connect(self.tab_disk_activity.refresh_reads_in_sec)
-        # worker.updated_disk_activity_writes_out_sec.connect(self.tab_disk_activity.refresh_writes_out_sec)
-
         worker.updated_disk_activity_data_read.connect(self.tab_disk_activity.refresh_data_read)
         worker.updated_disk_activity_data_written.connect(self.tab_disk_activity.refresh_data_written)
-        # worker.updated_disk_activity_data_read_sec.connect(self.tab_disk_activity.refresh_data_read_sec)
-        # worker.updated_disk_activity_data_written_sec.connect(self.tab_disk_activity.refresh_data_written_sec)
-
-        # worker.updated_disk_activity_bandwidth_value.connect(self.tab_disk_activity.refresh_bandwidth)
 
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
