@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-def bytes2human(n):
+
+def bytes2human(n, short=True):
     """
     Forked method from psutil with a better suffix management
     """
@@ -16,4 +17,10 @@ def bytes2human(n):
     for s in reversed(symbols):
         if n >= prefix[s]:
             return f"{round(float(n) / prefix[s], 2):.2f} {s}B"
-    return f"{n} B"
+    if short:
+        return f"{n} B"
+    else:
+        if n >= 1:
+            return f"{n} bytes"
+        else:
+            return f"{n} byte"

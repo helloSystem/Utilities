@@ -61,9 +61,9 @@ class TabSystemMemory(QWidget):
 
         # layout_grid.setRowStretch(0 | 1 | 2 | 3 | 4, 1)
         # #
-        # layout_grid.setColumnStretch(0 | 1 | 2, 1)
-        # layout_grid.setColumnStretch(3 | 4, 2)
-        # layout_grid.setColumnStretch(5, 2)
+        # layout_grid.setColumnStretch(0 | 1 | 2, 20)
+        # layout_grid.setColumnStretch(3 | 4, 0)
+        # layout_grid.setColumnStretch(5, 40)
 
         # widget Position management
         grid_col = 0
@@ -77,12 +77,13 @@ class TabSystemMemory(QWidget):
             self.lbl_free_value = QLabel("")
             self.lbl_free_value.setAlignment(Qt.AlignRight)
             self.lbl_free_value.setToolTip(
-                "Memory not being used at all (zeroed) that is readily available; note that this doesn't reflect the "
+                "Memory not being used at all (zeroed) that is readily available<br>Note that this doesn't reflect the "
                 "actual memory available (use available instead). total - used does not necessarily match free. "
             )
             # Free Color button
             self.color_button_free = ColorButton(color="green")
             self.color_button_free.setToolTip("Change Free color display")
+
             # Insert Free labels on the right position
             layout_grid.addWidget(lbl_free, grid_row, grid_col, 1, 1)
             layout_grid.addWidget(self.lbl_free_value, grid_row, grid_col + 1, 1, 1)

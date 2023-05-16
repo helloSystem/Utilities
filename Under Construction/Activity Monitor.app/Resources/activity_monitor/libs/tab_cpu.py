@@ -11,7 +11,6 @@ from PyQt5.QtWidgets import (
     QColorDialog,
     QSpacerItem,
     QSizePolicy,
-
 )
 
 from .buttons import ColorButton

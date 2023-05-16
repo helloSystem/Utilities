@@ -97,14 +97,12 @@ class TabDiskUsage(QWidget):
             f"{self.mounted_disk_partitions[index]['free_in_bytes']}"
             f"</font>"
         )
-        self.label_space_total_value.setText(
-            f"{self.mounted_disk_partitions[index]['total']}"
-        )
+        self.label_space_total_value.setText(f"{self.mounted_disk_partitions[index]['total']}")
 
         self.chartpie_item_utilized.color = self.color_button_space_utilized.color()
-        self.chartpie_item_utilized.data = self.mounted_disk_partitions[index]['used_raw']
+        self.chartpie_item_utilized.data = self.mounted_disk_partitions[index]["used_raw"]
         self.chartpie_item_free.color = self.color_button_space_free.color()
-        self.chartpie_item_free.data = self.mounted_disk_partitions[index]['free_raw']
+        self.chartpie_item_free.data = self.mounted_disk_partitions[index]["free_raw"]
 
     def setupUI(self):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -163,11 +161,12 @@ class TabDiskUsage(QWidget):
         self.chartpie_item_free.data = 0
 
         self.chartpie = ChartPie()
-        self.chartpie.addItems([
-            self.chartpie_item_utilized,
-            self.chartpie_item_free,
-
-        ])
+        self.chartpie.addItems(
+            [
+                self.chartpie_item_utilized,
+                self.chartpie_item_free,
+            ]
+        )
         layout_grid.addWidget(self.chartpie, 0, 4, 4, 1, Qt.AlignCenter)
         layout_grid.addWidget(self.label_space_total_value, 4, 4, 1, 1, Qt.AlignCenter)
 

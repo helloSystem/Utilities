@@ -48,4 +48,3 @@ class About(QDialog):
         layout.addStretch()
         self.setLayout(layout)
         self.exec()
-

@@ -1,15 +1,8 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtCore import (
-    Qt,
-    pyqtSignal
-)
+from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QPaintEvent, QPainter, QPen, QColor, QBrush, QFontMetrics, QFont
-from PyQt5.QtWidgets import (
-    QColorDialog,
-    QVBoxLayout,
-    QAbstractButton
-)
+from PyQt5.QtWidgets import QColorDialog, QVBoxLayout, QAbstractButton
 
 
 class ColorButton(QAbstractButton):

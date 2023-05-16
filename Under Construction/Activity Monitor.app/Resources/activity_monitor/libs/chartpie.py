@@ -42,7 +42,6 @@ class ChartPieItem(object):
 
 
 class ChartPie(QWidget):
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__data = None
@@ -59,8 +58,11 @@ class ChartPie(QWidget):
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        self._circular_size = (self.width() - (self._thickness * 2)) if self.width() < self.height() else (
-                self.height() - (self._thickness * 2))
+        self._circular_size = (
+            (self.width() - (self._thickness * 2))
+            if self.width() < self.height()
+            else (self.height() - (self._thickness * 2))
+        )
 
     @property
     def data(self):
@@ -89,14 +91,10 @@ class ChartPie(QWidget):
     def clear(self):
         self.data = None
 
-
     def setupUI(self):
         self.setContentsMargins(0, 0, 0, 0)
         self.setBaseSize(100, 100)
-        self.setSizePolicy(
-            QSizePolicy.MinimumExpanding,
-            QSizePolicy.MinimumExpanding
-        )
+        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         # self.setMaximumWidth(self.height())
 
         self.setLayout(QVBoxLayout())
@@ -117,8 +115,11 @@ class ChartPie(QWidget):
         # x: int, y: int, w: int, h: int, a: int, alen: int
         d_height = self.height()
         d_width = self.width()
-        self._circular_size = (self.height() - (self._thickness * 2)) if self.width() < self.height() else (
-                self.height() - (self._thickness * 2))
+        self._circular_size = (
+            (self.height() - (self._thickness * 2))
+            if self.width() < self.height()
+            else (self.height() - (self._thickness * 2))
+        )
 
         x = int(d_width / 2) - int((d_height - (pen_size * 2)) / 2)
         y = pen_size
@@ -133,7 +134,8 @@ class ChartPie(QWidget):
             y + int(off_set / 2),
             self._circular_size - int(off_set / 2),
             self._circular_size - int(off_set / 2),
-            0 * 16, 360 * 16
+            0 * 16,
+            360 * 16,
         )
 
         # Overlap the Chart Pie
