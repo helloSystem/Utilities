@@ -55,12 +55,7 @@ __app_description__ = "View CPU, Memory, Network, Disk activities and interact w
 __app_url__ = "https://github.com/helloSystem/Utilities"
 
 
-
-
-
-
-
-class ProcessMonitor(QWidget):
+class TreeViewProcess(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         layout = QGridLayout()
@@ -352,7 +347,7 @@ class Window(QMainWindow):
         #                                 "border-radius: 30px}")
         self.filterComboBox = QComboBox()
 
-        self.process_monitor = ProcessMonitor()
+        self.process_monitor = TreeViewProcess()
         self.process_monitor.filterComboBox = self.filterComboBox
         self.process_monitor.searchLineEdit = self.searchLineEdit
 
