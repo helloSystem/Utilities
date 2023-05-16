@@ -82,6 +82,19 @@ class PSUtilsWorker(QObject):
     updated_system_memory_active_raw = Signal(int)
     updated_system_memory_inactive_raw = Signal(int)
 
+    # Disk Activity
+    updated_disk_activity_reads_in = Signal(int)
+    updated_disk_activity_writes_out = Signal(int)
+    updated_disk_activity_reads_in_sec = Signal(int)
+    updated_disk_activity_writes_out_sec = Signal(int)
+
+    updated_disk_activity_data_read = Signal(str)
+    updated_disk_activity_data_written = Signal(str)
+    updated_disk_activity_data_read_sec = Signal(str)
+    updated_disk_activity_data_written_sec = Signal(str)
+
+    updated_disk_activity_bandwidth_value = Signal(str)
+
     # Disk Usage
     updated_mounted_disk_partitions = Signal(dict)
 
@@ -93,19 +106,13 @@ class PSUtilsWorker(QObject):
 
         # CPU
         cumulative_threads = 0
-        process_number = 0
-        # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.Process.oneshot
-        p = psutil.Process()
-        with p.oneshot():
-            # https://psutil.readthedocs.io/en/latest/index.html?highlight=wired#psutil.process_iter
-            for proc in psutil.process_iter():
-                try:
-                    cumulative_threads += proc.num_threads()
-                    process_number += 1
-                except psutil.NoSuchProcess:
-                    pass
+        for proc in psutil.process_iter():
+            try:
+                cumulative_threads += proc.num_threads()
+            except psutil.NoSuchProcess:
+                pass
         self.updated_cpu_cumulative_threads.emit(cumulative_threads)
-        self.updated_cpu_process_number.emit(process_number)
+        self.updated_cpu_process_number.emit(len(psutil.pids()))
 
         # System Memory
         virtual_memory = psutil.virtual_memory()
@@ -137,7 +144,8 @@ class PSUtilsWorker(QObject):
         if hasattr(virtual_memory, "wired"):
             self.updated_system_memory_wired.emit(bytes2human(virtual_memory.wired))
             self.updated_system_memory_wired_raw.emit(virtual_memory.wired)
-        # Disks usage
+
+        # Disk Usage
         data = {}
         item_number = 0
         for part in psutil.disk_partitions(all=False):
@@ -166,10 +174,58 @@ class PSUtilsWorker(QObject):
             item_number += 1
         self.updated_mounted_disk_partitions.emit(data)
 
+        # Disk Activity A last because it need to wait 1 entire second
+        activity = psutil.disk_io_counters()
+        activity_per_sec = disks_statistics_per_sec()
+
+        self.updated_disk_activity_reads_in.emit(activity.read_count)
+        self.updated_disk_activity_writes_out.emit(activity.write_count)
+        self.updated_disk_activity_reads_in_sec.emit(activity_per_sec["read_count_per_sec"])
+        self.updated_disk_activity_writes_out_sec.emit(activity_per_sec["write_count_per_sec"])
+
+        self.updated_disk_activity_data_read.emit(bytes2human(activity.read_bytes))
+        self.updated_disk_activity_data_written.emit(bytes2human(activity.write_bytes))
+        self.updated_disk_activity_data_read_sec.emit(bytes2human(activity_per_sec["read_bytes_per_sec"]))
+        self.updated_disk_activity_data_written_sec.emit(bytes2human(activity_per_sec["write_bytes_per_sec"]))
+
+        self.updated_disk_activity_bandwidth_value.emit(
+            f"{bytes2human(activity_per_sec['read_bytes_per_sec'] + activity_per_sec['write_bytes_per_sec'])}/sec"
+        )
+
         self.finished.emit()
 
 
+def disks_statistics_per_sec():
+    """
+    Calculate IO usage by comparing IO statistics before and
+    after 1 sec interval.
 
+     {
+     'read_bytes_per_sec': 0,
+     'write_bytes_per_sec': 0,
+     'read_count_per_sec': 0,
+     'write_count_per_sec': 0
+     }
+
+    :return: Return a dict including total disks I/O activity.
+    :rtype: dict
+    """
+    # first get disk io counters
+    disks_before = psutil.disk_io_counters()
+
+    # sleep 1 sec (yes easy trick)
+    time.sleep(1)
+
+    # then retrieve the same info again
+    disks_after = psutil.disk_io_counters()
+
+    # finally return calculated results by comparing data before and
+    return {
+        "read_bytes_per_sec": disks_after.read_bytes - disks_before.read_bytes,
+        "write_bytes_per_sec": disks_after.write_bytes - disks_before.write_bytes,
+        "read_count_per_sec": disks_after.read_count - disks_before.read_count,
+        "write_count_per_sec": disks_after.write_count - disks_before.write_count,
+    }
 
 class TabNetwork(QWidget):
     def __init__(self, parent=None):
@@ -576,6 +632,29 @@ class Window(QMainWindow):
 
         # Disk Usage
         worker.updated_mounted_disk_partitions.connect(self.tab_disk_usage.setMoutedDiskPartitions)
+
+        # Disk Activity
+        #         self.updated_disk_activity_reads_in.emit(activity.read_count)
+        #         self.updated_disk_activity_writes_out.emit(activity.write_count)
+        #         self.updated_disk_activity_reads_in_sec.emit(activity_per_sec["read_count_per_sec"])
+        #         self.updated_disk_activity_writes_out_sec.emit(activity_per_sec["write_count_per_sec"])
+        #
+        #         self.updated_disk_activity_data_read.emit(bytes2human(activity.read_bytes))
+        #         self.updated_disk_activity_data_written.emit(bytes2human(activity.write_bytes))
+        #         self.updated_disk_activity_data_read_sec.emit(bytes2human(activity_per_sec["read_bytes_per_sec"]))
+        #         self.updated_disk_activity_data_written_sec.emit(bytes2human(activity_per_sec["write_bytes_per_sec"]))
+
+        worker.updated_disk_activity_reads_in.connect(self.tab_disk_activity.refresh_reads_in)
+        worker.updated_disk_activity_writes_out.connect(self.tab_disk_activity.refresh_writes_out)
+        worker.updated_disk_activity_reads_in_sec.connect(self.tab_disk_activity.refresh_reads_in_sec)
+        worker.updated_disk_activity_writes_out_sec.connect(self.tab_disk_activity.refresh_writes_out_sec)
+
+        worker.updated_disk_activity_data_read.connect(self.tab_disk_activity.refresh_data_read)
+        worker.updated_disk_activity_data_written.connect(self.tab_disk_activity.refresh_data_written)
+        worker.updated_disk_activity_data_read_sec.connect(self.tab_disk_activity.refresh_data_read_sec)
+        worker.updated_disk_activity_data_written_sec.connect(self.tab_disk_activity.refresh_data_written_sec)
+
+        worker.updated_disk_activity_bandwidth_value.connect(self.tab_disk_activity.refresh_bandwidth)
 
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)

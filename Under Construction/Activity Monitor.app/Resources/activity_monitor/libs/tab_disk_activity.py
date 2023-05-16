@@ -41,34 +41,34 @@ class TabDiskActivity(QWidget):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.label_reads_in_value = QLabel()
-        self.label_reads_in_value.setAlignment(Qt.AlignLeft)
+        self.label_reads_in_value.setAlignment(Qt.AlignRight)
         self.label_writes_out_value = QLabel()
-        self.label_writes_out_value.setAlignment(Qt.AlignLeft)
+        self.label_writes_out_value.setAlignment(Qt.AlignRight)
         self.label_reads_in_sec_value = QLabel()
-        self.label_reads_in_sec_value.setAlignment(Qt.AlignLeft)
+        self.label_reads_in_sec_value.setAlignment(Qt.AlignRight)
         self.label_writes_out_sec_value = QLabel()
-        self.label_writes_out_sec_value.setAlignment(Qt.AlignLeft)
+        self.label_writes_out_sec_value.setAlignment(Qt.AlignRight)
 
         self.label_data_read_value = QLabel()
-        self.label_data_read_value.setAlignment(Qt.AlignLeft)
+        self.label_data_read_value.setAlignment(Qt.AlignRight)
         self.label_data_written_value = QLabel()
-        self.label_data_written_value.setAlignment(Qt.AlignLeft)
+        self.label_data_written_value.setAlignment(Qt.AlignRight)
         self.label_data_read_sec_value = QLabel()
-        self.label_data_read_sec_value.setAlignment(Qt.AlignLeft)
+        self.label_data_read_sec_value.setAlignment(Qt.AlignRight)
         self.label_data_written_sec_value = QLabel()
-        self.label_data_written_sec_value.setAlignment(Qt.AlignLeft)
+        self.label_data_written_sec_value.setAlignment(Qt.AlignRight)
 
         self.color_picker_data_read_sec_value = ColorButton(color="green")
         self.color_picker_data_written_sec_value = ColorButton(color="red")
 
-        self.label_bandwidth_value = QLabel("2.00 GB/sec")
+        self.label_bandwidth_value = QLabel()
         self.label_bandwidth_value.setAlignment(Qt.AlignCenter)
 
         label_reads_in = QLabel("Reads in:")
         label_reads_in.setAlignment(Qt.AlignRight)
         label_writes_out = QLabel("Writes out:")
         label_writes_out.setAlignment(Qt.AlignRight)
-        label_reads_in_sec = QLabel("Reads in/sec")
+        label_reads_in_sec = QLabel("Reads in/sec:")
         label_reads_in_sec.setAlignment(Qt.AlignRight)
         label_writes_out_sec = QLabel("Writes out/sec:")
         label_writes_out_sec.setAlignment(Qt.AlignRight)
@@ -124,16 +124,16 @@ class TabDiskActivity(QWidget):
         self.setLayout(layout_vbox)
 
     def refresh_reads_in(self, reads_in):
-        self.label_reads_in_value.setText(reads_in)
+        self.label_reads_in_value.setText("%s" % reads_in)
 
     def refresh_writes_out(self, writes_out):
-        self.label_writes_out_value.setText(writes_out)
+        self.label_writes_out_value.setText("%s" % writes_out)
 
     def refresh_reads_in_sec(self, reads_in_sec):
-        self.label_reads_in_sec_value.setText(reads_in_sec)
+        self.label_reads_in_sec_value.setText("%s" % reads_in_sec)
 
     def refresh_writes_out_sec(self, writes_out_sec):
-        self.label_writes_out_sec_value.setText(writes_out_sec)
+        self.label_writes_out_sec_value.setText("%s" % writes_out_sec)
 
     def refresh_data_read(self, data_read):
         self.label_data_read_value.setText(data_read)
