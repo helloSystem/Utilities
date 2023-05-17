@@ -24,3 +24,15 @@ def bytes2human(n, short=True):
             return f"{n} bytes"
         else:
             return f"{n} byte"
+
+
+def clamp_to_zero(value):
+    if value < 0:
+        return 0
+    return value
+
+
+def to_positive(value):
+    if value < 0:
+        return abs(value)
+    return value

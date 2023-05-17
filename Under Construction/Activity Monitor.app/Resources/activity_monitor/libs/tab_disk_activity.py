@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import (
 
 from .buttons import ColorButton
 from .utils import bytes2human
+from .utils import to_positive
 
 
 class TabDiskActivity(QWidget):
@@ -135,21 +136,15 @@ class TabDiskActivity(QWidget):
 
         self.setLayout(layout_vbox)
 
-    @staticmethod
-    def __convert_to_positive_value(value):
-        if value < 0:
-            return abs(value)
-        return value
-
     def refresh_reads_in(self, reads_in):
         if self.reads_in_old_value:
             self.reads_in_old_value = self.reads_in_value
-            self.reads_in_value = self.__convert_to_positive_value(reads_in)
+            self.reads_in_value = to_positive(reads_in)
             delta = int((self.reads_in_value - self.reads_in_old_value) / self.timer_value)
-            self.label_reads_in_sec_value.setText(f"{delta}")
+            self.label_reads_in_sec_value.setText("%s" % delta)
 
         else:
-            self.reads_in_value = self.__convert_to_positive_value(reads_in)
+            self.reads_in_value = to_positive(reads_in)
             self.reads_in_old_value = self.reads_in_value
 
         self.label_reads_in_value.setText("%s" % self.reads_in_value)
@@ -157,59 +152,65 @@ class TabDiskActivity(QWidget):
     def refresh_writes_out(self, writes_out):
         if self.writes_out_old_value:
             self.writes_out_old_value = self.writes_out_value
-            self.writes_out_value = self.__convert_to_positive_value(writes_out)
+            self.writes_out_value = to_positive(writes_out)
             delta = int((self.writes_out_value - self.writes_out_old_value) / self.timer_value)
-            self.label_writes_out_sec_value.setText(f"{delta}")
+            self.label_writes_out_sec_value.setText("%s" % delta)
 
         else:
-            self.writes_out_value = self.__convert_to_positive_value(writes_out)
+            self.writes_out_value = to_positive(writes_out)
             self.writes_out_old_value = self.writes_out_value
 
-        self.label_writes_out_value.setText(f"{self.writes_out_value}")
+        self.label_writes_out_value.setText("%s" % self.writes_out_value)
 
     def refresh_data_read(self, data_read):
         if self.data_read_old_value:
             self.data_read_old_value = self.data_read_value
-            self.data_read_value = self.__convert_to_positive_value(data_read)
+            self.data_read_value = to_positive(data_read)
 
             delta = (
-                int((self.data_read_old_value - self.data_read_value) / self.timer_value)
+                int((self.data_read_value - self.data_read_old_value) / self.timer_value)
             )
             self.label_data_read_sec_value.setText(
-                f"<font color={self.color_picker_data_read_sec_value.color()}>{bytes2human(delta)}</font>"
+                "<font color=%s>%s</font>" % (
+                    self.color_picker_data_read_sec_value.color(),
+                    bytes2human(delta)
+                )
             )
         else:
-            self.data_read_value = self.__convert_to_positive_value(data_read)
+            self.data_read_value = to_positive(data_read)
             self.data_read_old_value = self.data_read_value
 
-        self.label_data_read_value.setText(f"{bytes2human(self.data_read_value)}")
+        self.label_data_read_value.setText("%s" % bytes2human(self.data_read_value))
 
     def refresh_data_written(self, data_written):
         if self.data_written_old_value:
             self.data_written_old_value = self.data_written_value
-            self.data_written_value = self.__convert_to_positive_value(data_written)
+            self.data_written_value = to_positive(data_written)
 
             delta = (
-                int((self.data_written_old_value - self.data_written_value) / self.timer_value)
+                int((self.data_written_value - self.data_written_old_value) / self.timer_value)
             )
 
             self.label_data_written_sec_value.setText(
-                f"<font color={self.color_picker_data_written_sec_value.color()}>{bytes2human(delta)}</font>"
+                "<font color=%s>%s</font>" % (
+                    self.color_picker_data_written_sec_value.color(),
+                    bytes2human(delta)
+                )
             )
         else:
-            self.data_written_value = self.__convert_to_positive_value(data_written)
+            self.data_written_value = to_positive(data_written)
             self.data_written_old_value = self.data_written_value
 
-        self.label_data_written_value.setText(f"{bytes2human(self.data_written_value)}")
+        self.label_data_written_value.setText("%s" % bytes2human(self.data_written_value))
 
         self.refresh_bandwidth()
 
     def refresh_bandwidth(self):
         delta1 = (
-            int((self.data_written_old_value - self.data_written_value) / self.timer_value)
+            int((self.data_written_value - self.data_written_old_value) / self.timer_value)
         )
         delta2 = (
-            int((self.data_read_old_value - self.data_read_value) / self.timer_value)
+            int((self.data_read_value - self.data_read_old_value) / self.timer_value)
         )
 
-        self.label_bandwidth_value.setText(f"{bytes2human(delta1 + delta2)}")
+        self.label_bandwidth_value.setText("%s" % bytes2human(delta1 + delta2))
