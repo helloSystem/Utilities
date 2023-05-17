@@ -16,7 +16,7 @@ class TabNetwork(QWidget):
         self.setupUI()
 
     def setupUI(self):
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        # self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         layout_grid = QGridLayout()
 

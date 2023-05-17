@@ -92,9 +92,10 @@ class ChartPie(QWidget):
         self.data = None
 
     def setupUI(self):
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.setContentsMargins(0, 0, 0, 0)
         self.setBaseSize(100, 100)
-        self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
+        # self.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         # self.setMaximumWidth(self.height())
 
         self.setLayout(QVBoxLayout())
@@ -148,6 +149,6 @@ class ChartPie(QWidget):
             self.qp.setPen(QPen(QColor(item.color), pen_size))
             self.qp.setBrush(QBrush(QColor(item.color), Qt.SolidPattern))
             if total > 0:
-                angle = round(float(item.data * 5760) / total)
+                angle = item.data * 5760 / total
                 self.qp.drawPie(x, y, w - off_set, h - off_set, set_angle, angle)
                 set_angle += angle

@@ -51,7 +51,7 @@ class TabDiskActivity(QWidget):
         self.setupUI()
 
     def setupUI(self):
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        # self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         self.label_reads_in_value = QLabel()
         self.label_reads_in_value.setAlignment(Qt.AlignRight)
@@ -142,7 +142,6 @@ class TabDiskActivity(QWidget):
             self.reads_in_value = to_positive(reads_in)
             delta = int((self.reads_in_value - self.reads_in_old_value) / self.timer_value)
             self.label_reads_in_sec_value.setText("%s" % delta)
-
         else:
             self.reads_in_value = to_positive(reads_in)
             self.reads_in_old_value = self.reads_in_value
@@ -155,7 +154,6 @@ class TabDiskActivity(QWidget):
             self.writes_out_value = to_positive(writes_out)
             delta = int((self.writes_out_value - self.writes_out_old_value) / self.timer_value)
             self.label_writes_out_sec_value.setText("%s" % delta)
-
         else:
             self.writes_out_value = to_positive(writes_out)
             self.writes_out_old_value = self.writes_out_value
@@ -166,7 +164,6 @@ class TabDiskActivity(QWidget):
         if self.data_read_old_value:
             self.data_read_old_value = self.data_read_value
             self.data_read_value = to_positive(data_read)
-
             delta = (
                 int((self.data_read_value - self.data_read_old_value) / self.timer_value)
             )
@@ -186,11 +183,9 @@ class TabDiskActivity(QWidget):
         if self.data_written_old_value:
             self.data_written_old_value = self.data_written_value
             self.data_written_value = to_positive(data_written)
-
             delta = (
                 int((self.data_written_value - self.data_written_old_value) / self.timer_value)
             )
-
             self.label_data_written_sec_value.setText(
                 "<font color=%s>%s</font>" % (
                     self.color_picker_data_written_sec_value.color(),
@@ -202,7 +197,6 @@ class TabDiskActivity(QWidget):
             self.data_written_old_value = self.data_written_value
 
         self.label_data_written_value.setText("%s" % bytes2human(self.data_written_value))
-
         self.refresh_bandwidth()
 
     def refresh_bandwidth(self):
@@ -212,5 +206,4 @@ class TabDiskActivity(QWidget):
         delta2 = (
             int((self.data_read_value - self.data_read_old_value) / self.timer_value)
         )
-
         self.label_bandwidth_value.setText("%s" % bytes2human(delta1 + delta2))

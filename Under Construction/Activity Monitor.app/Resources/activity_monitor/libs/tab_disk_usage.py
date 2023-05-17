@@ -105,7 +105,7 @@ class TabDiskUsage(QWidget):
         self.chartpie_item_free.data = self.mounted_disk_partitions[index]["free_raw"]
 
     def setupUI(self):
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        # self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         layout_grid = QGridLayout()
 
         self.combobox_devices = QComboBox()

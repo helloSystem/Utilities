@@ -139,7 +139,7 @@ class Window(QMainWindow):
         )
 
         tabs = QTabWidget()
-        tabs.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        tabs.setMaximumHeight(190)
 
         tabs.addTab(self.tab_cpu, "CPU")
         tabs.addTab(self.tab_system_memory, "System Memory")
@@ -150,9 +150,10 @@ class Window(QMainWindow):
         layout = QVBoxLayout()
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
+
         layout.addWidget(self.process_monitor, 1)
-        layout.addWidget(QLabel(""))
-        layout.addWidget(tabs)
+        layout.addWidget(QLabel(), 0)
+        layout.addWidget(tabs, 0)
 
         central_widget = QWidget()
         central_widget.setLayout(layout)

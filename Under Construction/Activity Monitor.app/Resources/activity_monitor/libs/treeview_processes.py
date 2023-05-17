@@ -18,6 +18,7 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QAbstractItemView,
     QTreeView,
+    QSizePolicy,
 )
 from .utils import bytes2human
 
@@ -40,6 +41,7 @@ class TreeViewProcess(QWidget):
         self.setupUi()
 
     def setupUi(self):
+        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         layout = QGridLayout()
         self.tree_view_model = QStandardItemModel()
 
