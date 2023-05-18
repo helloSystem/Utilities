@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, pyqtSignal, pyqtProperty
 from PyQt5.QtGui import QPainter, QPen, QColor, QBrush
 from PyQt5.QtWidgets import (
     QWidget,
@@ -34,7 +34,7 @@ class ChartPieItem(object):
     def data(self, value):
         if type(value) != float and type(value) != int:
             raise TypeError("'data' property value must be a float or a int type")
-        if self.data != value:
+        if self.__data != value:
             self.__data = value
 
     def setData(self, data):
@@ -122,13 +122,13 @@ class ChartPie(QWidget):
             else (self.height() - (self._thickness * 2))
         )
 
-        x = int(d_width / 2) - int((d_height - (pen_size * 2)) / 2)
-        y = pen_size
+        x = int(d_width / 2) - int((d_height - (self._thickness * 2)) / 2)
+        y = self._thickness
         w = self._circular_size
         h = self._circular_size
 
         # Micro Drop Shadow
-        self.qp.setPen(QPen(Qt.gray, pen_size))
+        self.qp.setPen(QPen(Qt.gray, self._thickness))
         self.qp.setBrush(QBrush(Qt.gray, Qt.SolidPattern))
         self.qp.drawPie(
             x + int(off_set / 2),
@@ -146,7 +146,7 @@ class ChartPie(QWidget):
                 total += item.data
         set_angle = 0
         for item in self.data:
-            self.qp.setPen(QPen(QColor(item.color), pen_size))
+            self.qp.setPen(QPen(QColor(item.color), self._thickness))
             self.qp.setBrush(QBrush(QColor(item.color), Qt.SolidPattern))
             if total > 0:
                 angle = item.data * 5760 / total

@@ -3,6 +3,8 @@
 import psutil
 from PyQt5.QtCore import (
     Qt,
+    pyqtSignal,
+    pyqtProperty,
 )
 from PyQt5.QtWidgets import (
     QGridLayout,
@@ -41,6 +43,17 @@ class TabSystemMemory(QWidget):
         self.color_button_free = None
         self.lbl_buffers_value = None
         self.lbl_wired_value = None
+        self.lbl_active_value = None
+        self.color_button_wired = None
+        self.color_button_active = None
+        self.lbl_cached_value = None
+        self.lbl_inactive_value = None
+        self.color_button_inactive = None
+        self.lbl_used_value = None
+        self.lbl_available_value = None
+        self.lbl_shared_value = None
+        self.lbl_slab_value = None
+        self.lbl_total_value = None
 
         # System Memory Chart Pie
         self.chart_pie = None
@@ -48,9 +61,6 @@ class TabSystemMemory(QWidget):
         self.chart_pie_item_wired = None
         self.chart_pie_item_active = None
         self.chart_pie_item_inactive = None
-        self.color_button_wired = None
-        self.lbl_active_value = None
-        self.color_button_active = None
 
         self.setupUI()
 
@@ -225,7 +235,7 @@ class TabSystemMemory(QWidget):
             lbl_cached = QLabel("Cached:")
             lbl_cached.setAlignment(Qt.AlignRight)
             # Used label value
-            self.lbl_cached_value = QLabel("")
+            self.lbl_cached_value = QLabel()
             self.lbl_cached_value.setAlignment(Qt.AlignRight)
             self.lbl_cached_value.setToolTip("Cache for various things.")
             # Insert Used labels on the right position
@@ -239,7 +249,7 @@ class TabSystemMemory(QWidget):
             lbl_shared = QLabel("Shared:")
             lbl_shared.setAlignment(Qt.AlignRight)
             # Used label value
-            self.lbl_shared_value = QLabel("")
+            self.lbl_shared_value = QLabel()
             self.lbl_shared_value.setAlignment(Qt.AlignRight)
             self.lbl_shared_value.setToolTip("Memory that may be simultaneously accessed by multiple processes.")
             # Insert Used labels on the right position
@@ -253,7 +263,7 @@ class TabSystemMemory(QWidget):
             lbl_slab = QLabel("Slab:")
             lbl_slab.setAlignment(Qt.AlignRight)
             # Used label value
-            self.lbl_slab_value = QLabel("")
+            self.lbl_slab_value = QLabel()
             self.lbl_slab_value.setAlignment(Qt.AlignRight)
             self.lbl_slab_value.setToolTip("in-kernel data structures cache.")
             # Insert Used labels on the right position
@@ -263,11 +273,11 @@ class TabSystemMemory(QWidget):
 
         grid_col = 5
 
-        self.lbl_total_value = QLabel(f"{bytes2human(self.__virtual_memory.total)}")
+        self.lbl_total_value = QLabel("%s" % bytes2human(self.__virtual_memory.total))
         self.lbl_total_value.setAlignment(Qt.AlignLeft)
 
-        layout_grid.addWidget(self.chart_pie, 0, 5, 5, 1, Qt.AlignCenter)
-        layout_grid.addWidget(self.lbl_total_value, 5, 5, 1, 1, Qt.AlignCenter)
+        layout_grid.addWidget(self.chart_pie, 0, grid_col, grid_col, 1, Qt.AlignCenter)
+        layout_grid.addWidget(self.lbl_total_value, 5, grid_col, 1, 1, Qt.AlignCenter)
         grid_row += 1
 
         layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -277,7 +287,7 @@ class TabSystemMemory(QWidget):
         widget_grid.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         widget_grid.setLayout(layout_grid)
 
-        space_label = QLabel("")
+        space_label = QLabel()
         layout_vbox = QVBoxLayout()
         layout_vbox.addWidget(space_label)
         layout_vbox.addWidget(widget_grid)
@@ -287,44 +297,44 @@ class TabSystemMemory(QWidget):
         self.setLayout(layout_vbox)
 
     def refresh_free_raw(self, free_raw):
-        if free_raw < 0:
-            free_raw = abs(free_raw)
         self.chart_pie_item_free.setData(free_raw)
         self.chart_pie_item_free.setColor(self.color_button_free.color())
         self.chart_pie.repaint()
 
     def refresh_free(self, free):
-        self.lbl_free_value.setText(f"<font color={self.color_button_free.color()}>{free}</font>")
+        self.lbl_free_value.setText(
+            "<font color='%s'>%s</font>" % (self.color_button_free.color(), free)
+        )
 
     def refresh_wired_raw(self, wired_raw):
-        if wired_raw < 0:
-            wired_raw = abs(wired_raw)
         self.chart_pie_item_wired.setData(wired_raw)
         self.chart_pie_item_wired.setColor(self.color_button_wired.color())
-        # self.chart_pie.repaint()
+        self.chart_pie.repaint()
 
     def refresh_wired(self, wired):
-        self.lbl_wired_value.setText(f"<font color={self.color_button_wired.color()}>{wired}</font>")
+        self.lbl_wired_value.setText(
+            "<font color='%s'>%s</font>" % (self.color_button_wired.color(), wired)
+        )
 
     def refresh_active_raw(self, active_raw):
-        if active_raw < 0:
-            active_raw = abs(active_raw)
         self.chart_pie_item_active.setData(active_raw)
         self.chart_pie_item_active.setColor(self.color_button_active.color())
-        # self.chart_pie.repaint()
+        self.chart_pie.repaint()
 
     def refresh_active(self, active):
-        self.lbl_active_value.setText(f"<font color={self.color_button_active.color()}>{active}</font>")
+        self.lbl_active_value.setText(
+            "<font color='%s'>%s</font>" % (self.color_button_active.color(), active)
+        )
 
     def refresh_inactive_raw(self, inactive_raw):
-        if inactive_raw < 0:
-            inactive_raw = abs(inactive_raw)
         self.chart_pie_item_inactive.setData(inactive_raw)
         self.chart_pie_item_inactive.setColor(self.color_button_inactive.color())
-        # self.chart_pie.repaint()
+        self.chart_pie.repaint()
 
     def refresh_inactive(self, inactive):
-        self.lbl_inactive_value.setText(f"<font color={self.color_button_inactive.color()}>{inactive}</font>")
+        self.lbl_inactive_value.setText(
+            "<font color='%s'>%s</font>" % (self.color_button_inactive.color(), inactive)
+        )
 
     def refresh_used(self, used):
         self.lbl_used_value.setText(used)

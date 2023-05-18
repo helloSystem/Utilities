@@ -18,8 +18,8 @@ class PSUtilsWorker(QObject):
     updated_cpu_user = Signal(float)
     updated_cpu_system = Signal(float)
     updated_cpu_idle = Signal(float)
-    updated_cpu_cumulative_threads = Signal(int)
-    updated_cpu_process_number = Signal(int)
+    updated_cpu_cumulative_threads = Signal(object)
+    updated_cpu_process_number = Signal(object)
 
     # System Memory
     updated_system_memory_total = Signal(str)
@@ -36,22 +36,16 @@ class PSUtilsWorker(QObject):
     updated_system_memory_wired = Signal(str)
 
     # System Memory Chart Pie
-    updated_system_memory_free_raw = Signal(int)
-    updated_system_memory_wired_raw = Signal(int)
-    updated_system_memory_active_raw = Signal(int)
-    updated_system_memory_inactive_raw = Signal(int)
+    updated_system_memory_free_raw = Signal(object)
+    updated_system_memory_wired_raw = Signal(object)
+    updated_system_memory_active_raw = Signal(object)
+    updated_system_memory_inactive_raw = Signal(object)
 
     # Disk Activity
-    updated_disk_activity_reads_in = Signal(int)
-    updated_disk_activity_writes_out = Signal(int)
-    # updated_disk_activity_reads_in_sec = Signal(int)
-    # updated_disk_activity_writes_out_sec = Signal(int)
-
-    updated_disk_activity_data_read = Signal(int)
-    updated_disk_activity_data_written = Signal(int)
-    # updated_disk_activity_data_read_sec = Signal(str)
-    # updated_disk_activity_data_written_sec = Signal(str)
-
+    updated_disk_activity_reads_in = Signal(object)
+    updated_disk_activity_writes_out = Signal(object)
+    updated_disk_activity_data_read = Signal(object)
+    updated_disk_activity_data_written = Signal(object)
     # updated_disk_activity_bandwidth_value = Signal(str)
 
     # Disk Usage
@@ -91,8 +85,9 @@ class PSUtilsWorker(QObject):
             self.updated_system_memory_active.emit(bytes2human(virtual_memory.active))
             self.updated_system_memory_active_raw.emit(virtual_memory.active)
         if hasattr(virtual_memory, "inactive"):
-            self.updated_system_memory_inactive.emit(bytes2human(virtual_memory.inactive))
-            self.updated_system_memory_inactive_raw.emit(virtual_memory.inactive)
+            tmp_value = virtual_memory.inactive
+            self.updated_system_memory_inactive.emit(bytes2human(tmp_value))
+            self.updated_system_memory_inactive_raw.emit(tmp_value)
         if hasattr(virtual_memory, "buffers"):
             self.updated_system_memory_buffers.emit(bytes2human(virtual_memory.buffers))
         if hasattr(virtual_memory, "cached"):

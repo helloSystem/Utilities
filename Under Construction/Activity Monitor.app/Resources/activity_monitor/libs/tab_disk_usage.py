@@ -1,6 +1,7 @@
 from PyQt5.QtCore import (
     Qt,
-    pyqtSignal as Signal,
+    pyqtSignal,
+    pyqtProperty,
 )
 
 from PyQt5.QtWidgets import (
@@ -19,12 +20,12 @@ from .chartpie import ChartPie, ChartPieItem
 
 
 class TabDiskUsage(QWidget):
-    mounted_disk_partitions_changed = Signal()
+    mounted_disk_partitions_changed = pyqtSignal()
 
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
         self.__mounted_disk_partitions = None
-        self.mounted_disk_partitions = None
+        self.mounted_disk_partitions = {}
         self.combobox_devices = None
         self.label_space_utilized_value = None
         self.label_space_utilized_value_in_bytes = None
@@ -33,30 +34,23 @@ class TabDiskUsage(QWidget):
         self.label_space_free_value_in_bytes = None
         self.color_button_space_free = None
         self.label_space_total_value = None
-        self.chartpie = None
-        self.chartpie_item_utilized = None
-        self.chartpie_item_free = None
-        # self.mounted_disk_partitions = self.scan_mounted_disk_partitions()
+        self.chart_pie = None
+        self.chart_pie_item_utilized = None
+        self.chart_pie_item_free = None
 
         self.setupUI()
 
         self.combobox_devices.currentIndexChanged.connect(self.combobox_index_changed)
-        # self.combobox_devices.activated.connect(self.combobox_index_changed)
-        # self.combobox_devices.activated.connect(lambda: self.mounted_disk_partitions(self.combobox_refresh))
-
         self.mounted_disk_partitions_changed.connect(self.combobox_refresh)
 
-    @property
+    @pyqtProperty(dict)
     def mounted_disk_partitions(self):
         return self.__mounted_disk_partitions
 
     @mounted_disk_partitions.setter
-    def mounted_disk_partitions(self, value: dict):
-        if value is None:
-            value = {}
-        if self.mounted_disk_partitions != value:
+    def mounted_disk_partitions(self, value):
+        if value != self.__mounted_disk_partitions:
             self.__mounted_disk_partitions = value
-
             self.mounted_disk_partitions_changed.emit()
 
     def setMoutedDiskPartitions(self, value):
@@ -67,7 +61,7 @@ class TabDiskUsage(QWidget):
         if index == -1:
             index = 0
         self.combobox_devices.clear()
-        for item_number, data in self.mounted_disk_partitions.items():
+        for item_number, data in self.__mounted_disk_partitions.items():
             self.combobox_devices.addItem(QFileIconProvider().icon(QFileIconProvider.Drive), data["mountpoint"])
         self.combobox_devices.setCurrentIndex(index)
 
@@ -78,31 +72,43 @@ class TabDiskUsage(QWidget):
             self.combobox_devices.setCurrentIndex(index)
 
         self.label_space_utilized_value.setText(
-            f"<font color='{self.color_button_space_utilized.color()}'>"
-            f"{self.mounted_disk_partitions[index]['used']}"
-            f"</font>"
+            "<font color='%s'>"
+            "%s"
+            "</font>" % (
+                self.color_button_space_utilized.color(),
+                self.mounted_disk_partitions[index]['used']
+            )
         )
         self.label_space_utilized_value_in_bytes.setText(
-            f"<font color='{self.color_button_space_utilized.color()}'>"
-            f"{self.mounted_disk_partitions[index]['used_in_bytes']}"
-            f"</font>"
+            "<font color='%s'>"
+            "%s"
+            "</font>" % (
+                self.color_button_space_utilized.color(),
+                self.mounted_disk_partitions[index]['used_in_bytes']
+            )
         )
         self.label_space_free_value.setText(
-            f"<font color='{self.color_button_space_free.color()}'>"
-            f"{self.mounted_disk_partitions[index]['free']}"
-            f"</font>"
+            "<font color='%s'>"
+            "%s"
+            "</font>" % (
+                self.color_button_space_free.color(),
+                self.mounted_disk_partitions[index]['free']
+            )
         )
         self.label_space_free_value_in_bytes.setText(
-            f"<font color='{self.color_button_space_free.color()}'>"
-            f"{self.mounted_disk_partitions[index]['free_in_bytes']}"
-            f"</font>"
+            "<font color='%s'>"
+            "%s"
+            "</font>" % (
+                self.color_button_space_free.color(),
+                self.mounted_disk_partitions[index]['free_in_bytes']
+            )
         )
-        self.label_space_total_value.setText(f"{self.mounted_disk_partitions[index]['total']}")
+        self.label_space_total_value.setText("%s" % self.mounted_disk_partitions[index]['total'])
 
-        self.chartpie_item_utilized.color = self.color_button_space_utilized.color()
-        self.chartpie_item_utilized.data = self.mounted_disk_partitions[index]["used_raw"]
-        self.chartpie_item_free.color = self.color_button_space_free.color()
-        self.chartpie_item_free.data = self.mounted_disk_partitions[index]["free_raw"]
+        self.chart_pie_item_utilized.color = self.color_button_space_utilized.color()
+        self.chart_pie_item_utilized.data = self.mounted_disk_partitions[index]["used_raw"]
+        self.chart_pie_item_free.color = self.color_button_space_free.color()
+        self.chart_pie_item_free.data = self.mounted_disk_partitions[index]["free_raw"]
 
     def setupUI(self):
         # self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
@@ -152,22 +158,22 @@ class TabDiskUsage(QWidget):
         self.label_space_total_value.setAlignment(Qt.AlignLeft)
         # self.label_space_total_value.setContentsMargins(10, 0, 0, 0)
 
-        self.chartpie_item_utilized = ChartPieItem()
-        self.chartpie_item_utilized.color = self.color_button_space_utilized.color()
-        self.chartpie_item_utilized.data = 0
+        self.chart_pie_item_utilized = ChartPieItem()
+        self.chart_pie_item_utilized.color = self.color_button_space_utilized.color()
+        self.chart_pie_item_utilized.data = 0
 
-        self.chartpie_item_free = ChartPieItem()
-        self.chartpie_item_free.color = self.color_button_space_free.color()
-        self.chartpie_item_free.data = 0
+        self.chart_pie_item_free = ChartPieItem()
+        self.chart_pie_item_free.color = self.color_button_space_free.color()
+        self.chart_pie_item_free.data = 0
 
-        self.chartpie = ChartPie()
-        self.chartpie.addItems(
+        self.chart_pie = ChartPie()
+        self.chart_pie.addItems(
             [
-                self.chartpie_item_utilized,
-                self.chartpie_item_free,
+                self.chart_pie_item_utilized,
+                self.chart_pie_item_free,
             ]
         )
-        layout_grid.addWidget(self.chartpie, 0, 4, 4, 1, Qt.AlignCenter)
+        layout_grid.addWidget(self.chart_pie, 0, 4, 4, 1, Qt.AlignCenter)
         layout_grid.addWidget(self.label_space_total_value, 4, 4, 1, 1, Qt.AlignCenter)
 
         layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
