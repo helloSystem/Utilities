@@ -22,6 +22,7 @@ class _Bar(QWidget):
         self.color3 = QColor("black")
 
         self.setContentsMargins(0, 0, 0, 0)
+        self.painter = QPainter(self)
 
         self.setSizePolicy(
             QSizePolicy.MinimumExpanding,
@@ -30,7 +31,7 @@ class _Bar(QWidget):
 
         self.__padding = 0
         self.__step_number = 100
-        self.__step_size = 10
+        self.__step_size = 1
 
     def sizeHint(self):
         return QSize(10, 100)
@@ -46,20 +47,17 @@ class _Bar(QWidget):
         # Dynamic size
         self.__step_size = int((painter.device().height() / self.__step_number))
 
-        # Create background
-        pos_y = 0
-        for i in range(0, self.__step_number):
-            brush.setColor(QColor(self.color3))
-            rect = QRect(0, pos_y, painter.device().width(), self.__step_size)
-            pos_y += self.__step_size + self.__padding
-            painter.fillRect(rect, brush)
+        # Background
+        brush.setColor(QColor(self.color3))
+        rect = QRect(0, 0, painter.device().width(), painter.device().height())
+        painter.fillRect(rect, brush)
 
         pos_y = 0
         for i in range(0, self.__step_number):
-            # Frist Value
+            # First Value
             if i >= self.__step_number - self.value1:
                 brush.setColor(QColor(self.color1))
-            # Second Value just follow location of teh frist value
+            # Second Value just follow location of the first value
             elif i >= self.__step_number - (self.value1 + self.value2):
                 brush.setColor(QColor(self.color2))
 
@@ -88,7 +86,7 @@ class Graph(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         # Create Bars
-        for i in range(0, 10):
+        for i in range(0, self.__bars_number):
             bar = _Bar()
             bar.color1 = self.color1
             bar.color2 = self.color2
@@ -99,7 +97,6 @@ class Graph(QWidget):
             layout.addWidget(bar)
 
         self.setLayout(layout)
-
         self.show()
 
     def refresh(self):
