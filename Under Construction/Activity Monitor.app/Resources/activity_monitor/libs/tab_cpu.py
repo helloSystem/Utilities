@@ -3,18 +3,18 @@
 from PyQt5.QtCore import (
     Qt, pyqtProperty, pyqtSignal
 )
-from PyQt5.QtGui import QPaintEvent, QPainter, QPen, QColor, QBrush, QFontMetrics, QFont
+from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import (
     QGridLayout,
     QWidget,
     QVBoxLayout,
     QLabel,
-    QColorDialog,
     QSpacerItem,
     QSizePolicy,
 )
 
 from .buttons import ColorButton
+from .graph import Graph
 
 
 class TabCpu(QWidget):
@@ -105,7 +105,7 @@ class TabCpu(QWidget):
         self.lbl_system_value = QLabel("")
         self.lbl_system_value.setAlignment(Qt.AlignRight)
         # User system button
-        self.color_button_system = ColorButton(color="blue")
+        self.color_button_system = ColorButton(color="red")
 
         # Insert system labels on the right position
         layout_grid.addWidget(lbl_system, 2, 0, 1, 1)
@@ -148,7 +148,10 @@ class TabCpu(QWidget):
 
         lbl_cpu_usage = QLabel("CPU Usage")
         lbl_cpu_usage.setAlignment(Qt.AlignCenter)
+        self.widget_graph = Graph()
+
         layout_grid.addWidget(lbl_cpu_usage, 0, 6, 1, 1, Qt.AlignCenter)
+        layout_grid.addWidget(self.widget_graph, 1, 6, 4, 1, Qt.AlignCenter)
 
         # Force top position of widget
         layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -184,14 +187,17 @@ class TabCpu(QWidget):
     def refresh_user(self):
         if self.__user:
             self.lbl_user_value.setText("%s %s" % (self.__user, "%"))
+            self.widget_graph.bars[0].value2 = self.__user
 
     def refresh_system(self):
         if self.__system:
             self.lbl_system_value.setText("%s %s" % (self.__system, "%"))
+            self.widget_graph.bars[0].value1 = self.__system
 
     def refresh_idle(self):
         if self.__idle:
             self.lbl_idle_value.setText("%s %s" % (self.__idle, "%"))
+            self.widget_graph.refresh()
 
     def refresh_process_number(self, process_number: int):
         self.lbl_processes_value.setText("%d" % process_number)
@@ -201,9 +207,15 @@ class TabCpu(QWidget):
 
     def refresh_color_system(self):
         self.lbl_system_value.setStyleSheet("color: %s;" % self.color_button_system.color())
+        self.widget_graph.bars[0].color1 = self.color_button_system.color()
+        self.widget_graph.color1 = self.color_button_system.color()
+        self.widget_graph.refresh_color1()
 
     def refresh_color_user(self):
         self.lbl_user_value.setStyleSheet("color: %s;" % self.color_button_user.color())
+        self.widget_graph.bars[0].color2 = self.color_button_user.color()
+        self.widget_graph.color2 = self.color_button_user.color()
+        self.widget_graph.refresh_color2()
 
     def refresh_color_idle(self):
         self.lbl_idle_value.setStyleSheet("color: %s;" % self.color_button_idle.color())
