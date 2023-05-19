@@ -56,7 +56,7 @@ class ColorButton(QAbstractButton):
     def setColor(self, color):
         if color != self._color:
             self._color = color
-            self.colorChanged.emit(color)
+            self.colorChanged.emit(self._color)
 
     def color(self):
         return self._color

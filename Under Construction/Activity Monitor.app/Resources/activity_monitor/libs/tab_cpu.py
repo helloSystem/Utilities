@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 from PyQt5.QtCore import (
-    Qt,
+    Qt, pyqtProperty, pyqtSignal
 )
+from PyQt5.QtGui import QPaintEvent, QPainter, QPen, QColor, QBrush, QFontMetrics, QFont
 from PyQt5.QtWidgets import (
     QGridLayout,
     QWidget,
@@ -17,8 +18,17 @@ from .buttons import ColorButton
 
 
 class TabCpu(QWidget):
+    data_user_changed = pyqtSignal()
+    data_system_changed = pyqtSignal()
+    data_idle_changed = pyqtSignal()
+
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+
+        self.__user = None
+        self.__idle = None
+        self.__system = None
+
         self.lbl_user_value = None
         self.color_button_user = None
         self.lbl_system_value = None
@@ -30,9 +40,50 @@ class TabCpu(QWidget):
 
         self.setupUI()
 
+    @pyqtProperty(float)
+    def idle(self):
+        return self.__idle
+
+    @idle.setter
+    def idle(self, value):
+        if self.__idle != value:
+            self.__idle = value
+            self.data_idle_changed.emit()
+
+    def set_idle(self, value):
+        self.idle = value
+
+    @pyqtProperty(float)
+    def user(self):
+        return self.__user
+
+    @user.setter
+    def user(self, value):
+        if self.__user != value:
+            self.__user = value
+            self.data_user_changed.emit()
+
+    def set_user(self, value):
+        self.user = value
+
+    @pyqtProperty(float)
+    def system(self):
+        return self.__system
+
+    @system.setter
+    def system(self, value):
+        if self.__system != value:
+            self.__system = value
+            self.data_system_changed.emit()
+
+    def set_system(self, value):
+        self.system = value
+
     def setupUI(self):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         layout_grid = QGridLayout()
+        layout_grid.setContentsMargins(0, 0, 0, 0)
+        layout_grid.setSpacing(3)
 
         # User label
         lbl_user = QLabel("User:")
@@ -55,7 +106,6 @@ class TabCpu(QWidget):
         self.lbl_system_value.setAlignment(Qt.AlignRight)
         # User system button
         self.color_button_system = ColorButton(color="blue")
-        # self.color_button_system.clicked.connect(self._set_color_button_system())
 
         # Insert system labels on the right position
         layout_grid.addWidget(lbl_system, 2, 0, 1, 1)
@@ -106,38 +156,54 @@ class TabCpu(QWidget):
         widget_grid = QWidget()
         widget_grid.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         widget_grid.setLayout(layout_grid)
+        widget_grid.setContentsMargins(0, 0, 0, 0)
 
-        space_label = QLabel("")
+        space_label = QLabel()
         layout_vbox = QVBoxLayout()
         layout_vbox.addWidget(space_label)
         layout_vbox.addWidget(widget_grid)
         layout_vbox.setSpacing(0)
         layout_vbox.setContentsMargins(0, 0, 0, 0)
 
+        # Update color label by the color of the color picker
+        self.refresh_color_system()
+        self.refresh_color_user()
+        self.refresh_color_idle()
+
+        # Notre the good place but where ?
+        self.data_idle_changed.connect(self.refresh_idle)
+        self.data_user_changed.connect(self.refresh_user)
+        self.data_system_changed.connect(self.refresh_system)
+
+        self.color_button_system.colorChanged.connect(self.refresh_color_system)
+        self.color_button_user.colorChanged.connect(self.refresh_color_user)
+        self.color_button_idle.colorChanged.connect(self.refresh_color_idle)
+
         self.setLayout(layout_vbox)
 
-    def _set_color_button_system(self):
-        color = QColorDialog.getColor()  # OpenColorDialog
-        if color.isValid():
-            print(color.name())  # ff5b87
-            print(color.red(), color.green(), color.blue())  # 255 91 135
+    def refresh_user(self):
+        if self.__user:
+            self.lbl_user_value.setText("%s %s" % (self.__user, "%"))
 
-        r, g, b = color.red(), color.green(), color.blue()
-        strRGB = "{:^3d}, {:^3d}, {:^3d}".format(r, g, b)
+    def refresh_system(self):
+        if self.__system:
+            self.lbl_system_value.setText("%s %s" % (self.__system, "%"))
 
-        self.color_button_system.setStyleSheet("background-color:rgb({});".format(strRGB))
-
-    def refresh_user(self, user: float):
-        self.lbl_user_value.setText(f'<font color="{self.color_button_user.color()}">{user} %</font>')
-
-    def refresh_system(self, system: float):
-        self.lbl_system_value.setText(f'<font color="{self.color_button_system.color()}">{system} %</font>')
-
-    def refresh_idle(self, idle: float):
-        self.lbl_idle_value.setText(f'<font color="{self.color_button_idle.color()}">{idle} %</font>')
+    def refresh_idle(self):
+        if self.__idle:
+            self.lbl_idle_value.setText("%s %s" % (self.__idle, "%"))
 
     def refresh_process_number(self, process_number: int):
-        self.lbl_processes_value.setText(f"{process_number}")
+        self.lbl_processes_value.setText("%d" % process_number)
 
     def refresh_cumulative_threads(self, cumulative_threads: int):
-        self.lbl_threads_value.setText(f"{cumulative_threads}")
+        self.lbl_threads_value.setText("%d" % cumulative_threads)
+
+    def refresh_color_system(self):
+        self.lbl_system_value.setStyleSheet("color: %s;" % self.color_button_system.color())
+
+    def refresh_color_user(self):
+        self.lbl_user_value.setStyleSheet("color: %s;" % self.color_button_user.color())
+
+    def refresh_color_idle(self):
+        self.lbl_idle_value.setStyleSheet("color: %s;" % self.color_button_idle.color())

@@ -15,9 +15,9 @@ from .utils import bytes2human
 class PSUtilsWorker(QObject):
     finished = Signal()
     # CPU
-    updated_cpu_user = Signal(float)
-    updated_cpu_system = Signal(float)
-    updated_cpu_idle = Signal(float)
+    updated_cpu_user = Signal(object)
+    updated_cpu_system = Signal(object)
+    updated_cpu_idle = Signal(object)
     updated_cpu_cumulative_threads = Signal(object)
     updated_cpu_process_number = Signal(object)
 

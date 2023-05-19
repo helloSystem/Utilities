@@ -167,9 +167,9 @@ class Window(QMainWindow):
         thread.started.connect(lambda: worker.refresh())
 
         # CPU
-        worker.updated_cpu_user.connect(self.tab_cpu.refresh_user)
-        worker.updated_cpu_system.connect(self.tab_cpu.refresh_system)
-        worker.updated_cpu_idle.connect(self.tab_cpu.refresh_idle)
+        worker.updated_cpu_user.connect(self.tab_cpu.set_user)
+        worker.updated_cpu_system.connect(self.tab_cpu.set_system)
+        worker.updated_cpu_idle.connect(self.tab_cpu.set_idle)
         worker.updated_cpu_cumulative_threads.connect(self.tab_cpu.refresh_cumulative_threads)
         worker.updated_cpu_process_number.connect(self.tab_cpu.refresh_process_number)
 
