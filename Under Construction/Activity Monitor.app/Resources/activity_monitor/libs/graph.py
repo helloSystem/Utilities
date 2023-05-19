@@ -19,6 +19,7 @@ class _Bar(QWidget):
         self.value2 = 0
         self.color1 = QColor("black")
         self.color2 = QColor("black")
+        self.color3 = QColor("black")
 
         self.setContentsMargins(0, 0, 0, 0)
 
@@ -48,7 +49,7 @@ class _Bar(QWidget):
         # Create background
         pos_y = 0
         for i in range(0, self.__step_number):
-            brush.setColor(QColor('black'))
+            brush.setColor(QColor(self.color3))
             rect = QRect(0, pos_y, painter.device().width(), self.__step_size)
             pos_y += self.__step_size + self.__padding
             painter.fillRect(rect, brush)
@@ -78,6 +79,7 @@ class Graph(QWidget):
         self.value2 = 0
         self.color1 = QColor("red")
         self.color2 = QColor("green")
+        self.color3 = QColor("black")
 
         self.setupUI()
 
@@ -114,6 +116,10 @@ class Graph(QWidget):
     def refresh_color2(self):
         for i in range(9, 0, -1):
             self.bars[i].color2 = self.color2
+
+    def refresh_color3(self):
+        for i in range(9, 0, -1):
+            self.bars[i].color3 = self.color3
 
 
 if __name__ == "__main__":

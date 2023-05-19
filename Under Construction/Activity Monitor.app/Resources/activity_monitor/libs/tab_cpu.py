@@ -219,3 +219,6 @@ class TabCpu(QWidget):
 
     def refresh_color_idle(self):
         self.lbl_idle_value.setStyleSheet("color: %s;" % self.color_button_idle.color())
+        self.widget_graph.bars[0].color3 = self.color_button_idle.color()
+        self.widget_graph.color3 = self.color_button_idle.color()
+        self.widget_graph.refresh_color3()
