@@ -188,7 +188,7 @@ class TabDiskUsage(QWidget):
         layout_vbox.addWidget(space_label)
         layout_vbox.addWidget(widget_grid)
         layout_vbox.setSpacing(0)
-        layout_vbox.setContentsMargins(0, 0, 0, 0)
+        layout_vbox.setContentsMargins(20, 0, 20, 0)
 
         self.setLayout(layout_vbox)
 
