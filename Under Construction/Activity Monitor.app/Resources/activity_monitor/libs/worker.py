@@ -20,6 +20,7 @@ class PSUtilsWorker(QObject):
     updated_cpu_idle = Signal(object)
     updated_cpu_cumulative_threads = Signal(object)
     updated_cpu_process_number = Signal(object)
+    clear_cpu_graph_history = Signal(object)
 
     # System Memory
     updated_system_memory_total = Signal(str)
@@ -46,7 +47,6 @@ class PSUtilsWorker(QObject):
     updated_disk_activity_writes_out = Signal(object)
     updated_disk_activity_data_read = Signal(object)
     updated_disk_activity_data_written = Signal(object)
-    # updated_disk_activity_bandwidth_value = Signal(str)
 
     # Disk Usage
     updated_mounted_disk_partitions = Signal(dict)

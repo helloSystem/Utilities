@@ -38,6 +38,7 @@ from activity_monitor.libs.tab_disk_activity import TabDiskActivity
 from activity_monitor.libs.tab_network import TabNetwork
 from activity_monitor.libs.treeview_processes import TreeViewProcess
 from activity_monitor.libs.about import About
+from activity_monitor.libs.popup import popup
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
