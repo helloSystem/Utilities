@@ -26,7 +26,6 @@ from .utils import bytes2human
 class TreeViewProcess(QWidget):
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
-
         self.searchLineEdit = None
         self.filterComboBox = None
         self.tree_view_model = None
@@ -36,7 +35,13 @@ class TreeViewProcess(QWidget):
         self.inspect_process_action = None
         self.selected_pid = -1
         self.my_username = os.getlogin()
-        self.header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
+
+        self.ActionMenuViewViewColumnsProcessName = None
+        self.ActionMenuViewViewColumnsUser = None
+        self.ActionMenuViewViewColumnsPercentCPU = None
+        self.ActionMenuViewViewColumnsNumThreads = None
+        self.ActionMenuViewViewColumnsRealMemory = None
+        self.ActionMenuViewViewColumnsVirtualMemory = None
 
         self.setupUi()
 
@@ -102,18 +107,41 @@ class TreeViewProcess(QWidget):
 
     def refresh(self):
         self.tree_view_model = QStandardItemModel()
+        self.header = []
 
         for p in psutil.process_iter():
             with p.oneshot():
-                row = [
-                    QStandardItem(f"{p.pid}"),
-                    QStandardItem(f"{p.name()}"),
-                    QStandardItem(f"{p.username()}"),
-                    QStandardItem(f"{p.cpu_percent()}"),
-                    QStandardItem(f"{p.num_threads()}"),
-                    QStandardItem(f"{bytes2human(p.memory_info().rss)}"),
-                    QStandardItem(f"{bytes2human(p.memory_info().vms)}"),
-                ]
+                row = [QStandardItem(f"{p.pid}")]
+                self.header.append("Process ID")
+                if self.ActionMenuViewViewColumnsProcessName and self.ActionMenuViewViewColumnsProcessName.isChecked():
+                    row.append(QStandardItem(f"{p.name()}"))
+                    self.header.append("Process Name")
+                if self.ActionMenuViewViewColumnsUser and self.ActionMenuViewViewColumnsUser.isChecked():
+                    row.append(QStandardItem(f"{p.username()}"))
+                    self.header.append("User")
+                if self.ActionMenuViewViewColumnsPercentCPU and self.ActionMenuViewViewColumnsPercentCPU.isChecked():
+                    row.append(QStandardItem(f"{p.cpu_percent()}"))
+                    self.header.append("% CPU")
+                if self.ActionMenuViewViewColumnsNumThreads and self.ActionMenuViewViewColumnsNumThreads.isChecked():
+                    row.append(QStandardItem(f"{p.num_threads()}"))
+                    self.header.append("# Threads")
+                if self.ActionMenuViewViewColumnsRealMemory and self.ActionMenuViewViewColumnsRealMemory.isChecked():
+                    row.append(QStandardItem(f"{bytes2human(p.memory_info().rss)}"))
+                    self.header.append("Real Memory")
+                if self.ActionMenuViewViewColumnsVirtualMemory and self.ActionMenuViewViewColumnsVirtualMemory.isChecked():
+                    row.append(QStandardItem(f"{bytes2human(p.memory_info().vms)}"))
+                    self.header.append("Real Memory")
+
+                # if self.parent.ActionMenuViewViewColumnsProcessName.isChecked():
+                # row = [
+                #     QStandardItem(f"{p.pid}"),
+                #     QStandardItem(f"{p.name()}"),
+                #     QStandardItem(f"{p.username()}"),
+                #     QStandardItem(f"{p.cpu_percent()}"),
+                #     QStandardItem(f"{p.num_threads()}"),
+                #     QStandardItem(f"{bytes2human(p.memory_info().rss)}"),
+                #     QStandardItem(f"{bytes2human(p.memory_info().vms)}"),
+                # ]
 
                 # Filter Line
                 filtered_row = None

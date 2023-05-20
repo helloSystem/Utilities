@@ -77,10 +77,18 @@ class Window(QMainWindow):
         self.tab_network = None
         self.timer = None
 
+        self.ActionMenuViewViewColumnsProcessName = None
+        self.ActionMenuViewViewColumnsUser = None
+        self.ActionMenuViewViewColumnsPercentCPU = None
+        self.ActionMenuViewViewColumnsNumThreads = None
+        self.ActionMenuViewViewColumnsRealMemory = None
+        self.ActionMenuViewViewColumnsVirtualMemory = None
+
         self.graph = None
         self.setupUi()
 
         self.timer.timeout.connect(self.refresh)
+
         self.refresh()
 
     def setupUi(self):
@@ -119,6 +127,13 @@ class Window(QMainWindow):
         self._createMenuBar()
         self._createActions()
         self._createToolBars()
+
+        self.process_monitor.ActionMenuViewViewColumnsProcessName = self.ActionMenuViewViewColumnsProcessName
+        self.process_monitor.ActionMenuViewViewColumnsUser = self.ActionMenuViewViewColumnsUser
+        self.process_monitor.ActionMenuViewViewColumnsPercentCPU = self.ActionMenuViewViewColumnsPercentCPU
+        self.process_monitor.ActionMenuViewViewColumnsNumThreads = self.ActionMenuViewViewColumnsNumThreads
+        self.process_monitor.ActionMenuViewViewColumnsRealMemory = self.ActionMenuViewViewColumnsRealMemory
+        self.process_monitor.ActionMenuViewViewColumnsVirtualMemory = self.ActionMenuViewViewColumnsVirtualMemory
 
         self.process_monitor.kill_process_action = self.kill_process_action
         self.process_monitor.inspect_process_action = self.inspect_process_action
@@ -324,8 +339,47 @@ class Window(QMainWindow):
         # View Menu
         viewMenu = self.menuBar.addMenu("&View")
 
+        # ViewColumns sub menu
         view_columns = viewMenu.addMenu("Columns")
-        view_columns.setEnabled(False)
+        header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
+        ActionMenuViewViewColumnsProcessID = QAction("Process ID", self)
+        ActionMenuViewViewColumnsProcessID.setCheckable(True)
+        ActionMenuViewViewColumnsProcessID.setChecked(True)
+        ActionMenuViewViewColumnsProcessID.setEnabled(False)
+
+        self.ActionMenuViewViewColumnsProcessName = QAction("Process Name", self)
+        self.ActionMenuViewViewColumnsProcessName.setCheckable(True)
+        self.ActionMenuViewViewColumnsProcessName.setChecked(True)
+
+        self.ActionMenuViewViewColumnsUser = QAction("User", self)
+        self.ActionMenuViewViewColumnsUser.setCheckable(True)
+        self.ActionMenuViewViewColumnsUser.setChecked(True)
+
+        self.ActionMenuViewViewColumnsPercentCPU = QAction("% CPU", self)
+        self.ActionMenuViewViewColumnsPercentCPU.setCheckable(True)
+        self.ActionMenuViewViewColumnsPercentCPU.setChecked(True)
+
+        self.ActionMenuViewViewColumnsNumThreads = QAction("# Threads", self)
+        self.ActionMenuViewViewColumnsNumThreads.setCheckable(True)
+        self.ActionMenuViewViewColumnsNumThreads.setChecked(True)
+
+        self.ActionMenuViewViewColumnsRealMemory = QAction("Real Memory", self)
+        self.ActionMenuViewViewColumnsRealMemory.setCheckable(True)
+        self.ActionMenuViewViewColumnsRealMemory.setChecked(True)
+
+        self.ActionMenuViewViewColumnsVirtualMemory = QAction("Virtual Memory", self)
+        self.ActionMenuViewViewColumnsVirtualMemory.setCheckable(True)
+        self.ActionMenuViewViewColumnsVirtualMemory.setChecked(True)
+
+        view_columns.addActions([
+            ActionMenuViewViewColumnsProcessID,
+            self.ActionMenuViewViewColumnsProcessName,
+            self.ActionMenuViewViewColumnsUser,
+            self.ActionMenuViewViewColumnsPercentCPU,
+            self.ActionMenuViewViewColumnsNumThreads,
+            self.ActionMenuViewViewColumnsRealMemory,
+            self.ActionMenuViewViewColumnsVirtualMemory,
+        ])
 
         view_dock = viewMenu.addMenu("Dock Icon")
         view_dock.setEnabled(False)
@@ -412,7 +466,6 @@ class Window(QMainWindow):
         alignmentViewBy.addAction(self.ActionMenuViewApplicationInLast12Hours)
 
         self.ActionMenuViewAllProcesses.setChecked(True)
-
         viewMenu.addActions(
             [
                 self.ActionMenuViewAllProcesses,
