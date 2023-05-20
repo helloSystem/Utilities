@@ -24,21 +24,19 @@ from PyQt5.QtWidgets import (
     QWidgetAction,
     QMenuBar,
     QComboBox,
-    QSizePolicy,
     QLineEdit,
 )
 
-# In charge to background long time process
-from activity_monitor.libs.worker import PSUtilsWorker
+from activity_monitor.libs.about import About
 # Load each tab class
 from activity_monitor.libs.tab_cpu import TabCpu
-from activity_monitor.libs.tab_system_memory import TabSystemMemory
-from activity_monitor.libs.tab_disk_usage import TabDiskUsage
 from activity_monitor.libs.tab_disk_activity import TabDiskActivity
+from activity_monitor.libs.tab_disk_usage import TabDiskUsage
 from activity_monitor.libs.tab_network import TabNetwork
+from activity_monitor.libs.tab_system_memory import TabSystemMemory
 from activity_monitor.libs.treeview_processes import TreeViewProcess
-from activity_monitor.libs.about import About
-from activity_monitor.libs.popup import popup
+# In charge to background long time process
+from activity_monitor.libs.worker import PSUtilsWorker
 
 __app_name__ = "Activity Monitor"
 __app_version__ = "0.1a"
@@ -505,7 +503,54 @@ class Window(QMainWindow):
         ActionMenuWindowActivityMonitor.setShortcut("Ctrl+1")
         ActionMenuWindowActivityMonitor.setEnabled(False)
 
-        windowMenu.addAction(ActionMenuWindowActivityMonitor)
+        ActionMenuWindowCPUUsage = QAction("CPU Usage", self)
+        ActionMenuWindowCPUUsage.setShortcut("Ctrl+2")
+        ActionMenuWindowCPUUsage.setEnabled(False)
+
+        ActionMenuWindowCPUHistory = QAction("CPU History", self)
+        ActionMenuWindowCPUHistory.setShortcut("Ctrl+3")
+        ActionMenuWindowCPUHistory.setEnabled(False)
+
+        windowMenu.addActions(
+            [ActionMenuWindowActivityMonitor,
+             ActionMenuWindowCPUUsage,
+             ActionMenuWindowCPUHistory]
+        )
+        # Show Floating CPU Window sub menu
+        window_show_floating_cpu_window_Menu = windowMenu.addMenu("Show Floating CPU Window")
+        windowMenu.addMenu(window_show_floating_cpu_window_Menu)
+
+        ActionMenuWindowShowFloatingHorizontally = QAction("Horizontally", self)
+        ActionMenuWindowShowFloatingHorizontally.setShortcut("Ctrl+4")
+        ActionMenuWindowShowFloatingHorizontally.setCheckable(True)
+        ActionMenuWindowShowFloatingHorizontally.setEnabled(False)
+
+        ActionMenuWindowShowFloatingVertically = QAction("Vertically", self)
+        ActionMenuWindowShowFloatingVertically.setShortcut("Ctrl+5")
+        ActionMenuWindowShowFloatingVertically.setCheckable(True)
+        ActionMenuWindowShowFloatingVertically.setEnabled(False)
+
+        ActionMenuWindowShowFloatingDoNotShow = QAction("Do not show", self)
+        ActionMenuWindowShowFloatingDoNotShow.setCheckable(True)
+
+        show_floating_group = QActionGroup(self)
+        show_floating_group.addAction(ActionMenuWindowShowFloatingHorizontally)
+        show_floating_group.addAction(ActionMenuWindowShowFloatingVertically)
+        show_floating_group.addAction(ActionMenuWindowShowFloatingDoNotShow)
+
+        window_show_floating_cpu_window_Menu.addActions([
+            ActionMenuWindowShowFloatingHorizontally,
+            ActionMenuWindowShowFloatingVertically,
+            ActionMenuWindowShowFloatingDoNotShow
+
+        ])
+        ActionMenuWindowShowFloatingDoNotShow.setChecked(True)
+
+        windowMenu.addSeparator()
+
+        viewBringAllToFront = QAction("Bring All to Front", self)
+        viewBringAllToFront.setEnabled(False)
+        windowMenu.addAction(viewBringAllToFront)
 
         # Help Menu
         helpMenu = self.menuBar.addMenu("&Help")
