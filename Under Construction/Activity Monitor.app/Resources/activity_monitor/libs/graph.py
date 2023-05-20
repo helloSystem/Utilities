@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import sys
-from collections import deque
 
 from PyQt5.QtCore import Qt, QRect, QSize
 from PyQt5.QtGui import QPainter, QBrush, QColor
@@ -22,16 +21,13 @@ class _Bar(QWidget):
         self.color3 = QColor("black")
 
         self.setContentsMargins(0, 0, 0, 0)
-        self.painter = QPainter(self)
-
         self.setSizePolicy(
             QSizePolicy.MinimumExpanding,
-            QSizePolicy.MinimumExpanding
+            QSizePolicy.MinimumExpanding,
         )
 
-        self.__padding = 0
         self.__step_number = 100
-        self.__step_size = 1
+        self.qp = None
 
     def sizeHint(self):
         return QSize(10, 100)
@@ -40,17 +36,24 @@ class _Bar(QWidget):
         super(_Bar, self).resizeEvent(event)
 
     def paintEvent(self, e):
-        painter = QPainter(self)
+        self.qp = QPainter()
+        self.qp.begin(self)
+        self.qp.setRenderHint(QPainter.Antialiasing)
+        self.draw_graph()
+        self.qp.end()
+
+    def draw_graph(self):
         brush = QBrush()
         brush.setStyle(Qt.SolidPattern)
 
         # Dynamic size
-        self.__step_size = int((painter.device().height() / self.__step_number))
+        step_size = int((self.qp.device().height() / self.__step_number))
 
         # Background
         brush.setColor(QColor(self.color3))
-        rect = QRect(0, 0, painter.device().width(), painter.device().height())
-        painter.fillRect(rect, brush)
+        x = int(self.width() / 2) - int(self.qp.device().width() / 2)
+        rect = QRect(x, 0, self.qp.device().width(), self.qp.device().height())
+        self.qp.fillRect(rect, brush)
 
         pos_y = 0
         for i in range(0, self.__step_number):
@@ -61,9 +64,9 @@ class _Bar(QWidget):
             elif i >= self.__step_number - (self.value1 + self.value2):
                 brush.setColor(QColor(self.color2))
 
-            rect = QRect(0, pos_y, painter.device().width(), self.__step_size)
-            pos_y += self.__step_size + self.__padding
-            painter.fillRect(rect, brush)
+            rect = QRect(x, pos_y, self.qp.device().width(), step_size)
+            self.qp.fillRect(rect, brush)
+            pos_y += step_size
 
 
 class Graph(QWidget):

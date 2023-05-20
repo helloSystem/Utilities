@@ -105,7 +105,6 @@ class ChartPie(QWidget):
         self.qp = QPainter()
         self.qp.begin(self)
         self.qp.setRenderHint(QPainter.Antialiasing)
-        self.qp.setRenderHint(QPainter.HighQualityAntialiasing)
         self.draw_pie()
         self.qp.end()
 
