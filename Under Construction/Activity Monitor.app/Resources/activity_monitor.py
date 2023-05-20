@@ -77,6 +77,7 @@ class Window(QMainWindow):
         self.tab_network = None
         self.timer = None
 
+        self.graph = None
         self.setupUi()
 
         self.timer.timeout.connect(self.refresh)
@@ -301,6 +302,9 @@ class Window(QMainWindow):
     def _filter_by_application_in_last_12_hours(self):
         self.filterComboBox.setCurrentIndex(9)
 
+    def _clear_cpu_history(self):
+        self.tab_cpu.widget_graph.clear_history()
+
     def _createMenuBar(self):
         self.menuBar = QMenuBar()
 
@@ -473,7 +477,7 @@ class Window(QMainWindow):
 
         viewClearCPUHistory = QAction("Clear CPU History", self)
         viewClearCPUHistory.setShortcut("Ctrl+K")
-        viewClearCPUHistory.setEnabled(False)
+        viewClearCPUHistory.triggered.connect(self._clear_cpu_history)
 
         viewEnterFullScreen = QAction("Enter Full Screen", self)
         viewEnterFullScreen.setEnabled(False)
@@ -549,7 +553,7 @@ class Window(QMainWindow):
         windowMenu.addSeparator()
 
         viewBringAllToFront = QAction("Bring All to Front", self)
-        viewBringAllToFront.setEnabled(False)
+        viewBringAllToFront.triggered.connect(self._bring_to_front)
         windowMenu.addAction(viewBringAllToFront)
 
         # Help Menu
@@ -641,6 +645,10 @@ class Window(QMainWindow):
         toolbar.addAction(self.search_process_action)
 
         self.addToolBar(toolbar)
+
+    def _bring_to_front(self):
+        self.showMinimized()
+        self.setWindowState(self.windowState() and (not Qt.WindowMinimized or Qt.WindowActive))
 
     @staticmethod
     def _showAbout():

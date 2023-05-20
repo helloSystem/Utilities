@@ -245,6 +245,12 @@ class CPUGraphBar(QWidget):
         for bar in self.bars:
             bar.color_idle = self.__color_idle
 
+    def clear_history(self):
+        for i in range(len(self.bars) - 1, 0, -1):
+            self.bars[i].user = 0.0
+            self.bars[i].system = 0.0
+            self.repaint()
+
 
 if __name__ == "__main__":
     app = QApplication([])
