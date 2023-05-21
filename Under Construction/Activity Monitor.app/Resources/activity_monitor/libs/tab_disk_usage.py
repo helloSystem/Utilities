@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
     QFileIconProvider,
 )
 
-from .buttons import ColorButton
+from .widget_color_pickup import ColorButton
 from .widget_chartpie import ChartPie, ChartPieItem
 
 

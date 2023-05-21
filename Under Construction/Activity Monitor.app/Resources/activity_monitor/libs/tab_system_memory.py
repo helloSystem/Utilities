@@ -15,7 +15,7 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
 )
 
-from .buttons import ColorButton
+from .widget_color_pickup import ColorButton
 from .utils import bytes2human
 from .widget_chartpie import ChartPieItem, ChartPie
 

@@ -13,7 +13,7 @@ from PyQt5.QtWidgets import (
     QSizePolicy,
 )
 
-from .buttons import ColorButton
+from .widget_color_pickup import ColorButton
 from .widget_cpugraphbar import CPUGraphBar
 
 
