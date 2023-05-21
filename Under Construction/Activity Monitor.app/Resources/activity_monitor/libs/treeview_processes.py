@@ -193,11 +193,11 @@ class TreeViewProcess(QWidget):
         # for pos, title in enumerate(self.header):
         #     self.process_tree.resizeColumnToContents(pos)
 
-        if self.selected_pid >= 0:
+        if self.selected_pid and self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
 
     def selectClear(self):
-        self.selected_pid = -1
+        self.selected_pid = None
         self.process_tree.clearSelection()
         self.kill_process_action.setEnabled(False)
         self.inspect_process_action.setEnabled(False)
@@ -230,7 +230,7 @@ class TreeViewProcess(QWidget):
         self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
         if self.selected_pid:
             self.kill_process_action.setEnabled(True)
-            self.inspect_process_action.setEnabled(True)
+            self.inspect_process_action.setEnabled(False)
             self.filterComboBox.model().item(8).setEnabled(True)
             if self.ActionMenuViewSelectedProcesses:
                 self.ActionMenuViewSelectedProcesses.setEnabled(True)
@@ -240,20 +240,20 @@ class TreeViewProcess(QWidget):
             os.kill(self.selected_pid, signal.SIGKILL)
 
     def SIGKILLSelectedProcess(self):
-        if self.selected_pid and self.selected_pid != -1:
+        if self.selected_pid:
             try:
                 os.kill(self.selected_pid, signal.SIGKILL)
-                self.selected_pid = -1
+                self.selected_pid = None
                 self.process_tree.clearSelection()
                 self.process_tree.refresh()
             except (Exception, BaseException):
                 pass
 
     def SIGQUITSelectedProcess(self):
-        if self.selected_pid and self.selected_pid != -1:
+        if self.selected_pid:
             try:
                 os.kill(self.selected_pid, signal.SIGTERM)
-                self.selected_pid = -1
+                self.selected_pid = None
                 self.process_tree.clearSelection()
                 self.process_tree.refresh()
             except (Exception, BaseException):
@@ -264,6 +264,6 @@ class TreeViewProcess(QWidget):
         if selected is not None:
             # pid = int(selected.text(0))
             try:
-                self.selected_pid = -1
+                self.selected_pid = None
             except (Exception, BaseException):
                 pass
