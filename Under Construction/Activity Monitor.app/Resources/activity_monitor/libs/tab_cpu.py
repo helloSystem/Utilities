@@ -129,7 +129,7 @@ class TabCpu(QWidget):
         layout_grid.addWidget(lbl_processes, 2, 3, 1, 1)
         layout_grid.addWidget(self.lbl_processes_value, 2, 4, 1, 1)
         layout_grid.addWidget(lbl_cpu_usage, 0, 6, 1, 1, Qt.AlignCenter)
-        layout_grid.addWidget(self.widget_graph, 1, 6, 4, 1, Qt.AlignLeft)
+        layout_grid.addWidget(self.widget_graph, 1, 6, 4, 1, Qt.AlignCenter)
         layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
 
         # Add spacing on the Tab
