@@ -17,7 +17,7 @@ from PyQt5.QtWidgets import (
 
 from .buttons import ColorButton
 from .utils import bytes2human
-from .chartpie import ChartPieItem, ChartPie
+from .widget_chartpie import ChartPieItem, ChartPie
 
 
 class TabSystemMemory(QWidget):

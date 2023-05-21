@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
 )
 
 from .buttons import ColorButton
-from .cpugraphbar import CPUGraphBar
+from .widget_cpugraphbar import CPUGraphBar
 
 
 class TabCpu(QWidget):

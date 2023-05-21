@@ -16,7 +16,7 @@ from PyQt5.QtWidgets import (
 )
 
 from .buttons import ColorButton
-from .chartpie import ChartPie, ChartPieItem
+from .widget_chartpie import ChartPie, ChartPieItem
 
 
 class TabDiskUsage(QWidget):

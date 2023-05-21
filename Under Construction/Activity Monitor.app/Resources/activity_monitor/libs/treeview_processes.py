@@ -239,10 +239,20 @@ class TreeViewProcess(QWidget):
         if self.selected_pid:
             os.kill(self.selected_pid, signal.SIGKILL)
 
-    def killSelectedProcess(self):
+    def SIGKILLSelectedProcess(self):
         if self.selected_pid and self.selected_pid != -1:
             try:
                 os.kill(self.selected_pid, signal.SIGKILL)
+                self.selected_pid = -1
+                self.process_tree.clearSelection()
+                self.process_tree.refresh()
+            except (Exception, BaseException):
+                pass
+
+    def SIGQUITSelectedProcess(self):
+        if self.selected_pid and self.selected_pid != -1:
+            try:
+                os.kill(self.selected_pid, signal.SIGTERM)
                 self.selected_pid = -1
                 self.process_tree.clearSelection()
                 self.process_tree.refresh()

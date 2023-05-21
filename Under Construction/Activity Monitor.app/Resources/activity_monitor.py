@@ -3,6 +3,7 @@
 import os
 import sys
 
+import psutil
 from PyQt5.QtCore import (
     QTimer,
     Qt,
@@ -27,7 +28,8 @@ from PyQt5.QtWidgets import (
     QLineEdit,
 )
 
-from activity_monitor.libs.about import About
+from activity_monitor.libs.dialog_about import About
+from activity_monitor.libs.dialog_kill import Kill
 # Load each tab class
 from activity_monitor.libs.tab_cpu import TabCpu
 from activity_monitor.libs.tab_disk_activity import TabDiskActivity
@@ -95,7 +97,7 @@ class Window(QMainWindow):
         # Wait a bit for UI stabilisation then send Signals about setting
         # Can be remove when a true setting manager will be implemented
         # THAT IS A TRIVIAL SETTING MANAGER
-        QTimer.singleShot(1500, self.restore_settings)
+        QTimer.singleShot(2000, self.restore_settings)
 
     def setupUi(self):
         self.setWindowTitle("Activity Monitor")
@@ -656,7 +658,7 @@ class Window(QMainWindow):
             self,
         )
         self.kill_process_action.setStatusTip("Kill process")
-        self.kill_process_action.triggered.connect(self.process_monitor.killSelectedProcess)
+        self.kill_process_action.triggered.connect(self._showKill)
         self.kill_process_action.setEnabled(False)
 
         self.inspect_process_action = QAction(
@@ -724,6 +726,26 @@ class Window(QMainWindow):
     def _bring_to_front(self):
         self.showMinimized()
         self.setWindowState(self.windowState() and (not Qt.WindowMinimized or Qt.WindowActive))
+
+    def _showKill(self):
+        self.kill = Kill(
+            title="Are you sure you want to quit this process ?",
+            text="Do you really want to quit '%s'?" % psutil.Process(self.process_monitor.selected_pid).name(),
+            size=(450, 155),
+            icon=QPixmap(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "activity_monitor",
+                    "ui",
+                    "Processes.png",
+                )
+            ).scaledToWidth(76, Qt.SmoothTransformation)
+        )
+
+        self.kill.process_signal_quit.connect(self.process_monitor.SIGQUITSelectedProcess)
+        self.kill.process_signal_kill.connect(self.process_monitor.SIGKILLSelectedProcess)
+
+        self.kill.show()
 
     @staticmethod
     def _showAbout():
