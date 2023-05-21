@@ -213,16 +213,17 @@ class TreeViewProcess(QWidget):
         try:  # an item is given--------------------------------------------
             newIndex = self.process_tree.model().indexFromItem(itemOrText)
         except (Exception, BaseException):  # a text is given and we are looking for the first match---
-            # for toto in self.process_tree.model().index(0, 0):
-            #     print(toto)
             listIndexes = self.process_tree.model().match(
                 self.process_tree.model().index(0, 0), Qt.DisplayRole, itemOrText, Qt.MatchStartsWith
             )
             if listIndexes:
                 newIndex = listIndexes[0]
         if newIndex:
-            self.process_tree.selectionModel().select(  # programmatically selection---------
-                newIndex, QItemSelectionModel.ClearAndSelect
+            self.process_tree.selectionModel().setCurrentIndex(
+                newIndex, QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
+            )
+            self.process_tree.selectionModel().select(
+                newIndex, QItemSelectionModel.ClearAndSelect | QItemSelectionModel.Rows
             )
 
     def onClicked(self):
