@@ -9,17 +9,16 @@ from PyQt5.QtCore import (
     Qt,
     QSize,
     QItemSelectionModel,
-    QItemSelection,
 )
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
-    QGridLayout,
     QWidget,
     QVBoxLayout,
     QAbstractItemView,
     QTreeView,
     QSizePolicy,
 )
+
 from .utils import bytes2human
 
 
@@ -36,18 +35,21 @@ class TreeViewProcess(QWidget):
         self.selected_pid = -1
         self.my_username = os.getlogin()
 
-        self.ActionMenuViewViewColumnsProcessName = None
-        self.ActionMenuViewViewColumnsUser = None
-        self.ActionMenuViewViewColumnsPercentCPU = None
-        self.ActionMenuViewViewColumnsNumThreads = None
-        self.ActionMenuViewViewColumnsRealMemory = None
-        self.ActionMenuViewViewColumnsVirtualMemory = None
+        self.header = []
+
+        self.ActionViewColumnProcessName = None
+        self.ActionViewColumnUser = None
+        self.ActionViewColumnPercentCPU = None
+        self.ActionViewColumnNumThreads = None
+        self.ActionViewColumnRealMemory = None
+        self.ActionViewColumnVirtualMemory = None
+
+        self.ActionMenuViewSelectedProcesses = None
 
         self.setupUi()
 
     def setupUi(self):
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        layout = QGridLayout()
         self.tree_view_model = QStandardItemModel()
 
         self.process_tree = QTreeView()
@@ -69,33 +71,6 @@ class TreeViewProcess(QWidget):
 
         self.refresh()
 
-    def save_selection(self):
-        selection = self.process_tree.selectionModel().selectedRows()
-        blocks = []
-        for count, index in enumerate(sorted(selection)):
-            row = index.row()
-
-            if count > 0 and row == block[1] + 1:
-                block[1] = row
-            else:
-                block = [row, row]
-                blocks.append(block)
-        return blocks
-
-    def create_selection(self, blocks):
-        mod = self.process_tree.model()
-        columns = mod.columnCount() - 1
-        flags = QItemSelectionModel.Select
-        selection = QItemSelection()
-        for start, end in blocks:
-            start, end = mod.index(start, 0), mod.index(end, columns)
-            if selection.indexes():
-                selection.merge(QItemSelection(start, end), flags)
-            else:
-                selection.select(start, end)
-        self.process_tree.selectionModel().clear()
-        self.process_tree.selectionModel().select(selection, flags)
-
     def filter_by_line(self, row, text):
         if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
             if self.searchLineEdit.text() in text:
@@ -111,37 +86,35 @@ class TreeViewProcess(QWidget):
 
         for p in psutil.process_iter():
             with p.oneshot():
-                row = [QStandardItem(f"{p.pid}")]
-                self.header.append("Process ID")
-                if self.ActionMenuViewViewColumnsProcessName and self.ActionMenuViewViewColumnsProcessName.isChecked():
-                    row.append(QStandardItem(f"{p.name()}"))
-                    self.header.append("Process Name")
-                if self.ActionMenuViewViewColumnsUser and self.ActionMenuViewViewColumnsUser.isChecked():
-                    row.append(QStandardItem(f"{p.username()}"))
-                    self.header.append("User")
-                if self.ActionMenuViewViewColumnsPercentCPU and self.ActionMenuViewViewColumnsPercentCPU.isChecked():
-                    row.append(QStandardItem(f"{p.cpu_percent()}"))
-                    self.header.append("% CPU")
-                if self.ActionMenuViewViewColumnsNumThreads and self.ActionMenuViewViewColumnsNumThreads.isChecked():
-                    row.append(QStandardItem(f"{p.num_threads()}"))
-                    self.header.append("# Threads")
-                if self.ActionMenuViewViewColumnsRealMemory and self.ActionMenuViewViewColumnsRealMemory.isChecked():
-                    row.append(QStandardItem(f"{bytes2human(p.memory_info().rss)}"))
-                    self.header.append("Real Memory")
-                if self.ActionMenuViewViewColumnsVirtualMemory and self.ActionMenuViewViewColumnsVirtualMemory.isChecked():
-                    row.append(QStandardItem(f"{bytes2human(p.memory_info().vms)}"))
-                    self.header.append("Real Memory")
 
-                # if self.parent.ActionMenuViewViewColumnsProcessName.isChecked():
-                # row = [
-                #     QStandardItem(f"{p.pid}"),
-                #     QStandardItem(f"{p.name()}"),
-                #     QStandardItem(f"{p.username()}"),
-                #     QStandardItem(f"{p.cpu_percent()}"),
-                #     QStandardItem(f"{p.num_threads()}"),
-                #     QStandardItem(f"{bytes2human(p.memory_info().rss)}"),
-                #     QStandardItem(f"{bytes2human(p.memory_info().vms)}"),
-                # ]
+                # PID can't be disable because it is use for selection tracking
+                row = [QStandardItem("%d" % p.pid)]
+                self.header.append("Process ID")
+
+                # Headers it depend of Application Actions Menu are coupled with model value
+                if self.ActionViewColumnProcessName and self.ActionViewColumnProcessName.isChecked():
+                    self.header.append(self.ActionViewColumnProcessName.text())
+                    row.append(QStandardItem("%s" % p.name()))
+
+                if self.ActionViewColumnUser and self.ActionViewColumnUser.isChecked():
+                    self.header.append(self.ActionViewColumnUser.text())
+                    row.append(QStandardItem("%s" % p.username()))
+
+                if self.ActionViewColumnPercentCPU and self.ActionViewColumnPercentCPU.isChecked():
+                    self.header.append(self.ActionViewColumnPercentCPU.text())
+                    row.append(QStandardItem("%s" % p.cpu_percent()))
+
+                if self.ActionViewColumnNumThreads and self.ActionViewColumnNumThreads.isChecked():
+                    self.header.append(self.ActionViewColumnNumThreads.text())
+                    row.append(QStandardItem("%s" % p.num_threads()))
+
+                if self.ActionViewColumnRealMemory and self.ActionViewColumnRealMemory.isChecked():
+                    self.header.append(self.ActionViewColumnRealMemory.text())
+                    row.append(QStandardItem("%s" % bytes2human(p.memory_info().rss)))
+
+                if self.ActionViewColumnVirtualMemory and self.ActionViewColumnVirtualMemory.isChecked():
+                    self.header.append(self.ActionViewColumnVirtualMemory.text())
+                    row.append(QStandardItem("%s" % bytes2human(p.memory_info().vms)))
 
                 # Filter Line
                 filtered_row = None
@@ -217,8 +190,8 @@ class TreeViewProcess(QWidget):
 
         self.process_tree.setModel(self.tree_view_model)
 
-        for pos, title in enumerate(self.header):
-            self.process_tree.resizeColumnToContents(pos)
+        # for pos, title in enumerate(self.header):
+        #     self.process_tree.resizeColumnToContents(pos)
 
         if self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
@@ -231,13 +204,15 @@ class TreeViewProcess(QWidget):
         if self.filterComboBox.currentIndex() == 8:
             self.filterComboBox.setCurrentIndex(0)
         self.filterComboBox.model().item(8).setEnabled(False)
+        if self.ActionMenuViewSelectedProcesses:
+            self.ActionMenuViewSelectedProcesses.setEnabled(False)
 
     def selectItem(self, itemOrText):
-        oldIndex = self.process_tree.selectionModel().currentIndex()
+        # oldIndex = self.process_tree.selectionModel().currentIndex()
         newIndex = None
         try:  # an item is given--------------------------------------------
             newIndex = self.process_tree.model().indexFromItem(itemOrText)
-        except:  # a text is given and we are looking for the first match---
+        except (Exception, BaseException):  # a text is given and we are looking for the first match---
             # for toto in self.process_tree.model().index(0, 0):
             #     print(toto)
             listIndexes = self.process_tree.model().match(
@@ -256,6 +231,8 @@ class TreeViewProcess(QWidget):
             self.kill_process_action.setEnabled(True)
             self.inspect_process_action.setEnabled(True)
             self.filterComboBox.model().item(8).setEnabled(True)
+            if self.ActionMenuViewSelectedProcesses:
+                self.ActionMenuViewSelectedProcesses.setEnabled(True)
 
     def killProcess(self):
         if self.selected_pid:
@@ -274,7 +251,7 @@ class TreeViewProcess(QWidget):
     def InspectSelectedProcess(self):
         selected = self.process_tree.currentItem()
         if selected is not None:
-            pid = int(selected.text(0))
+            # pid = int(selected.text(0))
             try:
                 self.selected_pid = -1
             except (Exception, BaseException):

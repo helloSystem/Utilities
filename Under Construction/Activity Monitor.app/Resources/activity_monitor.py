@@ -75,21 +75,27 @@ class Window(QMainWindow):
         self.tab_disk_activity = None
         self.tab_disk_usage = None
         self.tab_network = None
+
         self.timer = None
 
-        self.ActionMenuViewViewColumnsProcessName = None
-        self.ActionMenuViewViewColumnsUser = None
-        self.ActionMenuViewViewColumnsPercentCPU = None
-        self.ActionMenuViewViewColumnsNumThreads = None
-        self.ActionMenuViewViewColumnsRealMemory = None
-        self.ActionMenuViewViewColumnsVirtualMemory = None
+        self.ActionViewColumnProcessID = None
+        self.ActionColumnProcessName = None
+        self.ActionViewColumnUser = None
+        self.ActionViewColumnPercentCPU = None
+        self.ActionViewColumnNumThreads = None
+        self.ActionViewColumnRealMemory = None
+        self.ActionViewColumnVirtualMemory = None
 
-        self.graph = None
         self.setupUi()
 
         self.timer.timeout.connect(self.refresh)
 
         self.refresh()
+
+        # Wait a bit for UI stabilisation then send Signals about setting
+        # Can be remove when a true setting manager will be implemented
+        # THAT IS A TRIVIAL SETTING MANAGER
+        QTimer.singleShot(1500, self.restore_settings)
 
     def setupUi(self):
         self.setWindowTitle("Activity Monitor")
@@ -128,12 +134,14 @@ class Window(QMainWindow):
         self._createActions()
         self._createToolBars()
 
-        self.process_monitor.ActionMenuViewViewColumnsProcessName = self.ActionMenuViewViewColumnsProcessName
-        self.process_monitor.ActionMenuViewViewColumnsUser = self.ActionMenuViewViewColumnsUser
-        self.process_monitor.ActionMenuViewViewColumnsPercentCPU = self.ActionMenuViewViewColumnsPercentCPU
-        self.process_monitor.ActionMenuViewViewColumnsNumThreads = self.ActionMenuViewViewColumnsNumThreads
-        self.process_monitor.ActionMenuViewViewColumnsRealMemory = self.ActionMenuViewViewColumnsRealMemory
-        self.process_monitor.ActionMenuViewViewColumnsVirtualMemory = self.ActionMenuViewViewColumnsVirtualMemory
+        self.process_monitor.ActionViewColumnProcessName = self.ActionColumnProcessName
+        self.process_monitor.ActionViewColumnUser = self.ActionViewColumnUser
+        self.process_monitor.ActionViewColumnPercentCPU = self.ActionViewColumnPercentCPU
+        self.process_monitor.ActionViewColumnNumThreads = self.ActionViewColumnNumThreads
+        self.process_monitor.ActionViewColumnRealMemory = self.ActionViewColumnRealMemory
+        self.process_monitor.ActionViewColumnVirtualMemory = self.ActionViewColumnVirtualMemory
+
+        self.process_monitor.ActionMenuViewSelectedProcesses = self.ActionMenuViewSelectedProcesses
 
         self.process_monitor.kill_process_action = self.kill_process_action
         self.process_monitor.inspect_process_action = self.inspect_process_action
@@ -174,6 +182,8 @@ class Window(QMainWindow):
         central_widget.setLayout(layout)
 
         self.setCentralWidget(central_widget)
+
+        self.restore_settings()
 
     def createThread(self):
         thread = QThread()
@@ -221,6 +231,39 @@ class Window(QMainWindow):
         thread.finished.connect(thread.deleteLater)
 
         return thread
+
+    def restore_settings(self):
+        # Menu docker
+        self.ActionViewColumnProcessID.setCheckable(True)
+        self.ActionViewColumnProcessID.setEnabled(False)
+        self.ActionViewColumnProcessID.setChecked(False)
+        self.ActionViewColumnProcessID.setChecked(True)
+
+        self.ActionColumnProcessName.setCheckable(True)
+        self.ActionColumnProcessName.setChecked(True)
+
+        self.ActionViewColumnUser.setCheckable(True)
+        self.ActionViewColumnUser.setChecked(True)
+
+        self.ActionViewColumnPercentCPU.setCheckable(True)
+        self.ActionViewColumnPercentCPU.setChecked(True)
+
+        self.ActionViewColumnNumThreads.setCheckable(True)
+        self.ActionViewColumnNumThreads.setChecked(True)
+
+        self.ActionViewColumnRealMemory.setCheckable(True)
+        self.ActionViewColumnRealMemory.setChecked(True)
+
+        self.ActionViewColumnVirtualMemory.setCheckable(True)
+        self.ActionViewColumnVirtualMemory.setChecked(True)
+
+        # Filter
+        self.ActionMenuViewSelectedProcesses.setCheckable(True)
+        self.ActionMenuViewSelectedProcesses.setEnabled(False)
+        self.ActionMenuViewSelectedProcesses.setChecked(False)
+        self.ActionMenuViewSelectedProcesses.setChecked(True)
+
+        self.ActionMenuViewAllProcesses.setChecked(True)
 
     def refresh(self):
         self.process_monitor.refresh()
@@ -341,44 +384,23 @@ class Window(QMainWindow):
 
         # ViewColumns sub menu
         view_columns = viewMenu.addMenu("Columns")
-        header = ["Process ID", "Process Name", "User", "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
-        ActionMenuViewViewColumnsProcessID = QAction("Process ID", self)
-        ActionMenuViewViewColumnsProcessID.setCheckable(True)
-        ActionMenuViewViewColumnsProcessID.setChecked(True)
-        ActionMenuViewViewColumnsProcessID.setEnabled(False)
 
-        self.ActionMenuViewViewColumnsProcessName = QAction("Process Name", self)
-        self.ActionMenuViewViewColumnsProcessName.setCheckable(True)
-        self.ActionMenuViewViewColumnsProcessName.setChecked(True)
-
-        self.ActionMenuViewViewColumnsUser = QAction("User", self)
-        self.ActionMenuViewViewColumnsUser.setCheckable(True)
-        self.ActionMenuViewViewColumnsUser.setChecked(True)
-
-        self.ActionMenuViewViewColumnsPercentCPU = QAction("% CPU", self)
-        self.ActionMenuViewViewColumnsPercentCPU.setCheckable(True)
-        self.ActionMenuViewViewColumnsPercentCPU.setChecked(True)
-
-        self.ActionMenuViewViewColumnsNumThreads = QAction("# Threads", self)
-        self.ActionMenuViewViewColumnsNumThreads.setCheckable(True)
-        self.ActionMenuViewViewColumnsNumThreads.setChecked(True)
-
-        self.ActionMenuViewViewColumnsRealMemory = QAction("Real Memory", self)
-        self.ActionMenuViewViewColumnsRealMemory.setCheckable(True)
-        self.ActionMenuViewViewColumnsRealMemory.setChecked(True)
-
-        self.ActionMenuViewViewColumnsVirtualMemory = QAction("Virtual Memory", self)
-        self.ActionMenuViewViewColumnsVirtualMemory.setCheckable(True)
-        self.ActionMenuViewViewColumnsVirtualMemory.setChecked(True)
+        self.ActionViewColumnProcessID = QAction("Process ID", self)
+        self.ActionColumnProcessName = QAction("Process Name", self)
+        self.ActionViewColumnUser = QAction("User", self)
+        self.ActionViewColumnPercentCPU = QAction("% CPU", self)
+        self.ActionViewColumnNumThreads = QAction("# Threads", self)
+        self.ActionViewColumnRealMemory = QAction("Real Memory", self)
+        self.ActionViewColumnVirtualMemory = QAction("Virtual Memory", self)
 
         view_columns.addActions([
-            ActionMenuViewViewColumnsProcessID,
-            self.ActionMenuViewViewColumnsProcessName,
-            self.ActionMenuViewViewColumnsUser,
-            self.ActionMenuViewViewColumnsPercentCPU,
-            self.ActionMenuViewViewColumnsNumThreads,
-            self.ActionMenuViewViewColumnsRealMemory,
-            self.ActionMenuViewViewColumnsVirtualMemory,
+            self.ActionViewColumnProcessID,
+            self.ActionColumnProcessName,
+            self.ActionViewColumnUser,
+            self.ActionViewColumnPercentCPU,
+            self.ActionViewColumnNumThreads,
+            self.ActionViewColumnRealMemory,
+            self.ActionViewColumnVirtualMemory,
         ])
 
         view_dock = viewMenu.addMenu("Dock Icon")
