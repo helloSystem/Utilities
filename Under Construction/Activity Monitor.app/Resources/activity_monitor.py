@@ -30,7 +30,6 @@ from PyQt5.QtWidgets import (
 
 from activity_monitor.libs.dialog_about import About
 from activity_monitor.libs.dialog_kill import Kill
-from activity_monitor.libs.dialog_send_signal import SendSignal
 # Load each tab class
 from activity_monitor.libs.tab_cpu import TabCpu
 from activity_monitor.libs.tab_disk_activity import TabDiskActivity
@@ -38,6 +37,8 @@ from activity_monitor.libs.tab_disk_usage import TabDiskUsage
 from activity_monitor.libs.tab_network import TabNetwork
 from activity_monitor.libs.tab_system_memory import TabSystemMemory
 from activity_monitor.libs.treeview_processes import TreeViewProcess
+
+from activity_monitor.libs.dialog_send_signal import SendSignalDialog
 # In charge to background long time process
 from activity_monitor.libs.worker import PSUtilsWorker
 
@@ -743,12 +744,8 @@ class Window(QMainWindow):
         self.setWindowState(self.windowState() and (not Qt.WindowMinimized or Qt.WindowActive))
 
     def _showSendSignal(self):
-        self.send_signal = SendSignal(
-            process=psutil.Process(self.process_monitor.selected_pid),
-            size=(450, 155),
-
-        )
-        self.send_signal.show()
+        self.send_signal_dialog = SendSignalDialog(process=psutil.Process(self.process_monitor.selected_pid))
+        self.send_signal_dialog.exec()
 
     def _showKill(self):
         self.kill = Kill(
