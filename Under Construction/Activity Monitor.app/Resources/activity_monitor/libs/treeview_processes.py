@@ -46,6 +46,9 @@ class TreeViewProcess(QWidget):
 
         self.ActionMenuViewSelectedProcesses = None
 
+        self.ActionViewKillDialog = None
+        self.ActionViewSendSignalDialog = None
+
         self.setupUi()
 
     def setupUi(self):
@@ -206,6 +209,10 @@ class TreeViewProcess(QWidget):
         self.filterComboBox.model().item(8).setEnabled(False)
         if self.ActionMenuViewSelectedProcesses:
             self.ActionMenuViewSelectedProcesses.setEnabled(False)
+        if self.ActionViewKillDialog:
+            self.ActionViewKillDialog.setEnabled(False)
+        if self.ActionViewSendSignalDialog:
+            self.ActionViewSendSignalDialog.setEnabled(False)
 
     def selectItem(self, itemOrText):
         # oldIndex = self.process_tree.selectionModel().currentIndex()
@@ -234,6 +241,10 @@ class TreeViewProcess(QWidget):
             self.filterComboBox.model().item(8).setEnabled(True)
             if self.ActionMenuViewSelectedProcesses:
                 self.ActionMenuViewSelectedProcesses.setEnabled(True)
+            if self.ActionViewKillDialog:
+                self.ActionViewKillDialog.setEnabled(True)
+            if self.ActionViewSendSignalDialog:
+                self.ActionViewSendSignalDialog.setEnabled(True)
 
     def killProcess(self):
         if self.selected_pid:

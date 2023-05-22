@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
 
 from activity_monitor.libs.dialog_about import About
 from activity_monitor.libs.dialog_kill import Kill
+from activity_monitor.libs.dialog_send_signal import SendSignal
 # Load each tab class
 from activity_monitor.libs.tab_cpu import TabCpu
 from activity_monitor.libs.tab_disk_activity import TabDiskActivity
@@ -88,6 +89,9 @@ class Window(QMainWindow):
         self.ActionViewColumnRealMemory = None
         self.ActionViewColumnVirtualMemory = None
 
+        self.ActionViewKillDialog = None
+        self.ActionViewSendSignalDialog = None
+
         self.setupUi()
 
         self.timer.timeout.connect(self.refresh)
@@ -136,6 +140,7 @@ class Window(QMainWindow):
         self._createActions()
         self._createToolBars()
 
+        # Pass Action from Menu and ToolBar to the Process Treeview Widget
         self.process_monitor.ActionViewColumnProcessName = self.ActionColumnProcessName
         self.process_monitor.ActionViewColumnUser = self.ActionViewColumnUser
         self.process_monitor.ActionViewColumnPercentCPU = self.ActionViewColumnPercentCPU
@@ -144,6 +149,8 @@ class Window(QMainWindow):
         self.process_monitor.ActionViewColumnVirtualMemory = self.ActionViewColumnVirtualMemory
 
         self.process_monitor.ActionMenuViewSelectedProcesses = self.ActionMenuViewSelectedProcesses
+        self.process_monitor.ActionViewKillDialog = self.ActionViewKillDialog
+        self.process_monitor.ActionViewSendSignalDialog = self.ActionViewSendSignalDialog
 
         self.process_monitor.kill_process_action = self.kill_process_action
         self.process_monitor.inspect_process_action = self.inspect_process_action
@@ -532,12 +539,14 @@ class Window(QMainWindow):
         viewRunSystemDiagnostics = QAction("Run system Diagnostics", self)
         viewRunSystemDiagnostics.setEnabled(False)
 
-        viewQuitProcess = QAction("Quit Process", self)
-        viewQuitProcess.setShortcut("Ctrl+Meta+Q")
-        viewQuitProcess.setEnabled(False)
+        self.ActionViewKillDialog = QAction("Quit Process", self)
+        self.ActionViewKillDialog.triggered.connect(self._showKill)
+        self.ActionViewKillDialog.setShortcut("Ctrl+Meta+Q")
+        self.ActionViewKillDialog.setEnabled(False)
 
-        viewSendSignalToProcesses = QAction("Send Signal to Processes", self)
-        viewSendSignalToProcesses.setEnabled(False)
+        self.ActionViewSendSignalDialog = QAction("Send Signal to Processes", self)
+        self.ActionViewSendSignalDialog.triggered.connect(self._showSendSignal)
+        self.ActionViewSendSignalDialog.setEnabled(False)
 
         viewShowDeltasForProcess = QAction("Show Deltas for Process", self)
         viewShowDeltasForProcess.setShortcut("Ctrl+Meta+J")
@@ -550,8 +559,8 @@ class Window(QMainWindow):
                 viewSampleProcess,
                 viewRunSpindump,
                 viewRunSystemDiagnostics,
-                viewQuitProcess,
-                viewSendSignalToProcesses,
+                self.ActionViewKillDialog,
+                self.ActionViewSendSignalDialog,
                 viewShowDeltasForProcess,
             ]
         )
@@ -732,6 +741,14 @@ class Window(QMainWindow):
     def _bring_to_front(self):
         self.showMinimized()
         self.setWindowState(self.windowState() and (not Qt.WindowMinimized or Qt.WindowActive))
+
+    def _showSendSignal(self):
+        self.send_signal = SendSignal(
+            process=psutil.Process(self.process_monitor.selected_pid),
+            size=(450, 155),
+
+        )
+        self.send_signal.show()
 
     def _showKill(self):
         self.kill = Kill(
