@@ -51,6 +51,12 @@ class PSUtilsWorker(QObject):
     # Disk Usage
     updated_mounted_disk_partitions = Signal(dict)
 
+    # Network
+    updated_network_packets_in = Signal(object)
+    updated_network_packets_out = Signal(object)
+    updated_network_data_received = Signal(object)
+    updated_network_data_sent = Signal(object)
+
     # noinspection PyUnresolvedReferences
     def refresh(self):
         cpu_times_percent = psutil.cpu_times_percent()
@@ -127,12 +133,20 @@ class PSUtilsWorker(QObject):
             item_number += 1
         self.updated_mounted_disk_partitions.emit(data)
 
-        # Disk Activity A last because it need to wait 1 entire second
+        # Disk activity
         activity = psutil.disk_io_counters()
 
         self.updated_disk_activity_reads_in.emit(activity.read_count)
         self.updated_disk_activity_writes_out.emit(activity.write_count)
         self.updated_disk_activity_data_read.emit(activity.read_bytes)
         self.updated_disk_activity_data_written.emit(activity.write_bytes)
+
+        # Network
+        net_io_counters = psutil.net_io_counters()
+
+        self.updated_network_packets_in.emit(net_io_counters.packets_recv)
+        self.updated_network_packets_out.emit(net_io_counters.packets_sent)
+        self.updated_network_data_received.emit(net_io_counters.bytes_recv)
+        self.updated_network_data_sent.emit(net_io_counters.bytes_sent)
 
         self.finished.emit()

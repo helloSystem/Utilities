@@ -228,6 +228,12 @@ class Window(QMainWindow):
         worker.updated_disk_activity_data_read.connect(self.tab_disk_activity.refresh_data_read)
         worker.updated_disk_activity_data_written.connect(self.tab_disk_activity.refresh_data_written)
 
+        # Network
+        worker.updated_network_packets_in.connect(self.tab_network.refresh_packets_in)
+        worker.updated_network_packets_out.connect(self.tab_network.refresh_packets_out)
+        worker.updated_network_data_received.connect(self.tab_network.refresh_data_received)
+        worker.updated_network_data_sent.connect(self.tab_network.refresh_data_sent)
+
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
         thread.finished.connect(thread.deleteLater)

@@ -18,12 +18,12 @@ def bytes2human(n, short=True):
         if n >= prefix[s]:
             return f"{round(float(n) / prefix[s], 2):.2f} {s}B"
     if short:
-        return f"{n} B"
+        return f"{int(n)} B"
     else:
         if n >= 1:
-            return f"{n} bytes"
+            return f"{int(n)} bytes"
         else:
-            return f"{n} byte"
+            return f"{int(n)} byte"
 
 
 def clamp_to_zero(value):

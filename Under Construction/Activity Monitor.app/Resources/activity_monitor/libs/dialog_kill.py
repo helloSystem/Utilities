@@ -32,6 +32,9 @@ class Kill(QWidget):
         self.setupConnection()
 
     def setupUI(self):
+        self.setWindowFlags(
+            Qt.Dialog
+        )
         self.setWindowTitle(" ")
 
         self.button_cancel = QPushButton(self.tr("Cancel"))
