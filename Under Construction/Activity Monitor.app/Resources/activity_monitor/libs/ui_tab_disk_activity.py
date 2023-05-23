@@ -57,7 +57,7 @@ class Ui_TabDiskActivity(object):
         self.label_reads_in_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_reads_in_value.setObjectName("label_reads_in_value")
         self.gridLayout.addWidget(self.label_reads_in_value, 0, 1, 1, 1)
-        spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.MinimumExpanding,
+        spacerItem1 = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.MinimumExpanding,
                                             QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 0, 5, 1, 1)
         self.label_reads_in_sec = QtWidgets.QLabel(TabDiskActivity)
@@ -123,7 +123,7 @@ class Ui_TabDiskActivity(object):
         self.graph = QtWidgets.QWidget(TabDiskActivity)
         self.graph.setObjectName("graph")
         self.gridLayout.addWidget(self.graph, 1, 6, 3, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(80, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem3, 0, 2, 1, 1)
         self.color_picker_data_written_sec_value = ColorButton(TabDiskActivity)
         self.color_picker_data_written_sec_value.setObjectName("color_picker_data_written_sec_value")
@@ -137,6 +137,11 @@ class Ui_TabDiskActivity(object):
         spacerItem4 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem4, 4, 0, 1, 1)
         self.label_reads_in = QtWidgets.QLabel(TabDiskActivity)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label_reads_in.sizePolicy().hasHeightForWidth())
+        self.label_reads_in.setSizePolicy(sizePolicy)
         self.label_reads_in.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_reads_in.setObjectName("label_reads_in")
         self.gridLayout.addWidget(self.label_reads_in, 0, 0, 1, 1)
@@ -155,7 +160,8 @@ class Ui_TabDiskActivity(object):
             QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_writes_out_sec_value.setObjectName("label_writes_out_sec_value")
         self.gridLayout.addWidget(self.label_writes_out_sec_value, 3, 1, 1, 1)
-        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem5 = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.MinimumExpanding,
+                                            QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem5, 0, 7, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.verticalLayout_2.addLayout(self.verticalLayout)
@@ -176,6 +182,4 @@ class Ui_TabDiskActivity(object):
         self.label_reads_in.setText(_translate("TabDiskActivity", "Reads in:"))
         self.label_data_read_sec.setText(_translate("TabDiskActivity", "Data read/sec:"))
         self.label_data_written_sec.setText(_translate("TabDiskActivity", "Data written/sec:"))
-
-
 from .widget_color_pickup import ColorButton
