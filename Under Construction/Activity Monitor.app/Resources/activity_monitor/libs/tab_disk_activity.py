@@ -13,41 +13,24 @@ from PyQt5.QtWidgets import (
 )
 
 from .widget_color_pickup import ColorButton
+from .ui_tab_disk_activity import Ui_TabDiskActivity
 from .utils import bytes2human
 
 
-class TabDiskActivity(QWidget):
+class TabDiskActivity(QWidget, Ui_TabDiskActivity):
     def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
-
-        self.reads_in_value = None
-        self.writes_out_value = None
-        self.data_read_value = None
-        self.data_written_value = None
+        super().__init__()
 
         self.reads_in_old_value = None
         self.writes_out_old_value = None
         self.data_read_old_value = None
         self.data_written_old_value = None
 
-        self.label_reads_in_value = None
-        self.label_writes_out_value = None
-        self.label_data_read_value = None
-        self.label_data_written_value = None
-
-        self.label_reads_in_sec_value = None
-        self.label_writes_out_sec_value = None
-        self.label_data_read_sec_value = None
-        self.label_data_written_sec_value = None
-
-        self.color_picker_data_read_sec_value = None
-        self.color_picker_data_written_sec_value = None
-
-        self.label_bandwidth_value = None
-
         self.timer_value = 3
 
-        self.setupUI()
+        self.setupUi(self)
+        self.color_picker_data_read_sec_value.setColor("green")
+        self.color_picker_data_written_sec_value.setColor("red")
 
     def setupUI(self):
         # self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
