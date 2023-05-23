@@ -123,7 +123,7 @@ class Ui_TabDiskActivity(object):
         self.graph = QtWidgets.QWidget(TabDiskActivity)
         self.graph.setObjectName("graph")
         self.gridLayout.addWidget(self.graph, 1, 6, 3, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(80, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        spacerItem3 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem3, 0, 2, 1, 1)
         self.color_picker_data_written_sec_value = ColorButton(TabDiskActivity)
         self.color_picker_data_written_sec_value.setObjectName("color_picker_data_written_sec_value")

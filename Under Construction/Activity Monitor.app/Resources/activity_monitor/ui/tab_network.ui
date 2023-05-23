@@ -61,17 +61,7 @@
                             <property name="rightMargin">
                                 <number>20</number>
                             </property>
-                            <item row="0" column="1">
-                                <widget class="QLabel" name="label_packets_in_value">
-                                    <property name="text">
-                                        <string/>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="0" column="7">
+                            <item row="0" column="6" colspan="2">
                                 <layout class="QHBoxLayout" name="hobxbandwidh">
                                     <property name="spacing">
                                         <number>0</number>
@@ -114,6 +104,16 @@
                                         </widget>
                                     </item>
                                 </layout>
+                            </item>
+                            <item row="0" column="1">
+                                <widget class="QLabel" name="label_packets_in_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
                             </item>
                             <item row="3" column="0">
                                 <widget class="QLabel" name="label_packets_out_sec">
@@ -211,22 +211,6 @@
                             <item row="2" column="5" alignment="Qt::AlignLeft">
                                 <widget class="ColorButton" name="color_picker_data_received_sec_value" native="true"/>
                             </item>
-                            <item row="0" column="8">
-                                <spacer name="horizontalSpacer_3">
-                                    <property name="orientation">
-                                        <enum>Qt::Horizontal</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>QSizePolicy::MinimumExpanding</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>0</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
                             <item row="0" column="2">
                                 <spacer name="horizontalSpacer">
                                     <property name="orientation">
@@ -273,22 +257,6 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="0" column="5">
-                                <spacer name="horizontalSpacer_2">
-                                    <property name="orientation">
-                                        <enum>Qt::Horizontal</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>QSizePolicy::MinimumExpanding</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>0</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
                             <item row="1" column="3">
                                 <widget class="QLabel" name="label_data_sent">
                                     <property name="text">
@@ -308,6 +276,22 @@
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                                     </property>
                                 </widget>
+                            </item>
+                            <item row="0" column="5">
+                                <spacer name="horizontalSpacer_2">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>QSizePolicy::MinimumExpanding</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>0</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
                             </item>
                             <item row="1" column="1">
                                 <widget class="QLabel" name="label_packets_out_value">
@@ -332,7 +316,20 @@
                             <item row="3" column="5" alignment="Qt::AlignLeft">
                                 <widget class="ColorButton" name="color_picker_data_sent_sec_value" native="true"/>
                             </item>
-                            <item row="1" column="7" rowspan="3">
+                            <item row="0" column="8">
+                                <spacer name="horizontalSpacer_3">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>40</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item row="1" column="5" rowspan="3" colspan="4">
                                 <widget class="QWidget" name="graph" native="true"/>
                             </item>
                         </layout>

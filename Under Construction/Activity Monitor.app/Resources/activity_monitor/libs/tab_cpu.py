@@ -1,46 +1,31 @@
 #!/usr/bin/env python3
 
 from PyQt5.QtCore import (
-    Qt, pyqtProperty, pyqtSignal
-)
-from PyQt5.QtGui import QColor
-from PyQt5.QtWidgets import (
-    QGridLayout,
-    QWidget,
-    QVBoxLayout,
-    QLabel,
-    QSpacerItem,
-    QSizePolicy,
+    pyqtProperty, pyqtSignal
 )
 
-from .widget_color_pickup import ColorButton
-from .widget_cpugraphbar import CPUGraphBar
+from PyQt5.QtWidgets import QWidget
+from .ui_tab_cpu import Ui_TabCPU
 
 
-class TabCpu(QWidget):
+class TabCpu(QWidget, Ui_TabCPU):
     data_user_changed = pyqtSignal()
     data_system_changed = pyqtSignal()
     data_idle_changed = pyqtSignal()
 
     def __init__(self, parent=None):
-        QWidget.__init__(self, parent)
+        super().__init__()
 
         self.__user = None
         self.__idle = None
         self.__system = None
 
-        self.label_user_value = None
-        self.color_picker_user = None
-        self.label_system_value = None
-        self.color_picker_system = None
-        self.label_idle_value = None
-        self.color_picker_idle = None
-        self.label_threads_value = None
-        self.label_processes_value = None
-        self.widget_graph = None
+        self.setupUi(self)
 
-        self.setupUI()
         self.setupConnect()
+        self.color_picker_user_value.setColor("green")
+        self.color_picker_system_value.setColor("red")
+        self.color_picker_idle_value.setColor("black")
 
     @pyqtProperty(float)
     def idle(self):
@@ -81,85 +66,14 @@ class TabCpu(QWidget):
     def set_system(self, value):
         self.system = value
 
-    def setupUI(self):
-        self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-
-        label_user = QLabel("User:")
-        label_user.setAlignment(Qt.AlignRight)
-        label_system = QLabel("System:")
-        label_system.setAlignment(Qt.AlignRight)
-        label_idle = QLabel("Idle:")
-        label_idle.setAlignment(Qt.AlignRight)
-        label_threads = QLabel("Threads:")
-        label_threads.setAlignment(Qt.AlignRight)
-        label_processes = QLabel("Processes:")
-        label_processes.setAlignment(Qt.AlignRight)
-        label_cpu_usage = QLabel("CPU Usage")
-        label_cpu_usage.setAlignment(Qt.AlignCenter)
-
-        self.label_user_value = QLabel()
-        self.label_user_value.setAlignment(Qt.AlignRight)
-        self.color_picker_user = ColorButton(color="green")
-        self.label_system_value = QLabel("")
-        self.label_system_value.setAlignment(Qt.AlignRight)
-        self.color_picker_system = ColorButton(color="red")
-        self.label_idle_value = QLabel("")
-        self.label_idle_value.setAlignment(Qt.AlignRight)
-        self.color_picker_idle = ColorButton(color="black")
-        self.label_threads_value = QLabel("")
-        self.label_threads_value.setAlignment(Qt.AlignLeft)
-        self.label_processes_value = QLabel("")
-        self.label_processes_value.setAlignment(Qt.AlignLeft)
-        self.widget_graph = CPUGraphBar()
-
-        layout_grid = QGridLayout()
-        layout_grid.setContentsMargins(0, 0, 0, 0)
-        layout_grid.setSpacing(3)
-        layout_grid.addWidget(label_user, 1, 0, 1, 1)
-        layout_grid.addWidget(self.label_user_value, 1, 1, 1, 1)
-        layout_grid.addWidget(self.color_picker_user, 1, 2, 1, 1)
-        layout_grid.addWidget(label_system, 2, 0, 1, 1)
-        layout_grid.addWidget(self.label_system_value, 2, 1, 1, 1)
-        layout_grid.addWidget(self.color_picker_system, 2, 2, 1, 1)
-        layout_grid.addWidget(label_idle, 3, 0, 1, 1)
-        layout_grid.addWidget(self.label_idle_value, 3, 1, 1, 1)
-        layout_grid.addWidget(self.color_picker_idle, 3, 2, 1, 1)
-        layout_grid.addWidget(label_threads, 1, 3, 1, 1)
-        layout_grid.addWidget(self.label_threads_value, 1, 4, 1, 1)
-        layout_grid.addWidget(label_processes, 2, 3, 1, 1)
-        layout_grid.addWidget(self.label_processes_value, 2, 4, 1, 1)
-        layout_grid.addWidget(label_cpu_usage, 0, 6, 1, 1, Qt.AlignCenter)
-        layout_grid.addWidget(self.widget_graph, 1, 6, 4, 1, Qt.AlignCenter)
-        layout_grid.addItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Minimum))
-
-        # Add spacing on the Tab
-        widget_grid = QWidget()
-        widget_grid.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
-        widget_grid.setLayout(layout_grid)
-        widget_grid.setContentsMargins(0, 0, 0, 0)
-
-        space_label = QLabel()
-        layout_vbox = QVBoxLayout()
-        layout_vbox.addWidget(space_label)
-        layout_vbox.addWidget(widget_grid)
-        layout_vbox.setSpacing(0)
-        layout_vbox.setContentsMargins(20, 0, 20, 0)
-
-        self.setLayout(layout_vbox)
-
-        # Update color label by the color of the color picker
-        self.refresh_color_system()
-        self.refresh_color_user()
-        self.refresh_color_idle()
-
     def setupConnect(self):
         self.data_idle_changed.connect(self.refresh_idle)
         self.data_user_changed.connect(self.refresh_user)
         self.data_system_changed.connect(self.refresh_system)
 
-        self.color_picker_system.colorChanged.connect(self.refresh_color_system)
-        self.color_picker_user.colorChanged.connect(self.refresh_color_user)
-        self.color_picker_idle.colorChanged.connect(self.refresh_color_idle)
+        self.color_picker_system_value.colorChanged.connect(self.refresh_color_system)
+        self.color_picker_user_value.colorChanged.connect(self.refresh_color_user)
+        self.color_picker_idle_value.colorChanged.connect(self.refresh_color_idle)
 
     def refresh_user(self):
         if self.__user:
@@ -184,13 +98,13 @@ class TabCpu(QWidget):
         self.label_threads_value.setText("%d" % cumulative_threads)
 
     def refresh_color_system(self):
-        self.label_system_value.setStyleSheet("color: %s;" % self.color_picker_system.color())
-        self.widget_graph.color_system = self.color_picker_system.color()
+        self.label_system_value.setStyleSheet("color: %s;" % self.color_picker_system_value.color())
+        self.widget_graph.color_system = self.color_picker_system_value.color()
 
     def refresh_color_user(self):
-        self.label_user_value.setStyleSheet("color: %s;" % self.color_picker_user.color())
-        self.widget_graph.color_user = self.color_picker_user.color()
+        self.label_user_value.setStyleSheet("color: %s;" % self.color_picker_user_value.color())
+        self.widget_graph.color_user = self.color_picker_user_value.color()
 
     def refresh_color_idle(self):
-        self.label_idle_value.setStyleSheet("color: %s;" % self.color_picker_idle.color())
-        self.widget_graph.color_idle = self.color_picker_idle.color()
+        self.label_idle_value.setStyleSheet("color: %s;" % self.color_picker_idle_value.color())
+        self.widget_graph.color_idle = self.color_picker_idle_value.color()
