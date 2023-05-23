@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_TabCPU(object):
     def setupUi(self, TabCPU):
         TabCPU.setObjectName("TabCPU")
-        TabCPU.resize(905, 378)
+        TabCPU.resize(905, 192)
         TabCPU.setLayoutDirection(QtCore.Qt.LeftToRight)
         TabCPU.setAutoFillBackground(False)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(TabCPU)
@@ -68,15 +68,13 @@ class Ui_TabCPU(object):
         self.color_picker_idle_value.setObjectName("color_picker_idle_value")
         self.gridLayout.addWidget(self.color_picker_idle_value, 3, 2, 1, 1,
                                   QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
-        self.gridLayout.addItem(spacerItem2, 4, 0, 1, 1)
         self.label_processes_value = QtWidgets.QLabel(TabCPU)
         self.label_processes_value.setText("")
         self.label_processes_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_processes_value.setObjectName("label_processes_value")
         self.gridLayout.addWidget(self.label_processes_value, 2, 4, 1, 1)
-        spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
-        self.gridLayout.addItem(spacerItem3, 5, 0, 1, 1)
+        spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.gridLayout.addItem(spacerItem2, 5, 0, 1, 1)
         self.color_picker_user_value = ColorButton(TabCPU)
         self.color_picker_user_value.setObjectName("color_picker_user_value")
         self.gridLayout.addWidget(self.color_picker_user_value, 1, 2, 1, 1,
@@ -87,13 +85,13 @@ class Ui_TabCPU(object):
         self.gridLayout.addWidget(self.label_processes, 2, 3, 1, 1, QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
+        spacerItem3 = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        self.horizontalLayout.addItem(spacerItem3)
+        self.label_cpu_usage = QtWidgets.QLabel(TabCPU)
+        self.label_cpu_usage.setObjectName("label_cpu_usage")
+        self.horizontalLayout.addWidget(self.label_cpu_usage)
         spacerItem4 = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem4)
-        self.label = QtWidgets.QLabel(TabCPU)
-        self.label.setObjectName("label")
-        self.horizontalLayout.addWidget(self.label)
-        spacerItem5 = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.horizontalLayout.addItem(spacerItem5)
         self.gridLayout.addLayout(self.horizontalLayout, 0, 6, 1, 1)
         self.label_idle_value = QtWidgets.QLabel(TabCPU)
         self.label_idle_value.setText("")
@@ -104,8 +102,12 @@ class Ui_TabCPU(object):
         self.color_picker_system_value.setObjectName("color_picker_system_value")
         self.gridLayout.addWidget(self.color_picker_system_value, 2, 2, 1, 1,
                                   QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
-        spacerItem6 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem6, 1, 5, 1, 1)
+        spacerItem5 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.gridLayout.addItem(spacerItem5, 0, 5, 1, 1)
+        self.label_spacing = QtWidgets.QLabel(TabCPU)
+        self.label_spacing.setText("")
+        self.label_spacing.setObjectName("label_spacing")
+        self.gridLayout.addWidget(self.label_spacing, 4, 0, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.verticalLayout_2.addLayout(self.verticalLayout)
 
@@ -120,8 +122,6 @@ class Ui_TabCPU(object):
         self.label_user.setText(_translate("TabCPU", "User:"))
         self.label_system.setText(_translate("TabCPU", "System:"))
         self.label_processes.setText(_translate("TabCPU", "Processes:"))
-        self.label.setText(_translate("TabCPU", "CPU Usage"))
-
-
+        self.label_cpu_usage.setText(_translate("TabCPU", "CPU Usage"))
 from .widget_color_pickup import ColorButton
 from .widget_cpugraphbar import CPUGraphBar

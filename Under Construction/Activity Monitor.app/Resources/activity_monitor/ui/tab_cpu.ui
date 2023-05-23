@@ -7,7 +7,7 @@
                 <x>0</x>
                 <y>0</y>
                 <width>905</width>
-                <height>378</height>
+                <height>192</height>
             </rect>
         </property>
         <property name="windowTitle">
@@ -153,22 +153,6 @@
                             <item row="3" column="2" alignment="Qt::AlignLeft|Qt::AlignVCenter">
                                 <widget class="ColorButton" name="color_picker_idle_value" native="true"/>
                             </item>
-                            <item row="4" column="0">
-                                <spacer name="verticalSpacer">
-                                    <property name="orientation">
-                                        <enum>Qt::Vertical</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>QSizePolicy::Fixed</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>20</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
                             <item row="2" column="4">
                                 <widget class="QLabel" name="label_processes_value">
                                     <property name="text">
@@ -224,7 +208,7 @@
                                         </spacer>
                                     </item>
                                     <item>
-                                        <widget class="QLabel" name="label">
+                                        <widget class="QLabel" name="label_cpu_usage">
                                             <property name="text">
                                                 <string>CPU Usage</string>
                                             </property>
@@ -261,7 +245,7 @@
                             <item row="2" column="2" alignment="Qt::AlignLeft|Qt::AlignVCenter">
                                 <widget class="ColorButton" name="color_picker_system_value" native="true"/>
                             </item>
-                            <item row="1" column="5">
+                            <item row="0" column="5">
                                 <spacer name="horizontalSpacer_3">
                                     <property name="orientation">
                                         <enum>Qt::Horizontal</enum>
@@ -276,6 +260,13 @@
                                         </size>
                                     </property>
                                 </spacer>
+                            </item>
+                            <item row="4" column="0">
+                                <widget class="QLabel" name="label_spacing">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                </widget>
                             </item>
                         </layout>
                     </item>

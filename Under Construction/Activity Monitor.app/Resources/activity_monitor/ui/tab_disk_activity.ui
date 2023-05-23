@@ -62,82 +62,6 @@
                                 <number>20</number>
                             </property>
                             <item row="3" column="0">
-                                <widget class="QLabel" name="label_writes_out_sec">
-                                    <property name="text">
-                                        <string>Writes out/sec:</string>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="1" column="3">
-                                <widget class="QLabel" name="label_data_written">
-                                    <property name="text">
-                                        <string>Data written:</string>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="1" column="4">
-                                <widget class="QLabel" name="label_data_written_value">
-                                    <property name="text">
-                                        <string/>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="1" column="0">
-                                <widget class="QLabel" name="label_writes_out">
-                                    <property name="text">
-                                        <string>Writes out:</string>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="2" column="1">
-                                <widget class="QLabel" name="label_reads_in_sec_value">
-                                    <property name="text">
-                                        <string/>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="0" column="1">
-                                <widget class="QLabel" name="label_reads_in_value">
-                                    <property name="text">
-                                        <string/>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="0" column="5">
-                                <spacer name="horizontalSpacer_2">
-                                    <property name="orientation">
-                                        <enum>Qt::Horizontal</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>QSizePolicy::MinimumExpanding</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>0</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
-                            <item row="2" column="0">
                                 <widget class="QLabel" name="label_reads_in_sec">
                                     <property name="text">
                                         <string>Reads in/sec:</string>
@@ -147,8 +71,11 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="0" column="4">
-                                <widget class="QLabel" name="label_data_read_value">
+                            <item row="4" column="7" alignment="Qt::AlignLeft">
+                                <widget class="ColorButton" name="color_picker_data_written_sec_value" native="true"/>
+                            </item>
+                            <item row="2" column="1">
+                                <widget class="QLabel" name="label_writes_out_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -157,7 +84,80 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="0" column="3">
+                            <item row="3" column="1">
+                                <widget class="QLabel" name="label_reads_in_sec_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="0">
+                                <widget class="QLabel" name="label_writes_out">
+                                    <property name="text">
+                                        <string>Writes out:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="3">
+                                <widget class="QLabel" name="label_data_written">
+                                    <property name="text">
+                                        <string>Data written:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="4" column="3">
+                                <widget class="QLabel" name="label_data_written_sec">
+                                    <property name="text">
+                                        <string>Data written/sec:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="7" alignment="Qt::AlignLeft">
+                                <widget class="ColorButton" name="color_picker_data_read_sec_value" native="true"/>
+                            </item>
+                            <item row="2" column="4">
+                                <widget class="QLabel" name="label_data_written_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="1">
+                                <widget class="QLabel" name="label_reads_in_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="3">
+                                <widget class="QLabel" name="label_data_read_sec">
+                                    <property name="text">
+                                        <string>Data read/sec:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="3">
                                 <widget class="QLabel" name="label_data_read">
                                     <property name="text">
                                         <string>Data read:</string>
@@ -167,15 +167,94 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="0" column="6">
-                                <layout class="QHBoxLayout" name="hbox_bandwidth">
-                                    <property name="spacing">
-                                        <number>0</number>
+                            <item row="3" column="4">
+                                <widget class="QLabel" name="label_data_read_sec_value">
+                                    <property name="text">
+                                        <string/>
                                     </property>
-                                    <property name="sizeConstraint">
-                                        <enum>QLayout::SetDefaultConstraint</enum>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                                     </property>
-                                    <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
+                                </widget>
+                            </item>
+                            <item row="4" column="4">
+                                <widget class="QLabel" name="label_data_written_sec_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="0">
+                                <widget class="QLabel" name="label_reads_in">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="text">
+                                        <string>Reads in:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="4" column="1">
+                                <widget class="QLabel" name="label_writes_out_sec_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="5" column="0">
+                                <spacer name="verticalSpacer">
+                                    <property name="orientation">
+                                        <enum>Qt::Vertical</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>20</width>
+                                            <height>40</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item row="4" column="0">
+                                <widget class="QLabel" name="label_writes_out_sec">
+                                    <property name="text">
+                                        <string>Writes out/sec:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="9">
+                                <layout class="QHBoxLayout" name="horizontalLayout">
+                                    <item>
+                                        <spacer name="horizontalSpacer_2">
+                                            <property name="orientation">
+                                                <enum>Qt::Horizontal</enum>
+                                            </property>
+                                            <property name="sizeType">
+                                                <enum>QSizePolicy::MinimumExpanding</enum>
+                                            </property>
+                                            <property name="sizeHint" stdset="0">
+                                                <size>
+                                                    <width>0</width>
+                                                    <height>20</height>
+                                                </size>
+                                            </property>
+                                        </spacer>
+                                    </item>
+                                    <item alignment="Qt::AlignRight|Qt::AlignVCenter">
                                         <widget class="QLabel" name="label_bandwidth">
                                             <property name="enabled">
                                                 <bool>true</bool>
@@ -200,7 +279,7 @@
                                                 <enum>Qt::Horizontal</enum>
                                             </property>
                                             <property name="sizeType">
-                                                <enum>QSizePolicy::Preferred</enum>
+                                                <enum>QSizePolicy::Fixed</enum>
                                             </property>
                                             <property name="sizeHint" stdset="0">
                                                 <size>
@@ -233,10 +312,26 @@
                                             </property>
                                         </widget>
                                     </item>
+                                    <item>
+                                        <spacer name="horizontalSpacer_3">
+                                            <property name="orientation">
+                                                <enum>Qt::Horizontal</enum>
+                                            </property>
+                                            <property name="sizeType">
+                                                <enum>QSizePolicy::MinimumExpanding</enum>
+                                            </property>
+                                            <property name="sizeHint" stdset="0">
+                                                <size>
+                                                    <width>0</width>
+                                                    <height>20</height>
+                                                </size>
+                                            </property>
+                                        </spacer>
+                                    </item>
                                 </layout>
                             </item>
-                            <item row="1" column="1">
-                                <widget class="QLabel" name="label_writes_out_value">
+                            <item row="1" column="4">
+                                <widget class="QLabel" name="label_data_read_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -245,23 +340,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="3" column="4">
-                                <widget class="QLabel" name="label_data_written_sec_value">
-                                    <property name="text">
-                                        <string/>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="2" column="5" alignment="Qt::AlignLeft">
-                                <widget class="ColorButton" name="color_picker_data_read_sec_value" native="true"/>
-                            </item>
-                            <item row="1" column="6" rowspan="3">
-                                <widget class="QWidget" name="graph" native="true"/>
-                            </item>
-                            <item row="0" column="2">
+                            <item row="1" column="2">
                                 <spacer name="horizontalSpacer">
                                     <property name="orientation">
                                         <enum>Qt::Horizontal</enum>
@@ -277,93 +356,24 @@
                                     </property>
                                 </spacer>
                             </item>
-                            <item row="3" column="5" alignment="Qt::AlignLeft">
-                                <widget class="ColorButton" name="color_picker_data_written_sec_value" native="true"/>
-                            </item>
-                            <item row="2" column="4">
-                                <widget class="QLabel" name="label_data_read_sec_value">
-                                    <property name="text">
-                                        <string/>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="4" column="0">
-                                <spacer name="verticalSpacer">
-                                    <property name="orientation">
-                                        <enum>Qt::Vertical</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>20</width>
-                                            <height>40</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
-                            <item row="0" column="0">
-                                <widget class="QLabel" name="label_reads_in">
-                                    <property name="sizePolicy">
-                                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                    <property name="text">
-                                        <string>Reads in:</string>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="2" column="3">
-                                <widget class="QLabel" name="label_data_read_sec">
-                                    <property name="text">
-                                        <string>Data read/sec:</string>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="3" column="3">
-                                <widget class="QLabel" name="label_data_written_sec">
-                                    <property name="text">
-                                        <string>Data written/sec:</string>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="3" column="1">
-                                <widget class="QLabel" name="label_writes_out_sec_value">
-                                    <property name="text">
-                                        <string/>
-                                    </property>
-                                    <property name="alignment">
-                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="0" column="7">
-                                <spacer name="horizontalSpacer_3">
+                            <item row="0" column="8">
+                                <spacer name="horizontalSpacer_4">
                                     <property name="orientation">
                                         <enum>Qt::Horizontal</enum>
                                     </property>
                                     <property name="sizeType">
-                                        <enum>QSizePolicy::MinimumExpanding</enum>
+                                        <enum>QSizePolicy::Preferred</enum>
                                     </property>
                                     <property name="sizeHint" stdset="0">
                                         <size>
-                                            <width>0</width>
+                                            <width>40</width>
                                             <height>20</height>
                                         </size>
                                     </property>
                                 </spacer>
+                            </item>
+                            <item row="1" column="9" rowspan="4">
+                                <widget class="QWidget" name="graph" native="true"/>
                             </item>
                         </layout>
                     </item>
