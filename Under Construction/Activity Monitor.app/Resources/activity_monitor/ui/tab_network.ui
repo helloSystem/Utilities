@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+    <class>TabNetwork</class>
+    <widget class="QWidget" name="TabNetwork">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>777</width>
+                <height>378</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Form</string>
+        </property>
+        <property name="layoutDirection">
+            <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="autoFillBackground">
+            <bool>false</bool>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+                <layout class="QVBoxLayout" name="verticalLayout">
+                    <property name="spacing">
+                        <number>6</number>
+                    </property>
+                    <item>
+                        <spacer name="verticalSpacer_2">
+                            <property name="orientation">
+                                <enum>Qt::Vertical</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>QSizePolicy::Fixed</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                                <size>
+                                    <width>20</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                    </item>
+                    <item>
+                        <layout class="QGridLayout" name="gridLayout">
+                            <property name="leftMargin">
+                                <number>20</number>
+                            </property>
+                            <property name="rightMargin">
+                                <number>20</number>
+                            </property>
+                            <item row="3" column="0">
+                                <widget class="QLabel" name="label_packets_out_sec">
+                                    <property name="text">
+                                        <string>Packets out/sec:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="3">
+                                <widget class="QLabel" name="label_data_sent">
+                                    <property name="text">
+                                        <string>Data sent:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="6" alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+                                <widget class="QLabel" name="label_bandwidth_value">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                    <property name="text">
+                                        <string>TextLabel</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="4">
+                                <widget class="QLabel" name="label_data_sent_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="0">
+                                <widget class="QLabel" name="label_packets_out">
+                                    <property name="text">
+                                        <string>Packets out:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="1">
+                                <widget class="QLabel" name="label_packets_in_sec_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="1">
+                                <widget class="QLabel" name="label_packets_in_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="5">
+                                <spacer name="horizontalSpacer_2">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>40</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item row="2" column="0">
+                                <widget class="QLabel" name="label_packets_in_sec">
+                                    <property name="text">
+                                        <string>Packets in/sec:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="4">
+                                <widget class="QLabel" name="label_data_received_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="3">
+                                <widget class="QLabel" name="label_data_received">
+                                    <property name="text">
+                                        <string>Data received:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="1">
+                                <widget class="QLabel" name="label_packets_out_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="4">
+                                <widget class="QLabel" name="label_data_sent_sec_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="5" alignment="Qt::AlignLeft">
+                                <widget class="ColorButton" name="color_picker_data_received_sec_value" native="true"/>
+                            </item>
+                            <item row="0" column="2">
+                                <spacer name="horizontalSpacer">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>40</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item row="3" column="5" alignment="Qt::AlignLeft">
+                                <widget class="ColorButton" name="color_picker_data_sent_sec_value" native="true"/>
+                            </item>
+                            <item row="2" column="4">
+                                <widget class="QLabel" name="label_data_received_sec_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="4" column="0">
+                                <spacer name="verticalSpacer">
+                                    <property name="orientation">
+                                        <enum>Qt::Vertical</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>20</width>
+                                            <height>40</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item row="0" column="0">
+                                <widget class="QLabel" name="label_packets_in">
+                                    <property name="text">
+                                        <string>Packets in:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="2" column="3">
+                                <widget class="QLabel" name="label_data_received_sec">
+                                    <property name="text">
+                                        <string>Data received/sec:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="3">
+                                <widget class="QLabel" name="label_data_sent_sec">
+                                    <property name="text">
+                                        <string>Data sent/sec:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="1">
+                                <widget class="QLabel" name="label_packets_out_sec_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="0" column="7">
+                                <spacer name="horizontalSpacer_3">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>40</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                        </layout>
+                    </item>
+                </layout>
+            </item>
+        </layout>
+    </widget>
+    <customwidgets>
+        <customwidget>
+            <class>ColorButton</class>
+            <extends>QWidget</extends>
+            <header>.widget_color_pickup</header>
+            <container>1</container>
+        </customwidget>
+    </customwidgets>
+    <resources/>
+    <connections/>
+</ui>
