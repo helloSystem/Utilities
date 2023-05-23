@@ -36,7 +36,7 @@ class Ui_TabDiskActivity(object):
         self.gridLayout.addWidget(self.label_reads_in_sec, 3, 1, 1, 1)
         self.color_picker_data_written_sec_value = ColorButton(TabDiskActivity)
         self.color_picker_data_written_sec_value.setObjectName("color_picker_data_written_sec_value")
-        self.gridLayout.addWidget(self.color_picker_data_written_sec_value, 4, 8, 1, 1, QtCore.Qt.AlignLeft)
+        self.gridLayout.addWidget(self.color_picker_data_written_sec_value, 4, 6, 1, 1, QtCore.Qt.AlignLeft)
         self.label_writes_out_value = QtWidgets.QLabel(TabDiskActivity)
         self.label_writes_out_value.setText("")
         self.label_writes_out_value.setAlignment(
@@ -64,10 +64,10 @@ class Ui_TabDiskActivity(object):
         self.gridLayout.addWidget(self.label_data_written_sec, 4, 4, 1, 1)
         spacerItem2 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.MinimumExpanding,
                                             QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem2, 0, 9, 1, 1)
+        self.gridLayout.addItem(spacerItem2, 0, 7, 1, 1)
         self.color_picker_data_read_sec_value = ColorButton(TabDiskActivity)
         self.color_picker_data_read_sec_value.setObjectName("color_picker_data_read_sec_value")
-        self.gridLayout.addWidget(self.color_picker_data_read_sec_value, 3, 8, 1, 1, QtCore.Qt.AlignLeft)
+        self.gridLayout.addWidget(self.color_picker_data_read_sec_value, 3, 6, 1, 1, QtCore.Qt.AlignLeft)
         self.label_data_written_value = QtWidgets.QLabel(TabDiskActivity)
         self.label_data_written_value.setText("")
         self.label_data_written_value.setAlignment(
@@ -81,7 +81,7 @@ class Ui_TabDiskActivity(object):
         self.gridLayout.addWidget(self.label_reads_in_value, 1, 2, 1, 1)
         self.graph = QtWidgets.QWidget(TabDiskActivity)
         self.graph.setObjectName("graph")
-        self.gridLayout.addWidget(self.graph, 1, 10, 4, 1)
+        self.gridLayout.addWidget(self.graph, 1, 8, 4, 1)
         self.label_data_read_sec = QtWidgets.QLabel(TabDiskActivity)
         self.label_data_read_sec.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_read_sec.setObjectName("label_data_read_sec")
@@ -129,7 +129,7 @@ class Ui_TabDiskActivity(object):
         self.horizontalLayout_2.addWidget(self.radioButton_2, 0, QtCore.Qt.AlignLeft)
         spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem4)
-        self.gridLayout.addLayout(self.horizontalLayout_2, 5, 10, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout_2, 5, 8, 1, 1)
         self.label_writes_out_sec_value = QtWidgets.QLabel(TabDiskActivity)
         self.label_writes_out_sec_value.setText("")
         self.label_writes_out_sec_value.setAlignment(
@@ -189,14 +189,14 @@ class Ui_TabDiskActivity(object):
         spacerItem9 = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.MinimumExpanding,
                                             QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem9)
-        self.gridLayout.addLayout(self.horizontalLayout, 0, 10, 1, 1)
+        self.gridLayout.addLayout(self.horizontalLayout, 0, 8, 1, 1)
         self.label_data_read_value = QtWidgets.QLabel(TabDiskActivity)
         self.label_data_read_value.setText("")
         self.label_data_read_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_read_value.setObjectName("label_data_read_value")
         self.gridLayout.addWidget(self.label_data_read_value, 1, 5, 1, 1)
         spacerItem10 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout.addItem(spacerItem10, 0, 11, 1, 1)
+        self.gridLayout.addItem(spacerItem10, 0, 9, 1, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         self.verticalLayout_2.addLayout(self.verticalLayout)
 
