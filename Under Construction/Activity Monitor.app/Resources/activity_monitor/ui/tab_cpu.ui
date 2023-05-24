@@ -349,7 +349,7 @@
                                     </property>
                                 </spacer>
                             </item>
-                            <item row="1" column="9" rowspan="4">
+                            <item row="1" column="9" rowspan="5">
                                 <widget class="CPUGraphBar" name="widget_graph" native="true">
                                     <property name="sizePolicy">
                                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">

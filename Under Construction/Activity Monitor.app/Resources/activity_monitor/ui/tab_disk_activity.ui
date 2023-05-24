@@ -48,7 +48,7 @@
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-            <height>25</height>
+         <height>25</height>
         </size>
        </property>
       </spacer>
@@ -77,16 +77,16 @@
          </property>
         </spacer>
        </item>
-       <item row="3" column="1">
-        <widget class="QLabel" name="label_reads_in_sec">
-         <property name="text">
-          <string>Reads in/sec:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
+          <item row="3" column="1">
+              <widget class="QLabel" name="label_reads_in_sec">
+                  <property name="text">
+                      <string>Reads in/sec:</string>
+                  </property>
+                  <property name="alignment">
+                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+              </widget>
+          </item>
           <item row="4" column="8" alignment="Qt::AlignLeft">
               <widget class="ColorButton" name="color_picker_data_written_sec_value" native="true"/>
           </item>
@@ -110,16 +110,16 @@
                   </property>
               </widget>
           </item>
-       <item row="2" column="1">
-        <widget class="QLabel" name="label_writes_out">
-         <property name="text">
-          <string>Writes out:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
+          <item row="2" column="1">
+              <widget class="QLabel" name="label_writes_out">
+                  <property name="text">
+                      <string>Writes out:</string>
+                  </property>
+                  <property name="alignment">
+                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+              </widget>
+          </item>
           <item row="2" column="5">
               <widget class="QLabel" name="label_data_written">
                   <property name="text">
@@ -151,11 +151,11 @@
                   <property name="sizeHint" stdset="0">
                       <size>
                           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
+                          <height>20</height>
+                      </size>
+                  </property>
+              </spacer>
+          </item>
           <item row="3" column="8" alignment="Qt::AlignLeft">
               <widget class="ColorButton" name="color_picker_data_read_sec_value" native="true"/>
           </item>
@@ -249,16 +249,16 @@
                               <size>
                                   <width>40</width>
                                   <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item alignment="Qt::AlignLeft">
-          <widget class="QRadioButton" name="radioButton">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
+                              </size>
+                          </property>
+                      </spacer>
+                  </item>
+                  <item alignment="Qt::AlignLeft">
+                      <widget class="QRadioButton" name="radioButton">
+                          <property name="sizePolicy">
+                              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
             </sizepolicy>
            </property>
            <property name="text">
@@ -293,16 +293,16 @@
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
+              <property name="sizeHint" stdset="0">
+                  <size>
+                      <width>40</width>
+                      <height>20</height>
+                  </size>
+              </property>
           </spacer>
          </item>
-        </layout>
-       </item>
+              </layout>
+          </item>
           <item row="4" column="3">
               <widget class="QLabel" name="label_writes_out_sec_value">
                   <property name="text">
@@ -313,22 +313,22 @@
                   </property>
               </widget>
           </item>
-       <item row="1" column="1">
-        <widget class="QLabel" name="label_reads_in">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string>Reads in:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
+          <item row="1" column="1">
+              <widget class="QLabel" name="label_reads_in">
+                  <property name="sizePolicy">
+                      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                      </sizepolicy>
+                  </property>
+                  <property name="text">
+                      <string>Reads in:</string>
+                  </property>
+                  <property name="alignment">
+                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+              </widget>
+          </item>
           <item row="0" column="4">
               <spacer name="horizontalSpacer">
                   <property name="orientation">
@@ -340,21 +340,21 @@
                   <property name="sizeHint" stdset="0">
                       <size>
                           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-       <item row="4" column="1">
-        <widget class="QLabel" name="label_writes_out_sec">
-         <property name="text">
-          <string>Writes out/sec:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-         </property>
-        </widget>
-       </item>
+                          <height>20</height>
+                      </size>
+                  </property>
+              </spacer>
+          </item>
+          <item row="4" column="1">
+              <widget class="QLabel" name="label_writes_out_sec">
+                  <property name="text">
+                      <string>Writes out/sec:</string>
+                  </property>
+                  <property name="alignment">
+                      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                  </property>
+              </widget>
+          </item>
           <item row="0" column="9">
               <layout class="QHBoxLayout" name="horizontalLayout">
                   <property name="spacing">
@@ -370,16 +370,16 @@
                           </property>
                           <property name="sizeHint" stdset="0">
                               <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item alignment="Qt::AlignRight|Qt::AlignVCenter">
-          <widget class="QLabel" name="label_bandwidth">
-           <property name="enabled">
-            <bool>true</bool>
+                                  <width>0</width>
+                                  <height>20</height>
+                              </size>
+                          </property>
+                      </spacer>
+                  </item>
+                  <item alignment="Qt::AlignRight|Qt::AlignVCenter">
+                      <widget class="QLabel" name="label_bandwidth">
+                          <property name="enabled">
+                              <bool>true</bool>
            </property>
            <property name="sizePolicy">
             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -442,16 +442,16 @@
            <property name="sizeType">
             <enum>QSizePolicy::MinimumExpanding</enum>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>0</width>
-             <height>20</height>
-            </size>
-           </property>
+              <property name="sizeHint" stdset="0">
+                  <size>
+                      <width>0</width>
+                      <height>20</height>
+                  </size>
+              </property>
           </spacer>
          </item>
-        </layout>
-       </item>
+              </layout>
+          </item>
           <item row="1" column="7">
               <widget class="QLabel" name="label_data_read_value">
                   <property name="text">
