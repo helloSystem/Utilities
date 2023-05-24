@@ -78,17 +78,26 @@ class TabDiskUsage(QWidget, Ui_TabDiskUsage):
             index = 0
             self.combobox_devices.setCurrentIndex(index)
 
-        self.label_space_utilized_value.setText(self.mounted_disk_partitions[index]['used'])
-        self.label_space_utilized_value_in_bytes.setText(self.mounted_disk_partitions[index]['used_in_bytes'])
-        self.label_space_free_value.setText(self.mounted_disk_partitions[index]['free'])
+        if self.label_space_utilized_value.text() != self.mounted_disk_partitions[index]['used']:
+            self.label_space_utilized_value.setText(self.mounted_disk_partitions[index]['used'])
 
-        self.label_space_free_value_in_bytes.setText(self.mounted_disk_partitions[index]['free_in_bytes'])
-        self.label_space_total_value.setText(self.mounted_disk_partitions[index]['total'])
+        if self.label_space_utilized_value_in_bytes.text() != self.mounted_disk_partitions[index]['used_in_bytes']:
+            self.label_space_utilized_value_in_bytes.setText(self.mounted_disk_partitions[index]['used_in_bytes'])
 
-        self.chart_pie_item_utilized.color = self.color_button_space_utilized.color()
-        self.chart_pie_item_utilized.data = self.mounted_disk_partitions[index]["used_raw"]
-        self.chart_pie_item_free.color = self.color_button_space_free.color()
-        self.chart_pie_item_free.data = self.mounted_disk_partitions[index]["free_raw"]
+        if self.label_space_free_value.text() != self.mounted_disk_partitions[index]['free']:
+            self.label_space_free_value.setText(self.mounted_disk_partitions[index]['free'])
+
+        if self.label_space_free_value_in_bytes.text() != self.mounted_disk_partitions[index]['free_in_bytes']:
+            self.label_space_free_value_in_bytes.setText(self.mounted_disk_partitions[index]['free_in_bytes'])
+
+        if self.label_space_total_value.text() != self.mounted_disk_partitions[index]['total']:
+            self.label_space_total_value.setText(self.mounted_disk_partitions[index]['total'])
+
+        if self.chart_pie_item_utilized.data != self.mounted_disk_partitions[index]['used_raw']:
+            self.chart_pie_item_utilized.data = self.mounted_disk_partitions[index]["used_raw"]
+
+        if self.chart_pie_item_free.data != self.mounted_disk_partitions[index]['free_raw']:
+            self.chart_pie_item_free.data = self.mounted_disk_partitions[index]["free_raw"]
 
     def setupConnect(self):
         self.combobox_devices.currentIndexChanged.connect(self.combobox_index_changed)

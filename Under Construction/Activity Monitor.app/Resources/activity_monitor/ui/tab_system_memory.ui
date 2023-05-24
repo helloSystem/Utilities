@@ -1,44 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>TabCPU</class>
-    <widget class="QWidget" name="TabCPU">
+    <class>SystemMemory</class>
+    <widget class="QWidget" name="SystemMemory">
         <property name="geometry">
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>917</width>
-                <height>235</height>
+                <width>881</width>
+                <height>247</height>
             </rect>
         </property>
         <property name="windowTitle">
             <string>Form</string>
         </property>
-        <property name="layoutDirection">
-            <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="autoFillBackground">
-            <bool>false</bool>
-        </property>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-            <property name="leftMargin">
-                <number>0</number>
-            </property>
-            <property name="topMargin">
-                <number>0</number>
-            </property>
-            <property name="rightMargin">
-                <number>0</number>
-            </property>
-            <property name="bottomMargin">
-                <number>0</number>
-            </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
             <item>
-                <layout class="QVBoxLayout" name="CPUMainVLayout">
+                <layout class="QVBoxLayout" name="SystemMemoryMainVLayout">
                     <property name="spacing">
                         <number>6</number>
                     </property>
                     <item>
-                        <spacer name="verticalSpacer_1">
+                        <spacer name="verticalSpacer_2">
                             <property name="orientation">
                                 <enum>Qt::Vertical</enum>
                             </property>
@@ -54,7 +36,7 @@
                         </spacer>
                     </item>
                     <item>
-                        <layout class="QGridLayout" name="CPUgridLayout">
+                        <layout class="QGridLayout" name="SystemMemorygridLayout">
                             <property name="leftMargin">
                                 <number>20</number>
                             </property>
@@ -62,9 +44,9 @@
                                 <number>20</number>
                             </property>
                             <item row="4" column="1">
-                                <widget class="QLabel" name="label_irq">
+                                <widget class="QLabel" name="label_used">
                                     <property name="text">
-                                        <string>Irq:</string>
+                                        <string>Used:</string>
                                     </property>
                                     <property name="alignment">
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -72,9 +54,9 @@
                                 </widget>
                             </item>
                             <item row="1" column="5" alignment="Qt::AlignRight|Qt::AlignVCenter">
-                                <widget class="QLabel" name="label_threads">
+                                <widget class="QLabel" name="label_available">
                                     <property name="text">
-                                        <string>Threads:</string>
+                                        <string>Available:</string>
                                     </property>
                                     <property name="alignment">
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -82,10 +64,10 @@
                                 </widget>
                             </item>
                             <item row="3" column="4" alignment="Qt::AlignLeft">
-                                <widget class="ColorButton" name="color_picker_nice_value" native="true"/>
+                                <widget class="ColorButton" name="color_picker_inactive_value" native="true"/>
                             </item>
                             <item row="1" column="7">
-                                <widget class="QLabel" name="label_threads_value">
+                                <widget class="QLabel" name="label_available_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -95,9 +77,9 @@
                                 </widget>
                             </item>
                             <item row="1" column="1">
-                                <widget class="QLabel" name="label_user">
+                                <widget class="QLabel" name="label_free">
                                     <property name="text">
-                                        <string>User:</string>
+                                        <string>Free:</string>
                                     </property>
                                     <property name="alignment">
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -105,7 +87,7 @@
                                 </widget>
                             </item>
                             <item row="2" column="3">
-                                <widget class="QLabel" name="label_system_value">
+                                <widget class="QLabel" name="label_active_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -115,9 +97,9 @@
                                 </widget>
                             </item>
                             <item row="3" column="1">
-                                <widget class="QLabel" name="label_nice">
+                                <widget class="QLabel" name="label_inactive">
                                     <property name="text">
-                                        <string>Nice:</string>
+                                        <string>Inactive:</string>
                                     </property>
                                     <property name="alignment">
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -125,12 +107,12 @@
                                 </widget>
                             </item>
                             <item row="5" column="4" alignment="Qt::AlignLeft">
-                                <widget class="ColorButton" name="color_picker_idle_value" native="true"/>
+                                <widget class="ColorButton" name="color_picker_wired_value" native="true"/>
                             </item>
                             <item row="2" column="1">
-                                <widget class="QLabel" name="label_system">
+                                <widget class="QLabel" name="label_active">
                                     <property name="text">
-                                        <string>System:</string>
+                                        <string>Active:</string>
                                     </property>
                                     <property name="alignment">
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -154,7 +136,7 @@
                                 </spacer>
                             </item>
                             <item row="3" column="3">
-                                <widget class="QLabel" name="label_nice_value">
+                                <widget class="QLabel" name="label_inactive_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -164,7 +146,7 @@
                                 </widget>
                             </item>
                             <item row="1" column="3">
-                                <widget class="QLabel" name="label_user_value">
+                                <widget class="QLabel" name="label_free_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -174,10 +156,10 @@
                                 </widget>
                             </item>
                             <item row="4" column="4" alignment="Qt::AlignLeft">
-                                <widget class="ColorButton" name="color_picker_irq_value" native="true"/>
+                                <widget class="ColorButton" name="color_picker_used_value" native="true"/>
                             </item>
                             <item row="5" column="3">
-                                <widget class="QLabel" name="label_idle_value">
+                                <widget class="QLabel" name="label_wired_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -200,9 +182,9 @@
                                 </spacer>
                             </item>
                             <item row="5" column="1">
-                                <widget class="QLabel" name="label_idle">
+                                <widget class="QLabel" name="label_wired">
                                     <property name="text">
-                                        <string>Idle:</string>
+                                        <string>Wired:</string>
                                     </property>
                                     <property name="alignment">
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -210,7 +192,7 @@
                                 </widget>
                             </item>
                             <item row="2" column="7">
-                                <widget class="QLabel" name="label_processes_value">
+                                <widget class="QLabel" name="label_buffers_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -236,12 +218,12 @@
                                 </spacer>
                             </item>
                             <item row="1" column="4" alignment="Qt::AlignLeft">
-                                <widget class="ColorButton" name="color_picker_user_value" native="true"/>
+                                <widget class="ColorButton" name="color_picker_free_value" native="true"/>
                             </item>
                             <item row="2" column="5" alignment="Qt::AlignRight|Qt::AlignVCenter">
-                                <widget class="QLabel" name="label_processes">
+                                <widget class="QLabel" name="label_buffers">
                                     <property name="text">
-                                        <string>Processes:</string>
+                                        <string>Buffers:</string>
                                     </property>
                                     <property name="alignment">
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -264,51 +246,8 @@
                                     </property>
                                 </spacer>
                             </item>
-                            <item row="0" column="9">
-                                <layout class="QHBoxLayout" name="horizontalLayout">
-                                    <item>
-                                        <spacer name="horizontalSpacer">
-                                            <property name="orientation">
-                                                <enum>Qt::Horizontal</enum>
-                                            </property>
-                                            <property name="sizeType">
-                                                <enum>QSizePolicy::Expanding</enum>
-                                            </property>
-                                            <property name="sizeHint" stdset="0">
-                                                <size>
-                                                    <width>0</width>
-                                                    <height>0</height>
-                                                </size>
-                                            </property>
-                                        </spacer>
-                                    </item>
-                                    <item>
-                                        <widget class="QLabel" name="label_cpu_usage">
-                                            <property name="text">
-                                                <string>CPU Usage</string>
-                                            </property>
-                                        </widget>
-                                    </item>
-                                    <item>
-                                        <spacer name="horizontalSpacer_2">
-                                            <property name="orientation">
-                                                <enum>Qt::Horizontal</enum>
-                                            </property>
-                                            <property name="sizeType">
-                                                <enum>QSizePolicy::Expanding</enum>
-                                            </property>
-                                            <property name="sizeHint" stdset="0">
-                                                <size>
-                                                    <width>0</width>
-                                                    <height>0</height>
-                                                </size>
-                                            </property>
-                                        </spacer>
-                                    </item>
-                                </layout>
-                            </item>
                             <item row="4" column="3">
-                                <widget class="QLabel" name="label_irq_value">
+                                <widget class="QLabel" name="label_used_value">
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -331,7 +270,7 @@
                                 </spacer>
                             </item>
                             <item row="2" column="4" alignment="Qt::AlignLeft">
-                                <widget class="ColorButton" name="color_picker_system_value" native="true"/>
+                                <widget class="ColorButton" name="color_picker_active_value" native="true"/>
                             </item>
                             <item row="0" column="6">
                                 <spacer name="horizontalSpacer_7">
@@ -349,8 +288,75 @@
                                     </property>
                                 </spacer>
                             </item>
-                            <item row="1" column="9" rowspan="5">
-                                <widget class="CPUGraphBar" name="widget_graph" native="true">
+                            <item row="3" column="5">
+                                <widget class="QLabel" name="label_cached">
+                                    <property name="text">
+                                        <string>Cached:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="4" column="5">
+                                <widget class="QLabel" name="label_shared">
+                                    <property name="text">
+                                        <string>Shared:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="5" column="5">
+                                <widget class="QLabel" name="label_slab">
+                                    <property name="text">
+                                        <string>Slab:</string>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="3" column="7">
+                                <widget class="QLabel" name="label_cached_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="5" column="7">
+                                <widget class="QLabel" name="label_slab_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="4" column="7">
+                                <widget class="QLabel" name="label_shared_value">
+                                    <property name="text">
+                                        <string/>
+                                    </property>
+                                    <property name="alignment">
+                                        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="5" column="9" alignment="Qt::AlignHCenter">
+                                <widget class="QLabel" name="label_total_value">
+                                    <property name="text">
+                                        <string>TextLabel</string>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item row="1" column="9" rowspan="4">
+                                <widget class="ChartPie" name="chart_pie" native="true">
                                     <property name="sizePolicy">
                                         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                                             <horstretch>0</horstretch>
@@ -362,7 +368,7 @@
                         </layout>
                     </item>
                     <item>
-                        <spacer name="verticalSpacer">
+                        <spacer name="verticalSpacer_1">
                             <property name="orientation">
                                 <enum>Qt::Vertical</enum>
                             </property>
@@ -386,9 +392,9 @@
             <container>1</container>
         </customwidget>
         <customwidget>
-            <class>CPUGraphBar</class>
+            <class>ChartPie</class>
             <extends>QWidget</extends>
-            <header>.widget_cpugraphbar</header>
+            <header>.widget_chartpie</header>
             <container>1</container>
         </customwidget>
     </customwidgets>
