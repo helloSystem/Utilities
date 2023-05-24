@@ -75,9 +75,6 @@ class Ui_SystemMemory(object):
         self.label_free_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_free_value.setObjectName("label_free_value")
         self.SystemMemorygridLayout.addWidget(self.label_free_value, 1, 3, 1, 1)
-        self.color_picker_used_value = ColorButton(SystemMemory)
-        self.color_picker_used_value.setObjectName("color_picker_used_value")
-        self.SystemMemorygridLayout.addWidget(self.color_picker_used_value, 4, 4, 1, 1, QtCore.Qt.AlignLeft)
         self.label_wired_value = QtWidgets.QLabel(SystemMemory)
         self.label_wired_value.setText("")
         self.label_wired_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
@@ -180,7 +177,5 @@ class Ui_SystemMemory(object):
         self.label_shared.setText(_translate("SystemMemory", "Shared:"))
         self.label_slab.setText(_translate("SystemMemory", "Slab:"))
         self.label_total_value.setText(_translate("SystemMemory", "TextLabel"))
-
-
 from .widget_chartpie import ChartPie
 from .widget_color_pickup import ColorButton

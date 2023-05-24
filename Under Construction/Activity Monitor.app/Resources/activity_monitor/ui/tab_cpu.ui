@@ -63,6 +63,11 @@
                             </property>
                             <item row="4" column="1">
                                 <widget class="QLabel" name="label_irq">
+                                    <property name="toolTip">
+                                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time spent for servicing
+                                            hardware interrupts&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                        </string>
+                                    </property>
                                     <property name="text">
                                         <string>Irq:</string>
                                     </property>
@@ -86,6 +91,9 @@
                             </item>
                             <item row="1" column="7">
                                 <widget class="QLabel" name="label_threads_value">
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -96,6 +104,11 @@
                             </item>
                             <item row="1" column="1">
                                 <widget class="QLabel" name="label_user">
+                                    <property name="toolTip">
+                                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time spent by normal
+                                            processes executing in user mode&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                        </string>
+                                    </property>
                                     <property name="text">
                                         <string>User:</string>
                                     </property>
@@ -106,6 +119,12 @@
                             </item>
                             <item row="2" column="3">
                                 <widget class="QLabel" name="label_system_value">
+                                    <property name="toolTip">
+                                        <string/>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -116,6 +135,11 @@
                             </item>
                             <item row="3" column="1">
                                 <widget class="QLabel" name="label_nice">
+                                    <property name="toolTip">
+                                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time spent by niced
+                                            (prioritized) processes executing in user mode&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                        </string>
+                                    </property>
                                     <property name="text">
                                         <string>Nice:</string>
                                     </property>
@@ -129,6 +153,12 @@
                             </item>
                             <item row="2" column="1">
                                 <widget class="QLabel" name="label_system">
+                                    <property name="toolTip">
+                                        <string comment="toolTip information"
+                                                extracomment="That is HTML format in case of formating needed">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time
+                                            spent by processes executing in kernel mode.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
+                                        </string>
+                                    </property>
                                     <property name="text">
                                         <string>System:</string>
                                     </property>
@@ -155,6 +185,9 @@
                             </item>
                             <item row="3" column="3">
                                 <widget class="QLabel" name="label_nice_value">
+                                    <property name="toolTip">
+                                        <string/>
+                                    </property>
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -165,6 +198,12 @@
                             </item>
                             <item row="1" column="3">
                                 <widget class="QLabel" name="label_user_value">
+                                    <property name="toolTip">
+                                        <string/>
+                                    </property>
+                                    <property name="styleSheet">
+                                        <string notr="true">QToolTip { color: #ffffff; border: 0px; }</string>
+                                    </property>
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -178,6 +217,9 @@
                             </item>
                             <item row="5" column="3">
                                 <widget class="QLabel" name="label_idle_value">
+                                    <property name="toolTip">
+                                        <string/>
+                                    </property>
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -201,6 +243,9 @@
                             </item>
                             <item row="5" column="1">
                                 <widget class="QLabel" name="label_idle">
+                                    <property name="toolTip">
+                                        <string>Time spent doing nothing</string>
+                                    </property>
                                     <property name="text">
                                         <string>Idle:</string>
                                     </property>
@@ -211,6 +256,9 @@
                             </item>
                             <item row="2" column="7">
                                 <widget class="QLabel" name="label_processes_value">
+                                    <property name="styleSheet">
+                                        <string notr="true"/>
+                                    </property>
                                     <property name="text">
                                         <string/>
                                     </property>
@@ -309,6 +357,9 @@
                             </item>
                             <item row="4" column="3">
                                 <widget class="QLabel" name="label_irq_value">
+                                    <property name="toolTip">
+                                        <string/>
+                                    </property>
                                     <property name="text">
                                         <string/>
                                     </property>
