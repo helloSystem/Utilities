@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_TabNetwork(object):
     def setupUi(self, TabNetwork):
         TabNetwork.setObjectName("TabNetwork")
-        TabNetwork.resize(980, 262)
+        TabNetwork.resize(927, 262)
         TabNetwork.setLayoutDirection(QtCore.Qt.LeftToRight)
         TabNetwork.setAutoFillBackground(False)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(TabNetwork)

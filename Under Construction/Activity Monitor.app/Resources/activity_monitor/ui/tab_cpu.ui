@@ -6,7 +6,7 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>978</width>
+                <width>917</width>
                 <height>300</height>
             </rect>
         </property>
@@ -134,16 +134,6 @@
                                     </property>
                                     <property name="alignment">
                                         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item row="1" column="9" rowspan="5">
-                                <widget class="CPUGraphBar" name="widget_graph" native="true">
-                                    <property name="sizePolicy">
-                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
                                     </property>
                                 </widget>
                             </item>
@@ -358,6 +348,16 @@
                                         </size>
                                     </property>
                                 </spacer>
+                            </item>
+                            <item row="1" column="9" rowspan="4">
+                                <widget class="CPUGraphBar" name="widget_graph" native="true">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                </widget>
                             </item>
                         </layout>
                     </item>

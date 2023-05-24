@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_TabCPU(object):
     def setupUi(self, TabCPU):
         TabCPU.setObjectName("TabCPU")
-        TabCPU.resize(978, 300)
+        TabCPU.resize(917, 300)
         TabCPU.setLayoutDirection(QtCore.Qt.LeftToRight)
         TabCPU.setAutoFillBackground(False)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(TabCPU)
@@ -64,15 +64,6 @@ class Ui_TabCPU(object):
         self.label_system.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_system.setObjectName("label_system")
         self.gridLayout.addWidget(self.label_system, 2, 1, 1, 1)
-        self.widget_graph = CPUGraphBar(TabCPU)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.MinimumExpanding)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.widget_graph.sizePolicy().hasHeightForWidth())
-        self.widget_graph.setSizePolicy(sizePolicy)
-        self.widget_graph.setObjectName("widget_graph")
-        self.gridLayout.addWidget(self.widget_graph, 1, 9, 5, 1)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.MinimumExpanding,
                                             QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem1, 0, 4, 1, 1)
@@ -139,6 +130,15 @@ class Ui_TabCPU(object):
         self.gridLayout.addWidget(self.color_picker_system_value, 2, 4, 1, 1, QtCore.Qt.AlignLeft)
         spacerItem8 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         self.gridLayout.addItem(spacerItem8, 0, 6, 1, 1)
+        self.widget_graph = CPUGraphBar(TabCPU)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.widget_graph.sizePolicy().hasHeightForWidth())
+        self.widget_graph.setSizePolicy(sizePolicy)
+        self.widget_graph.setObjectName("widget_graph")
+        self.gridLayout.addWidget(self.widget_graph, 1, 9, 4, 1)
         self.verticalLayout.addLayout(self.gridLayout)
         spacerItem9 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem9)
