@@ -6,7 +6,7 @@
             <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>948</width>
+                <width>980</width>
                 <height>262</height>
             </rect>
         </property>
@@ -48,7 +48,7 @@
                             <property name="sizeHint" stdset="0">
                                 <size>
                                     <width>20</width>
-                                    <height>20</height>
+                                    <height>25</height>
                                 </size>
                             </property>
                         </spacer>
@@ -61,7 +61,7 @@
                             <property name="rightMargin">
                                 <number>20</number>
                             </property>
-                            <item row="0" column="7">
+                            <item row="0" column="9">
                                 <layout class="QHBoxLayout" name="hobxbandwidh">
                                     <property name="spacing">
                                         <number>0</number>
@@ -131,7 +131,7 @@
                                     </item>
                                 </layout>
                             </item>
-                            <item row="1" column="2">
+                            <item row="1" column="3">
                                 <widget class="QLabel" name="label_packets_in_value">
                                     <property name="text">
                                         <string/>
@@ -151,7 +151,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="4" column="4">
+                            <item row="4" column="5">
                                 <widget class="QLabel" name="label_data_sent_sec">
                                     <property name="text">
                                         <string>Data sent/sec:</string>
@@ -161,7 +161,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="0" column="3">
+                            <item row="0" column="4">
                                 <spacer name="horizontalSpacer">
                                     <property name="orientation">
                                         <enum>Qt::Horizontal</enum>
@@ -177,10 +177,23 @@
                                     </property>
                                 </spacer>
                             </item>
-                            <item row="1" column="7" rowspan="4">
+                            <item row="0" column="10">
+                                <spacer name="horizontalSpacer_9">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>40</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item row="1" column="9" rowspan="4">
                                 <widget class="QWidget" name="graph" native="true"/>
                             </item>
-                            <item row="3" column="5">
+                            <item row="3" column="7">
                                 <widget class="QLabel" name="label_data_received_sec_value">
                                     <property name="text">
                                         <string/>
@@ -210,7 +223,23 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="1" column="5">
+                            <item row="0" column="6">
+                                <spacer name="horizontalSpacer_10">
+                                    <property name="orientation">
+                                        <enum>Qt::Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>QSizePolicy::Preferred</enum>
+                                    </property>
+                                    <property name="sizeHint" stdset="0">
+                                        <size>
+                                            <width>20</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                            </item>
+                            <item row="1" column="7">
                                 <widget class="QLabel" name="label_data_received_value">
                                     <property name="text">
                                         <string/>
@@ -220,7 +249,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="3" column="4">
+                            <item row="3" column="5">
                                 <widget class="QLabel" name="label_data_received_sec">
                                     <property name="text">
                                         <string>Data received/sec:</string>
@@ -230,20 +259,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="6" column="1">
-                                <spacer name="verticalSpacer">
-                                    <property name="orientation">
-                                        <enum>Qt::Vertical</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>20</width>
-                                            <height>40</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
-                            <item row="4" column="5">
+                            <item row="4" column="7">
                                 <widget class="QLabel" name="label_data_sent_sec_value">
                                     <property name="text">
                                         <string/>
@@ -253,10 +269,10 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="3" column="6" alignment="Qt::AlignLeft">
+                            <item row="3" column="8" alignment="Qt::AlignLeft">
                                 <widget class="ColorButton" name="color_picker_data_received_sec_value" native="true"/>
                             </item>
-                            <item row="2" column="5">
+                            <item row="2" column="7">
                                 <widget class="QLabel" name="label_data_sent_value">
                                     <property name="text">
                                         <string/>
@@ -266,7 +282,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="0" column="6">
+                            <item row="0" column="8">
                                 <spacer name="horizontalSpacer_5">
                                     <property name="orientation">
                                         <enum>Qt::Horizontal</enum>
@@ -292,7 +308,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="1" column="4">
+                            <item row="1" column="5">
                                 <widget class="QLabel" name="label_data_received">
                                     <property name="text">
                                         <string>Data received:</string>
@@ -315,7 +331,7 @@
                                     </property>
                                 </spacer>
                             </item>
-                            <item row="2" column="4">
+                            <item row="2" column="5">
                                 <widget class="QLabel" name="label_data_sent">
                                     <property name="text">
                                         <string>Data sent:</string>
@@ -325,7 +341,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="4" column="2">
+                            <item row="4" column="3">
                                 <widget class="QLabel" name="label_packets_out_sec_value">
                                     <property name="text">
                                         <string/>
@@ -335,7 +351,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="2" column="2">
+                            <item row="2" column="3">
                                 <widget class="QLabel" name="label_packets_out_value">
                                     <property name="text">
                                         <string/>
@@ -345,7 +361,7 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="3" column="2">
+                            <item row="3" column="3">
                                 <widget class="QLabel" name="label_packets_in_sec_value">
                                     <property name="text">
                                         <string/>
@@ -355,10 +371,10 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="4" column="6" alignment="Qt::AlignLeft">
+                            <item row="4" column="8" alignment="Qt::AlignLeft">
                                 <widget class="ColorButton" name="color_picker_data_sent_sec_value" native="true"/>
                             </item>
-                            <item row="5" column="7">
+                            <item row="5" column="9">
                                 <layout class="QHBoxLayout" name="horizontalLayout">
                                     <item>
                                         <spacer name="horizontalSpacer_7">
@@ -423,20 +439,36 @@
                                     </item>
                                 </layout>
                             </item>
-                            <item row="0" column="8">
-                                <spacer name="horizontalSpacer_9">
+                            <item row="0" column="2">
+                                <spacer name="horizontalSpacer_11">
                                     <property name="orientation">
                                         <enum>Qt::Horizontal</enum>
                                     </property>
+                                    <property name="sizeType">
+                                        <enum>QSizePolicy::Preferred</enum>
+                                    </property>
                                     <property name="sizeHint" stdset="0">
                                         <size>
-                                            <width>40</width>
+                                            <width>20</width>
                                             <height>20</height>
                                         </size>
                                     </property>
                                 </spacer>
                             </item>
                         </layout>
+                    </item>
+                    <item>
+                        <spacer name="verticalSpacer">
+                            <property name="orientation">
+                                <enum>Qt::Vertical</enum>
+                            </property>
+                            <property name="sizeHint" stdset="0">
+                                <size>
+                                    <width>20</width>
+                                    <height>40</height>
+                                </size>
+                            </property>
+                        </spacer>
                     </item>
                 </layout>
             </item>

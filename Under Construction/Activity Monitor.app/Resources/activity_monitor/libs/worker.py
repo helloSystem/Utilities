@@ -18,6 +18,8 @@ class PSUtilsWorker(QObject):
     updated_cpu_user = Signal(object)
     updated_cpu_system = Signal(object)
     updated_cpu_idle = Signal(object)
+    updated_cpu_nice = Signal(object)
+    updated_cpu_irq = Signal(object)
     updated_cpu_cumulative_threads = Signal(object)
     updated_cpu_process_number = Signal(object)
     clear_cpu_graph_history = Signal(object)
@@ -62,6 +64,8 @@ class PSUtilsWorker(QObject):
         cpu_times_percent = psutil.cpu_times_percent()
         self.updated_cpu_user.emit(cpu_times_percent.user)
         self.updated_cpu_system.emit(cpu_times_percent.system)
+        self.updated_cpu_nice.emit(cpu_times_percent.nice)
+        self.updated_cpu_irq.emit(cpu_times_percent.irq)
         self.updated_cpu_idle.emit(cpu_times_percent.idle)
 
         # CPU

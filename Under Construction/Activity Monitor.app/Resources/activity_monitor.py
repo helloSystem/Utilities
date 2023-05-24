@@ -172,7 +172,7 @@ class Window(QMainWindow):
         )
 
         tabs = QTabWidget()
-        tabs.setMaximumHeight(190)
+        tabs.setMaximumHeight(210)
 
         tabs.addTab(self.tab_cpu, "CPU")
         tabs.addTab(self.tab_system_memory, "System Memory")
@@ -205,6 +205,8 @@ class Window(QMainWindow):
         worker.updated_cpu_user.connect(self.tab_cpu.set_user)
         worker.updated_cpu_system.connect(self.tab_cpu.set_system)
         worker.updated_cpu_idle.connect(self.tab_cpu.set_idle)
+        worker.updated_cpu_nice.connect(self.tab_cpu.set_nice)
+        worker.updated_cpu_irq.connect(self.tab_cpu.set_irq)
         worker.updated_cpu_cumulative_threads.connect(self.tab_cpu.refresh_cumulative_threads)
         worker.updated_cpu_process_number.connect(self.tab_cpu.refresh_process_number)
 

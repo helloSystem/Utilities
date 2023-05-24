@@ -12,6 +12,8 @@ class TabCpu(QWidget, Ui_TabCPU):
     data_user_changed = pyqtSignal()
     data_system_changed = pyqtSignal()
     data_idle_changed = pyqtSignal()
+    data_nice_changed = pyqtSignal()
+    data_irq_changed = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__()
@@ -19,12 +21,16 @@ class TabCpu(QWidget, Ui_TabCPU):
         self.__user = None
         self.__idle = None
         self.__system = None
+        self.__nice = None
+        self.__irq = None
 
         self.setupUi(self)
 
         self.setupConnect()
         self.color_picker_user_value.setColor("green")
         self.color_picker_system_value.setColor("red")
+        self.color_picker_nice_value.setColor("blue")
+        self.color_picker_irq_value.setColor("orange")
         self.color_picker_idle_value.setColor("black")
 
     @pyqtProperty(float)
@@ -66,30 +72,69 @@ class TabCpu(QWidget, Ui_TabCPU):
     def set_system(self, value):
         self.system = value
 
+    @pyqtProperty(float)
+    def nice(self):
+        return self.__nice
+
+    @nice.setter
+    def nice(self, value):
+        if self.__nice != value:
+            self.__nice = value
+            self.data_nice_changed.emit()
+
+    def set_nice(self, value):
+        self.nice = value
+
+    @pyqtProperty(float)
+    def irq(self):
+        return self.__irq
+
+    @irq.setter
+    def irq(self, value):
+        if self.__irq != value:
+            self.__irq = value
+            self.data_irq_changed.emit()
+
+    def set_irq(self, value):
+        self.irq = value
+
     def setupConnect(self):
         self.data_idle_changed.connect(self.refresh_idle)
         self.data_user_changed.connect(self.refresh_user)
         self.data_system_changed.connect(self.refresh_system)
+        self.data_nice_changed.connect(self.refresh_nice)
+        self.data_irq_changed.connect(self.refresh_irq)
 
         self.color_picker_system_value.colorChanged.connect(self.refresh_color_system)
         self.color_picker_user_value.colorChanged.connect(self.refresh_color_user)
         self.color_picker_idle_value.colorChanged.connect(self.refresh_color_idle)
+        self.color_picker_nice_value.colorChanged.connect(self.refresh_color_nice)
+        self.color_picker_irq_value.colorChanged.connect(self.refresh_color_irq)
 
     def refresh_user(self):
-        if self.__user:
+        if self.__user is not None:
             self.label_user_value.setText("%s %s" % (self.__user, "%"))
             self.widget_graph.user = self.__user / 2
 
     def refresh_system(self):
-        if self.__system:
+        if self.__system is not None:
             self.label_system_value.setText("%s %s" % (self.__system, "%"))
             self.widget_graph.system = self.__system / 2
 
     def refresh_idle(self):
-        if self.__idle:
+        if self.__idle is not None:
             self.label_idle_value.setText("%s %s" % (self.__idle, "%"))
             # idle color is just the background color, then it is bind to refresh
             self.widget_graph.refresh()
+
+    def refresh_nice(self):
+        if self.__nice is not None:
+            self.label_nice_value.setText("%s %s" % (self.__nice, "%"))
+            # self.widget_graph.refresh()
+
+    def refresh_irq(self):
+        if self.__irq is not None:
+            self.label_irq_value.setText("%s %s" % (self.__irq, "%"))
 
     def refresh_process_number(self, process_number: int):
         self.label_processes_value.setText("%d" % process_number)
@@ -108,3 +153,11 @@ class TabCpu(QWidget, Ui_TabCPU):
     def refresh_color_idle(self):
         self.label_idle_value.setStyleSheet("color: %s;" % self.color_picker_idle_value.color())
         self.widget_graph.color_idle = self.color_picker_idle_value.color()
+
+    def refresh_color_nice(self):
+        self.label_nice_value.setStyleSheet("color: %s;" % self.color_picker_nice_value.color())
+        # self.widget_graph.color_nice = self.color_picker_nice_value.color()
+
+    def refresh_color_irq(self):
+        self.label_irq_value.setStyleSheet("color: %s;" % self.color_picker_irq_value.color())
+        # self.widget_graph.color_irq = self.color_picker_irq_value.color()
