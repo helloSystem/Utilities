@@ -155,6 +155,7 @@ class Ui_SystemMemory(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.chart_pie.sizePolicy().hasHeightForWidth())
         self.chart_pie.setSizePolicy(sizePolicy)
+        self.chart_pie.setMaximumSize(QtCore.QSize(80, 80))
         self.chart_pie.setObjectName("chart_pie")
         self.SystemMemorygridLayout.addWidget(self.chart_pie, 1, 9, 4, 1)
         self.SystemMemoryMainVLayout.addLayout(self.SystemMemorygridLayout)
