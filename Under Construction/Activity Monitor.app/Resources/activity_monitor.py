@@ -172,7 +172,7 @@ class Window(QMainWindow):
         )
 
         tabs = QTabWidget()
-        # tabs.setMaximumHeight(190)
+        tabs.setMaximumHeight(200)
 
         tabs.addTab(self.tab_cpu, "CPU")
         tabs.addTab(self.tab_system_memory, "System Memory")

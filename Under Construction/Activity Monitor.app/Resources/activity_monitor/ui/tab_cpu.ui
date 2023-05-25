@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>824</width>
-    <height>244</height>
+    <width>712</width>
+    <height>189</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,13 +21,13 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <property name="leftMargin">
-    <number>0</number>
+    <number>13</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
+    <number>25</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>13</number>
    </property>
    <property name="bottomMargin">
     <number>0</number>
@@ -38,28 +38,12 @@
       <number>6</number>
      </property>
      <item>
-      <spacer name="verticalSpacer_1">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::MinimumExpanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>25</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <layout class="QGridLayout" name="CPUgridLayout">
        <property name="leftMargin">
-        <number>20</number>
+        <number>0</number>
        </property>
        <property name="rightMargin">
-        <number>20</number>
+        <number>0</number>
        </property>
        <item row="4" column="1">
         <widget class="QLabel" name="label_irq">
@@ -176,6 +160,16 @@
          </property>
         </widget>
        </item>
+       <item row="1" column="10" rowspan="4">
+        <widget class="CPUGraphBar" name="widget_graph" native="true">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="5">
         <spacer name="horizontalSpacer_1">
          <property name="orientation">
@@ -218,6 +212,16 @@
          </property>
          <property name="alignment">
           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="10" alignment="Qt::AlignHCenter">
+        <widget class="QLabel" name="label_cpu_usage">
+         <property name="text">
+          <string>CPU Usage</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
@@ -358,49 +362,6 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="10">
-        <layout class="QHBoxLayout" name="horizontalLayout">
-         <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="QLabel" name="label_cpu_usage">
-           <property name="text">
-            <string>CPU Usage</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-        </layout>
-       </item>
        <item row="4" column="3">
         <widget class="QLabel" name="label_irq_value">
          <property name="toolTip">
@@ -429,16 +390,6 @@
        </item>
        <item row="2" column="5" alignment="Qt::AlignLeft">
         <widget class="ColorButton" name="color_picker_system_value" native="true"/>
-       </item>
-       <item row="1" column="10" rowspan="4">
-        <widget class="CPUGraphBar" name="widget_graph" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>
