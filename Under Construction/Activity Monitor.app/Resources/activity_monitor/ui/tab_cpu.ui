@@ -181,16 +181,6 @@
                                     </property>
                                 </widget>
                             </item>
-                            <item row="1" column="10" rowspan="5">
-                                <widget class="CPUGraphBar" name="widget_graph" native="true">
-                                    <property name="sizePolicy">
-                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-                                            <horstretch>0</horstretch>
-                                            <verstretch>0</verstretch>
-                                        </sizepolicy>
-                                    </property>
-                                </widget>
-                            </item>
                             <item row="0" column="5">
                                 <spacer name="horizontalSpacer_1">
                                     <property name="orientation">
@@ -444,6 +434,16 @@
                             </item>
                             <item row="2" column="5" alignment="Qt::AlignLeft">
                                 <widget class="ColorButton" name="color_picker_system_value" native="true"/>
+                            </item>
+                            <item row="1" column="10" rowspan="4">
+                                <widget class="CPUGraphBar" name="widget_graph" native="true">
+                                    <property name="sizePolicy">
+                                        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                                            <horstretch>0</horstretch>
+                                            <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                    </property>
+                                </widget>
                             </item>
                         </layout>
                     </item>
