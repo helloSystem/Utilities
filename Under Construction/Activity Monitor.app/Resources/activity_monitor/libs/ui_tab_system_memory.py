@@ -71,6 +71,7 @@ class Ui_SystemMemory(object):
         self.label_inactive_value.setObjectName("label_inactive_value")
         self.SystemMemorygridLayout.addWidget(self.label_inactive_value, 3, 3, 1, 1)
         self.label_free_value = QtWidgets.QLabel(SystemMemory)
+        self.label_free_value.setStyleSheet("QToolTip { color: #ffffff; border: 0px; }")
         self.label_free_value.setText("")
         self.label_free_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_free_value.setObjectName("label_free_value")
