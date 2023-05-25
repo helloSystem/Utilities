@@ -25,8 +25,8 @@ class TabCpu(QWidget, Ui_TabCPU):
         self.__irq = None
 
         self.setupUi(self)
-
         self.setupConnect()
+
         self.color_picker_user_value.setColor("green")
         self.color_picker_system_value.setColor("red")
         self.color_picker_nice_value.setColor("blue")
@@ -112,41 +112,29 @@ class TabCpu(QWidget, Ui_TabCPU):
         self.color_picker_irq_value.colorChanged.connect(self.refresh_color_irq)
 
     def refresh_user(self):
-        if self.__user is not None:
-            if self.label_user_value.text() != f"{self.__user}":
-                self.label_user_value.setText(f"{self.__user}")
-            if self.widget_graph.user != self.__user / 2:
-                self.widget_graph.user = self.__user / 2
+        self.label_user_value.setText(f"{self.__user}")
+        self.widget_graph.user = self.__user / 2
 
     def refresh_system(self):
-        if self.__system is not None:
-            if self.label_system_value.text() != f"{self.__system}":
-                self.label_system_value.setText(f"{self.__system}")
-            if self.widget_graph.system != self.__system / 2:
-                self.widget_graph.system = self.__system / 2
+        self.label_system_value.setText(f"{self.__system}")
+        self.widget_graph.system = self.__system / 2
 
     def refresh_idle(self):
-        if self.__idle is not None:
-            if self.label_idle_value.text() != f"{self.__idle}":
-                self.label_idle_value.setText(f"{self.__idle}")
-
-            # idle color is just the background color, then it is bind to refresh
-            self.widget_graph.refresh()
+        self.label_idle_value.setText(f"{self.__idle}")
+        # idle color is just the background color, then it is bind to refresh
+        self.widget_graph.refresh()
 
     def refresh_nice(self):
-        if self.__nice is not None and self.label_nice_value.text() != f"{self.__nice}":
-            self.label_nice_value.setText(f"{self.__nice}")
+        self.label_nice_value.setText(f"{self.__nice}")
 
     def refresh_irq(self):
-        if self.__irq is not None and self.label_irq_value.text() != f"{self.__irq}":
-            self.label_irq_value.setText(f"{self.__irq}")
+        self.label_irq_value.setText(f"{self.__irq}")
 
     def refresh_process_number(self, process_number: int):
         self.label_processes_value.setText("%d" % process_number)
 
     def refresh_cumulative_threads(self, cumulative_threads: int):
-        if self.label_threads_value.text() != f"{cumulative_threads}":
-            self.label_threads_value.setText(f"{cumulative_threads}")
+        self.label_threads_value.setText(f"{cumulative_threads}")
 
     def refresh_color_system(self):
         self.label_system_value.setStyleSheet("color: %s;" % self.color_picker_system_value.color())
