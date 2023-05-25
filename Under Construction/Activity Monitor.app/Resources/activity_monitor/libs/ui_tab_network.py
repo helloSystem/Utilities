@@ -23,7 +23,8 @@ class Ui_TabNetwork(object):
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName("verticalLayout")
-        spacerItem = QtWidgets.QSpacerItem(20, 25, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        spacerItem = QtWidgets.QSpacerItem(20, 25, QtWidgets.QSizePolicy.Minimum,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
         self.verticalLayout.addItem(spacerItem)
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setContentsMargins(20, -1, 20, -1)

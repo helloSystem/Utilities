@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_TabDiskUsage(object):
     def setupUi(self, TabDiskUsage):
         TabDiskUsage.setObjectName("TabDiskUsage")
-        TabDiskUsage.resize(904, 332)
+        TabDiskUsage.resize(904, 212)
         TabDiskUsage.setLayoutDirection(QtCore.Qt.LeftToRight)
         TabDiskUsage.setAutoFillBackground(False)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(TabDiskUsage)
@@ -23,7 +23,8 @@ class Ui_TabDiskUsage(object):
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setSpacing(6)
         self.verticalLayout.setObjectName("verticalLayout")
-        spacerItem = QtWidgets.QSpacerItem(20, 45, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        spacerItem = QtWidgets.QSpacerItem(20, 45, QtWidgets.QSizePolicy.Minimum,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
         self.verticalLayout.addItem(spacerItem)
         self.gridLayout = QtWidgets.QGridLayout()
         self.gridLayout.setContentsMargins(20, -1, 20, -1)
@@ -104,7 +105,5 @@ class Ui_TabDiskUsage(object):
         self.label_space_free_value_in_bytes.setText(_translate("TabDiskUsage", "TextLabel"))
         self.label_space_free.setText(_translate("TabDiskUsage", "Space free:"))
         self.label_space_utilized_value.setText(_translate("TabDiskUsage", "TextLabel"))
-
-
 from .widget_chartpie import ChartPie
 from .widget_color_pickup import ColorButton

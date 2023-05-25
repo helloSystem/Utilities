@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_TabCPU(object):
     def setupUi(self, TabCPU):
         TabCPU.setObjectName("TabCPU")
-        TabCPU.resize(824, 235)
+        TabCPU.resize(824, 244)
         TabCPU.setLayoutDirection(QtCore.Qt.LeftToRight)
         TabCPU.setAutoFillBackground(False)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(TabCPU)
@@ -23,7 +23,8 @@ class Ui_TabCPU(object):
         self.CPUMainVLayout = QtWidgets.QVBoxLayout()
         self.CPUMainVLayout.setSpacing(6)
         self.CPUMainVLayout.setObjectName("CPUMainVLayout")
-        spacerItem = QtWidgets.QSpacerItem(20, 25, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        spacerItem = QtWidgets.QSpacerItem(20, 25, QtWidgets.QSizePolicy.Minimum,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
         self.CPUMainVLayout.addItem(spacerItem)
         self.CPUgridLayout = QtWidgets.QGridLayout()
         self.CPUgridLayout.setContentsMargins(20, -1, 20, -1)

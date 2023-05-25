@@ -43,7 +43,7 @@
         <enum>Qt::Vertical</enum>
        </property>
        <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
+        <enum>QSizePolicy::MinimumExpanding</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -67,14 +67,14 @@
           <enum>Qt::Horizontal</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
+             <enum>QSizePolicy::Expanding</enum>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
+            <property name="sizeHint" stdset="0">
+                <size>
+                    <width>40</width>
+                    <height>20</height>
+                </size>
+            </property>
         </spacer>
        </item>
           <item row="3" column="1">
@@ -259,16 +259,16 @@
                               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                   <horstretch>0</horstretch>
                                   <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>IO</string>
-           </property>
-           <attribute name="buttonGroup">
-            <string notr="true">buttonGroup</string>
-           </attribute>
-          </widget>
-         </item>
+                              </sizepolicy>
+                          </property>
+                          <property name="text">
+                              <string>IO</string>
+                          </property>
+                          <attribute name="buttonGroup">
+                              <string notr="true">buttonGroup</string>
+                          </attribute>
+                      </widget>
+                  </item>
          <item alignment="Qt::AlignLeft">
           <widget class="QRadioButton" name="radioButton_2">
            <property name="sizePolicy">
@@ -289,17 +289,17 @@
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_6">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-              <property name="sizeHint" stdset="0">
-                  <size>
-                      <width>40</width>
-                      <height>20</height>
-                  </size>
-              </property>
-          </spacer>
+             <spacer name="horizontalSpacer_6">
+                 <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                     <size>
+                         <width>40</width>
+                         <height>20</height>
+                     </size>
+                 </property>
+             </spacer>
          </item>
               </layout>
           </item>
@@ -380,16 +380,16 @@
                       <widget class="QLabel" name="label_bandwidth">
                           <property name="enabled">
                               <bool>true</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="text">
-            <string>Peak:</string>
-           </property>
+                          </property>
+                          <property name="sizePolicy">
+                              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                                  <horstretch>0</horstretch>
+                                  <verstretch>0</verstretch>
+                              </sizepolicy>
+                          </property>
+                          <property name="text">
+                              <string>Peak:</string>
+                          </property>
            <property name="alignment">
             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
            </property>
@@ -435,20 +435,20 @@
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::MinimumExpanding</enum>
-           </property>
-              <property name="sizeHint" stdset="0">
-                  <size>
-                      <width>0</width>
-                      <height>20</height>
-                  </size>
-              </property>
-          </spacer>
+             <spacer name="horizontalSpacer_3">
+                 <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                     <enum>QSizePolicy::MinimumExpanding</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                     <size>
+                         <width>0</width>
+                         <height>20</height>
+                     </size>
+                 </property>
+             </spacer>
          </item>
               </layout>
           </item>

@@ -20,7 +20,8 @@ class Ui_SystemMemory(object):
         self.SystemMemoryMainVLayout = QtWidgets.QVBoxLayout()
         self.SystemMemoryMainVLayout.setSpacing(6)
         self.SystemMemoryMainVLayout.setObjectName("SystemMemoryMainVLayout")
-        spacerItem = QtWidgets.QSpacerItem(20, 25, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
+        spacerItem = QtWidgets.QSpacerItem(20, 25, QtWidgets.QSizePolicy.Minimum,
+                                           QtWidgets.QSizePolicy.MinimumExpanding)
         self.SystemMemoryMainVLayout.addItem(spacerItem)
         self.SystemMemorygridLayout = QtWidgets.QGridLayout()
         self.SystemMemorygridLayout.setContentsMargins(20, -1, 20, -1)
