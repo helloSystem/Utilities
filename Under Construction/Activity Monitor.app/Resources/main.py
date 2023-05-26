@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
 import sys
+import psutil
+
 from PyQt5.QtCore import Qt, QTimer, QThread
 from PyQt5.QtWidgets import (
     QApplication,
@@ -14,15 +16,24 @@ from PyQt5.QtWidgets import (
     QComboBox,
 
 )
-from ui import Ui_MainWindow
-from libs import PSUtilsWorker
-from libs import TabCpu
+from ui import (
+    Ui_MainWindow,
+    ChartPieItem,
+    ChartPie
+)
+from libs import (
+    bytes2human,
+    PSUtilsWorker,
+    TabCpu,
+    TabSystemMemory,
+)
 
 
-class Window(QMainWindow, Ui_MainWindow, TabCpu):
+class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory):
     def __init__(self, parent=None):
         super().__init__(parent)
         TabCpu.__init__(self)
+        TabSystemMemory.__init__(self)
         # Worker
         self.threads = []
 
@@ -44,6 +55,13 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu):
         self.searchLineEdit = None
         self.filterComboBox = None
 
+        # Tab System Memory
+        self.memory_os_capability = None
+        self.chart_pie_item_free = None
+        self.chart_pie_item_wired = None
+        self.chart_pie_item_active = None
+        self.chart_pie_item_inactive = None
+
         self.setupUi(self)
         self.setupCustomUi()
 
@@ -51,18 +69,71 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu):
         self._timer_change_for_5_secs()
 
         self.connectSignalsSlots()
-        self.setupCustomUiColorPicker()
+
+        self.setupInitialState()
+
+        self.refresh()
 
     def setupCustomUi(self):
         self.setupCustomUiGroups()
         self.setupCustomUiToolBar()
 
+        # Configure Chart Data
+        self.chart_pie_item_free = ChartPieItem()
+        self.chart_pie_item_free.setColor(Qt.black)
+        self.chart_pie_item_free.data = 0
+
+        self.chart_pie_item_wired = ChartPieItem()
+        self.chart_pie_item_wired.setColor(Qt.black)
+        self.chart_pie_item_wired.setData(0)
+
+        self.chart_pie_item_active = ChartPieItem()
+        self.chart_pie_item_active.setColor(Qt.black)
+        self.chart_pie_item_active.setData(0)
+
+        self.chart_pie_item_inactive = ChartPieItem()
+        self.chart_pie_item_inactive.setColor(Qt.black)
+        self.chart_pie_item_inactive.setData(0)
+
+        self.system_memory_chart_pie.addItems([
+            self.chart_pie_item_free,
+            self.chart_pie_item_wired,
+            self.chart_pie_item_active,
+            self.chart_pie_item_inactive,
+        ])
+
+    def setupInitialState(self):
+        self.setupCustomUiColorPicker()
+
+        virtual_memory = psutil.virtual_memory()
+        self.memory_os_capability = {
+            "total": hasattr(virtual_memory, "total"),
+            "available": hasattr(virtual_memory, "available"),
+            "percent": hasattr(virtual_memory, "percent"),
+            "used": hasattr(virtual_memory, "used"),
+            "free": hasattr(virtual_memory, "free"),
+            "active": hasattr(virtual_memory, "active"),
+            "inactive": hasattr(virtual_memory, "inactive"),
+            "buffers": hasattr(virtual_memory, "buffers"),
+            "cached": hasattr(virtual_memory, "cached"),
+            "shared": hasattr(virtual_memory, "shared"),
+            "slab": hasattr(virtual_memory, "slab"),
+            "wired": hasattr(virtual_memory, "wired"),
+        }
+        self.system_memory_total_value.setText("%s" % bytes2human(virtual_memory.total))
+
     def setupCustomUiColorPicker(self):
+        # Tab CPU
         self.color_picker_user_value.setColor("green")
         self.color_picker_system_value.setColor("red")
         self.color_picker_nice_value.setColor("blue")
         self.color_picker_irq_value.setColor("orange")
         self.color_picker_idle_value.setColor("black")
+        # Tab System Memory
+        self.color_picker_free_value.setColor("green")
+        self.color_picker_wired_value.setColor("red")
+        self.color_picker_active_value.setColor("orange")
+        self.color_picker_inactive_value.setColor("blue")
 
     def setupCustomUiGroups(self):
         menu_frequency_group = QActionGroup(self)
@@ -154,6 +225,12 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu):
         self.color_picker_nice_value.colorChanged.connect(self.refresh_color_nice)
         self.color_picker_irq_value.colorChanged.connect(self.refresh_color_irq)
 
+        # Tab system Memory
+        self.color_picker_free_value.colorChanged.connect(self.refresh_color_free)
+        self.color_picker_active_value.colorChanged.connect(self.refresh_color_active)
+        self.color_picker_inactive_value.colorChanged.connect(self.refresh_color_inactive)
+        self.color_picker_wired_value.colorChanged.connect(self.refresh_color_wired)
+
     def createThread(self):
         thread = QThread()
         worker = PSUtilsWorker()
@@ -169,24 +246,23 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu):
         worker.updated_cpu_cumulative_threads.connect(self.refresh_cumulative_threads)
         worker.updated_cpu_process_number.connect(self.refresh_process_number)
 
-        # System MEmory
-        # worker.updated_system_memory_total.connect(self.tab_system_memory.refresh_total)
-        # worker.updated_system_memory_available.connect(self.tab_system_memory.refresh_available)
-        # worker.updated_system_memory_used.connect(self.tab_system_memory.refresh_used)
-        # worker.updated_system_memory_free.connect(self.tab_system_memory.refresh_free)
-        # worker.updated_system_memory_active.connect(self.tab_system_memory.refresh_active)
-        # worker.updated_system_memory_inactive.connect(self.tab_system_memory.refresh_inactive)
-        # worker.updated_system_memory_buffers.connect(self.tab_system_memory.refresh_buffers)
-        # worker.updated_system_memory_cached.connect(self.tab_system_memory.refresh_cached)
-        # worker.updated_system_memory_shared.connect(self.tab_system_memory.refresh_shared)
-        # worker.updated_system_memory_slab.connect(self.tab_system_memory.refresh_slab)
-        # worker.updated_system_memory_wired.connect(self.tab_system_memory.refresh_wired)
+        # System Memory
+        worker.updated_system_memory_available.connect(self.refresh_available)
+        worker.updated_system_memory_used.connect(self.refresh_used)
+        worker.updated_system_memory_free.connect(self.refresh_free)
+        worker.updated_system_memory_active.connect(self.refresh_active)
+        worker.updated_system_memory_inactive.connect(self.refresh_inactive)
+        worker.updated_system_memory_buffers.connect(self.refresh_buffers)
+        worker.updated_system_memory_cached.connect(self.refresh_cached)
+        worker.updated_system_memory_shared.connect(self.refresh_shared)
+        worker.updated_system_memory_slab.connect(self.refresh_slab)
+        worker.updated_system_memory_wired.connect(self.refresh_wired)
 
         # System Memory Chart Pie
-        # worker.updated_system_memory_free_raw.connect(self.tab_system_memory.refresh_free_raw)
-        # worker.updated_system_memory_wired_raw.connect(self.tab_system_memory.refresh_wired_raw)
-        # worker.updated_system_memory_active_raw.connect(self.tab_system_memory.refresh_active_raw)
-        # worker.updated_system_memory_inactive_raw.connect(self.tab_system_memory.refresh_inactive_raw)
+        worker.updated_system_memory_free_raw.connect(self.refresh_free_raw)
+        worker.updated_system_memory_wired_raw.connect(self.refresh_wired_raw)
+        worker.updated_system_memory_active_raw.connect(self.refresh_active_raw)
+        worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
 
         # Disk Usage
         # worker.updated_mounted_disk_partitions.connect(self.tab_disk_usage.setMoutedDiskPartitions)
