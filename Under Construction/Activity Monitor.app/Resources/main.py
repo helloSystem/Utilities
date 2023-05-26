@@ -27,10 +27,11 @@ from libs import (
     TabSystemMemory,
     TabDiskActivity,
     TabDiskUsage,
+    TabNetwork,
 )
 
 
-class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivity, TabDiskUsage):
+class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivity, TabDiskUsage, TabNetwork):
     def __init__(self, parent=None):
         super().__init__(parent)
         TabCpu.__init__(self)
@@ -168,6 +169,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivit
         # Disk Usage
         self.color_button_space_free.setColor("green")
         self.color_button_space_utilized.setColor("red")
+        # Network
+        self.color_picker_data_received_sec_value.setColor("green")
+        self.color_picker_data_sent_sec_value.setColor("red")
 
     def setupCustomUiGroups(self):
         menu_frequency_group = QActionGroup(self)
@@ -314,10 +318,10 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivit
         worker.updated_disk_activity_data_written.connect(self.refresh_data_written)
 
         # Network
-        # worker.updated_network_packets_in.connect(self.tab_network.refresh_packets_in)
-        # worker.updated_network_packets_out.connect(self.tab_network.refresh_packets_out)
-        # worker.updated_network_data_received.connect(self.tab_network.refresh_data_received)
-        # worker.updated_network_data_sent.connect(self.tab_network.refresh_data_sent)
+        worker.updated_network_packets_in.connect(self.refresh_packets_in)
+        worker.updated_network_packets_out.connect(self.refresh_packets_out)
+        worker.updated_network_data_received.connect(self.refresh_data_received)
+        worker.updated_network_data_sent.connect(self.refresh_data_sent)
 
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
