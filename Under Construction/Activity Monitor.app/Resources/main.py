@@ -548,6 +548,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
     def _filter_by_application_in_last_12_hours(self):
         self.filterComboBox.setCurrentIndex(9)
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = Window()

@@ -22,8 +22,8 @@ class TabSystemMemory(object):
         self.system_memory_chart_pie.repaint()
 
     def refresh_free_raw(self, free_raw):
-        if self.chart_pie_item_free.data != free_raw:
-            self.chart_pie_item_free.setData(free_raw)
+        if self.chart_pie_item_memory_free.data != free_raw:
+            self.chart_pie_item_memory_free.setData(free_raw)
             self.system_memory_chart_pie.repaint()
 
     def refresh_free(self, free):
@@ -31,8 +31,8 @@ class TabSystemMemory(object):
             self.label_free_value.setText(free)
 
     def refresh_wired_raw(self, wired_raw):
-        if self.chart_pie_item_wired.data != wired_raw:
-            self.chart_pie_item_wired.setData(wired_raw)
+        if self.chart_pie_item_memory_wired.data != wired_raw:
+            self.chart_pie_item_memory_wired.setData(wired_raw)
             self.system_memory_chart_pie.repaint()
 
     def refresh_wired(self, wired):
