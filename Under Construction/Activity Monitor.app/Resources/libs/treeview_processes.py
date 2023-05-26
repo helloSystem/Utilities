@@ -29,17 +29,17 @@ class TreeViewProcess(object):
     def selectClear(self):
         self.selected_pid = None
         self.process_tree.clearSelection()
-        self.kill_process_action.setEnabled(False)
-        self.inspect_process_action.setEnabled(False)
+
+        self.actionToolBarQuit_Process.setEnabled(False)
+        self.actionToolBar_Inspect_Process.setEnabled(False)
+        self.ActionMenuViewSelectedProcesses.setEnabled(False)
         if self.filterComboBox.currentIndex() == 8:
             self.filterComboBox.setCurrentIndex(0)
         self.filterComboBox.model().item(8).setEnabled(False)
-        if self.ActionMenuViewSelectedProcesses:
-            self.ActionMenuViewSelectedProcesses.setEnabled(False)
-        if self.ActionViewKillDialog:
-            self.ActionViewKillDialog.setEnabled(False)
-        if self.ActionViewSendSignalDialog:
-            self.ActionViewSendSignalDialog.setEnabled(False)
+        # if self.ActionViewKillDialog:
+        #     self.ActionViewKillDialog.setEnabled(False)
+        # if self.ActionViewSendSignalDialog:
+        #     self.ActionViewSendSignalDialog.setEnabled(False)
 
     def selectItem(self, itemOrText):
         # oldIndex = self.process_tree.selectionModel().currentIndex()

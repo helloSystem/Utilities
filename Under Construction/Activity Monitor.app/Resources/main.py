@@ -5,7 +5,7 @@ import psutil
 import time
 
 from PyQt5.QtCore import Qt, QTimer, QThread
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -16,8 +16,7 @@ from PyQt5.QtWidgets import (
     QWidgetAction,
     QLineEdit,
     QComboBox,
-    QAbstractItemView,
-
+    QShortcut,
 )
 from ui import (
     Ui_MainWindow,
@@ -163,6 +162,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         self.tree_view_model = QStandardItemModel()
         self.process_tree.setModel(self.tree_view_model)
+        self.process_tree.sortByColumn(3, Qt.DescendingOrder)
 
     def setupCustomUiColorPicker(self):
         # Tab CPU
@@ -249,7 +249,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionUpdateFrequencyTo3Secs.triggered.connect(self._timer_change_for_3_secs)
         self.ActionUpdateFrequencyTo1Sec.triggered.connect(self._timer_change_for_1_sec)
 
-        # self.searchLineEdit.textChanged.connect(self.process_monitor.refresh)
+        self.searchLineEdit.textChanged.connect(self.refresh_treeview)
         self.filterComboBox.currentIndexChanged.connect(self._filter_by_changed)
 
         self.ActionMenuViewAllProcesses.triggered.connect(self._filter_by_all_processes)
@@ -290,6 +290,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         # TreeView
         self.process_tree.clicked.connect(self.onClicked)
+        quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+        quitShortcut1.activated.connect(self.selectClear)
 
     def createThread(self):
         thread = QThread()
