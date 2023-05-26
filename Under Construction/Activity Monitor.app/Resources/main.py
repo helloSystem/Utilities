@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt, QTimer, QThread
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -15,11 +15,17 @@ from PyQt5.QtWidgets import (
 
 )
 from ui import Ui_MainWindow
+from libs import PSUtilsWorker
+from libs import TabCpu
 
 
-class Window(QMainWindow, Ui_MainWindow):
+class Window(QMainWindow, Ui_MainWindow, TabCpu):
     def __init__(self, parent=None):
         super().__init__(parent)
+        TabCpu.__init__(self)
+        # Worker
+        self.threads = []
+
         # ToolBar custom widgets
         self.filters = [
             "All Processes",
@@ -45,10 +51,18 @@ class Window(QMainWindow, Ui_MainWindow):
         self._timer_change_for_5_secs()
 
         self.connectSignalsSlots()
+        self.setupCustomUiColorPicker()
 
     def setupCustomUi(self):
         self.setupCustomUiGroups()
         self.setupCustomUiToolBar()
+
+    def setupCustomUiColorPicker(self):
+        self.color_picker_user_value.setColor("green")
+        self.color_picker_system_value.setColor("red")
+        self.color_picker_nice_value.setColor("blue")
+        self.color_picker_irq_value.setColor("orange")
+        self.color_picker_idle_value.setColor("black")
 
     def setupCustomUiGroups(self):
         menu_frequency_group = QActionGroup(self)
@@ -127,8 +141,81 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ActionMenuViewSelectedProcesses.triggered.connect(self._filter_by_selected_processes)
         self.ActionMenuViewApplicationInLast12Hours.triggered.connect(self._filter_by_application_in_last_12_hours)
 
+        # Tab CPU
+        self.data_idle_changed.connect(self.refresh_idle)
+        self.data_user_changed.connect(self.refresh_user)
+        self.data_system_changed.connect(self.refresh_system)
+        self.data_nice_changed.connect(self.refresh_nice)
+        self.data_irq_changed.connect(self.refresh_irq)
+
+        self.color_picker_system_value.colorChanged.connect(self.refresh_color_system)
+        self.color_picker_user_value.colorChanged.connect(self.refresh_color_user)
+        self.color_picker_idle_value.colorChanged.connect(self.refresh_color_idle)
+        self.color_picker_nice_value.colorChanged.connect(self.refresh_color_nice)
+        self.color_picker_irq_value.colorChanged.connect(self.refresh_color_irq)
+
+    def createThread(self):
+        thread = QThread()
+        worker = PSUtilsWorker()
+        worker.moveToThread(thread)
+        thread.started.connect(lambda: worker.refresh())
+
+        # CPU
+        worker.updated_cpu_user.connect(self.set_user)
+        worker.updated_cpu_system.connect(self.set_system)
+        worker.updated_cpu_idle.connect(self.set_idle)
+        worker.updated_cpu_nice.connect(self.set_nice)
+        worker.updated_cpu_irq.connect(self.set_irq)
+        worker.updated_cpu_cumulative_threads.connect(self.refresh_cumulative_threads)
+        worker.updated_cpu_process_number.connect(self.refresh_process_number)
+
+        # System MEmory
+        # worker.updated_system_memory_total.connect(self.tab_system_memory.refresh_total)
+        # worker.updated_system_memory_available.connect(self.tab_system_memory.refresh_available)
+        # worker.updated_system_memory_used.connect(self.tab_system_memory.refresh_used)
+        # worker.updated_system_memory_free.connect(self.tab_system_memory.refresh_free)
+        # worker.updated_system_memory_active.connect(self.tab_system_memory.refresh_active)
+        # worker.updated_system_memory_inactive.connect(self.tab_system_memory.refresh_inactive)
+        # worker.updated_system_memory_buffers.connect(self.tab_system_memory.refresh_buffers)
+        # worker.updated_system_memory_cached.connect(self.tab_system_memory.refresh_cached)
+        # worker.updated_system_memory_shared.connect(self.tab_system_memory.refresh_shared)
+        # worker.updated_system_memory_slab.connect(self.tab_system_memory.refresh_slab)
+        # worker.updated_system_memory_wired.connect(self.tab_system_memory.refresh_wired)
+
+        # System Memory Chart Pie
+        # worker.updated_system_memory_free_raw.connect(self.tab_system_memory.refresh_free_raw)
+        # worker.updated_system_memory_wired_raw.connect(self.tab_system_memory.refresh_wired_raw)
+        # worker.updated_system_memory_active_raw.connect(self.tab_system_memory.refresh_active_raw)
+        # worker.updated_system_memory_inactive_raw.connect(self.tab_system_memory.refresh_inactive_raw)
+
+        # Disk Usage
+        # worker.updated_mounted_disk_partitions.connect(self.tab_disk_usage.setMoutedDiskPartitions)
+
+        # Disk Activity
+        # worker.updated_disk_activity_reads_in.connect(self.tab_disk_activity.refresh_reads_in)
+        # worker.updated_disk_activity_writes_out.connect(self.tab_disk_activity.refresh_writes_out)
+        # worker.updated_disk_activity_data_read.connect(self.tab_disk_activity.refresh_data_read)
+        # worker.updated_disk_activity_data_written.connect(self.tab_disk_activity.refresh_data_written)
+
+        # Network
+        # worker.updated_network_packets_in.connect(self.tab_network.refresh_packets_in)
+        # worker.updated_network_packets_out.connect(self.tab_network.refresh_packets_out)
+        # worker.updated_network_data_received.connect(self.tab_network.refresh_data_received)
+        # worker.updated_network_data_sent.connect(self.tab_network.refresh_data_sent)
+
+        worker.finished.connect(thread.quit)
+        worker.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+
+        return thread
+
     def refresh(self):
-        pass
+        # self.process_monitor.refresh()
+
+        self.threads.clear()
+        self.threads = [self.createThread()]
+        for thread in self.threads:
+            thread.start()
 
     def _timer_change_for_1_sec(self):
         self.timer.start(1000)
