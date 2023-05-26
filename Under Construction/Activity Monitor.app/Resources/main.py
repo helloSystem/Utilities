@@ -2,8 +2,10 @@
 
 import sys
 import psutil
+import time
 
 from PyQt5.QtCore import Qt, QTimer, QThread
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -14,6 +16,7 @@ from PyQt5.QtWidgets import (
     QWidgetAction,
     QLineEdit,
     QComboBox,
+    QAbstractItemView,
 
 )
 from ui import (
@@ -28,16 +31,20 @@ from libs import (
     TabDiskActivity,
     TabDiskUsage,
     TabNetwork,
+    TreeViewProcess,
 )
 
 
-class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivity, TabDiskUsage, TabNetwork):
+class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
+             TabDiskActivity, TabDiskUsage, TabNetwork, TreeViewProcess):
     def __init__(self, parent=None):
         super().__init__(parent)
         TabCpu.__init__(self)
         TabSystemMemory.__init__(self)
         TabDiskActivity.__init__(self)
         TabDiskUsage.__init__(self)
+        TabNetwork.__init__(self)
+        TreeViewProcess.__init__(self)
 
         # Worker
         self.threads = []
@@ -70,6 +77,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivit
         # Tab Disk Usage
         self.chart_pie_item_utilized = None
         self.chart_pie_item_free = None
+
+        # TreeView
+        self.tree_view_model = None
 
         self.setupUi(self)
         self.setupCustomUi()
@@ -150,6 +160,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivit
             "wired": hasattr(virtual_memory, "wired"),
         }
         self.system_memory_total_value.setText("%s" % bytes2human(virtual_memory.total))
+
+        self.tree_view_model = QStandardItemModel()
+        self.process_tree.setModel(self.tree_view_model)
 
     def setupCustomUiColorPicker(self):
         # Tab CPU
@@ -275,6 +288,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivit
         self.color_button_space_free.colorChanged.connect(self.refresh_color_space_free)
         self.color_button_space_utilized.colorChanged.connect(self.refresh_color_space_utilized)
 
+        # TreeView
+        self.process_tree.clicked.connect(self.onClicked)
+
     def createThread(self):
         thread = QThread()
         worker = PSUtilsWorker()
@@ -330,12 +346,128 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivit
         return thread
 
     def refresh(self):
-        # self.process_monitor.refresh()
+        self.refresh_treeview()
 
         self.threads.clear()
         self.threads = [self.createThread()]
         for thread in self.threads:
             thread.start()
+
+    def refresh_treeview(self):
+        self.tree_view_model = QStandardItemModel()
+        self.header = []
+
+        for p in psutil.process_iter():
+            with p.oneshot():
+
+                # PID can't be disable because it is use for selection tracking
+                row = [QStandardItem("%d" % p.pid)]
+                self.header.append("Process ID")
+
+                # Headers it depend of Application Actions Menu are coupled with model value
+                if self.ActionViewColumnProcessName and self.ActionViewColumnProcessName.isChecked():
+                    self.header.append(self.ActionViewColumnProcessName.text())
+                    row.append(QStandardItem("%s" % p.name()))
+
+                if self.ActionViewColumnUser and self.ActionViewColumnUser.isChecked():
+                    self.header.append(self.ActionViewColumnUser.text())
+                    row.append(QStandardItem("%s" % p.username()))
+
+                if self.ActionViewColumnPercentCPU and self.ActionViewColumnPercentCPU.isChecked():
+                    self.header.append(self.ActionViewColumnPercentCPU.text())
+                    row.append(QStandardItem("%s" % p.cpu_percent()))
+
+                if self.ActionViewColumnNumThreads and self.ActionViewColumnNumThreads.isChecked():
+                    self.header.append(self.ActionViewColumnNumThreads.text())
+                    row.append(QStandardItem("%s" % p.num_threads()))
+
+                if self.ActionViewColumnRealMemory and self.ActionViewColumnRealMemory.isChecked():
+                    self.header.append(self.ActionViewColumnRealMemory.text())
+                    row.append(QStandardItem("%s" % bytes2human(p.memory_info().rss)))
+
+                if self.ActionViewColumnVirtualMemory and self.ActionViewColumnVirtualMemory.isChecked():
+                    self.header.append(self.ActionViewColumnVirtualMemory.text())
+                    row.append(QStandardItem("%s" % bytes2human(p.memory_info().vms)))
+
+                # Filter Line
+                filtered_row = None
+                if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
+                    if self.searchLineEdit.text() in p.name():
+                        filtered_row = row
+                else:
+                    filtered_row = row
+
+                # Filter by ComboBox index
+                #             0: 'All Processes',
+                #             1: 'All Processes, Hierarchically',
+                #             2: 'My Processes',
+                #             3: 'System Processes',
+                #             4: 'Other User Processes',
+                #             5: 'Active Processes',
+                #             6: 'Inactive Processes',
+                #             7: 'Windowed Processes',
+                #             8: 'Selected Processes',
+                #             9: 'Application in last 12 hours',
+                if hasattr(self.filterComboBox, "currentIndex"):
+                    combo_box_current_index = self.filterComboBox.currentIndex()
+                    if combo_box_current_index == 0:
+                        pass
+
+                    if combo_box_current_index == 1:
+                        pass
+                    else:
+                        pass
+
+                    if combo_box_current_index == 2:
+                        if p.username() == self.my_username:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
+                    if combo_box_current_index == 3:
+                        if p.uids().real < 1000:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
+                    if combo_box_current_index == 4:
+                        if p.username() != self.my_username:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
+                    if combo_box_current_index == 5:
+                        pass
+                    elif combo_box_current_index == 6:
+                        pass
+                    elif combo_box_current_index == 7:
+                        pass
+
+                    if combo_box_current_index == 8:
+                        if p.pid == self.selected_pid:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
+                    if combo_box_current_index == 9:
+                        if (time.time() - p.create_time()) % 60 <= 43200:
+                            filtered_row = self.filter_by_line(filtered_row, p.name())
+                        else:
+                            filtered_row = None
+
+                if filtered_row:
+                    self.tree_view_model.appendRow(filtered_row)
+
+        for pos, title in enumerate(self.header):
+            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, title)
+
+        self.process_tree.setModel(self.tree_view_model)
+
+        # for pos, title in enumerate(self.header):
+        #     self.process_tree.resizeColumnToContents(pos)
+
+        if self.selected_pid and self.selected_pid >= 0:
+            self.selectItem(str(self.selected_pid))
 
     def _timer_change_for_1_sec(self):
         self.timer_value = 1
