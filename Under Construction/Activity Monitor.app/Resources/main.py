@@ -19,21 +19,25 @@ from PyQt5.QtWidgets import (
 from ui import (
     Ui_MainWindow,
     ChartPieItem,
-    ChartPie
 )
 from libs import (
     bytes2human,
     PSUtilsWorker,
     TabCpu,
     TabSystemMemory,
+    TabDiskActivity,
+    TabDiskUsage,
 )
 
 
-class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory):
+class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivity, TabDiskUsage):
     def __init__(self, parent=None):
         super().__init__(parent)
         TabCpu.__init__(self)
         TabSystemMemory.__init__(self)
+        TabDiskActivity.__init__(self)
+        TabDiskUsage.__init__(self)
+
         # Worker
         self.threads = []
 
@@ -57,10 +61,14 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory):
 
         # Tab System Memory
         self.memory_os_capability = None
+        self.chart_pie_item_memory_free = None
+        self.chart_pie_item_memory_wired = None
+        self.chart_pie_item_memory_active = None
+        self.chart_pie_item_memory_inactive = None
+
+        # Tab Disk Usage
+        self.chart_pie_item_utilized = None
         self.chart_pie_item_free = None
-        self.chart_pie_item_wired = None
-        self.chart_pie_item_active = None
-        self.chart_pie_item_inactive = None
 
         self.setupUi(self)
         self.setupCustomUi()
@@ -79,28 +87,48 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory):
         self.setupCustomUiToolBar()
 
         # Configure Chart Data
-        self.chart_pie_item_free = ChartPieItem()
-        self.chart_pie_item_free.setColor(Qt.black)
-        self.chart_pie_item_free.data = 0
+        # System Memory
+        self.chart_pie_item_memory_free = ChartPieItem()
+        self.chart_pie_item_memory_free.setColor(Qt.black)
+        self.chart_pie_item_memory_free.data = 0
 
-        self.chart_pie_item_wired = ChartPieItem()
-        self.chart_pie_item_wired.setColor(Qt.black)
-        self.chart_pie_item_wired.setData(0)
+        self.chart_pie_item_memory_wired = ChartPieItem()
+        self.chart_pie_item_memory_wired.setColor(Qt.black)
+        self.chart_pie_item_memory_wired.setData(0)
 
-        self.chart_pie_item_active = ChartPieItem()
-        self.chart_pie_item_active.setColor(Qt.black)
-        self.chart_pie_item_active.setData(0)
+        self.chart_pie_item_memory_active = ChartPieItem()
+        self.chart_pie_item_memory_active.setColor(Qt.black)
+        self.chart_pie_item_memory_active.setData(0)
 
-        self.chart_pie_item_inactive = ChartPieItem()
-        self.chart_pie_item_inactive.setColor(Qt.black)
-        self.chart_pie_item_inactive.setData(0)
+        self.chart_pie_item_memory_inactive = ChartPieItem()
+        self.chart_pie_item_memory_inactive.setColor(Qt.black)
+        self.chart_pie_item_memory_inactive.setData(0)
 
         self.system_memory_chart_pie.addItems([
-            self.chart_pie_item_free,
-            self.chart_pie_item_wired,
-            self.chart_pie_item_active,
-            self.chart_pie_item_inactive,
+            self.chart_pie_item_memory_free,
+            self.chart_pie_item_memory_wired,
+            self.chart_pie_item_memory_active,
+            self.chart_pie_item_memory_inactive,
         ])
+
+        # Disk Usage
+        self.chart_pie_item_utilized = None
+        self.chart_pie_item_free = None
+
+        self.chart_pie_item_utilized = ChartPieItem()
+        self.chart_pie_item_utilized.color = Qt.black
+        self.chart_pie_item_utilized.data = 0
+
+        self.chart_pie_item_free = ChartPieItem()
+        self.chart_pie_item_free.color = Qt.black
+        self.chart_pie_item_free.data = 0
+
+        self.chart_pie.addItems(
+            [
+                self.chart_pie_item_utilized,
+                self.chart_pie_item_free,
+            ]
+        )
 
     def setupInitialState(self):
         self.setupCustomUiColorPicker()
@@ -134,6 +162,12 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory):
         self.color_picker_wired_value.setColor("red")
         self.color_picker_active_value.setColor("orange")
         self.color_picker_inactive_value.setColor("blue")
+        # Tab Disk Activity
+        self.color_picker_data_read_sec_value.setColor("green")
+        self.color_picker_data_written_sec_value.setColor("red")
+        # Disk Usage
+        self.color_button_space_free.setColor("green")
+        self.color_button_space_utilized.setColor("red")
 
     def setupCustomUiGroups(self):
         menu_frequency_group = QActionGroup(self)
@@ -231,6 +265,12 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory):
         self.color_picker_inactive_value.colorChanged.connect(self.refresh_color_inactive)
         self.color_picker_wired_value.colorChanged.connect(self.refresh_color_wired)
 
+        # Tab Disk Usage
+        self.combobox_devices.currentIndexChanged.connect(self.combobox_index_changed)
+        self.mounted_disk_partitions_changed.connect(self.combobox_refresh)
+        self.color_button_space_free.colorChanged.connect(self.refresh_color_space_free)
+        self.color_button_space_utilized.colorChanged.connect(self.refresh_color_space_utilized)
+
     def createThread(self):
         thread = QThread()
         worker = PSUtilsWorker()
@@ -265,13 +305,13 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory):
         worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
 
         # Disk Usage
-        # worker.updated_mounted_disk_partitions.connect(self.tab_disk_usage.setMoutedDiskPartitions)
+        worker.updated_mounted_disk_partitions.connect(self.setMoutedDiskPartitions)
 
         # Disk Activity
-        # worker.updated_disk_activity_reads_in.connect(self.tab_disk_activity.refresh_reads_in)
-        # worker.updated_disk_activity_writes_out.connect(self.tab_disk_activity.refresh_writes_out)
-        # worker.updated_disk_activity_data_read.connect(self.tab_disk_activity.refresh_data_read)
-        # worker.updated_disk_activity_data_written.connect(self.tab_disk_activity.refresh_data_written)
+        worker.updated_disk_activity_reads_in.connect(self.refresh_reads_in)
+        worker.updated_disk_activity_writes_out.connect(self.refresh_writes_out)
+        worker.updated_disk_activity_data_read.connect(self.refresh_data_read)
+        worker.updated_disk_activity_data_written.connect(self.refresh_data_written)
 
         # Network
         # worker.updated_network_packets_in.connect(self.tab_network.refresh_packets_in)
@@ -294,19 +334,16 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory):
             thread.start()
 
     def _timer_change_for_1_sec(self):
+        self.timer_value = 1
         self.timer.start(1000)
-        if self.tab_disk_activity:
-            self.tab_disk_activity.timer_value = 1
 
     def _timer_change_for_3_secs(self):
+        self.timer_value = 3
         self.timer.start(3000)
-        if self.tab_disk_activity:
-            self.tab_disk_activity.timer_value = 3
 
     def _timer_change_for_5_secs(self):
+        self.timer_value = 5
         self.timer.start(5000)
-        if self.tab_disk_activity:
-            self.tab_disk_activity.timer_value = 5
 
     def _filter_by_changed(self):
         #             0: 'All Processes',

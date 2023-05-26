@@ -3,22 +3,22 @@
 class TabSystemMemory(object):
     def refresh_color_free(self):
         self.label_free_value.setStyleSheet("color: %s;" % self.color_picker_free_value.color())
-        self.chart_pie_item_free.setColor(self.color_picker_free_value.color())
+        self.chart_pie_item_memory_free.setColor(self.color_picker_free_value.color())
         self.system_memory_chart_pie.repaint()
 
     def refresh_color_active(self):
         self.label_active_value.setStyleSheet("color: %s;" % self.color_picker_active_value.color())
-        self.chart_pie_item_active.setColor(self.color_picker_active_value.color())
+        self.chart_pie_item_memory_active.setColor(self.color_picker_active_value.color())
         self.system_memory_chart_pie.repaint()
 
     def refresh_color_inactive(self):
         self.label_inactive_value.setStyleSheet("color: %s;" % self.color_picker_inactive_value.color())
-        self.chart_pie_item_inactive.setColor(self.color_picker_inactive_value.color())
+        self.chart_pie_item_memory_inactive.setColor(self.color_picker_inactive_value.color())
         self.system_memory_chart_pie.repaint()
 
     def refresh_color_wired(self):
         self.label_wired_value.setStyleSheet("color: %s;" % self.color_picker_wired_value.color())
-        self.chart_pie_item_wired.setColor(self.color_picker_wired_value.color())
+        self.chart_pie_item_memory_wired.setColor(self.color_picker_wired_value.color())
         self.system_memory_chart_pie.repaint()
 
     def refresh_free_raw(self, free_raw):
@@ -40,8 +40,8 @@ class TabSystemMemory(object):
             self.label_wired_value.setText(wired)
 
     def refresh_active_raw(self, active_raw):
-        if self.chart_pie_item_active.data != active_raw:
-            self.chart_pie_item_active.setData(active_raw)
+        if self.chart_pie_item_memory_active.data != active_raw:
+            self.chart_pie_item_memory_active.setData(active_raw)
             self.system_memory_chart_pie.repaint()
 
     def refresh_active(self, active):
@@ -49,8 +49,8 @@ class TabSystemMemory(object):
             self.label_active_value.setText(active)
 
     def refresh_inactive_raw(self, inactive_raw):
-        if self.chart_pie_item_inactive.data != inactive_raw:
-            self.chart_pie_item_inactive.setData(inactive_raw)
+        if self.chart_pie_item_memory_inactive.data != inactive_raw:
+            self.chart_pie_item_memory_inactive.setData(inactive_raw)
             self.system_memory_chart_pie.repaint()
 
     def refresh_inactive(self, inactive):
