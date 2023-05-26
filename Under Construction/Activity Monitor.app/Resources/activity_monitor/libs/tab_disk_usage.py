@@ -5,18 +5,11 @@ from PyQt5.QtCore import (
 )
 
 from PyQt5.QtWidgets import (
-    QGridLayout,
     QWidget,
-    QVBoxLayout,
-    QLabel,
-    QComboBox,
-    QSpacerItem,
-    QSizePolicy,
     QFileIconProvider,
 )
 
-from .widget_color_pickup import ColorButton
-from .widget_chartpie import ChartPie, ChartPieItem
+from .widget_chartpie import ChartPieItem
 from .ui_tab_disk_usage import Ui_TabDiskUsage
 
 
