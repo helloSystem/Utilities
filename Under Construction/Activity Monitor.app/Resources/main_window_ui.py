@@ -937,8 +937,8 @@ class Ui_MainWindow(object):
         self.ActionMenuViewShowDeltasforProcess = QtWidgets.QAction(MainWindow)
         self.ActionMenuViewShowDeltasforProcess.setEnabled(False)
         self.ActionMenuViewShowDeltasforProcess.setObjectName("ActionMenuViewShowDeltasforProcess")
-        self.actionClear_CPU_History = QtWidgets.QAction(MainWindow)
-        self.actionClear_CPU_History.setObjectName("actionClear_CPU_History")
+        self.ActionMenuViewClearCPUHistory = QtWidgets.QAction(MainWindow)
+        self.ActionMenuViewClearCPUHistory.setObjectName("ActionMenuViewClearCPUHistory")
         self.actionEnter_Full_Screen = QtWidgets.QAction(MainWindow)
         self.actionEnter_Full_Screen.setEnabled(False)
         self.actionEnter_Full_Screen.setObjectName("actionEnter_Full_Screen")
@@ -977,7 +977,7 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.ActionMenuViewSendSignaltoProcesses)
         self.menuView.addAction(self.ActionMenuViewShowDeltasforProcess)
         self.menuView.addSeparator()
-        self.menuView.addAction(self.actionClear_CPU_History)
+        self.menuView.addAction(self.ActionMenuViewClearCPUHistory)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionEnter_Full_Screen)
         self.menuHelp.addAction(self.actionAbout)
@@ -1128,10 +1128,9 @@ class Ui_MainWindow(object):
         self.ActionViewKillDialog.setText(_translate("MainWindow", "Quit Process"))
         self.ActionMenuViewSendSignaltoProcesses.setText(_translate("MainWindow", "Send Signal to Processes"))
         self.ActionMenuViewShowDeltasforProcess.setText(_translate("MainWindow", "Show Deltas for Process"))
-        self.actionClear_CPU_History.setText(_translate("MainWindow", "Clear CPU History"))
+        self.ActionMenuViewClearCPUHistory.setText(_translate("MainWindow", "Clear CPU History"))
+        self.ActionMenuViewClearCPUHistory.setShortcut(_translate("MainWindow", "Ctrl+K"))
         self.actionEnter_Full_Screen.setText(_translate("MainWindow", "Enter Full Screen"))
-
-
 from widget_chartpie import ChartPie
 from widget_color_pickup import ColorButton
 from widget_cpugraphbar import CPUGraphBar

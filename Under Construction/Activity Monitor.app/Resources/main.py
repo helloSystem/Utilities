@@ -289,6 +289,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.color_picker_nice_value.colorChanged.connect(self.refresh_color_nice)
         self.color_picker_irq_value.colorChanged.connect(self.refresh_color_irq)
 
+        self.ActionMenuViewClearCPUHistory.triggered.connect(self._clear_cpu_history)
+
         # Tab system Memory
         self.color_picker_free_value.colorChanged.connect(self.refresh_color_free)
         self.color_picker_active_value.colorChanged.connect(self.refresh_color_active)
@@ -651,6 +653,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
     def _searchLineEdit_get_focus(self):
         self.searchLineEdit.setFocus()
+
+    def _clear_cpu_history(self):
+        self.widget_graph.clear_history()
 
 
 if __name__ == "__main__":

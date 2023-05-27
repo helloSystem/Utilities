@@ -2058,7 +2058,7 @@
     <addaction name="ActionMenuViewSendSignaltoProcesses"/>
     <addaction name="ActionMenuViewShowDeltasforProcess"/>
     <addaction name="separator"/>
-    <addaction name="actionClear_CPU_History"/>
+    <addaction name="ActionMenuViewClearCPUHistory"/>
     <addaction name="separator"/>
     <addaction name="actionEnter_Full_Screen"/>
    </widget>
@@ -2490,9 +2490,12 @@
     <string>Show Deltas for Process</string>
    </property>
   </action>
-  <action name="actionClear_CPU_History">
+  <action name="ActionMenuViewClearCPUHistory">
    <property name="text">
     <string>Clear CPU History</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+K</string>
    </property>
   </action>
   <action name="actionEnter_Full_Screen">
