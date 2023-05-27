@@ -23,6 +23,7 @@ class TreeViewProcess(object):
     ActionMenuViewSendSignaltoProcesses: QAction
 
     def __init__(self):
+
         self.tree_view_model = None
         self.selected_pid = -1
         self.my_username = os.getlogin()
@@ -100,15 +101,6 @@ class TreeViewProcess(object):
                 self.selected_pid = None
                 self.process_tree.clearSelection()
                 self.refresh()
-            except (Exception, BaseException):
-                pass
-
-    def InspectSelectedProcess(self):
-        selected = self.process_tree.currentItem()
-        if selected is not None:
-            # pid = int(selected.text(0))
-            try:
-                self.selected_pid = None
             except (Exception, BaseException):
                 pass
 

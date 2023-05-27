@@ -5,7 +5,7 @@ import psutil
 import time
 
 from PyQt5.QtCore import Qt, QTimer, QThread, QSortFilterProxyModel, QRegExp
-from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -30,6 +30,7 @@ from treeview_processes import TreeViewProcess
 
 from widget_chartpie import ChartPieItem
 from worker import PSUtilsWorker
+from worker_icons_cache import IconsCacheWorker
 from bytes2human import bytes2human
 
 
@@ -46,6 +47,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         # Worker
         self.threads = []
+        self.__icons = {}
 
         # ToolBar custom widgets
         self.filters = [
@@ -302,7 +304,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
         quitShortcut1.activated.connect(self.selectClear)
 
-    def createThread(self):
+    def createPSUtilsThread(self):
         thread = QThread()
         worker = PSUtilsWorker()
         worker.moveToThread(thread)
@@ -350,6 +352,24 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         worker.updated_network_data_received.connect(self.refresh_data_received)
         worker.updated_network_data_sent.connect(self.refresh_data_sent)
 
+        # Icons Cache
+        worker.updated_icons_cache.connect(self._refresh_icons_cache)
+
+        worker.finished.connect(thread.quit)
+        worker.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+
+        return thread
+
+    def createIconsCacheThread(self):
+        thread = QThread()
+        worker = IconsCacheWorker(cache=self.__icons)
+        worker.moveToThread(thread)
+        thread.started.connect(lambda: worker.refresh())
+
+        # Icons Cache
+        worker.updated_icons_cache.connect(self._refresh_icons_cache)
+
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
         thread.finished.connect(thread.deleteLater)
@@ -360,7 +380,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.refresh_treeview_model()
 
         self.threads.clear()
-        self.threads = [self.createThread()]
+        self.threads = [self.createPSUtilsThread(), self.createIconsCacheThread()]
         for thread in self.threads:
             thread.start()
 
@@ -382,7 +402,11 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 row.append(item)
 
                 if self.ActionViewColumnProcessName.isChecked():
-                    row.append(QStandardItem("%s" % p.name()))
+                    item = QStandardItem("%s" % p.name())
+                    if self.__icons and p.name() in self.__icons:
+                        item.setIcon(self.__icons[p.name()])
+
+                    row.append(item)
 
                 if self.ActionViewColumnUser.isChecked():
                     row.append(QStandardItem("%s" % p.username()))
@@ -412,13 +436,13 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                     row.append(item)
 
                 # Filter Line
-                # filtered_row = None
-                # if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
-                #     if self.searchLineEdit.text() in p.name():
-                #         filtered_row = row
-                # else:
-                #     filtered_row = row
-                filtered_row = row
+                filtered_row = None
+                if self.searchLineEdit.text():
+                    if self.searchLineEdit.text().lower() in p.name():
+                        filtered_row = row
+                else:
+                    filtered_row = row
+
                 # Filter by ComboBox index
                 #             0: 'All Processes',
                 #             1: 'All Processes, Hierarchically',
@@ -514,6 +538,11 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         if self.selected_pid and self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
+
+    def _refresh_icons_cache(self, icons):
+        for pname, icon in icons.items():
+            if pname not in self.__icons:
+                self.__icons[pname] = icon
 
     def _timer_change_for_1_sec(self):
         self.timer_value = 1

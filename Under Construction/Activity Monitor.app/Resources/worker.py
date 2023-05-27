@@ -3,6 +3,7 @@
 import os
 
 import psutil
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
     pyqtSignal as Signal,
     QObject,
@@ -57,6 +58,9 @@ class PSUtilsWorker(QObject):
     updated_network_packets_out = Signal(object)
     updated_network_data_received = Signal(object)
     updated_network_data_sent = Signal(object)
+
+    # Icon Cache
+    updated_icons_cache = Signal(object)
 
     # noinspection PyUnresolvedReferences
     def refresh(self):

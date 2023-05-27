@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/">
+      <file alias="None">images/None.png</file>
       <file alias="Activity Monitor.png">images/Activity Monitor.png</file>
       <file alias="Inspect.png">images/Inspect.png</file>
       <file alias="KillProcess.png">images/KillProcess.png</file>
