@@ -31,6 +31,7 @@ from treeview_processes import TreeViewProcess
 from widget_chartpie import ChartPieItem
 from worker import PSUtilsWorker
 from worker_cpu import CPUWorker
+from worker_system_memory import SystemMemoryWorker
 from worker_icons_cache import IconsCacheWorker
 from bytes2human import bytes2human
 
@@ -311,24 +312,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         worker.moveToThread(thread)
         thread.started.connect(lambda: worker.refresh())
 
-        # System Memory
-        worker.updated_system_memory_available.connect(self.refresh_available)
-        worker.updated_system_memory_used.connect(self.refresh_used)
-        worker.updated_system_memory_free.connect(self.refresh_free)
-        worker.updated_system_memory_active.connect(self.refresh_active)
-        worker.updated_system_memory_inactive.connect(self.refresh_inactive)
-        worker.updated_system_memory_buffers.connect(self.refresh_buffers)
-        worker.updated_system_memory_cached.connect(self.refresh_cached)
-        worker.updated_system_memory_shared.connect(self.refresh_shared)
-        worker.updated_system_memory_slab.connect(self.refresh_slab)
-        worker.updated_system_memory_wired.connect(self.refresh_wired)
-
-        # System Memory Chart Pie
-        worker.updated_system_memory_free_raw.connect(self.refresh_free_raw)
-        worker.updated_system_memory_wired_raw.connect(self.refresh_wired_raw)
-        worker.updated_system_memory_active_raw.connect(self.refresh_active_raw)
-        worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
-
         # Disk Usage
         worker.updated_mounted_disk_partitions.connect(self.setMoutedDiskPartitions)
 
@@ -343,9 +326,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         worker.updated_network_packets_out.connect(self.refresh_packets_out)
         worker.updated_network_data_received.connect(self.refresh_data_received)
         worker.updated_network_data_sent.connect(self.refresh_data_sent)
-
-        # Icons Cache
-        worker.updated_icons_cache.connect(self._refresh_icons_cache)
 
         worker.finished.connect(thread.quit)
         worker.finished.connect(worker.deleteLater)
@@ -389,12 +369,43 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         return thread
 
+    def createSystemMemoryThread(self):
+        thread = QThread()
+        worker = SystemMemoryWorker()
+        worker.moveToThread(thread)
+        thread.started.connect(lambda: worker.refresh())
+
+        # System Memory
+        worker.updated_system_memory_available.connect(self.refresh_available)
+        worker.updated_system_memory_used.connect(self.refresh_used)
+        worker.updated_system_memory_free.connect(self.refresh_free)
+        worker.updated_system_memory_active.connect(self.refresh_active)
+        worker.updated_system_memory_inactive.connect(self.refresh_inactive)
+        worker.updated_system_memory_buffers.connect(self.refresh_buffers)
+        worker.updated_system_memory_cached.connect(self.refresh_cached)
+        worker.updated_system_memory_shared.connect(self.refresh_shared)
+        worker.updated_system_memory_slab.connect(self.refresh_slab)
+        worker.updated_system_memory_wired.connect(self.refresh_wired)
+
+        # System Memory Chart Pie
+        worker.updated_system_memory_free_raw.connect(self.refresh_free_raw)
+        worker.updated_system_memory_wired_raw.connect(self.refresh_wired_raw)
+        worker.updated_system_memory_active_raw.connect(self.refresh_active_raw)
+        worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
+
+        worker.finished.connect(thread.quit)
+        worker.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+
+        return thread
+
     def refresh(self):
         self.refresh_treeview_model()
 
         self.threads.clear()
         self.threads = [
             self.createCPUThread(),
+            self.createSystemMemoryThread(),
             self.createPSUtilsThread(),
             self.createIconsCacheThread()
         ]
