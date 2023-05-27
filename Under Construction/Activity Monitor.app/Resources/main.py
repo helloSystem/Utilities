@@ -30,6 +30,7 @@ from treeview_processes import TreeViewProcess
 
 from widget_chartpie import ChartPieItem
 from worker import PSUtilsWorker
+from worker_cpu import CPUWorker
 from worker_icons_cache import IconsCacheWorker
 from bytes2human import bytes2human
 
@@ -310,15 +311,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         worker.moveToThread(thread)
         thread.started.connect(lambda: worker.refresh())
 
-        # CPU
-        worker.updated_cpu_user.connect(self.set_user)
-        worker.updated_cpu_system.connect(self.set_system)
-        worker.updated_cpu_idle.connect(self.set_idle)
-        worker.updated_cpu_nice.connect(self.set_nice)
-        worker.updated_cpu_irq.connect(self.set_irq)
-        worker.updated_cpu_cumulative_threads.connect(self.refresh_cumulative_threads)
-        worker.updated_cpu_process_number.connect(self.refresh_process_number)
-
         # System Memory
         worker.updated_system_memory_available.connect(self.refresh_available)
         worker.updated_system_memory_used.connect(self.refresh_used)
@@ -376,11 +368,36 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         return thread
 
+    def createCPUThread(self):
+        thread = QThread()
+        worker = CPUWorker()
+        worker.moveToThread(thread)
+        thread.started.connect(lambda: worker.refresh())
+
+        # CPU
+        worker.updated_cpu_user.connect(self.set_user)
+        worker.updated_cpu_system.connect(self.set_system)
+        worker.updated_cpu_idle.connect(self.set_idle)
+        worker.updated_cpu_nice.connect(self.set_nice)
+        worker.updated_cpu_irq.connect(self.set_irq)
+        worker.updated_cpu_cumulative_threads.connect(self.refresh_cumulative_threads)
+        worker.updated_cpu_process_number.connect(self.refresh_process_number)
+
+        worker.finished.connect(thread.quit)
+        worker.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+
+        return thread
+
     def refresh(self):
         self.refresh_treeview_model()
 
         self.threads.clear()
-        self.threads = [self.createPSUtilsThread(), self.createIconsCacheThread()]
+        self.threads = [
+            self.createCPUThread(),
+            self.createPSUtilsThread(),
+            self.createIconsCacheThread()
+        ]
         for thread in self.threads:
             thread.start()
 
