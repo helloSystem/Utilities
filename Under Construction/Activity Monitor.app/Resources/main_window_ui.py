@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(576, 547)
+        MainWindow.resize(695, 628)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Processes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -50,13 +50,14 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.central_widget_tabs.sizePolicy().hasHeightForWidth())
         self.central_widget_tabs.setSizePolicy(sizePolicy)
         self.central_widget_tabs.setMaximumSize(QtCore.QSize(16777215, 200))
-        self.central_widget_tabs.setStyleSheet("            QTabWidget::tab-bar {\n"
-                                               "                alignment: center;\n"
-                                               "            }\n"
-                                               "            QTabWidget::pane { /* The tab widget frame */\n"
-                                               "                position: absolute;\n"
-                                               "                top: -0.9em;\n"
-                                               "            }")
+        self.central_widget_tabs.setStyleSheet("QTabWidget::tab-bar {\n"
+                                               "        alignment: center;\n"
+                                               "        }\n"
+                                               "        QTabWidget::pane { /* The tab widget frame */\n"
+                                               "        position: absolute;\n"
+                                               "        top: -0.9em;\n"
+                                               "        }\n"
+                                               "       ")
         self.central_widget_tabs.setObjectName("central_widget_tabs")
         self.tab_cpu = QtWidgets.QWidget()
         self.tab_cpu.setObjectName("tab_cpu")
@@ -771,7 +772,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.central_widget_tabs)
         MainWindow.setCentralWidget(self.central_widget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 576, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 695, 24))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -988,7 +989,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.actionToolBar_Inspect_Process)
 
         self.retranslateUi(MainWindow)
-        self.central_widget_tabs.setCurrentIndex(2)
+        self.central_widget_tabs.setCurrentIndex(0)
         self.actionQuit.triggered.connect(MainWindow.close)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -1000,18 +1001,21 @@ class Ui_MainWindow(object):
         self.label_irq.setText(_translate("MainWindow", "Irq:"))
         self.label_threads.setText(_translate("MainWindow", "Threads:"))
         self.label_system_unit.setText(_translate("MainWindow", "%"))
-        self.label_user.setToolTip(_translate("MainWindow",
-                                              "<html><head/><body><p>Time spent by normal processes executing in user mode</p></body></html>"))
+        self.label_user.setToolTip(
+            _translate("MainWindow", "<html><head/><body><p>Time spent by normal processes executing in user\n"
+                                     "                mode</p></body></html>\n"
+                                     "               "))
         self.label_user.setText(_translate("MainWindow", "User:"))
         self.label_nice.setToolTip(
-            _translate("MainWindow", "<html><head/><body><p>Time spent by niced (prioritized) processes executing in\n"
-                                     "           user mode</p></body></html>\n"
-                                     "          "))
+            _translate("MainWindow", "<html><head/><body><p>Time spent by niced (prioritized) processes\n"
+                                     "                executing in\n"
+                                     "                user mode</p></body></html>\n"
+                                     "               "))
         self.label_nice.setText(_translate("MainWindow", "Nice:"))
         self.label_nice_unit.setText(_translate("MainWindow", "%"))
         self.label_system.setToolTip(_translate("MainWindow", "<html><head/><body><p>Time\n"
-                                                              "           spent by processes executing in kernel mode.</p></body></html>\n"
-                                                              "          ", "toolTip information"))
+                                                              "                spent by processes executing in kernel mode.</p></body></html>\n"
+                                                              "               ", "toolTip information"))
         self.label_system.setText(_translate("MainWindow", "System:"))
         self.label_cpu_usage.setText(_translate("MainWindow", "CPU Usage"))
         self.label_user_unit.setText(_translate("MainWindow", "%"))
@@ -1126,7 +1130,9 @@ class Ui_MainWindow(object):
         self.ActionMenuViewShowDeltasforProcess.setText(_translate("MainWindow", "Show Deltas for Process"))
         self.actionClear_CPU_History.setText(_translate("MainWindow", "Clear CPU History"))
         self.actionEnter_Full_Screen.setText(_translate("MainWindow", "Enter Full Screen"))
-from .widget_chartpie import ChartPie
-from .widget_color_pickup import ColorButton
-from .widget_cpugraphbar import CPUGraphBar
+
+
+from widget_chartpie import ChartPie
+from widget_color_pickup import ColorButton
+from widget_cpugraphbar import CPUGraphBar
 import qressources_rc

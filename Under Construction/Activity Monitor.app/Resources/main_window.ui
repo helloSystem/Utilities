@@ -6,15 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
-    <height>547</height>
+    <width>695</width>
+    <height>628</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Activity Monitor</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="../qressources.qrc">
+   <iconset resource="qressources.qrc">
     <normaloff>:/Processes.png</normaloff>:/Processes.png
    </iconset>
   </property>
@@ -116,7 +116,7 @@
        </string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_cpu">
        <attribute name="title">
@@ -1992,7 +1992,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>576</width>
+     <width>695</width>
      <height>24</height>
     </rect>
    </property>
@@ -2399,7 +2399,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../qressources.qrc">
+    <iconset resource="qressources.qrc">
      <normaloff>:/KillProcess.png</normaloff>:/KillProcess.png
     </iconset>
    </property>
@@ -2415,7 +2415,7 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="../qressources.qrc">
+    <iconset resource="qressources.qrc">
      <normaloff>:/Inspect.png</normaloff>:/Inspect.png
     </iconset>
    </property>
@@ -2508,24 +2508,24 @@
   <customwidget>
    <class>ColorButton</class>
    <extends>QWidget</extends>
-   <header>.widget_color_pickup</header>
+   <header>widget_color_pickup</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>CPUGraphBar</class>
    <extends>QWidget</extends>
-   <header>.widget_cpugraphbar</header>
+   <header>widget_cpugraphbar</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>ChartPie</class>
    <extends>QWidget</extends>
-   <header>.widget_chartpie</header>
+   <header>widget_chartpie</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="../qressources.qrc"/>
+  <include location="qressources.qrc"/>
  </resources>
  <connections>
   <connection>

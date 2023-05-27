@@ -8,7 +8,7 @@ from PyQt5.QtCore import (
     QObject,
 )
 
-from .bytes2human import bytes2human
+from bytes2human import bytes2human
 
 
 class PSUtilsWorker(QObject):

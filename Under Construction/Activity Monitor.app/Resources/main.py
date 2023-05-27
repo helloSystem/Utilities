@@ -18,20 +18,19 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QShortcut,
 )
-from ui import (
-    Ui_MainWindow,
-    ChartPieItem,
-)
-from libs import (
-    bytes2human,
-    PSUtilsWorker,
-    TabCpu,
-    TabSystemMemory,
-    TabDiskActivity,
-    TabDiskUsage,
-    TabNetwork,
-    TreeViewProcess,
-)
+
+from main_window_ui import Ui_MainWindow
+
+from tab_cpu import TabCpu
+from tab_system_memory import TabSystemMemory
+from tab_disk_activity import TabDiskActivity
+from tab_disk_usage import TabDiskUsage
+from tab_network import TabNetwork
+from treeview_processes import TreeViewProcess
+
+from widget_chartpie import ChartPieItem
+from worker import PSUtilsWorker
+from bytes2human import bytes2human
 
 
 class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
