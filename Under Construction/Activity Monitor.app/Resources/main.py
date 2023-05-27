@@ -4,7 +4,7 @@ import sys
 import psutil
 import time
 
-from PyQt5.QtCore import Qt, QTimer, QThread
+from PyQt5.QtCore import Qt, QTimer, QThread, QSortFilterProxyModel, QRegExp
 from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
@@ -141,6 +141,13 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         )
 
     def setupInitialState(self):
+        # Set Menu ShortCut With Meta Key
+        self.ActionMenuViewFilterProcesses.setShortcut("Ctrl+Meta+F")
+        self.ActionMenuViewSampleProcess.setShortcut("Ctrl+Meta+S")
+        self.ActionMenuViewRunSpindump.setShortcut("Alt+Ctrl+Meta+S")
+        self.ActionViewKillDialog.setShortcut("Ctrl+Meta+Q")
+        self.ActionMenuViewShowDeltasforProcess.setShortcut("Ctrl+Meta+J")
+
         self.setupCustomUiColorPicker()
 
         virtual_memory = psutil.virtual_memory()
@@ -163,6 +170,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.tree_view_model = QStandardItemModel()
         self.process_tree.setModel(self.tree_view_model)
         self.process_tree.sortByColumn(3, Qt.DescendingOrder)
+        # for pos, title in enumerate(self.header):
+        #     self.process_tree.resizeColumnToContents(pos)
 
     def setupCustomUiColorPicker(self):
         # Tab CPU
@@ -249,8 +258,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionUpdateFrequencyTo3Secs.triggered.connect(self._timer_change_for_3_secs)
         self.ActionUpdateFrequencyTo1Sec.triggered.connect(self._timer_change_for_1_sec)
 
-        self.searchLineEdit.textChanged.connect(self.refresh_treeview)
+        self.searchLineEdit.textChanged.connect(self.refresh_treeview_model)
         self.filterComboBox.currentIndexChanged.connect(self._filter_by_changed)
+        self.ActionMenuViewFilterProcesses.triggered.connect(self._searchLineEdit_get_focus)
 
         self.ActionMenuViewAllProcesses.triggered.connect(self._filter_by_all_processes)
         self.ActionMenuViewAllProcessesHierarchically.triggered.connect(self._filter_by_all_process_hierarchically)
@@ -348,57 +358,68 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         return thread
 
     def refresh(self):
-        self.refresh_treeview()
+        self.refresh_treeview_model()
 
         self.threads.clear()
         self.threads = [self.createThread()]
         for thread in self.threads:
             thread.start()
 
-    def refresh_treeview(self):
+    def refresh_treeview_model(self):
+
         self.tree_view_model = QStandardItemModel()
+        # One shot header
         self.header = []
+
+        # self.header.append(self.ActionViewColumnVirtualMemory.text())
 
         for p in psutil.process_iter():
             with p.oneshot():
 
-                # PID can't be disable because it is use for selection tracking
-                row = [QStandardItem("%d" % p.pid)]
-                self.header.append("Process ID")
+                row = []
 
-                # Headers it depend of Application Actions Menu are coupled with model value
-                if self.ActionViewColumnProcessName and self.ActionViewColumnProcessName.isChecked():
-                    self.header.append(self.ActionViewColumnProcessName.text())
+                item = QStandardItem("%d" % p.pid)
+                item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                row.append(item)
+
+                if self.ActionViewColumnProcessName.isChecked():
                     row.append(QStandardItem("%s" % p.name()))
 
-                if self.ActionViewColumnUser and self.ActionViewColumnUser.isChecked():
-                    self.header.append(self.ActionViewColumnUser.text())
+                if self.ActionViewColumnUser.isChecked():
                     row.append(QStandardItem("%s" % p.username()))
 
-                if self.ActionViewColumnPercentCPU and self.ActionViewColumnPercentCPU.isChecked():
-                    self.header.append(self.ActionViewColumnPercentCPU.text())
-                    row.append(QStandardItem("%s" % p.cpu_percent()))
+                if self.ActionViewColumnPercentCPU.isChecked():
+                    item = QStandardItem("%s" % p.cpu_percent())
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    # item.setData(p.cpu_percent())
+                    row.append(item)
 
-                if self.ActionViewColumnNumThreads and self.ActionViewColumnNumThreads.isChecked():
-                    self.header.append(self.ActionViewColumnNumThreads.text())
-                    row.append(QStandardItem("%s" % p.num_threads()))
+                if self.ActionViewColumnNumThreads.isChecked():
+                    item = QStandardItem("%s" % p.num_threads())
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    # item.setData(p.num_threads())
+                    row.append(item)
 
-                if self.ActionViewColumnRealMemory and self.ActionViewColumnRealMemory.isChecked():
-                    self.header.append(self.ActionViewColumnRealMemory.text())
-                    row.append(QStandardItem("%s" % bytes2human(p.memory_info().rss)))
+                if self.ActionViewColumnRealMemory.isChecked():
+                    item = QStandardItem("%s" % bytes2human(p.memory_info().rss))
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    item.setData(p.memory_info().rss)
+                    row.append(item)
 
-                if self.ActionViewColumnVirtualMemory and self.ActionViewColumnVirtualMemory.isChecked():
-                    self.header.append(self.ActionViewColumnVirtualMemory.text())
-                    row.append(QStandardItem("%s" % bytes2human(p.memory_info().vms)))
+                if self.ActionViewColumnVirtualMemory.isChecked():
+                    item = QStandardItem("%s" % bytes2human(p.memory_info().vms))
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    item.setData(p.memory_info().rss)
+                    row.append(item)
 
                 # Filter Line
-                filtered_row = None
-                if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
-                    if self.searchLineEdit.text() in p.name():
-                        filtered_row = row
-                else:
-                    filtered_row = row
-
+                # filtered_row = None
+                # if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
+                #     if self.searchLineEdit.text() in p.name():
+                #         filtered_row = row
+                # else:
+                #     filtered_row = row
+                filtered_row = row
                 # Filter by ComboBox index
                 #             0: 'All Processes',
                 #             1: 'All Processes, Hierarchically',
@@ -460,13 +481,37 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 if filtered_row:
                     self.tree_view_model.appendRow(filtered_row)
 
-        for pos, title in enumerate(self.header):
-            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, title)
+        # for pos, title in enumerate(self.header):
+        #     self.tree_view_model.setHeaderData(pos, Qt.Horizontal, title)
+        pos = 0
+        # PID can't be disabled because it is use for selection tracking
+        self.tree_view_model.setHeaderData(pos, Qt.Horizontal, self.ActionViewColumnProcessID.text())
+        pos += 1
+        if self.ActionViewColumnProcessName.isChecked():
+            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, self.ActionViewColumnProcessName.text())
+            pos += 1
+            # self.header.append(self.ActionViewColumnProcessName.text())
+        if self.ActionViewColumnUser.isChecked():
+            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, self.ActionViewColumnUser.text())
+            pos += 1
+            # self.header.append(self.ActionViewColumnUser.text())
+        if self.ActionViewColumnPercentCPU.isChecked():
+            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, self.ActionViewColumnPercentCPU.text())
+            pos += 1
+            # self.header.append(self.ActionViewColumnPercentCPU.text())
+        if self.ActionViewColumnNumThreads.isChecked():
+            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, self.ActionViewColumnNumThreads.text())
+            pos += 1
+            # self.header.append(self.ActionViewColumnNumThreads.text())
+        if self.ActionViewColumnRealMemory.isChecked():
+            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, self.ActionViewColumnRealMemory.text())
+            pos += 1
+            # self.header.append(self.ActionViewColumnRealMemory.text())
+        if self.ActionViewColumnVirtualMemory.isChecked():
+            self.tree_view_model.setHeaderData(pos, Qt.Horizontal, self.ActionViewColumnVirtualMemory.text())
+            pos += 1
 
         self.process_tree.setModel(self.tree_view_model)
-
-        # for pos, title in enumerate(self.header):
-        #     self.process_tree.resizeColumnToContents(pos)
 
         if self.selected_pid and self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
@@ -547,6 +592,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
     def _filter_by_application_in_last_12_hours(self):
         self.filterComboBox.setCurrentIndex(9)
+
+    def _searchLineEdit_get_focus(self):
+        self.searchLineEdit.setFocus()
 
 
 if __name__ == "__main__":

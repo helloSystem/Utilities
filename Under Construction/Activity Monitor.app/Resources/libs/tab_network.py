@@ -1,12 +1,26 @@
 #!/usr/bin/env python3
 
 from .bytes2human import bytes2human
+from PyQt5.QtWidgets import QLabel
 
 
 class TabNetwork(object):
-    def __init__(self, parent=None):
-        super().__init__()
+    label_packets_in_sec_value: QLabel
+    label_packets_in_value: QLabel
+    label_packets_out_sec_value: QLabel
+    label_packets_out_value: QLabel
+    label_data_received_sec_value: QLabel
+    label_data_received_value: QLabel
+    label_data_sent_sec_value: QLabel
+    label_data_sent_value: QLabel
+    label_bandwidth_value_2: QLabel
+    timer_value: int
 
+    def __init__(self):
+        self.data_sent_value = None
+        self.packets_out_value = None
+        self.packets_in_value = None
+        self.data_received_value = None
         self.packets_in_old_value = None
         self.packets_out_old_value = None
         self.data_received_old_value = None
@@ -69,13 +83,13 @@ class TabNetwork(object):
             self.data_sent_old_value = self.data_sent_value
 
         self.label_data_sent_value.setText("%s" % bytes2human(self.data_sent_value))
-        self.refresh_bandwidth()
+        self.refresh_network_bandwidth()
 
-    def refresh_bandwidth(self):
+    def refresh_network_bandwidth(self):
         delta1 = (
                 (self.data_sent_value - self.data_sent_old_value) / self.timer_value
         )
         delta2 = (
                 (self.data_received_value - self.data_received_old_value) / self.timer_value
         )
-        self.label_bandwidth_value.setText("%s" % bytes2human(delta1 + delta2))
+        self.label_bandwidth_value_2.setText("%s" % bytes2human(delta1 + delta2))

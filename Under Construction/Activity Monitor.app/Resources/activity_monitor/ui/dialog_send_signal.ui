@@ -1,201 +1,201 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
-    <class>SendSignalDialog</class>
-    <widget class="QDialog" name="SendSignalDialog">
-        <property name="windowModality">
-            <enum>Qt::WindowModal</enum>
+ <class>SendSignalDialog</class>
+ <widget class="QDialog" name="SendSignalDialog">
+  <property name="windowModality">
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>421</width>
+    <height>133</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string notr="true"/>
+  </property>
+  <property name="modal">
+   <bool>false</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="leftMargin">
+    <number>9</number>
+   </property>
+   <property name="topMargin">
+    <number>9</number>
+   </property>
+   <property name="rightMargin">
+    <number>9</number>
+   </property>
+   <property name="bottomMargin">
+    <number>9</number>
+   </property>
+   <item>
+    <layout class="QVBoxLayout" name="MainVbox" stretch="0,0,0,0">
+     <property name="spacing">
+      <number>6</number>
+     </property>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
+     </property>
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+      <widget class="QLabel" name="Label">
+       <property name="text">
+        <string>Please select a signal to send to the process '%s'</string>
+       </property>
+      </widget>
+     </item>
+     <item alignment="Qt::AlignLeft|Qt::AlignTop">
+      <widget class="QComboBox" name="SignalListComboBox">
+       <item>
+        <property name="text">
+         <string>Hangup (SIGHUP)</string>
         </property>
-        <property name="enabled">
-            <bool>true</bool>
+       </item>
+       <item>
+        <property name="text">
+         <string>Interrupt (SIGINT)</string>
         </property>
-        <property name="geometry">
-            <rect>
-                <x>0</x>
-                <y>0</y>
-                <width>465</width>
-                <height>133</height>
-            </rect>
+       </item>
+       <item>
+        <property name="text">
+         <string>Quit (SIGQUIT)</string>
         </property>
-        <property name="windowTitle">
-            <string notr="true"></string>
+       </item>
+       <item>
+        <property name="text">
+         <string>Abort (SIGABRT)</string>
         </property>
-        <property name="modal">
-            <bool>false</bool>
+       </item>
+       <item>
+        <property name="text">
+         <string>Kill (SIGKILL)</string>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayout">
-            <property name="leftMargin">
-                <number>9</number>
-            </property>
-            <property name="topMargin">
-                <number>9</number>
-            </property>
-            <property name="rightMargin">
-                <number>9</number>
-            </property>
-            <property name="bottomMargin">
-                <number>9</number>
-            </property>
-            <item>
-                <layout class="QVBoxLayout" name="MainVbox" stretch="0,0,0,0">
-                    <property name="spacing">
-                        <number>6</number>
-                    </property>
-                    <property name="sizeConstraint">
-                        <enum>QLayout::SetNoConstraint</enum>
-                    </property>
-                    <property name="leftMargin">
-                        <number>0</number>
-                    </property>
-                    <property name="topMargin">
-                        <number>0</number>
-                    </property>
-                    <property name="rightMargin">
-                        <number>0</number>
-                    </property>
-                    <property name="bottomMargin">
-                        <number>0</number>
-                    </property>
-                    <item alignment="Qt::AlignLeft|Qt::AlignTop">
-                        <widget class="QLabel" name="Label">
-                            <property name="text">
-                                <string>Please select a signal to send to the process '%s'</string>
-                            </property>
-                        </widget>
-                    </item>
-                    <item alignment="Qt::AlignLeft|Qt::AlignTop">
-                        <widget class="QComboBox" name="SignalListComboBox">
-                            <item>
-                                <property name="text">
-                                    <string>Hangup (SIGHUP)</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Interrupt (SIGINT)</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Quit (SIGQUIT)</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Abort (SIGABRT)</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Kill (SIGKILL)</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Alarm (SIGALRM)</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>User Defined 1 (SIGUSR1)</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>User Defined 2 (SIGUSR2)</string>
-                                </property>
-                            </item>
-                        </widget>
-                    </item>
-                    <item>
-                        <spacer name="verticalSpacer">
-                            <property name="orientation">
-                                <enum>Qt::Vertical</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>QSizePolicy::MinimumExpanding</enum>
-                            </property>
-                            <property name="sizeHint" stdset="0">
-                                <size>
-                                    <width>20</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                    </item>
-                    <item>
-                        <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
-                            <property name="spacing">
-                                <number>6</number>
-                            </property>
-                            <property name="sizeConstraint">
-                                <enum>QLayout::SetDefaultConstraint</enum>
-                            </property>
-                            <item>
-                                <spacer name="horizontalSpacer">
-                                    <property name="orientation">
-                                        <enum>Qt::Horizontal</enum>
-                                    </property>
-                                    <property name="sizeHint" stdset="0">
-                                        <size>
-                                            <width>40</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                            </item>
-                            <item>
-                                <widget class="QPushButton" name="CancelButton">
-                                    <property name="text">
-                                        <string>Cancel</string>
-                                    </property>
-                                </widget>
-                            </item>
-                            <item>
-                                <widget class="QPushButton" name="SendButton">
-                                    <property name="text">
-                                        <string>Send</string>
-                                    </property>
-                                </widget>
-                            </item>
-                        </layout>
-                    </item>
-                </layout>
-            </item>
-        </layout>
-    </widget>
-    <resources/>
-    <connections>
-        <connection>
-            <sender>CancelButton</sender>
-            <signal>clicked()</signal>
-            <receiver>SendSignalDialog</receiver>
-            <slot>reject()</slot>
-            <hints>
-                <hint type="sourcelabel">
-                    <x>327</x>
-                    <y>108</y>
-                </hint>
-                <hint type="destinationlabel">
-                    <x>232</x>
-                    <y>66</y>
-                </hint>
-            </hints>
-        </connection>
-        <connection>
-            <sender>SendButton</sender>
-            <signal>clicked()</signal>
-            <receiver>SendSignalDialog</receiver>
-            <slot>accept()</slot>
-            <hints>
-                <hint type="sourcelabel">
-                    <x>413</x>
-                    <y>108</y>
-                </hint>
-                <hint type="destinationlabel">
-                    <x>232</x>
-                    <y>66</y>
-                </hint>
-            </hints>
-        </connection>
-    </connections>
+       </item>
+       <item>
+        <property name="text">
+         <string>Alarm (SIGALRM)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>User Defined 1 (SIGUSR1)</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>User Defined 2 (SIGUSR2)</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::MinimumExpanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">
+       <property name="spacing">
+        <number>6</number>
+       </property>
+       <property name="sizeConstraint">
+        <enum>QLayout::SetDefaultConstraint</enum>
+       </property>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="CancelButton">
+         <property name="text">
+          <string>Cancel</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="SendButton">
+         <property name="text">
+          <string>Send</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>CancelButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SendSignalDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>327</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>232</x>
+     <y>66</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>SendButton</sender>
+   <signal>clicked()</signal>
+   <receiver>SendSignalDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>413</x>
+     <y>108</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>232</x>
+     <y>66</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

@@ -6,19 +6,29 @@ import signal
 from PyQt5.QtCore import (
     Qt,
     QItemSelectionModel,
+
 )
+
+from PyQt5.QtWidgets import QAction, QLineEdit, QTreeView, QWidgetAction, QComboBox
 
 
 class TreeViewProcess(object):
-    def __init__(self, parent=None):
+    actionToolBarQuit_Process: QAction
+    actionToolBar_Inspect_Process: QAction
+    searchLineEdit: QLineEdit
+    process_tree: QTreeView
+    ActionMenuViewSelectedProcesses: QAction
+    filterComboBox: QComboBox
+    ActionViewKillDialog: QAction
+    ActionMenuViewSendSignaltoProcesses: QAction
+
+    def __init__(self):
         self.tree_view_model = None
         self.selected_pid = -1
         self.my_username = os.getlogin()
 
-        self.header = []
-
     def filter_by_line(self, row, text):
-        if hasattr(self.searchLineEdit, "text") and self.searchLineEdit.text():
+        if self.searchLineEdit.text():
             if self.searchLineEdit.text() in text:
                 return row
             else:
@@ -79,7 +89,7 @@ class TreeViewProcess(object):
                 os.kill(self.selected_pid, signal.SIGKILL)
                 self.selected_pid = None
                 self.process_tree.clearSelection()
-                self.process_tree.refresh()
+                self.refresh()
             except (Exception, BaseException):
                 pass
 
@@ -89,7 +99,7 @@ class TreeViewProcess(object):
                 os.kill(self.selected_pid, signal.SIGTERM)
                 self.selected_pid = None
                 self.process_tree.clearSelection()
-                self.process_tree.refresh()
+                self.refresh()
             except (Exception, BaseException):
                 pass
 
@@ -101,3 +111,6 @@ class TreeViewProcess(object):
                 self.selected_pid = None
             except (Exception, BaseException):
                 pass
+
+    def refresh(self):
+        pass
