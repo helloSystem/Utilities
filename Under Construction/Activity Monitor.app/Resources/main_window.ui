@@ -2054,7 +2054,7 @@
     <addaction name="ActionMenuViewSampleProcess"/>
     <addaction name="ActionMenuViewRunSpindump"/>
     <addaction name="ActionMenuViewRunDystemDiagnostics"/>
-    <addaction name="ActionViewKillDialog"/>
+    <addaction name="ActionMenuViewKillDialog"/>
     <addaction name="ActionMenuViewSendSignaltoProcesses"/>
     <addaction name="ActionMenuViewShowDeltasforProcess"/>
     <addaction name="separator"/>
@@ -2466,7 +2466,7 @@
     <string>Run system Diagnostics</string>
    </property>
   </action>
-  <action name="ActionViewKillDialog">
+  <action name="ActionMenuViewKillDialog">
    <property name="enabled">
     <bool>false</bool>
    </property>

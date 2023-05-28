@@ -4,23 +4,23 @@
 import psutil
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import (
-    pyqtSignal as Signal,
+    pyqtSignal,
     QObject,
 )
 
 
 class IconsCacheWorker(QObject):
-    finished = Signal()
+    finished = pyqtSignal()
 
     # Icon Cache
-    updated_icons_cache = Signal(object)
+    updated_icons_cache = pyqtSignal(object)
 
     def __init__(self, cache):
         super().__init__()
         self.cache = cache
 
     def refresh(self):
-        none_icon = QIcon(":/None")
+        # none_icon = QIcon(":/None")
         for p in psutil.process_iter():
             if p.name() not in self.cache:
                 # Set icon as speed of possible

@@ -41,15 +41,16 @@ class Ui_KillDialog(object):
         self.horizontalLayout_2.addWidget(self.icon)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.title = QtWidgets.QLabel(KillDialog)
-        self.title.setStyleSheet("QLabel {\n"
-                                 "    font: bold\n"
-                                 "}")
-        self.title.setObjectName("title")
-        self.verticalLayout_2.addWidget(self.title)
-        self.text = QtWidgets.QLabel(KillDialog)
-        self.text.setObjectName("text")
-        self.verticalLayout_2.addWidget(self.text)
+        self.Title = QtWidgets.QLabel(KillDialog)
+        self.Title.setStyleSheet("QLabel {\n"
+                                 "                                                    font: bold\n"
+                                 "                                                    }\n"
+                                 "                                                ")
+        self.Title.setObjectName("Title")
+        self.verticalLayout_2.addWidget(self.Title)
+        self.Label = QtWidgets.QLabel(KillDialog)
+        self.Label.setObjectName("Label")
+        self.verticalLayout_2.addWidget(self.Label)
         self.horizontalLayout_2.addLayout(self.verticalLayout_2)
         self.horizontalLayout_2.setStretch(1, 1)
         self.MainVbox.addLayout(self.horizontalLayout_2)
@@ -80,11 +81,9 @@ class Ui_KillDialog(object):
     def retranslateUi(self, KillDialog):
         _translate = QtCore.QCoreApplication.translate
         KillDialog.setWindowTitle(_translate("KillDialog", "Dialog"))
-        self.title.setText(_translate("KillDialog", "TextLabel"))
-        self.text.setText(_translate("KillDialog", "TextLabel"))
+        self.Title.setText(_translate("KillDialog", "Are you sure you want to quit this process ?"))
+        self.Label.setText(_translate("KillDialog", "Do you really want to quit \'%s\'?"))
         self.button_cancel.setText(_translate("KillDialog", "Cancel"))
         self.button_force_quit.setText(_translate("KillDialog", "Force Quit"))
         self.button_quit.setText(_translate("KillDialog", "Quit"))
-
-
 import qressources_rc

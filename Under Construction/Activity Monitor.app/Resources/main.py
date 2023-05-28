@@ -4,8 +4,8 @@ import sys
 import psutil
 import time
 
-from PyQt5.QtCore import Qt, QTimer, QThread, QSortFilterProxyModel, QRegExp
-from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem, QIcon
+from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool
+from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -27,6 +27,8 @@ from tab_disk_activity import TabDiskActivity
 from tab_disk_usage import TabDiskUsage
 from tab_network import TabNetwork
 from treeview_processes import TreeViewProcess
+from dialog_send_signal import SendSignalDialog
+from dialog_kill_process import KillProcessDialog
 
 from widget_chartpie import ChartPieItem
 from worker import PSUtilsWorker
@@ -49,6 +51,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         # Worker
         self.threads = []
+        self.threadpool = QThreadPool()
         self.__icons = {}
 
         # ToolBar custom widgets
@@ -148,7 +151,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionMenuViewFilterProcesses.setShortcut("Ctrl+Meta+F")
         self.ActionMenuViewSampleProcess.setShortcut("Ctrl+Meta+S")
         self.ActionMenuViewRunSpindump.setShortcut("Alt+Ctrl+Meta+S")
-        self.ActionViewKillDialog.setShortcut("Ctrl+Meta+Q")
+        self.ActionMenuViewKillDialog.setShortcut("Ctrl+Meta+Q")
         self.ActionMenuViewShowDeltasforProcess.setShortcut("Ctrl+Meta+J")
 
         self.setupCustomUiColorPicker()
@@ -276,6 +279,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionMenuViewSelectedProcesses.triggered.connect(self._filter_by_selected_processes)
         self.ActionMenuViewApplicationInLast12Hours.triggered.connect(self._filter_by_application_in_last_12_hours)
 
+        self.ActionMenuViewSendSignaltoProcesses.triggered.connect(self._showSendSignalDialog)
+        self.ActionMenuViewKillDialog.triggered.connect(self._showKillDialog)
         # Tab CPU
         self.data_idle_changed.connect(self.refresh_idle)
         self.data_user_changed.connect(self.refresh_user)
@@ -369,6 +374,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         worker.finished.connect(worker.deleteLater)
         thread.finished.connect(thread.deleteLater)
 
+        # self.threadpool.start(worker)
         return thread
 
     def createSystemMemoryThread(self):
@@ -406,8 +412,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         self.threads.clear()
         self.threads = [
-            self.createCPUThread(),
             self.createSystemMemoryThread(),
+            self.createCPUThread(),
             self.createPSUtilsThread(),
             self.createIconsCacheThread()
         ]
@@ -423,6 +429,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         # self.header.append(self.ActionViewColumnVirtualMemory.text())
 
         for p in psutil.process_iter():
+            QApplication.processEvents()
             with p.oneshot():
 
                 row = []
@@ -573,6 +580,18 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         for pname, icon in icons.items():
             if pname not in self.__icons:
                 self.__icons[pname] = icon
+
+    def _showSendSignalDialog(self):
+        self.send_signal_dialog = SendSignalDialog(process=psutil.Process(self.selected_pid))
+        self.send_signal_dialog.exec()
+
+    def _showKillDialog(self):
+        self.send_signal_dialog = KillProcessDialog(process=psutil.Process(self.selected_pid))
+
+        self.send_signal_dialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
+        self.send_signal_dialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
+
+        self.send_signal_dialog.exec()
 
     def _timer_change_for_1_sec(self):
         self.timer_value = 1

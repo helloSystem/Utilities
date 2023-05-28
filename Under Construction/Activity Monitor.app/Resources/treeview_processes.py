@@ -48,7 +48,7 @@ class TreeViewProcess(object):
             self.filterComboBox.setCurrentIndex(0)
         self.filterComboBox.model().item(8).setEnabled(False)
 
-        self.ActionViewKillDialog.setEnabled(False)
+        self.ActionMenuViewKillDialog.setEnabled(False)
         self.ActionMenuViewSendSignaltoProcesses.setEnabled(False)
 
     def selectItem(self, itemOrText):
@@ -77,7 +77,7 @@ class TreeViewProcess(object):
             self.actionToolBar_Inspect_Process.setEnabled(True)
             self.ActionMenuViewSelectedProcesses.setEnabled(True)
             self.filterComboBox.model().item(8).setEnabled(True)
-            self.ActionViewKillDialog.setEnabled(True)
+            self.ActionMenuViewKillDialog.setEnabled(True)
             self.ActionMenuViewSendSignaltoProcesses.setEnabled(True)
 
     def killProcess(self):
