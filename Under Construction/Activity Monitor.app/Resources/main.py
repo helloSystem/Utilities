@@ -29,6 +29,7 @@ from tab_network import TabNetwork
 from treeview_processes import TreeViewProcess
 from dialog_send_signal import SendSignalDialog
 from dialog_kill_process import KillProcessDialog
+from dialog_about import AboutDialog
 
 from widget_chartpie import ChartPieItem
 from worker import PSUtilsWorker
@@ -240,6 +241,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.filter_process_action.setDefaultWidget(showWidget)
 
         self.searchLineEdit = QLineEdit()
+        self.searchLineEdit.setClearButtonEnabled(True)
 
         searchLabel = QLabel("Search")
         searchLabel.setAlignment(Qt.AlignCenter)
@@ -260,6 +262,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
     def connectSignalsSlots(self):
         self.timer.timeout.connect(self.refresh)
 
+        # Menu and ToolBar
         self.ActionUpdateFrequencyTo5Secs.triggered.connect(self._timer_change_for_5_secs)
         self.ActionUpdateFrequencyTo3Secs.triggered.connect(self._timer_change_for_3_secs)
         self.ActionUpdateFrequencyTo1Sec.triggered.connect(self._timer_change_for_1_sec)
@@ -282,6 +285,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionMenuViewSendSignaltoProcesses.triggered.connect(self._showSendSignalDialog)
         self.ActionMenuViewKillDialog.triggered.connect(self._showKillDialog)
         self.ActionToolBarQuitProcess.triggered.connect(self._showKillDialog)
+        self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
 
         # Tab CPU
         self.data_idle_changed.connect(self.refresh_idle)
@@ -313,7 +317,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         # TreeView
         self.process_tree.clicked.connect(self.onClicked)
         quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-        quitShortcut1.activated.connect(self.selectClear)
+        quitShortcut1.activated.connect(self._escape_pressed)
 
     def createPSUtilsThread(self):
         thread = QThread()
@@ -585,15 +589,25 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
     def _showSendSignalDialog(self):
         self.send_signal_dialog = SendSignalDialog(process=psutil.Process(self.selected_pid))
-        self.send_signal_dialog.exec()
+        self.send_signal_dialog.show()
 
     def _showKillDialog(self):
         self.send_signal_dialog = KillProcessDialog(process=psutil.Process(self.selected_pid))
 
-        self.send_signal_dialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
-        self.send_signal_dialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
+        self.KillDialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
+        self.KillDialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
 
-        self.send_signal_dialog.exec()
+        self.KillDialog.show()
+
+    def _showAboutDialog(self):
+        self.AboutDialog = AboutDialog()
+        self.AboutDialog.show()
+
+    def _escape_pressed(self):
+        if self.process_tree.hasFocus():
+            self.selectClear()
+        if self.searchLineEdit.hasFocus():
+            self.process_tree.setFocus()
 
     def _timer_change_for_1_sec(self):
         self.timer_value = 1

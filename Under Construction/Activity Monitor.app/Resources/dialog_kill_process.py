@@ -2,7 +2,7 @@ import os
 import signal
 
 from PyQt5.QtWidgets import QDialog
-from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtCore import pyqtSignal, Qt
 from dialog_kill_process_ui import Ui_KillDialog
 
 
@@ -12,6 +12,7 @@ class KillProcessDialog(QDialog):
 
     def __init__(self, parent=None, process=None):
         super(KillProcessDialog, self).__init__(parent)
+        self.setWindowFlags(Qt.Dialog)
         self.process = process
         self.ui = Ui_KillDialog()
         self.ui.setupUi(self)

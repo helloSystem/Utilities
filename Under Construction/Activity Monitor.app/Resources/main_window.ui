@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="qressources.qrc">
-    <normaloff>:/Processes.png</normaloff>:/Processes.png
+       <normaloff>:/Processes.png</normaloff>:/Processes.png
    </iconset>
   </property>
   <widget class="QWidget" name="central_widget">
@@ -2069,7 +2069,7 @@
     <property name="title">
      <string>Help</string>
     </property>
-    <addaction name="actionAbout"/>
+       <addaction name="ActionMenuHelpAbout"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -2312,11 +2312,11 @@
     <string>Application in last 12 hours</string>
    </property>
   </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>About</string>
-   </property>
-  </action>
+     <action name="ActionMenuHelpAbout">
+         <property name="text">
+             <string>About</string>
+         </property>
+     </action>
   <action name="ActionViewColumnProcessID">
    <property name="checkable">
     <bool>true</bool>
@@ -2402,9 +2402,9 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="qressources.qrc">
-     <normaloff>:/KillProcess.png</normaloff>:/KillProcess.png
-    </iconset>
+       <iconset resource="qressources.qrc">
+           <normaloff>:/KillProcess.png</normaloff>:/KillProcess.png
+       </iconset>
    </property>
    <property name="text">
     <string>Quit Process</string>
@@ -2418,9 +2418,9 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="qressources.qrc">
-     <normaloff>:/Inspect.png</normaloff>:/Inspect.png
-    </iconset>
+       <iconset resource="qressources.qrc">
+           <normaloff>:/Inspect.png</normaloff>:/Inspect.png
+       </iconset>
    </property>
    <property name="text">
     <string>Inspect Process</string>

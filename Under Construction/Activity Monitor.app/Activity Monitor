@@ -1,3 +1,3 @@
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
-exec "${HERE}/Resources/activity_monitor.py" "$@"
+exec "${HERE}/Resources/main.py" "$@"
