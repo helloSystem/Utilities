@@ -3,7 +3,7 @@
     <class>SendSignalDialog</class>
     <widget class="QDialog" name="SendSignalDialog">
         <property name="windowModality">
-            <enum>Qt::WindowModal</enum>
+            <enum>Qt::NonModal</enum>
         </property>
         <property name="enabled">
             <bool>true</bool>
@@ -20,7 +20,7 @@
             <string notr="true"/>
         </property>
         <property name="modal">
-            <bool>false</bool>
+            <bool>true</bool>
         </property>
         <layout class="QVBoxLayout" name="verticalLayout">
             <property name="leftMargin">

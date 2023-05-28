@@ -14,3 +14,4 @@ class AboutDialog(QDialog):
         super(AboutDialog, self).__init__(parent)
         self.ui = Ui_AboutDialog()
         self.ui.setupUi(self)
+        self.setFixedSize(self.size())

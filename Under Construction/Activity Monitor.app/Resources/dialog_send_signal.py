@@ -13,6 +13,8 @@ class SendSignalDialog(QDialog):
         self.ui.setupUi(self)
         self.ui.Label.setText(self.ui.Label.text() % self.process.name())
 
+        self.setFixedSize(self.size())
+
         self.ui.CancelButton.clicked.connect(self.cancel_dialog)
         self.ui.SendButton.clicked.connect(self.send_dialog)
 

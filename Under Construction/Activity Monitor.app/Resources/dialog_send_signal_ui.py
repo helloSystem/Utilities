@@ -14,11 +14,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SendSignalDialog(object):
     def setupUi(self, SendSignalDialog):
         SendSignalDialog.setObjectName("SendSignalDialog")
-        SendSignalDialog.setWindowModality(QtCore.Qt.WindowModal)
+        SendSignalDialog.setWindowModality(QtCore.Qt.NonModal)
         SendSignalDialog.setEnabled(True)
         SendSignalDialog.resize(465, 133)
-        SendSignalDialog.setWindowTitle(" ")
-        SendSignalDialog.setModal(False)
+        SendSignalDialog.setWindowTitle("")
+        SendSignalDialog.setModal(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(SendSignalDialog)
         self.verticalLayout.setContentsMargins(9, 9, 9, 9)
         self.verticalLayout.setObjectName("verticalLayout")

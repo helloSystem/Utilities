@@ -18,6 +18,8 @@ class KillProcessDialog(QDialog):
         self.ui.setupUi(self)
         self.ui.Label.setText(self.ui.Label.text() % self.process.name())
 
+        self.setFixedSize(self.size())
+
         self.ui.button_cancel.clicked.connect(self.cancel_dialog)
         self.ui.button_force_quit.clicked.connect(self.force_kill_process)
         self.ui.button_quit.clicked.connect(self.kill_process)
