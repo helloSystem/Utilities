@@ -90,9 +90,7 @@ class Ui_AboutDialog(object):
         self.about_version.setText(_translate("AboutDialog",
                                               "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; color:#241f31;\">Version 0.1a</span></p></body></html>"))
         self.about_text.setText(_translate("AboutDialog",
-                                           "<html><head/><body><p align=\"center\">This project is open souce, contributions are welcomed.</p><p align=\"center\">Visit https://github.com/helloSystem/Utilities/ for more information or to report bug and/or suggest a new feature.</p></body></html>"))
+                                           "<html><head/><body><p align=\"center\">This project is open souce, contributions are welcomed.</p><p align=\"center\">Visit <a href=\"https://github.com/helloSystem/Utilities/\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/helloSystem/Utilities/</span></a> for more information or to report bug and/or suggest a new feature.</p></body></html>"))
         self.about_footer.setText(_translate("AboutDialog",
                                              "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; color:#3d3846;\">Copyright 2023-2024 helloSystem Team. All right reserved.</span></p></body></html>"))
-
-
 import qressources_rc

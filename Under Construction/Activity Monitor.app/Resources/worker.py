@@ -12,7 +12,7 @@ from PyQt5.QtCore import (
     QRunnable,
 )
 
-from bytes2human import bytes2human
+from utility_bytes2human import bytes2human
 
 
 class PSUtilsWorker(QObject):

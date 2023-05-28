@@ -36,7 +36,7 @@ from worker import PSUtilsWorker
 from worker_cpu import CPUWorker
 from worker_system_memory import SystemMemoryWorker
 from worker_icons_cache import IconsCacheWorker
-from bytes2human import bytes2human
+from utility_bytes2human import bytes2human
 
 
 class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
@@ -446,9 +446,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
                 if self.ActionViewColumnProcessName.isChecked():
                     item = QStandardItem("%s" % p.name())
-                    if self.__icons and p.name() in self.__icons:
+                    if p.name() in self.__icons:
                         item.setIcon(self.__icons[p.name()])
-
                     row.append(item)
 
                 if self.ActionViewColumnUser.isChecked():
@@ -592,7 +591,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.send_signal_dialog.show()
 
     def _showKillDialog(self):
-        self.send_signal_dialog = KillProcessDialog(process=psutil.Process(self.selected_pid))
+        self.KillDialog = KillProcessDialog(process=psutil.Process(self.selected_pid))
 
         self.KillDialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
         self.KillDialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)

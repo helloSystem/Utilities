@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from bytes2human import bytes2human
+from utility_bytes2human import bytes2human
 from PyQt5.QtWidgets import QLabel
 
 
