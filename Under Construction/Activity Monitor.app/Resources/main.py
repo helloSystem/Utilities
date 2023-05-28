@@ -281,6 +281,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         self.ActionMenuViewSendSignaltoProcesses.triggered.connect(self._showSendSignalDialog)
         self.ActionMenuViewKillDialog.triggered.connect(self._showKillDialog)
+        self.ActionToolBarQuitProcess.triggered.connect(self._showKillDialog)
+
         # Tab CPU
         self.data_idle_changed.connect(self.refresh_idle)
         self.data_user_changed.connect(self.refresh_user)

@@ -41,7 +41,7 @@ class TreeViewProcess(object):
         self.selected_pid = None
         self.process_tree.clearSelection()
 
-        self.actionToolBarQuit_Process.setEnabled(False)
+        self.ActionToolBarQuitProcess.setEnabled(False)
         self.actionToolBar_Inspect_Process.setEnabled(False)
         self.ActionMenuViewSelectedProcesses.setEnabled(False)
         if self.filterComboBox.currentIndex() == 8:
@@ -71,14 +71,17 @@ class TreeViewProcess(object):
             )
 
     def onClicked(self):
-        self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
-        if self.selected_pid:
-            self.actionToolBarQuit_Process.setEnabled(True)
-            self.actionToolBar_Inspect_Process.setEnabled(True)
-            self.ActionMenuViewSelectedProcesses.setEnabled(True)
-            self.filterComboBox.model().item(8).setEnabled(True)
-            self.ActionMenuViewKillDialog.setEnabled(True)
-            self.ActionMenuViewSendSignaltoProcesses.setEnabled(True)
+        try:
+            self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
+            if self.selected_pid:
+                self.ActionToolBarQuitProcess.setEnabled(True)
+                self.actionToolBar_Inspect_Process.setEnabled(True)
+                self.ActionMenuViewSelectedProcesses.setEnabled(True)
+                self.filterComboBox.model().item(8).setEnabled(True)
+                self.ActionMenuViewKillDialog.setEnabled(True)
+                self.ActionMenuViewSendSignaltoProcesses.setEnabled(True)
+        except KeyError:
+            self.selectClear()
 
     def killProcess(self):
         if self.selected_pid:
