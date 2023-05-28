@@ -6,10 +6,9 @@ import signal
 from PyQt5.QtCore import (
     Qt,
     QItemSelectionModel,
-
 )
 
-from PyQt5.QtWidgets import QAction, QLineEdit, QTreeView, QWidgetAction, QComboBox
+from PyQt5.QtWidgets import QAction, QLineEdit, QTreeView, QComboBox
 
 
 class TreeViewProcess(object):
@@ -54,9 +53,9 @@ class TreeViewProcess(object):
     def selectItem(self, itemOrText):
         # oldIndex = self.process_tree.selectionModel().currentIndex()
         newIndex = None
-        try:  # an item is given--------------------------------------------
+        try:  # an item is given
             newIndex = self.process_tree.model().indexFromItem(itemOrText)
-        except (Exception, BaseException):  # a text is given and we are looking for the first match---
+        except (Exception, BaseException):  # a text is given and we are looking for the first match
             listIndexes = self.process_tree.model().match(
                 self.process_tree.model().index(0, 0), Qt.DisplayRole, itemOrText, Qt.MatchStartsWith
             )
