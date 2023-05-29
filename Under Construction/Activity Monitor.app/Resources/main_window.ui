@@ -15,8 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="qressources.qrc">
-    <normaloff>:/Processes.png</normaloff>:/Processes.png
-   </iconset>
+    <normaloff>:/Processes.png</normaloff>:/Processes.png</iconset>
   </property>
   <widget class="QWidget" name="central_widget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -2729,8 +2728,7 @@
    </property>
    <property name="icon">
     <iconset resource="qressources.qrc">
-     <normaloff>:/KillProcess.png</normaloff>:/KillProcess.png
-    </iconset>
+     <normaloff>:/KillProcess.png</normaloff>:/KillProcess.png</iconset>
    </property>
    <property name="text">
     <string>Quit Process</string>
@@ -2745,8 +2743,7 @@
    </property>
    <property name="icon">
     <iconset resource="qressources.qrc">
-     <normaloff>:/Inspect.png</normaloff>:/Inspect.png
-    </iconset>
+     <normaloff>:/Inspect.png</normaloff>:/Inspect.png</iconset>
    </property>
    <property name="text">
     <string>Inspect Process</string>
