@@ -404,13 +404,13 @@ class Ui_MainWindow(object):
         self.label_writes_out_sec_value = QtWidgets.QLabel(self.tab_disk_activity)
         self.label_writes_out_sec_value.setText("")
         self.label_writes_out_sec_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_writes_out_sec_value.setObjectName("label_writes_out_sec_value")
         self.gridLayout.addWidget(self.label_writes_out_sec_value, 3, 1, 1, 1)
         self.label_reads_in_sec_value = QtWidgets.QLabel(self.tab_disk_activity)
         self.label_reads_in_sec_value.setText("")
         self.label_reads_in_sec_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_reads_in_sec_value.setObjectName("label_reads_in_sec_value")
         self.gridLayout.addWidget(self.label_reads_in_sec_value, 2, 1, 1, 1)
         self.label_writes_out = QtWidgets.QLabel(self.tab_disk_activity)
@@ -420,7 +420,7 @@ class Ui_MainWindow(object):
         self.label_writes_out_value = QtWidgets.QLabel(self.tab_disk_activity)
         self.label_writes_out_value.setText("")
         self.label_writes_out_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_writes_out_value.setObjectName("label_writes_out_value")
         self.gridLayout.addWidget(self.label_writes_out_value, 1, 1, 1, 1)
         self.label_reads_in = QtWidgets.QLabel(self.tab_disk_activity)
@@ -461,7 +461,7 @@ class Ui_MainWindow(object):
         self.label_data_written_value = QtWidgets.QLabel(self.tab_disk_activity)
         self.label_data_written_value.setText("")
         self.label_data_written_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_written_value.setObjectName("label_data_written_value")
         self.gridLayout_9.addWidget(self.label_data_written_value, 1, 1, 1, 1)
         self.label_data_read = QtWidgets.QLabel(self.tab_disk_activity)
@@ -471,7 +471,7 @@ class Ui_MainWindow(object):
         self.label_data_written_sec_value = QtWidgets.QLabel(self.tab_disk_activity)
         self.label_data_written_sec_value.setText("")
         self.label_data_written_sec_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_written_sec_value.setObjectName("label_data_written_sec_value")
         self.gridLayout_9.addWidget(self.label_data_written_sec_value, 3, 1, 1, 1)
         self.color_picker_data_written_sec_value = ColorButton(self.tab_disk_activity)
@@ -484,7 +484,7 @@ class Ui_MainWindow(object):
         self.gridLayout_9.addWidget(self.label_data_read_sec, 2, 0, 1, 1)
         self.label_data_written_sec = QtWidgets.QLabel(self.tab_disk_activity)
         self.label_data_written_sec.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_written_sec.setObjectName("label_data_written_sec")
         self.gridLayout_9.addWidget(self.label_data_written_sec, 3, 0, 1, 1)
         self.color_picker_data_read_sec_value = ColorButton(self.tab_disk_activity)
@@ -499,7 +499,7 @@ class Ui_MainWindow(object):
         self.label_data_read_sec_value = QtWidgets.QLabel(self.tab_disk_activity)
         self.label_data_read_sec_value.setText("")
         self.label_data_read_sec_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_read_sec_value.setObjectName("label_data_read_sec_value")
         self.gridLayout_9.addWidget(self.label_data_read_sec_value, 2, 1, 1, 1)
         spacerItem19 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -602,21 +602,21 @@ class Ui_MainWindow(object):
         self.label_space_free_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_space_free_value.setText("")
         self.label_space_free_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_space_free_value.setObjectName("label_space_free_value")
         self.gridLayout_2.addWidget(self.label_space_free_value, 3, 1, 1, 1)
         self.label_space_free_value_in_bytes = QtWidgets.QLabel(self.tab_disk_usage)
         self.label_space_free_value_in_bytes.setMinimumSize(QtCore.QSize(20, 0))
         self.label_space_free_value_in_bytes.setText("")
         self.label_space_free_value_in_bytes.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_space_free_value_in_bytes.setObjectName("label_space_free_value_in_bytes")
         self.gridLayout_2.addWidget(self.label_space_free_value_in_bytes, 3, 2, 1, 1)
         self.label_space_utilized_value_in_bytes = QtWidgets.QLabel(self.tab_disk_usage)
         self.label_space_utilized_value_in_bytes.setMinimumSize(QtCore.QSize(20, 0))
         self.label_space_utilized_value_in_bytes.setText("")
         self.label_space_utilized_value_in_bytes.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_space_utilized_value_in_bytes.setObjectName("label_space_utilized_value_in_bytes")
         self.gridLayout_2.addWidget(self.label_space_utilized_value_in_bytes, 2, 2, 1, 1)
         spacerItem26 = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -629,7 +629,7 @@ class Ui_MainWindow(object):
         self.label_space_utilized_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_space_utilized_value.setText("")
         self.label_space_utilized_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_space_utilized_value.setObjectName("label_space_utilized_value")
         self.gridLayout_2.addWidget(self.label_space_utilized_value, 2, 1, 1, 1)
         self.label_space_utilized = QtWidgets.QLabel(self.tab_disk_usage)
@@ -697,21 +697,21 @@ class Ui_MainWindow(object):
         self.label_packets_out_sec_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_packets_out_sec_value.setText("")
         self.label_packets_out_sec_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_packets_out_sec_value.setObjectName("label_packets_out_sec_value")
         self.gridLayout_3.addWidget(self.label_packets_out_sec_value, 3, 2, 1, 1)
         self.label_packets_out_value = QtWidgets.QLabel(self.tab_network)
         self.label_packets_out_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_packets_out_value.setText("")
         self.label_packets_out_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_packets_out_value.setObjectName("label_packets_out_value")
         self.gridLayout_3.addWidget(self.label_packets_out_value, 1, 2, 1, 1)
         self.label_packets_in_sec_value = QtWidgets.QLabel(self.tab_network)
         self.label_packets_in_sec_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_packets_in_sec_value.setText("")
         self.label_packets_in_sec_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_packets_in_sec_value.setObjectName("label_packets_in_sec_value")
         self.gridLayout_3.addWidget(self.label_packets_in_sec_value, 2, 2, 1, 1)
         self.label_packets_in_sec = QtWidgets.QLabel(self.tab_network)
@@ -736,7 +736,7 @@ class Ui_MainWindow(object):
         self.label_packets_in_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_packets_in_value.setText("")
         self.label_packets_in_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_packets_in_value.setObjectName("label_packets_in_value")
         self.gridLayout_3.addWidget(self.label_packets_in_value, 0, 2, 1, 1)
         spacerItem34 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -754,7 +754,7 @@ class Ui_MainWindow(object):
         self.gridLayout_12.addWidget(self.color_picker_data_received_sec_value, 2, 2, 1, 1)
         self.label_data_received_sec = QtWidgets.QLabel(self.tab_network)
         self.label_data_received_sec.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_received_sec.setObjectName("label_data_received_sec")
         self.gridLayout_12.addWidget(self.label_data_received_sec, 2, 0, 1, 1)
         self.label_data_sent = QtWidgets.QLabel(self.tab_network)
@@ -773,7 +773,7 @@ class Ui_MainWindow(object):
         self.label_data_sent_sec_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_data_sent_sec_value.setText("")
         self.label_data_sent_sec_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_sent_sec_value.setObjectName("label_data_sent_sec_value")
         self.gridLayout_12.addWidget(self.label_data_sent_sec_value, 3, 1, 1, 1)
         self.label_data_sent_value = QtWidgets.QLabel(self.tab_network)
@@ -786,14 +786,14 @@ class Ui_MainWindow(object):
         self.label_data_received_sec_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_data_received_sec_value.setText("")
         self.label_data_received_sec_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_received_sec_value.setObjectName("label_data_received_sec_value")
         self.gridLayout_12.addWidget(self.label_data_received_sec_value, 2, 1, 1, 1)
         self.label_data_received_value = QtWidgets.QLabel(self.tab_network)
         self.label_data_received_value.setMinimumSize(QtCore.QSize(20, 0))
         self.label_data_received_value.setText("")
         self.label_data_received_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+                QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
         self.label_data_received_value.setObjectName("label_data_received_value")
         self.gridLayout_12.addWidget(self.label_data_received_value, 0, 1, 1, 1)
         self.color_picker_data_sent_sec_value = ColorButton(self.tab_network)
@@ -1078,44 +1078,44 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.ActionToolBarInspectProcess)
 
         self.retranslateUi(MainWindow)
-        self.central_widget_tabs.setCurrentIndex(1)
+        self.central_widget_tabs.setCurrentIndex(0)
         self.actionQuit.triggered.connect(MainWindow.close)  # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "Activity Monitor"))
-        self.label_system_unit.setText(_translate("MainWindow", "%"))
-        self.label_user.setToolTip(
-            _translate("MainWindow", "<html><head/><body><p>Time spent by normal processes executing in user\n"
-                                     "                mode</p></body></html>\n"
-                                     "               "))
-        self.label_user.setText(_translate("MainWindow", "User:"))
-        self.label_idle_unit.setText(_translate("MainWindow", "%"))
-        self.label_system.setToolTip(_translate("MainWindow", "<html><head/><body><p>Time\n"
-                                                              "                spent by processes executing in kernel mode.</p></body></html>\n"
-                                                              "               ", "toolTip information"))
-        self.label_system.setText(_translate("MainWindow", "System:"))
-        self.label_irq_unit.setText(_translate("MainWindow", "%"))
-        self.label_idle.setToolTip(_translate("MainWindow", "Time spent doing nothing"))
-        self.label_idle.setText(_translate("MainWindow", "Idle:"))
-        self.label_nice.setToolTip(
-            _translate("MainWindow", "<html><head/><body><p>Time spent by niced (prioritized) processes\n"
-                                     "                executing in\n"
-                                     "                user mode</p></body></html>\n"
-                                     "               "))
-        self.label_nice.setText(_translate("MainWindow", "Nice:"))
-        self.label_user_unit.setText(_translate("MainWindow", "%"))
-        self.label_irq.setToolTip(_translate("MainWindow",
-                                             "<html><head/><body><p>Time spent for servicing hardware interrupts</p></body></html>"))
-        self.label_irq.setText(_translate("MainWindow", "Irq:"))
-        self.label_nice_unit.setText(_translate("MainWindow", "%"))
-        self.label_threads.setText(_translate("MainWindow", "Threads:"))
-        self.label_processes.setText(_translate("MainWindow", "Processes:"))
-        self.label_cpu_usage.setText(_translate("MainWindow", "CPU Usage"))
-        self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_cpu),
-                                            _translate("MainWindow", "CPU"))
-        self.label_free.setText(_translate("MainWindow", "Free:"))
+            _translate = QtCore.QCoreApplication.translate
+            MainWindow.setWindowTitle(_translate("MainWindow", "Activity Monitor"))
+            self.label_system_unit.setText(_translate("MainWindow", "%"))
+            self.label_user.setToolTip(
+                    _translate("MainWindow", "<html><head/><body><p>Time spent by normal processes executing in user\n"
+                                             "                mode</p></body></html>\n"
+                                             "               "))
+            self.label_user.setText(_translate("MainWindow", "User:"))
+            self.label_idle_unit.setText(_translate("MainWindow", "%"))
+            self.label_system.setToolTip(_translate("MainWindow", "<html><head/><body><p>Time\n"
+                                                                  "                spent by processes executing in kernel mode.</p></body></html>\n"
+                                                                  "               ", "toolTip information"))
+            self.label_system.setText(_translate("MainWindow", "System:"))
+            self.label_irq_unit.setText(_translate("MainWindow", "%"))
+            self.label_idle.setToolTip(_translate("MainWindow", "Time spent doing nothing"))
+            self.label_idle.setText(_translate("MainWindow", "Idle:"))
+            self.label_nice.setToolTip(
+                    _translate("MainWindow", "<html><head/><body><p>Time spent by niced (prioritized) processes\n"
+                                             "                executing in\n"
+                                             "                user mode</p></body></html>\n"
+                                             "               "))
+            self.label_nice.setText(_translate("MainWindow", "Nice:"))
+            self.label_user_unit.setText(_translate("MainWindow", "%"))
+            self.label_irq.setToolTip(_translate("MainWindow",
+                                                 "<html><head/><body><p>Time spent for servicing hardware interrupts</p></body></html>"))
+            self.label_irq.setText(_translate("MainWindow", "Irq:"))
+            self.label_nice_unit.setText(_translate("MainWindow", "%"))
+            self.label_threads.setText(_translate("MainWindow", "Threads:"))
+            self.label_processes.setText(_translate("MainWindow", "Processes:"))
+            self.label_cpu_usage.setText(_translate("MainWindow", "CPU Usage"))
+            self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_cpu),
+                                                _translate("MainWindow", "CPU"))
+            self.label_free.setText(_translate("MainWindow", "Free:"))
         self.label_used.setText(_translate("MainWindow", "Used:"))
         self.label_active.setText(_translate("MainWindow", "Active:"))
         self.label_inactive.setText(_translate("MainWindow", "Inactive:"))
@@ -1125,10 +1125,10 @@ class Ui_MainWindow(object):
         self.label_available.setText(_translate("MainWindow", "Available:"))
         self.label_shared.setText(_translate("MainWindow", "Shared:"))
         self.label_buffers.setText(_translate("MainWindow", "Buffers:"))
-        self.system_memory_total_value.setText(_translate("MainWindow", "TextLabel"))
-        self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_system_memory),
-                                            _translate("MainWindow", "System Memory"))
-        self.label_writes_out.setText(_translate("MainWindow", "Writes out:"))
+            self.system_memory_total_value.setText(_translate("MainWindow", "TextLabel"))
+            self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_system_memory),
+                                                _translate("MainWindow", "System Memory"))
+            self.label_writes_out.setText(_translate("MainWindow", "Writes out:"))
         self.label_reads_in.setText(_translate("MainWindow", "Reads in:"))
         self.label_reads_in_sec.setText(_translate("MainWindow", "Reads in/sec:"))
         self.label_writes_out_sec.setText(_translate("MainWindow", "Writes out/sec:"))
@@ -1139,14 +1139,14 @@ class Ui_MainWindow(object):
         self.radioButton.setText(_translate("MainWindow", "IO"))
         self.radioButton_2.setText(_translate("MainWindow", "Data"))
         self.label_bandwidth.setText(_translate("MainWindow", "Peak:"))
-        self.label_bandwidth_unit.setText(_translate("MainWindow", "/sec"))
-        self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_disk_activity),
-                                            _translate("MainWindow", "Disk Activity"))
-        self.label_space_free.setText(_translate("MainWindow", "Space free:"))
-        self.label_space_utilized.setText(_translate("MainWindow", "Space utilized:"))
-        self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_disk_usage),
-                                            _translate("MainWindow", "Disk Usage"))
-        self.label_packets_in_sec.setText(_translate("MainWindow", "Packets in/sec:"))
+            self.label_bandwidth_unit.setText(_translate("MainWindow", "/sec"))
+            self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_disk_activity),
+                                                _translate("MainWindow", "Disk Activity"))
+            self.label_space_free.setText(_translate("MainWindow", "Space free:"))
+            self.label_space_utilized.setText(_translate("MainWindow", "Space utilized:"))
+            self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_disk_usage),
+                                                _translate("MainWindow", "Disk Usage"))
+            self.label_packets_in_sec.setText(_translate("MainWindow", "Packets in/sec:"))
         self.label_packets_out.setText(_translate("MainWindow", "Packets out:"))
         self.label_packets_in.setText(_translate("MainWindow", "Packets in:"))
         self.label_packets_out_sec.setText(_translate("MainWindow", "Packets out/sec:"))
@@ -1157,10 +1157,10 @@ class Ui_MainWindow(object):
         self.radioButton_3.setText(_translate("MainWindow", "Packets"))
         self.radioButton_4.setText(_translate("MainWindow", "Data"))
         self.label_bandwidth_2.setText(_translate("MainWindow", "Peak:"))
-        self.label_bandwidth_unit_2.setText(_translate("MainWindow", "/sec"))
-        self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_network),
-                                            _translate("MainWindow", "Network"))
-        self.menuFile.setTitle(_translate("MainWindow", "File"))
+            self.label_bandwidth_unit_2.setText(_translate("MainWindow", "/sec"))
+            self.central_widget_tabs.setTabText(self.central_widget_tabs.indexOf(self.tab_network),
+                                                _translate("MainWindow", "Network"))
+            self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuViewFrequency.setTitle(_translate("MainWindow", "Update Frequency"))
