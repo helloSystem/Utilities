@@ -36,6 +36,7 @@ from tab_network import TabNetwork
 from dialog_send_signal import SendSignalDialog
 from dialog_kill_process import KillProcessDialog
 from dialog_about import AboutDialog
+from dialog_inspect_process import InspectProcess
 
 # Back end libs
 from widget_chartpie import ChartPieItem
@@ -270,6 +271,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.timer.timeout.connect(self.refresh)
 
         # Menu and ToolBar
+        self.ActionToolBarInspectProcess.triggered.connect(self._showInspectProcessDialog)
         self.ActionUpdateFrequencyTo5Secs.triggered.connect(self._timer_change_for_5_secs)
         self.ActionUpdateFrequencyTo3Secs.triggered.connect(self._timer_change_for_3_secs)
         self.ActionUpdateFrequencyTo1Sec.triggered.connect(self._timer_change_for_1_sec)
@@ -589,6 +591,11 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         for pname, icon in icons.items():
             if pname not in self.__icons:
                 self.__icons[pname] = icon
+
+    def _showInspectProcessDialog(self):
+        self.inspect_process_dialog = InspectProcess(process=psutil.Process(self.selected_pid))
+        self.inspect_process_dialog.run()
+        self.inspect_process_dialog.show()
 
     def _showSendSignalDialog(self):
         self.send_signal_dialog = SendSignalDialog(process=psutil.Process(self.selected_pid))

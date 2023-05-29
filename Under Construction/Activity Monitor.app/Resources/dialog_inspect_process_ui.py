@@ -63,17 +63,20 @@ class Ui_InspectProcess(object):
         self.gridLayout_2.addWidget(self.unique_set_size_label, 0, 0, 1, 1)
         self.data_resident_set_size_value = QtWidgets.QLabel(self.memory_tab)
         self.data_resident_set_size_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+            )
         self.data_resident_set_size_value.setObjectName("data_resident_set_size_value")
         self.gridLayout_2.addWidget(self.data_resident_set_size_value, 4, 1, 1, 1)
         self.unique_set_size_value = QtWidgets.QLabel(self.memory_tab)
         self.unique_set_size_value.setToolTip("")
-        self.unique_set_size_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.unique_set_size_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+                                                )
         self.unique_set_size_value.setObjectName("unique_set_size_value")
         self.gridLayout_2.addWidget(self.unique_set_size_value, 0, 1, 1, 1)
         self.resident_set_size_value = QtWidgets.QLabel(self.memory_tab)
         self.resident_set_size_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+            )
         self.resident_set_size_value.setObjectName("resident_set_size_value")
         self.gridLayout_2.addWidget(self.resident_set_size_value, 1, 1, 1, 1)
         self.virtual_memory_size_label = QtWidgets.QLabel(self.memory_tab)
@@ -81,12 +84,14 @@ class Ui_InspectProcess(object):
         self.gridLayout_2.addWidget(self.virtual_memory_size_label, 2, 0, 1, 1)
         self.text_resitent_set_size_value = QtWidgets.QLabel(self.memory_tab)
         self.text_resitent_set_size_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+            )
         self.text_resitent_set_size_value.setObjectName("text_resitent_set_size_value")
         self.gridLayout_2.addWidget(self.text_resitent_set_size_value, 3, 1, 1, 1)
         self.virtual_memory_size_value = QtWidgets.QLabel(self.memory_tab)
         self.virtual_memory_size_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+            )
         self.virtual_memory_size_value.setObjectName("virtual_memory_size_value")
         self.gridLayout_2.addWidget(self.virtual_memory_size_value, 2, 1, 1, 1)
         self.resident_set_size_label = QtWidgets.QLabel(self.memory_tab)
@@ -101,12 +106,14 @@ class Ui_InspectProcess(object):
         self.gridLayout_3.setObjectName("gridLayout_3")
         self.shared_libraries_size_value = QtWidgets.QLabel(self.memory_tab)
         self.shared_libraries_size_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+            )
         self.shared_libraries_size_value.setObjectName("shared_libraries_size_value")
         self.gridLayout_3.addWidget(self.shared_libraries_size_value, 1, 1, 1, 1)
         self.dirty_pages_number_value = QtWidgets.QLabel(self.memory_tab)
         self.dirty_pages_number_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+            )
         self.dirty_pages_number_value.setObjectName("dirty_pages_number_value")
         self.gridLayout_3.addWidget(self.dirty_pages_number_value, 2, 1, 1, 1)
         self.dirty_pages_number_label = QtWidgets.QLabel(self.memory_tab)
@@ -114,7 +121,8 @@ class Ui_InspectProcess(object):
         self.gridLayout_3.addWidget(self.dirty_pages_number_label, 2, 0, 1, 1)
         self.proportional_set_size_value = QtWidgets.QLabel(self.memory_tab)
         self.proportional_set_size_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+            )
         self.proportional_set_size_value.setObjectName("proportional_set_size_value")
         self.gridLayout_3.addWidget(self.proportional_set_size_value, 3, 1, 1, 1)
         self.shared_libraries_size_label = QtWidgets.QLabel(self.memory_tab)
@@ -125,7 +133,8 @@ class Ui_InspectProcess(object):
         self.gridLayout_3.addWidget(self.shared_memory_size_label, 0, 0, 1, 1)
         self.shared_memory_size_value = QtWidgets.QLabel(self.memory_tab)
         self.shared_memory_size_value.setAlignment(
-            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+            QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+            )
         self.shared_memory_size_value.setObjectName("shared_memory_size_value")
         self.gridLayout_3.addWidget(self.shared_memory_size_value, 0, 1, 1, 1)
         self.proportional_set_size_label = QtWidgets.QLabel(self.memory_tab)
@@ -137,7 +146,8 @@ class Ui_InspectProcess(object):
         self.swapped_size_label.setObjectName("swapped_size_label")
         self.gridLayout_3.addWidget(self.swapped_size_label, 4, 0, 1, 1)
         self.swapped_size_value = QtWidgets.QLabel(self.memory_tab)
-        self.swapped_size_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter)
+        self.swapped_size_value.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignTrailing | QtCore.Qt.AlignVCenter
+                                             )
         self.swapped_size_value.setObjectName("swapped_size_value")
         self.gridLayout_3.addWidget(self.swapped_size_value, 4, 1, 1, 1)
         self.horizontalLayout_2.addLayout(self.gridLayout_3)
@@ -212,44 +222,62 @@ class Ui_InspectProcess(object):
         self.procress_group_id_label.setText(_translate("InspectProcess", "Procress Group ID:"))
         self.cpu_percent_value.setText(_translate("InspectProcess", "TextLabel"))
         self.parent_process_value.setText(_translate("InspectProcess", "TextLabel"))
-        self.data_resident_set_size_label.setToolTip(_translate("InspectProcess",
-                                                                "<html><head/><body><p>The amount of physical memory devoted to other than executable code.</p></body></html>"))
+        self.data_resident_set_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>The\n"
+                                                                                  "                                                                    amount of physical memory devoted to other than\n"
+                                                                                  "                                                                    executable code.</p></body></html>\n"
+                                                                                  "                                                                "))
         self.data_resident_set_size_label.setText(_translate("InspectProcess", "Data Resident Set Size:"))
-        self.text_resitent_set_size_label.setToolTip(_translate("InspectProcess",
-                                                                "<html><head/><body><p>The amount of memory devoted to executable code. </p></body></html>"))
+        self.text_resitent_set_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>The\n"
+                                                                                  "                                                                    amount of memory devoted to executable code. </p></body></html>\n"
+                                                                                  "                                                                "))
         self.text_resitent_set_size_label.setText(_translate("InspectProcess", "Text Resident Set Size:"))
-        self.unique_set_size_label.setToolTip(_translate("InspectProcess",
-                                                         "<html><head/><body><p>This is the memory which is unique to a process and which would be freed if the process was terminated right now.</p></body></html>"))
+        self.unique_set_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>This\n"
+                                                                           "                                                                    is the memory which is unique to a process and which\n"
+                                                                           "                                                                    would be freed if the process was terminated right\n"
+                                                                           "                                                                    now.</p></body></html>\n"
+                                                                           "                                                                "))
         self.unique_set_size_label.setText(_translate("InspectProcess", "Unique Set Size:"))
         self.data_resident_set_size_value.setText(_translate("InspectProcess", "TextLabel"))
         self.unique_set_size_value.setText(_translate("InspectProcess", "TextLabel"))
         self.resident_set_size_value.setText(_translate("InspectProcess", "TextLabel"))
-        self.virtual_memory_size_label.setToolTip(_translate("InspectProcess",
-                                                             "<html><head/><body><p>This is the total amount of virtual memory used by the process. </p></body></html>"))
+        self.virtual_memory_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>This\n"
+                                                                               "                                                                    is the total amount of virtual memory used by the\n"
+                                                                               "                                                                    process. </p></body></html>\n"
+                                                                               "                                                                "))
         self.virtual_memory_size_label.setText(_translate("InspectProcess", "Vistual Memory Size:"))
         self.text_resitent_set_size_value.setText(_translate("InspectProcess", "TextLabel"))
         self.virtual_memory_size_value.setText(_translate("InspectProcess", "TextLabel"))
-        self.resident_set_size_label.setToolTip(_translate("InspectProcess",
-                                                           "<html><head/><body><p>This is the non-swapped physical memory a process has used. </p></body></html>"))
+        self.resident_set_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>This\n"
+                                                                             "                                                                    is the non-swapped physical memory a process has\n"
+                                                                             "                                                                    used. </p></body></html>\n"
+                                                                             "                                                                "))
         self.resident_set_size_label.setText(_translate("InspectProcess", "Resident Set Size:"))
         self.shared_libraries_size_value.setText(_translate("InspectProcess", "TextLabel"))
         self.dirty_pages_number_value.setText(_translate("InspectProcess", "TextLabel"))
-        self.dirty_pages_number_label.setToolTip(
-            _translate("InspectProcess", "<html><head/><body><p>The number of dirty pages.</p></body></html>"))
+        self.dirty_pages_number_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>The\n"
+                                                                              "                                                                    number of dirty pages.</p></body></html>\n"
+                                                                              "                                                                "))
         self.dirty_pages_number_label.setText(_translate("InspectProcess", "Dirty Pages Number:"))
         self.proportional_set_size_value.setText(_translate("InspectProcess", "TextLabel"))
-        self.shared_libraries_size_label.setToolTip(_translate("InspectProcess",
-                                                               "<html><head/><body><p>The memory used by shared libraries.</p></body></html>"))
+        self.shared_libraries_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>The\n"
+                                                                                 "                                                                    memory used by shared libraries.</p></body></html>\n"
+                                                                                 "                                                                "))
         self.shared_libraries_size_label.setText(_translate("InspectProcess", "Shared libraries Size:"))
-        self.shared_memory_size_label.setToolTip(_translate("InspectProcess",
-                                                            "<html><head/><body><p> Memory that could be potentially shared with other processes.</p></body></html>"))
+        self.shared_memory_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>\n"
+                                                                              "                                                                    Memory that could be potentially shared with other\n"
+                                                                              "                                                                    processes.</p></body></html>\n"
+                                                                              "                                                                "))
         self.shared_memory_size_label.setText(_translate("InspectProcess", "Shared Memory Size:"))
         self.shared_memory_size_value.setText(_translate("InspectProcess", "TextLabel"))
-        self.proportional_set_size_label.setToolTip(_translate("InspectProcess",
-                                                               "<html><head/><body><p>The amount of memory shared with other processes, accounted in a way that the amount is divided evenly between the processes that share it. </p></body></html>"))
+        self.proportional_set_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>The\n"
+                                                                                 "                                                                    amount of memory shared with other processes,\n"
+                                                                                 "                                                                    accounted in a way that the amount is divided evenly\n"
+                                                                                 "                                                                    between the processes that share it. </p></body></html>\n"
+                                                                                 "                                                                "))
         self.proportional_set_size_label.setText(_translate("InspectProcess", "Proportional Set Size:"))
-        self.swapped_size_label.setToolTip(_translate("InspectProcess",
-                                                      "<html><head/><body><p>Amount of memory that has been swapped out to disk.</p></body></html>"))
+        self.swapped_size_label.setToolTip(_translate("InspectProcess", "<html><head/><body><p>Amount\n"
+                                                                        "                                                                    of memory that has been swapped out to disk.</p></body></html>\n"
+                                                                        "                                                                "))
         self.swapped_size_label.setText(_translate("InspectProcess", "Swapped Size:"))
         self.swapped_size_value.setText(_translate("InspectProcess", "TextLabel"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.memory_tab), _translate("InspectProcess", "Memory"))

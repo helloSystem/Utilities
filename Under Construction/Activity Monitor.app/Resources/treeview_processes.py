@@ -41,7 +41,7 @@ class TreeViewProcess(object):
         self.process_tree.clearSelection()
 
         self.ActionToolBarQuitProcess.setEnabled(False)
-        self.actionToolBar_Inspect_Process.setEnabled(False)
+        self.ActionToolBarInspectProcess.setEnabled(False)
         self.ActionMenuViewSelectedProcesses.setEnabled(False)
         if self.filterComboBox.currentIndex() == 8:
             self.filterComboBox.setCurrentIndex(0)
@@ -74,7 +74,7 @@ class TreeViewProcess(object):
             self.selected_pid = int(self.tree_view_model.itemData(self.process_tree.selectedIndexes()[0])[0])
             if self.selected_pid:
                 self.ActionToolBarQuitProcess.setEnabled(True)
-                self.actionToolBar_Inspect_Process.setEnabled(True)
+                self.ActionToolBarInspectProcess.setEnabled(True)
                 self.ActionMenuViewSelectedProcesses.setEnabled(True)
                 self.filterComboBox.model().item(8).setEnabled(True)
                 self.ActionMenuViewKillDialog.setEnabled(True)

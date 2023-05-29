@@ -2100,7 +2100,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="ActionToolBarQuitProcess"/>
-   <addaction name="actionToolBar_Inspect_Process"/>
+      <addaction name="ActionToolBarInspectProcess"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -2289,15 +2289,15 @@
    </property>
   </action>
   <action name="ActionMenuViewSelectedProcesses">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>Selected Processes</string>
-   </property>
+      <property name="checkable">
+          <bool>true</bool>
+      </property>
+      <property name="enabled">
+          <bool>false</bool>
+      </property>
+      <property name="text">
+          <string>Selected Processes</string>
+      </property>
   </action>
      <action name="ActionMenuViewApplicationInLast12Hours">
          <property name="checkable">
@@ -2322,16 +2322,16 @@
          <property name="enabled">
              <bool>false</bool>
          </property>
-   <property name="text">
-    <string>Process ID</string>
-   </property>
-  </action>
-  <action name="ActionViewColumnProcessName">
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-   <property name="checked">
-    <bool>true</bool>
+         <property name="text">
+             <string>Process ID</string>
+         </property>
+     </action>
+     <action name="ActionViewColumnProcessName">
+         <property name="checkable">
+             <bool>true</bool>
+         </property>
+         <property name="checked">
+             <bool>true</bool>
    </property>
    <property name="text">
     <string>Process Name</string>
@@ -2392,38 +2392,38 @@
     <string>Virtual Memory</string>
    </property>
   </action>
-  <action name="ActionToolBarQuitProcess">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-      <property name="icon">
-          <iconset resource="qressources.qrc">
-              <normaloff>:/KillProcess.png</normaloff>:/KillProcess.png
-          </iconset>
-      </property>
-   <property name="text">
-    <string>Quit Process</string>
-   </property>
-   <property name="toolTip">
-    <string>Quit the selected process</string>
-   </property>
-  </action>
-  <action name="actionToolBar_Inspect_Process">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-      <property name="icon">
-          <iconset resource="qressources.qrc">
-              <normaloff>:/Inspect.png</normaloff>:/Inspect.png
-          </iconset>
-      </property>
-   <property name="text">
-    <string>Inspect Process</string>
-   </property>
-   <property name="toolTip">
-    <string>Inspect selected process</string>
-   </property>
-  </action>
+     <action name="ActionToolBarQuitProcess">
+         <property name="enabled">
+             <bool>false</bool>
+         </property>
+         <property name="icon">
+             <iconset resource="qressources.qrc">
+                 <normaloff>:/KillProcess.png</normaloff>:/KillProcess.png
+             </iconset>
+         </property>
+         <property name="text">
+             <string>Quit Process</string>
+         </property>
+         <property name="toolTip">
+             <string>Quit the selected process</string>
+         </property>
+     </action>
+     <action name="ActionToolBarInspectProcess">
+         <property name="enabled">
+             <bool>false</bool>
+         </property>
+         <property name="icon">
+             <iconset resource="qressources.qrc">
+                 <normaloff>:/Inspect.png</normaloff>:/Inspect.png
+             </iconset>
+         </property>
+         <property name="text">
+             <string>Inspect Process</string>
+         </property>
+         <property name="toolTip">
+             <string>Inspect selected process</string>
+         </property>
+     </action>
   <action name="ActionMenuViewFilterProcesses">
    <property name="enabled">
     <bool>true</bool>

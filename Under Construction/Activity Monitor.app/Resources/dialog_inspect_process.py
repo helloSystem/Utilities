@@ -73,10 +73,11 @@ class InspectProcess(QDialog):
             return ", ".join(["%s=%s" % (x, bytes2human(getattr(nt, x)))
                               for x in nt._fields])
 
-    def run(self, pid, verbose=False):
+    def run(self, verbose=False):
         try:
-            proc = psutil.Process(pid)
+            proc = self.process
             pinfo = proc.as_dict(ad_value=ACCESS_DENIED)
+            print(pinfo)
         except psutil.NoSuchProcess as err:
             sys.exit(str(err))
 
@@ -129,16 +130,20 @@ class InspectProcess(QDialog):
 
         self.print_('memory', self.str_ntuple(pinfo['memory_full_info'], convert_bytes=True))
         self.print_('memory %', round(pinfo['memory_percent'], 2))
-        self.ui.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
-        self.ui.virtual_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].vms)}")
-        self.ui.resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].rss)}")
-        self.ui.shared_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].shared)}")
-        self.ui.text_resitent_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].text)}")
-        self.ui.data_resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].data)}")
-        self.ui.swapped_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].swap)}")
-        self.ui.shared_libraries_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].lib)}")
-        self.ui.proportional_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].pss)}")
-        self.ui.dirty_pages_number_value.setText(f"{pinfo['memory_full_info'].dirty}")
+        if pinfo['memory_full_info']:
+            self.ui.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
+            self.ui.virtual_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].vms)}")
+            self.ui.resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].rss)}")
+            self.ui.shared_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].shared)}")
+            self.ui.text_resitent_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].text)}")
+            self.ui.data_resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].data)}")
+            self.ui.swapped_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].swap)}")
+            self.ui.shared_libraries_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].lib)}")
+            self.ui.proportional_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].pss)}")
+            self.ui.dirty_pages_number_value.setText(f"{pinfo['memory_full_info'].dirty}")
+        else:
+            self.ui.unique_set_size_label.setText("")
+            self.ui.unique_set_size_value.setText("")
 
         # User
         self.print_('user', pinfo['username'])
@@ -281,7 +286,7 @@ class InspectProcess(QDialog):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    win = InspectProcess(process=os.getpid())
-    win.run(os.getpid(), verbose=True)
+    win = InspectProcess(process=psutil.Process(os.getpid()))
+    win.run()
     win.show()
     sys.exit(app.exec())
