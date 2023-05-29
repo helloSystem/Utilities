@@ -185,8 +185,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.tree_view_model = QStandardItemModel()
         self.process_tree.setModel(self.tree_view_model)
         self.process_tree.sortByColumn(3, Qt.DescendingOrder)
-        # for pos, title in enumerate(self.header):
-        #     self.process_tree.resizeColumnToContents(pos)
 
     def setupCustomUiColorPicker(self):
         # Tab CPU
@@ -487,6 +485,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                     item.setData(p.memory_info().vms)
                     row.append(item)
 
+                if self.filterComboBox.currentIndex() == 1:
+                    item.parent
+
                 # Filter Line
                 filtered_row = None
                 if self.searchLineEdit.text():
@@ -593,21 +594,24 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 self.__icons[pname] = icon
 
     def _showInspectProcessDialog(self):
-        self.inspect_process_dialog = InspectProcess(process=psutil.Process(self.selected_pid))
-        self.inspect_process_dialog.run()
-        self.inspect_process_dialog.show()
+        if self.ActionMenuViewInspectProcess.isEnabled():
+            self.inspect_process_dialog = InspectProcess(process=psutil.Process(self.selected_pid))
+            self.inspect_process_dialog.run()
+            self.inspect_process_dialog.show()
 
     def _showSendSignalDialog(self):
-        self.send_signal_dialog = SendSignalDialog(process=psutil.Process(self.selected_pid))
-        self.send_signal_dialog.show()
+        if self.ActionMenuViewSendSignaltoProcesses.isEnabled():
+            self.send_signal_dialog = SendSignalDialog(process=psutil.Process(self.selected_pid))
+            self.send_signal_dialog.show()
 
     def _showKillDialog(self):
-        self.KillDialog = KillProcessDialog(process=psutil.Process(self.selected_pid))
+        if self.ActionMenuViewKillDialog.isEnabled():
+            self.KillDialog = KillProcessDialog(process=psutil.Process(self.selected_pid))
 
-        self.KillDialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
-        self.KillDialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
+            self.KillDialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
+            self.KillDialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
 
-        self.KillDialog.show()
+            self.KillDialog.show()
 
     def _showAboutDialog(self):
         self.AboutDialog = AboutDialog()
@@ -642,27 +646,28 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         #             7: 'Windowed Processes',
         #             8: 'Selected Processes',
         #             9: 'Application in last 12 hours',
-        if hasattr(self.filterComboBox, "currentIndex"):
-            if self.filterComboBox.currentIndex() == 0:
-                self.ActionMenuViewAllProcesses.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 1:
-                self.ActionMenuViewAllProcessesHierarchically.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 2:
-                self.ActionMenuViewMyProcesses.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 3:
-                self.ActionMenuViewSystemProcesses.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 4:
-                self.ActionMenuViewOtherUserProcesses.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 5:
-                self.ActionMenuViewActiveProcesses.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 6:
-                self.ActionMenuViewInactiveProcesses.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 7:
-                self.ActionMenuViewWindowedProcesses.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 8:
+
+        if self.filterComboBox.currentIndex() == 0:
+            self.ActionMenuViewAllProcesses.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 1:
+            self.ActionMenuViewAllProcessesHierarchically.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 2:
+            self.ActionMenuViewMyProcesses.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 3:
+            self.ActionMenuViewSystemProcesses.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 4:
+            self.ActionMenuViewOtherUserProcesses.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 5:
+            self.ActionMenuViewActiveProcesses.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 6:
+            self.ActionMenuViewInactiveProcesses.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 7:
+            self.ActionMenuViewWindowedProcesses.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 8:
+            if self.ActionMenuViewSelectedProcesses.isEnabled():
                 self.ActionMenuViewSelectedProcesses.setChecked(True)
-            elif self.filterComboBox.currentIndex() == 9:
-                self.ActionMenuViewApplicationInLast12Hours.setChecked(True)
+        elif self.filterComboBox.currentIndex() == 9:
+            self.ActionMenuViewApplicationInLast12Hours.setChecked(True)
 
         self.refresh_treeview_model()
 
@@ -691,7 +696,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.filterComboBox.setCurrentIndex(7)
 
     def _filter_by_selected_processes(self):
-        self.filterComboBox.setCurrentIndex(8)
+        if self.ActionMenuViewSelectedProcesses.isEnabled():
+            self.filterComboBox.setCurrentIndex(8)
 
     def _filter_by_application_in_last_12_hours(self):
         self.filterComboBox.setCurrentIndex(9)

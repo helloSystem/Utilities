@@ -17,9 +17,13 @@ class TreeViewProcess(object):
     searchLineEdit: QLineEdit
     process_tree: QTreeView
     ActionMenuViewSelectedProcesses: QAction
+    ActionMenuViewInspectProcess: QAction
     filterComboBox: QComboBox
     ActionViewKillDialog: QAction
     ActionMenuViewSendSignaltoProcesses: QAction
+    ActionToolBarQuitProcess: QAction
+    ActionMenuViewKillDialog: QAction
+    ActionToolBarInspectProcess: QAction
 
     def __init__(self):
 
@@ -41,14 +45,15 @@ class TreeViewProcess(object):
         self.process_tree.clearSelection()
 
         self.ActionToolBarQuitProcess.setEnabled(False)
-        self.ActionToolBarInspectProcess.setEnabled(False)
-        self.ActionMenuViewSelectedProcesses.setEnabled(False)
+
         if self.filterComboBox.currentIndex() == 8:
             self.filterComboBox.setCurrentIndex(0)
         self.filterComboBox.model().item(8).setEnabled(False)
-
+        self.ActionMenuViewInspectProcess.setEnabled(False)
+        self.ActionMenuViewSelectedProcesses.setEnabled(False)
         self.ActionMenuViewKillDialog.setEnabled(False)
         self.ActionMenuViewSendSignaltoProcesses.setEnabled(False)
+        self.ActionToolBarInspectProcess.setEnabled(False)
 
     def selectItem(self, itemOrText):
         # oldIndex = self.process_tree.selectionModel().currentIndex()
@@ -75,10 +80,11 @@ class TreeViewProcess(object):
             if self.selected_pid:
                 self.ActionToolBarQuitProcess.setEnabled(True)
                 self.ActionToolBarInspectProcess.setEnabled(True)
-                self.ActionMenuViewSelectedProcesses.setEnabled(True)
                 self.filterComboBox.model().item(8).setEnabled(True)
-                self.ActionMenuViewKillDialog.setEnabled(True)
                 self.ActionMenuViewSendSignaltoProcesses.setEnabled(True)
+                self.ActionMenuViewSelectedProcesses.setEnabled(True)
+                self.ActionMenuViewInspectProcess.setEnabled(True)
+                self.ActionMenuViewKillDialog.setEnabled(True)
         except KeyError:
             self.selectClear()
 

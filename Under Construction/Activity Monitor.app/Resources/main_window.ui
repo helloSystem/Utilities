@@ -2335,14 +2335,6 @@
     </property>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuEdit">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="title">
-     <string>Edit</string>
-    </property>
-   </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
@@ -2388,7 +2380,6 @@
     <addaction name="ActionMenuViewSendSignaltoProcesses"/>
     <addaction name="separator"/>
     <addaction name="ActionMenuViewClearCPUHistory"/>
-    <addaction name="actionEnter_Full_Screen"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -2397,7 +2388,6 @@
     <addaction name="ActionMenuHelpAbout"/>
    </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuEdit"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
@@ -2761,6 +2751,9 @@
    </property>
   </action>
   <action name="ActionMenuViewInspectProcess">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Inspect Process</string>
    </property>
