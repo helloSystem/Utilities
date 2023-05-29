@@ -106,6 +106,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.setupInitialState()
 
         self.refresh()
+        for header_pos in range(len(self.process_tree.header())):
+            self.process_tree.resizeColumnToContents(header_pos)
 
     def setupCustomUi(self):
         self.setupCustomUiGroups()
@@ -436,11 +438,10 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
     def refresh_treeview_model(self):
 
         self.tree_view_model = QStandardItemModel()
-
         for p in psutil.process_iter():
             QApplication.processEvents()
-            with p.oneshot():
 
+            with p.oneshot():
                 row = []
 
                 # PID can't be disabled because it is use for selection tracking
@@ -583,6 +584,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         # Impose the Model to TreeView Processes
         self.process_tree.setModel(self.tree_view_model)
+
 
         # Restore the selection
         if self.selected_pid and self.selected_pid >= 0:

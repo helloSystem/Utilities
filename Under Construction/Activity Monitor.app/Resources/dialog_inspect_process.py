@@ -7,20 +7,15 @@ import sys
 
 import psutil
 from utility_bytes2human import bytes2human
-
+from PyQt5.QtCore import Qt, QFileInfo
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import (
     QApplication,
-    QMainWindow,
-    QActionGroup,
-    QLabel,
-    QVBoxLayout,
-    QWidget,
-    QWidgetAction,
-    QLineEdit,
-    QComboBox,
-    QShortcut,
+    QFileIconProvider,
+    QAbstractScrollArea
+
 )
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QWidget
 from dialog_inspect_process_ui import Ui_InspectProcess
 
 ACCESS_DENIED = ''
@@ -47,14 +42,17 @@ RLIMITS_MAP = {
 }
 
 
-class InspectProcess(QDialog):
+class InspectProcess(QWidget, Ui_InspectProcess):
     def __init__(self, parent=None, process=None):
         super(InspectProcess, self).__init__(parent)
+        Ui_InspectProcess.__init__(self)
         self.process = process
-        self.ui = Ui_InspectProcess()
-        self.ui.setupUi(self)
+        self.setupUi(self)
+        self.open_files_model = QStandardItemModel()
 
-    def cancel_dialog(self):
+        self.buttonQuit.clicked.connect(self.quit)
+        self.buttonSample.clicked.connect(self.run)
+    def quit(self):
         self.close()
 
     def print_(self, a, b):
@@ -109,7 +107,7 @@ class InspectProcess(QDialog):
 
         # Parent
         self.print_('parent', '%s %s' % (pinfo['ppid'], parent))
-        self.ui.parent_process_value.setText('%s %s' % (pinfo['ppid'], parent))
+        self.parent_process_value.setText('%s %s' % (pinfo['ppid'], parent))
 
         self.print_('exe', pinfo['exe'])
         self.print_('cwd', pinfo['cwd'])
@@ -131,32 +129,32 @@ class InspectProcess(QDialog):
         self.print_('memory', self.str_ntuple(pinfo['memory_full_info'], convert_bytes=True))
         self.print_('memory %', round(pinfo['memory_percent'], 2))
         if pinfo['memory_full_info']:
-            self.ui.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
-            self.ui.virtual_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].vms)}")
-            self.ui.resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].rss)}")
-            self.ui.shared_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].shared)}")
-            self.ui.text_resitent_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].text)}")
-            self.ui.data_resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].data)}")
-            self.ui.swapped_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].swap)}")
-            self.ui.shared_libraries_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].lib)}")
-            self.ui.proportional_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].pss)}")
-            self.ui.dirty_pages_number_value.setText(f"{pinfo['memory_full_info'].dirty}")
+            self.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
+            self.virtual_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].vms)}")
+            self.resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].rss)}")
+            self.shared_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].shared)}")
+            self.text_resitent_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].text)}")
+            self.data_resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].data)}")
+            self.swapped_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].swap)}")
+            self.shared_libraries_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].lib)}")
+            self.proportional_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].pss)}")
+            self.dirty_pages_number_value.setText(f"{pinfo['memory_full_info'].dirty}")
         else:
-            self.ui.unique_set_size_label.setText("")
-            self.ui.unique_set_size_value.setText("")
+            self.unique_set_size_label.setText("")
+            self.unique_set_size_value.setText("")
 
         # User
         self.print_('user', pinfo['username'])
         if psutil.POSIX:
             self.print_('uids', self.str_ntuple(pinfo['uids']))
-            self.ui.user_value.setText(f"{pinfo['username']} ({pinfo['uids'].effective})")
+            self.user_value.setText(f"{pinfo['username']} ({pinfo['uids'].effective})")
 
         # Group
         if psutil.POSIX:
-            self.ui.process_group_id_value.setText(f"{pinfo['gids'].effective}")
+            self.process_group_id_value.setText(f"{pinfo['gids'].effective}")
 
         # CPU
-        self.ui.cpu_percent_value.setText(f"{proc.cpu_percent(interval=1)}")
+        self.cpu_percent_value.setText(f"{proc.cpu_percent(interval=1)}")
 
         # If run in terminal
         if psutil.POSIX:
@@ -197,13 +195,83 @@ class InspectProcess(QDialog):
                 except psutil.NoSuchProcess:
                     pass
 
+        # Open Files
         if pinfo['open_files']:
             self.print_('open-files', 'PATH')
+            self.open_files_model = QStandardItemModel()
+            headers = []
+
             for i, file in enumerate(pinfo['open_files']):
-                if not verbose and i >= NON_VERBOSE_ITERATIONS:
-                    self.print_("", "[...]")
-                    break
+                row = []
+                if hasattr(file, "path"):
+                    item = QStandardItem(f"{file.path}")
+                    item.setData(file.path)
+                    ip = QFileIconProvider()
+                    item.setIcon(ip.icon(QFileInfo(file.path)))
+                    row.append(item)
+                    if "Path" not in headers:
+                        headers.append("Path")
+
+                if hasattr(file, "fd"):
+                    item = QStandardItem(f"{file.fd}")
+                    item.setData(file.fd)
+                    row.append(item)
+                    if "Fd" not in headers:
+                        headers.append("Fd")
+
+                if hasattr(file, "position"):
+                    item = QStandardItem(f"{file.position}")
+                    item.setData(file.position)
+                    row.append(item)
+                    if "Position" not in headers:
+                        headers.append("Position")
+
+                if hasattr(file, "mode"):
+                    item = QStandardItem(f"{file.mode}")
+                    item.setData(file.mode)
+                    if f"{file.mode}" == "r" or f"{file.mode}" == "rt":
+                        item.setToolTip("<html><head/><body><p>Open for reading text</p></body></html>\n")
+                    elif f"{file.mode}" == "r+" or f"{file.mode}" == "r+b":
+                        item.setToolTip("<html><head/><body><p>Open the file with no truncation</p></body></html>\n")
+                    elif f"{file.mode}" == "w":
+                        item.setToolTip("<html><head/><body><p>Open for writing, truncating the file "
+                                        "first</p></body></html>\n")
+                    elif f"{file.mode}" == "w+" or f"{file.mode}" == "w+b":
+                        item.setToolTip("<html><head/><body><p>Open and truncate the file</p></body></html>\n")
+                    elif f"{file.mode}" == "a":
+                        item.setToolTip("<html><head/><body><p>Open for writing, appending to the end of file if it "
+                                        "exists</p></body></html>\n")
+                    elif f"{file.mode}" == "b":
+                        item.setToolTip("<html><head/><body><p>Binary mode</p></body></html>\n")
+                    elif f"{file.mode}" == "t":
+                        item.setToolTip("<html><head/><body><p>Text mode</p></body></html>\n")
+                    elif f"{file.mode}" == "+":
+                        item.setToolTip("<html><head/><body><p>Open for updating (reading and "
+                                        "writing)</p></body></html>\n")
+
+                    row.append(item)
+                    if "Mode" not in headers:
+                        headers.append("Mode")
+
+                if hasattr(file, "flags"):
+                    item = QStandardItem(f"{file.flags}")
+                    item.setData(file.flags)
+                    row.append(item)
+                    if "Flags" not in headers:
+                        headers.append("Flags")
+
+                if row:
+                    self.open_files_model.appendRow(row)
                 self.print_('', file.path)
+
+                self.open_files_model.setHorizontalHeaderLabels(headers)
+
+                self.OpenFileTreeView.setModel(self.open_files_model)
+
+                for header_pos in range(len(self.OpenFileTreeView.header())):
+                    self.OpenFileTreeView.resizeColumnToContents(header_pos)
+                self.OpenFileTreeView.sortByColumn(0, Qt.AscendingOrder)
+
         else:
             self.print_('open-files', '')
 
@@ -265,13 +333,34 @@ class InspectProcess(QDialog):
                         RLIMITS_MAP.get(res_name, res_name), soft, hard))
 
         if hasattr(proc, "environ") and pinfo['environ']:
+            environment_model = QStandardItemModel()
+
             template = "%-25s %s"
             self.print_("environ", template % ("NAME", "VALUE"))
-            for i, k in enumerate(sorted(pinfo['environ'])):
-                if not verbose and i >= NON_VERBOSE_ITERATIONS:
-                    self.print_("", "[...]")
-                    break
-                self.print_("", template % (k, pinfo['environ'][k]))
+            for name, value in pinfo['environ'].items():
+                row = []
+                self.print_("", template % (name, value))
+                item = QStandardItem()
+                item.setText(f"{name}")
+                item.setData(name)
+                row.append(item)
+
+                item = QStandardItem()
+                item.setText(f"{value}")
+                item.setData(value)
+                row.append(item)
+
+                if row:
+                    environment_model.appendRow(row)
+
+            environment_model.setHorizontalHeaderLabels(["Name", "Value"])
+
+            self.treeViewEnvironement.setModel(environment_model)
+
+            for header_pos in range(len(self.treeViewEnvironement.header())):
+                self.treeViewEnvironement.resizeColumnToContents(header_pos)
+            self.treeViewEnvironement.sortByColumn(0, Qt.AscendingOrder)
+
 
         if pinfo.get('memory_maps', None):
             template = "%-8s %s"
