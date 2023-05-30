@@ -26,20 +26,31 @@ class IconsCacheWorker(QObject):
                     if "LAUNCHED_BUNDLE" in p.environ():
                         # Without the path, only the bundle name, without the last suffix
                         bundle_path = p.environ()["LAUNCHED_BUNDLE"]
-                        bundle_name = bundle_path.split("/")[-1].split(".")[0]
+                        # bundle_name = bundle_path.split("/")[-1].split(".")[0]
+                        bundle_name = os.path.basename(bundle_path).rsplit(".", 1)[0]
 
                         # Get the application bundle icon
                         # AppDir
-                        if os.path.exists(bundle_path + "/DirIcon"):
-                            icon = QIcon(bundle_path + "/DirIcon")
-                            self.updated_icons_cache.emit({p.name(): icon})
+                        os.path.exists(os.path.join(bundle_path, "DirIcon"))
+                        if os.path.exists(os.path.join(bundle_path, "DirIcon")):
+                            self.updated_icons_cache.emit({p.name(): QIcon(os.path.join(bundle_path, "DirIcon"))})
                         else:
                             # .app
-                            icon_suffixes = ["png", "jpg", "xpg", "svg", "xpm"]
-                            for icon_suffix in icon_suffixes:
-                                if os.path.exists(bundle_path + "/Resources/" + bundle_name + "." + icon_suffix):
-                                    icon = QIcon(bundle_path + "/Resources/" + bundle_name + "." + icon_suffix)
-                                    self.updated_icons_cache.emit({p.name(): icon})
+                            for icon_suffix in ["png", "jpg", "xpg", "svg", "xpm"]:
+                                # Normal
+                                icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.lower())
+                                if os.path.exists(icon_path):
+                                    self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
+                                    break
+                                # Capital
+                                icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.upper())
+                                if os.path.exists(icon_path):
+                                    self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
+                                    break
+                                # Title
+                                icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.title())
+                                if os.path.exists(icon_path):
+                                    self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
                                     break
                         # XDG thumbnails for AppImages; TODO: Test this
                         if bundle_path.endswith(".AppImage"):
