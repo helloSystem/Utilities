@@ -34,27 +34,32 @@ class IconsCacheWorker(QObject):
                         os.path.exists(os.path.join(bundle_path, "DirIcon"))
                         if os.path.exists(os.path.join(bundle_path, "DirIcon")):
                             # self.updated_icons_cache.emit({p.name(): QIcon(os.path.join(bundle_path, "DirIcon"))})
-                            self.updated_icons_cache.emit({bundle_name: QIcon(os.path.join(bundle_path, "DirIcon"))})
+                            self.updated_icons_cache.emit(
+                                {f"{bundle_name}": QIcon(os.path.join(bundle_path, "DirIcon"))}
+                            )
                         else:
                             # .app
                             for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
                                 # Normal"
                                 icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.lower()}")
                                 if os.path.exists(icon_path):
-                                    # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
-                                    self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
+                                    self.updated_icons_cache.emit(
+                                        {f"{bundle_name}": QIcon(icon_path)}
+                                    )
                                     break
                                 # Capital
                                 icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.upper()}")
                                 if os.path.exists(icon_path):
-                                    self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
-                                    # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
+                                    self.updated_icons_cache.emit(
+                                        {f"{bundle_name}": QIcon(icon_path)}
+                                    )
                                     break
                                 # Title
                                 icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.title()}")
                                 if os.path.exists(icon_path):
-                                    self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
-                                    # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
+                                    self.updated_icons_cache.emit(
+                                        {f"{bundle_name}": QIcon(icon_path)}
+                                    )
                                     break
                         # XDG thumbnails for AppImages; TODO: Test this
                         if bundle_path.endswith(".AppImage"):
@@ -68,7 +73,7 @@ class IconsCacheWorker(QObject):
                                 icon = QIcon(xdg_thumbnail_path)
                                 self.updated_icons_cache.emit({p.name(): icon})
                     else:
-                        self.updated_icons_cache.emit({p.name(): QIcon.fromTheme(p.name().lower())})
+                        self.updated_icons_cache.emit({f"{p.name()}": QIcon.fromTheme(p.name().lower())})
                 except psutil.AccessDenied:
-                    self.updated_icons_cache.emit({p.name(): QIcon.fromTheme(p.name().lower())})
+                    self.updated_icons_cache.emit({f"{p.name()}": QIcon.fromTheme(p.name().lower())})
         self.finished.emit()

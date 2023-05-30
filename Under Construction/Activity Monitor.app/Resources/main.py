@@ -453,8 +453,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
                 if self.ActionViewColumnProcessName.isChecked():
                     item = QStandardItem()
-                    item.setData(p.name())
-
                     pname = p.name()
                     try:
                         if "LAUNCHED_BUNDLE" in p.environ():
@@ -462,10 +460,11 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                     except psutil.AccessDenied:
                         pass
 
-                    if pname in self.__icons:
-                        item.setIcon(self.__icons[pname])
+                    if f"{pname}" in self.__icons:
+                        item.setIcon(self.__icons[f"{pname}"])
 
                     item.setText(f"{pname}")
+                    item.setData(pname)
                     row.append(item)
 
                 if self.ActionViewColumnUser.isChecked():
@@ -612,8 +611,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
     def _refresh_icons_cache(self, icons):
         for pname, icon in icons.items():
-            if pname not in self.__icons:
-                self.__icons[pname] = icon
+            if f"{pname}" not in self.__icons:
+                self.__icons[f"{pname}"] = icon
 
     def _showInspectProcessDialog(self):
         if self.ActionMenuViewInspectProcess.isEnabled():
