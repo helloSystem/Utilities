@@ -565,7 +565,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                         filtered_row = self.filter_by_line(filtered_row, p.name())
                     else:
                         filtered_row = None
-
                 if combo_box_current_index == 8:
                     if p.pid == self.selected_pid:
                         filtered_row = self.filter_by_line(filtered_row, p.name())
