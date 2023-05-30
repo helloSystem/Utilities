@@ -448,6 +448,10 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                     environ = p.environ()
                 except psutil.AccessDenied:
                     environ = None
+                if environ and "LAUNCHED_BUNDLE" in environ:
+                    application_name = os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
+                else:
+                    application_name = p.name()
 
                 # PID can't be disabled because it is use for selection tracking
                 item = QStandardItem(f"{p.pid}")
@@ -457,19 +461,12 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
                 if self.ActionViewColumnProcessName.isChecked():
                     item = QStandardItem()
-                    pname = p.name()
-                    try:
-                        if "LAUNCHED_BUNDLE" in p.environ():
-                            pname = os.path.basename(p.environ()["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
 
-                    except psutil.AccessDenied:
-                        pass
+                    if f"{application_name}" in self.__icons:
+                        item.setIcon(self.__icons[f"{application_name}"])
 
-                    if f"{pname}" in self.__icons:
-                        item.setIcon(self.__icons[f"{pname}"])
-
-                    item.setText(f"{pname}")
-                    item.setData(pname)
+                    item.setText(f"{application_name}")
+                    item.setData(p.name())
                     row.append(item)
 
                 if self.ActionViewColumnUser.isChecked():
@@ -507,12 +504,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 # Filter Line
                 filtered_row = None
                 if self.searchLineEdit.text():
-                    if environ and "LAUNCHED_BUNDLE" in p.environ():
-                        if self.searchLineEdit.text().lower() in os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0].lower():
-                            filtered_row = row
-                    elif self.searchLineEdit.text().lower() in p.name():
+                    if self.searchLineEdit.text().lower() in application_name.lower():
                         filtered_row = row
-
                 else:
                     filtered_row = row
 
@@ -536,48 +529,48 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
                 if combo_box_current_index == 2:
                     if p.username() == self.my_username:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                        filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
 
                 if combo_box_current_index == 3:
                     if p.uids().real < 1000:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                        filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
 
                 if combo_box_current_index == 4:
                     if p.username() != self.my_username:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                        filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
 
                 if combo_box_current_index == 5:
                     if p.status() == psutil.STATUS_RUNNING:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                        filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
 
                 if combo_box_current_index == 6:
                     if p.status() == psutil.STATUS_WAITING or p.status() == psutil.STATUS_SLEEPING :
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                        filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
 
                 if combo_box_current_index == 7:
                     if environ and "LAUNCHED_BUNDLE" in p.environ() and not p.terminal():
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                        filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
                 if combo_box_current_index == 8:
                     if p.pid == self.selected_pid:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                        filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
 
                 if combo_box_current_index == 9:
                     if (time.time() - p.create_time()) % 60 <= 43200:
-                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                        filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
 
