@@ -22,23 +22,41 @@ class IconsCacheWorker(QObject):
     def refresh(self):
         for p in psutil.process_iter():
             icon = None
-            application_name = None
+
             try:
                 environ = p.environ()
             except psutil.AccessDenied:
                 environ = None
             if environ and "LAUNCHED_BUNDLE" in environ:
                 application_name = os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
-                for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
-                    icon_path = os.path.join(
-                        environ["LAUNCHED_BUNDLE"],
-                        "Resources",
-                        f"{application_name}{icon_suffix.lower()}"
-                    )
-                    print(f"Try: {icon_path}")
-                    if os.path.exists(icon_path):
-                        icon = QIcon(icon_path)
-                        break
+                # XDG thumbnails for AppImages; TODO: Test this
+                if environ["LAUNCHED_BUNDLE"].endswith(".AppImage"):
+
+                    # print(xdg_thumbnail_path)
+                    for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
+                        xdg_thumbnail_path = os.path.join(
+                            os.path.expanduser("~/.cache/thumbnails/normal"),
+                            f"{hashlib.md5(environ['LAUNCHED_BUNDLE'].encode('utf-8')).hexdigest()}{icon_suffix}"
+                        )
+                        if os.path.exists(xdg_thumbnail_path):
+                            icon = QIcon(xdg_thumbnail_path)
+                            break
+
+                if icon is None:
+                    # AppDir
+                    if os.path.exists(os.path.join(environ["LAUNCHED_BUNDLE"], "DirIcon")):
+                        icon = QIcon(os.path.join(environ["LAUNCHED_BUNDLE"], "DirIcon"))
+                # .app
+                if icon is None:
+                    for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
+                        icon_path = os.path.join(
+                            environ["LAUNCHED_BUNDLE"],
+                            "Resources",
+                            f"{application_name}{icon_suffix.lower()}"
+                        )
+                        if os.path.exists(icon_path):
+                            icon = QIcon(icon_path)
+                            break
             else:
                 application_name = p.name()
 
