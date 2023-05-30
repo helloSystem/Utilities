@@ -464,6 +464,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
                     if pname in self.__icons:
                         item.setIcon(self.__icons[pname])
+
                     item.setText(f"{pname}")
                     row.append(item)
 

@@ -37,21 +37,21 @@ class IconsCacheWorker(QObject):
                             self.updated_icons_cache.emit({bundle_name: QIcon(os.path.join(bundle_path, "DirIcon"))})
                         else:
                             # .app
-                            for icon_suffix in ["png", "jpg", "xpg", "svg", "xpm"]:
-                                # Normal
-                                icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.lower())
+                            for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
+                                # Normal"
+                                icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.lower()}")
                                 if os.path.exists(icon_path):
                                     # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
                                     self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
                                     break
                                 # Capital
-                                icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.upper())
+                                icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.upper()}")
                                 if os.path.exists(icon_path):
                                     self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
                                     # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
                                     break
                                 # Title
-                                icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.title())
+                                icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.title()}")
                                 if os.path.exists(icon_path):
                                     self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
                                     # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
