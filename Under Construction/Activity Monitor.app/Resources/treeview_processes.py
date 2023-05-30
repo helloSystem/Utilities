@@ -33,7 +33,7 @@ class TreeViewProcess(object):
 
     def filter_by_line(self, row, text):
         if self.searchLineEdit.text():
-            if self.searchLineEdit.text() in text:
+            if self.searchLineEdit.text().lower() in text.lower():
                 return row
             else:
                 return None
