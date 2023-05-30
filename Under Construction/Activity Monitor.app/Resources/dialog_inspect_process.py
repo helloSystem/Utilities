@@ -129,19 +129,66 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         self.print_('memory', self.str_ntuple(pinfo['memory_full_info'], convert_bytes=True))
         self.print_('memory %', round(pinfo['memory_percent'], 2))
         if pinfo['memory_full_info']:
-            self.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
-            self.virtual_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].vms)}")
-            self.resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].rss)}")
-            self.shared_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].shared)}")
-            self.text_resitent_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].text)}")
-            self.data_resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].data)}")
-            self.swapped_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].swap)}")
-            self.shared_libraries_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].lib)}")
-            self.proportional_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].pss)}")
-            self.dirty_pages_number_value.setText(f"{pinfo['memory_full_info'].dirty}")
-        else:
-            self.unique_set_size_label.setText("")
-            self.unique_set_size_value.setText("")
+            if hasattr(pinfo['memory_full_info'], "uss"):
+                self.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
+            else:
+                self.unique_set_size_label.hide()
+                self.unique_set_size_value.hide()
+
+            if hasattr(pinfo['memory_full_info'], "vms"):
+                self.virtual_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].vms)}")
+            else:
+                self.virtual_memory_size_value.hide()
+                self.virtual_memory_size_label.hide()
+
+            if hasattr(pinfo['memory_full_info'], "rss"):
+                self.resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].rss)}")
+            else:
+                self.resident_set_size_value.hide()
+                self.resident_set_size_label.hide()
+
+            if hasattr(pinfo['memory_full_info'], "shared"):
+                self.shared_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].shared)}")
+            else:
+                self.shared_memory_size_value.hide()
+                self.shared_memory_size_label.hide()
+
+            if hasattr(pinfo['memory_full_info'], "text"):
+                self.text_resitent_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].text)}")
+            else:
+                self.text_resitent_set_size_value.hide()
+                self.text_resitent_set_size_label.hide()
+
+            if hasattr(pinfo['memory_full_info'], "data"):
+                self.data_resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].data)}")
+            else:
+                self.data_resident_set_size_value.hide()
+                self.data_resident_set_size_label.hide()
+
+            if hasattr(pinfo['memory_full_info'], "swap"):
+                self.swapped_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].swap)}")
+            else:
+                self.swapped_size_value.hide()
+                self.swapped_size_label.hide()
+
+            if hasattr(pinfo['memory_full_info'], "lib"):
+                self.shared_libraries_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].lib)}")
+            else:
+                self.shared_libraries_size_value.hide()
+                self.shared_libraries_size_label.hide()
+
+            if hasattr(pinfo['memory_full_info'], "pss"):
+                self.proportional_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].pss)}")
+            else:
+                self.proportional_set_size_value.hide()
+                self.proportional_set_size_label.hide()
+
+            if hasattr(pinfo['memory_full_info'], "stack"):
+                self.stack_size_value.setText(f"{pinfo['memory_full_info'].stack}")
+            else:
+                self.stack_size_label.hide()
+                self.stack_size_value.hide()
+
 
         # User
         self.print_('user', pinfo['username'])
