@@ -507,11 +507,12 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 # Filter Line
                 filtered_row = None
                 if self.searchLineEdit.text():
-                    if self.searchLineEdit.text().lower() in p.name():
-                        filtered_row = row
                     if environ and "LAUNCHED_BUNDLE" in p.environ():
                         if self.searchLineEdit.text().lower() in os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0].lower():
                             filtered_row = row
+                    elif self.searchLineEdit.text().lower() in p.name():
+                        filtered_row = row
+
                 else:
                     filtered_row = row
 
