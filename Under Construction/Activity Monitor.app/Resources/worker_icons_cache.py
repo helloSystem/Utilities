@@ -40,23 +40,10 @@ class IconsCacheWorker(QObject):
                         else:
                             # .app
                             for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
-                                # Normal"
                                 icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.lower()}")
+                                print(f"Try: {icon_path}")
                                 if os.path.exists(icon_path):
-                                    self.updated_icons_cache.emit(
-                                        {f"{bundle_name}": QIcon(icon_path)}
-                                    )
-                                    break
-                                # Capital
-                                icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.upper()}")
-                                if os.path.exists(icon_path):
-                                    self.updated_icons_cache.emit(
-                                        {f"{bundle_name}": QIcon(icon_path)}
-                                    )
-                                    break
-                                # Title
-                                icon_path = os.path.join(bundle_path, "Resources", f"{bundle_name}{icon_suffix.title()}")
-                                if os.path.exists(icon_path):
+                                    print(f"Found: {icon_path}")
                                     self.updated_icons_cache.emit(
                                         {f"{bundle_name}": QIcon(icon_path)}
                                     )
