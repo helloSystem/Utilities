@@ -14,14 +14,14 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_AboutDialog(object):
     def setupUi(self, AboutDialog):
         AboutDialog.setObjectName("AboutDialog")
-        AboutDialog.resize(297, 329)
-        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        AboutDialog.resize(297, 336)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(AboutDialog.sizePolicy().hasHeightForWidth())
         AboutDialog.setSizePolicy(sizePolicy)
         AboutDialog.setMinimumSize(QtCore.QSize(0, 0))
+        AboutDialog.setModal(True)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(AboutDialog)
         self.verticalLayout_2.setContentsMargins(13, 13, 13, 13)
         self.verticalLayout_2.setSpacing(13)
@@ -42,7 +42,7 @@ class Ui_AboutDialog(object):
         self.about_logo.setText("")
         self.about_logo.setPixmap(QtGui.QPixmap(":/Processes.png"))
         self.about_logo.setScaledContents(True)
-        self.about_logo.setAlignment(QtCore.Qt.AlignLeading | QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
+        self.about_logo.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.about_logo.setObjectName("about_logo")
         self.about_verticalLayout.addWidget(self.about_logo, 0, QtCore.Qt.AlignHCenter)
         spacerItem1 = QtWidgets.QSpacerItem(20, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
@@ -66,7 +66,7 @@ class Ui_AboutDialog(object):
         self.about_text = QtWidgets.QLabel(AboutDialog)
         self.about_text.setTextFormat(QtCore.Qt.AutoText)
         self.about_text.setWordWrap(True)
-        self.about_text.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard | QtCore.Qt.LinksAccessibleByMouse)
+        self.about_text.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard|QtCore.Qt.LinksAccessibleByMouse)
         self.about_text.setObjectName("about_text")
         self.about_verticalLayout.addWidget(self.about_text)
         self.about_footer = QtWidgets.QLabel(AboutDialog)
@@ -85,12 +85,18 @@ class Ui_AboutDialog(object):
     def retranslateUi(self, AboutDialog):
         _translate = QtCore.QCoreApplication.translate
         AboutDialog.setWindowTitle(_translate("AboutDialog", " "))
-        self.about_app_name.setText(_translate("AboutDialog",
-                                               "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt;\">Activity Monitor</span></p></body></html>"))
-        self.about_version.setText(_translate("AboutDialog",
-                                              "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; color:#241f31;\">Version 0.1a</span></p></body></html>"))
-        self.about_text.setText(_translate("AboutDialog",
-                                           "<html><head/><body><p align=\"center\">This project is open souce, contributions are welcomed.</p><p align=\"center\">Visit <a href=\"https://github.com/helloSystem/Utilities/\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/helloSystem/Utilities/</span></a> for more information or to report bug and/or suggest a new feature.</p></body></html>"))
-        self.about_footer.setText(_translate("AboutDialog",
-                                             "<html><head/><body><p align=\"center\"><span style=\" font-size:10pt; color:#3d3846;\">Copyright 2023-2024 helloSystem Team. All right reserved.</span></p></body></html>"))
+        self.about_app_name.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\"\n"
+"         font-size:16pt;\">Activity Monitor</span></p></body></html>\n"
+"        "))
+        self.about_version.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\"\n"
+"         font-size:10pt; color:#241f31;\">Version 0.1a</span></p></body></html>\n"
+"        "))
+        self.about_text.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\">This project is open souce,\n"
+"         contributions are welcomed.</p><p align=\"center\">Visit <a href=\"https://github.com/helloSystem/Utilities/\"><span\n"
+"         style=\" text-decoration: underline; color:#0000ff;\">https://github.com/helloSystem/Utilities/</span></a>\n"
+"         for more information or to report bug and/or suggest a new feature.</p></body></html>\n"
+"        "))
+        self.about_footer.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\"\n"
+"         font-size:10pt; color:#3d3846;\">Copyright 2023-2024 helloSystem Team. All right reserved.</span></p></body></html>\n"
+"        "))
 import qressources_rc

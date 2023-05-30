@@ -2,32 +2,35 @@
 <ui version="4.0">
  <class>KillDialog</class>
  <widget class="QDialog" name="KillDialog">
-     <property name="geometry">
-         <rect>
-             <x>0</x>
-             <y>0</y>
-             <width>461</width>
-             <height>147</height>
-         </rect>
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>461</width>
+    <height>147</height>
+   </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::NoFocus</enum>
+  </property>
+  <property name="windowTitle">
+   <string> </string>
+  </property>
+  <property name="modal">
+   <bool>true</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <layout class="QVBoxLayout" name="MainVbox" stretch="0,0,0">
+     <property name="spacing">
+      <number>6</number>
      </property>
-     <property name="focusPolicy">
-         <enum>Qt::NoFocus</enum>
+     <property name="sizeConstraint">
+      <enum>QLayout::SetNoConstraint</enum>
      </property>
-     <property name="windowTitle">
-         <string/>
-     </property>
-     <property name="modal">
-         <bool>true</bool>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-             <layout class="QVBoxLayout" name="MainVbox" stretch="0,0,0">
-                 <property name="spacing">
-                     <number>6</number>
-                 </property>
-                 <property name="sizeConstraint">
-                     <enum>QLayout::SetNoConstraint</enum>
-                 </property>
      <property name="leftMargin">
       <number>0</number>
      </property>
@@ -79,72 +82,72 @@
          </property>
         </widget>
        </item>
-          <item>
-              <layout class="QVBoxLayout" name="verticalLayout_2">
-                  <property name="spacing">
-                      <number>0</number>
-                  </property>
-                  <item>
-                      <layout class="QHBoxLayout" name="horizontalLayout_3">
-                          <property name="spacing">
-                              <number>0</number>
-                          </property>
-                          <item>
-                              <spacer name="horizontalSpacer_2">
-                                  <property name="orientation">
-                                      <enum>Qt::Horizontal</enum>
-                                  </property>
-                                  <property name="sizeHint" stdset="0">
-                                      <size>
-                                          <width>40</width>
-                                          <height>20</height>
-                                      </size>
-                                  </property>
-                              </spacer>
-                          </item>
-                          <item>
-                              <layout class="QVBoxLayout" name="verticalLayout_3">
-                                  <property name="rightMargin">
-                                      <number>0</number>
-                                  </property>
-                                  <item>
-                                      <widget class="QLabel" name="Title">
-                                          <property name="styleSheet">
-                                              <string notr="true">QLabel {
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="spacing">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item>
+            <spacer name="horizontalSpacer_2">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="Title">
+               <property name="styleSheet">
+                <string notr="true">QLabel {
                                                   font: bold
                                                   }
                                               </string>
-                                          </property>
-                                          <property name="text">
-                                              <string>Are you sure you want to quit this process ?</string>
-                                          </property>
-                                      </widget>
-                                  </item>
-                                  <item>
-                                      <widget class="QLabel" name="Label">
-                                          <property name="text">
-                                              <string>Do you really want to quit '%s'?</string>
-                                          </property>
-                                      </widget>
-                                  </item>
-                              </layout>
-                          </item>
-                          <item>
-                              <spacer name="horizontalSpacer_3">
-                                  <property name="orientation">
-                                      <enum>Qt::Horizontal</enum>
-                                  </property>
-                                  <property name="sizeHint" stdset="0">
-                                      <size>
-                                          <width>40</width>
-                                          <height>20</height>
-                                      </size>
-                                  </property>
-                              </spacer>
-                          </item>
-                      </layout>
-                  </item>
-              </layout>
+               </property>
+               <property name="text">
+                <string>Are you sure you want to quit this process ?</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="Label">
+               <property name="text">
+                <string>Do you really want to quit '%s'?</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+        </layout>
        </item>
       </layout>
      </item>
@@ -199,16 +202,16 @@
          </property>
         </widget>
        </item>
-          <item>
-              <widget class="QPushButton" name="button_quit">
-                  <property name="text">
-                      <string>Quit</string>
-                  </property>
-                  <property name="default">
-                      <bool>true</bool>
-                  </property>
-              </widget>
-          </item>
+       <item>
+        <widget class="QPushButton" name="button_quit">
+         <property name="text">
+          <string>Quit</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
     </layout>
@@ -217,7 +220,7 @@
  </widget>
  <resources>
   <include location="qressources.qrc"/>
-     <include location="qressources.qrc"/>
+  <include location="qressources.qrc"/>
  </resources>
  <connections/>
 </ui>

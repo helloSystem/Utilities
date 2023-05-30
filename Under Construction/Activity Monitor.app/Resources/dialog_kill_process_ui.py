@@ -14,9 +14,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_KillDialog(object):
     def setupUi(self, KillDialog):
         KillDialog.setObjectName("KillDialog")
+        KillDialog.setWindowModality(QtCore.Qt.NonModal)
         KillDialog.resize(461, 147)
         KillDialog.setFocusPolicy(QtCore.Qt.NoFocus)
-        KillDialog.setWindowTitle("")
         KillDialog.setModal(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(KillDialog)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -55,9 +55,9 @@ class Ui_KillDialog(object):
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.Title = QtWidgets.QLabel(KillDialog)
         self.Title.setStyleSheet("QLabel {\n"
-                                 "                                               font: bold\n"
-                                 "                                               }\n"
-                                 "                                           ")
+"                                                  font: bold\n"
+"                                                  }\n"
+"                                              ")
         self.Title.setObjectName("Title")
         self.verticalLayout_3.addWidget(self.Title)
         self.Label = QtWidgets.QLabel(KillDialog)
@@ -70,8 +70,7 @@ class Ui_KillDialog(object):
         self.horizontalLayout_2.addLayout(self.verticalLayout_2)
         self.horizontalLayout_2.setStretch(1, 1)
         self.MainVbox.addLayout(self.horizontalLayout_2)
-        spacerItem2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum,
-                                            QtWidgets.QSizePolicy.MinimumExpanding)
+        spacerItem2 = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.MinimumExpanding)
         self.MainVbox.addItem(spacerItem2)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
@@ -97,6 +96,7 @@ class Ui_KillDialog(object):
 
     def retranslateUi(self, KillDialog):
         _translate = QtCore.QCoreApplication.translate
+        KillDialog.setWindowTitle(_translate("KillDialog", " "))
         self.Title.setText(_translate("KillDialog", "Are you sure you want to quit this process ?"))
         self.Label.setText(_translate("KillDialog", "Do you really want to quit \'%s\'?"))
         self.button_cancel.setText(_translate("KillDialog", "Cancel"))

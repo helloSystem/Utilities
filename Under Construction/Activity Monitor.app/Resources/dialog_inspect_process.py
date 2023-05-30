@@ -8,7 +8,7 @@ import sys
 import psutil
 from utility_bytes2human import bytes2human
 from PyQt5.QtCore import Qt, QFileInfo
-from PyQt5.QtGui import QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
     QFileIconProvider,
@@ -252,8 +252,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 if hasattr(file, "path"):
                     item = QStandardItem(f"{file.path}")
                     item.setData(file.path)
-                    ip = QFileIconProvider()
-                    item.setIcon(ip.icon(QFileInfo(file.path)))
+                    item.setIcon(QFileIconProvider().icon(QFileInfo(file.path)))
                     row.append(item)
                     if "Path" not in headers:
                         headers.append("Path")
@@ -301,7 +300,6 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
                 if hasattr(file, "flags"):
                     item = QStandardItem(f"{file.flags}")
-                    item.setData(file.flags)
                     row.append(item)
                     if "Flags" not in headers:
                         headers.append("Flags")
@@ -407,16 +405,68 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 self.treeViewEnvironement.resizeColumnToContents(header_pos)
             self.treeViewEnvironement.sortByColumn(0, Qt.AscendingOrder)
 
-
         if pinfo.get('memory_maps', None):
-            template = "%-8s %s"
-            self.print_("mem-maps", template % ("RSS", "PATH"))
-            maps = sorted(pinfo['memory_maps'], key=lambda x: x.rss, reverse=True)
-            for i, region in enumerate(maps):
-                if not verbose and i >= NON_VERBOSE_ITERATIONS:
-                    self.print_("", "[...]")
-                    break
-                self.print_("", template % (bytes2human(region.rss), region.path))
+            environment_model = QStandardItemModel()
+            headers = []
+            for m in proc.memory_maps(grouped=False):
+                row = []
+                if hasattr(m, "addr"):
+                    item = QStandardItem()
+                    item.setText(f"{m.addr.split('-')[0].zfill(16)}")
+                    item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+                    row.append(item)
+                    if "Address" not in headers:
+                        headers.append("Address")
+
+                if hasattr(m, "rss"):
+                    item = QStandardItem()
+                    item.setText(bytes2human(m.rss))
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    row.append(item)
+                    if "RSS" not in headers:
+                        headers.append("RSS")
+
+                if hasattr(m, "private"):
+                    item = QStandardItem()
+                    item.setText(bytes2human(m.private))
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    row.append(item)
+                    if "Private" not in headers:
+                        headers.append("Private")
+
+                if hasattr(m, "perms"):
+                    item = QStandardItem()
+                    item.setText(f"{m.perms}")
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    row.append(item)
+                    if "Mode" not in headers:
+                        headers.append("Mode")
+
+                if hasattr(m, "path"):
+                    item = QStandardItem()
+                    item.setText(f"{m.path}")
+                    item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+                    item.setIcon(QFileIconProvider().icon(QFileInfo(m.path)))
+                    # if os.path.exists(m.path):
+                    #     item.setIcon(QFileIconProvider().icon(QFileInfo(m.path)))
+                    # else:
+                    #     item.setIcon(QIcon.fromTheme("system-run"))
+                    row.append(item)
+                    if "Mapping" not in headers:
+                        headers.append("Mapping")
+
+                if row:
+                    environment_model.appendRow(row)
+            environment_model.setHorizontalHeaderLabels(headers)
+
+            self.MapsTreeView.setModel(environment_model)
+
+            for header_pos in range(len(self.MapsTreeView.header())):
+                self.MapsTreeView.resizeColumnToContents(header_pos)
+
+            self.MapsTreeView.sortByColumn(0, Qt.DescendingOrder)
+
+
 
 
 if __name__ == "__main__":

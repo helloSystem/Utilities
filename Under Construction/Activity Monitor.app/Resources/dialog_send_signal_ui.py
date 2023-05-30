@@ -17,7 +17,7 @@ class Ui_SendSignalDialog(object):
         SendSignalDialog.setWindowModality(QtCore.Qt.NonModal)
         SendSignalDialog.setEnabled(True)
         SendSignalDialog.resize(465, 133)
-        SendSignalDialog.setWindowTitle("")
+        SendSignalDialog.setWindowTitle(" ")
         SendSignalDialog.setModal(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(SendSignalDialog)
         self.verticalLayout.setContentsMargins(9, 9, 9, 9)
@@ -29,7 +29,7 @@ class Ui_SendSignalDialog(object):
         self.MainVbox.setObjectName("MainVbox")
         self.Label = QtWidgets.QLabel(SendSignalDialog)
         self.Label.setObjectName("Label")
-        self.MainVbox.addWidget(self.Label, 0, QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
+        self.MainVbox.addWidget(self.Label, 0, QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.SignalListComboBox = QtWidgets.QComboBox(SendSignalDialog)
         self.SignalListComboBox.setObjectName("SignalListComboBox")
         self.SignalListComboBox.addItem("")
@@ -40,9 +40,8 @@ class Ui_SendSignalDialog(object):
         self.SignalListComboBox.addItem("")
         self.SignalListComboBox.addItem("")
         self.SignalListComboBox.addItem("")
-        self.MainVbox.addWidget(self.SignalListComboBox, 0, QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
-        spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum,
-                                           QtWidgets.QSizePolicy.MinimumExpanding)
+        self.MainVbox.addWidget(self.SignalListComboBox, 0, QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        spacerItem = QtWidgets.QSpacerItem(20, 20, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.MinimumExpanding)
         self.MainVbox.addItem(spacerItem)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
@@ -60,8 +59,8 @@ class Ui_SendSignalDialog(object):
         self.verticalLayout.addLayout(self.MainVbox)
 
         self.retranslateUi(SendSignalDialog)
-        self.CancelButton.clicked.connect(SendSignalDialog.reject)  # type: ignore
-        self.SendButton.clicked.connect(SendSignalDialog.accept)  # type: ignore
+        self.CancelButton.clicked.connect(SendSignalDialog.reject) # type: ignore
+        self.SendButton.clicked.connect(SendSignalDialog.accept) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(SendSignalDialog)
 
     def retranslateUi(self, SendSignalDialog):

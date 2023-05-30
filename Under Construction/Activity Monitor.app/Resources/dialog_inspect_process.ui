@@ -64,7 +64,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab_Memory">
         <attribute name="title">
@@ -415,9 +415,9 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_Statistics">
+       <widget class="QWidget" name="tab_Maps">
         <attribute name="title">
-         <string>Statistics</string>
+         <string>Maps</string>
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_4">
          <property name="leftMargin">
@@ -433,7 +433,11 @@
           <number>20</number>
          </property>
          <item>
-          <widget class="QTextEdit" name="textEdit"/>
+          <widget class="QTreeView" name="MapsTreeView">
+           <property name="sortingEnabled">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
