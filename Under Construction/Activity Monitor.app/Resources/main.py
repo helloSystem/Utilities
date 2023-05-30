@@ -452,7 +452,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 row.append(item)
 
                 if self.ActionViewColumnProcessName.isChecked():
-                    item = QStandardItem(f"{p.name()}")
+                    item = QStandardItem()
                     item.setData(p.name())
 
                     pname = p.name()
@@ -464,6 +464,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
                     if pname in self.__icons:
                         item.setIcon(self.__icons[pname])
+                    item.setText(f"{pname}")
                     row.append(item)
 
                 if self.ActionViewColumnUser.isChecked():
