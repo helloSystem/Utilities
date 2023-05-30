@@ -533,14 +533,23 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                     else:
                         filtered_row = None
 
-                # if combo_box_current_index == 5:
-                #     pass
+                if combo_box_current_index == 5:
+                    if p.status() == psutil.STATUS_RUNNING:
+                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                    else:
+                        filtered_row = None
 
-                # if combo_box_current_index == 6:
-                #     pass
+                if combo_box_current_index == 6:
+                    if p.status() == psutil.STATUS_WAITING or p.status() == psutil.STATUS_SLEEPING :
+                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                    else:
+                        filtered_row = None
 
-                # if combo_box_current_index == 7:
-                #     pass
+                if combo_box_current_index == 7:
+                    if not p.terminal():
+                        filtered_row = self.filter_by_line(filtered_row, p.name())
+                    else:
+                        filtered_row = None
 
                 if combo_box_current_index == 8:
                     if p.pid == self.selected_pid:
