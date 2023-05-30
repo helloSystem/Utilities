@@ -579,7 +579,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             else:
                 filtered_row = None
         elif self.filterComboBox.currentIndex() == 7:
-            if environ and "LAUNCHED_BUNDLE" in p.environ:
+            if environ and "LAUNCHED_BUNDLE" in environ:
                 filtered_row = self.filter_by_line(filtered_row, application_name)
             else:
                 filtered_row = None
