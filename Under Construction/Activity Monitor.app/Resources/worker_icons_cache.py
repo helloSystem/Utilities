@@ -27,6 +27,8 @@ class IconsCacheWorker(QObject):
                 environ = p.environ()
             except psutil.AccessDenied:
                 environ = None
+
+            # Try helloSystem app first
             if environ and "LAUNCHED_BUNDLE" in environ:
                 application_name = os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
                 # XDG thumbnails for AppImages; TODO: Test this
@@ -58,9 +60,9 @@ class IconsCacheWorker(QObject):
             else:
                 application_name = p.name()
 
+            # Default case
             if icon is None:
                 icon = QIcon.fromTheme(p.name().lower())
-
             if application_name not in self.cache:
                 self.updated_icons_cache.emit({application_name: icon})
 

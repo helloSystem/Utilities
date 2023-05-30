@@ -558,7 +558,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                         filtered_row = None
 
                 if combo_box_current_index == 7:
-                    if environ and "LAUNCHED_BUNDLE" in p.environ() and not p.terminal():
+                    # TODO: X11 support
+                    if environ and "LAUNCHED_BUNDLE" in environ:
                         filtered_row = self.filter_by_line(filtered_row, application_name)
                     else:
                         filtered_row = None
