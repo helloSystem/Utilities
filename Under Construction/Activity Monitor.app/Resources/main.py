@@ -444,6 +444,10 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
             with p.oneshot():
                 row = []
+                try:
+                    environ = p.environ()
+                except psutil.AccessDenied:
+                    environ = None
 
                 # PID can't be disabled because it is use for selection tracking
                 item = QStandardItem(f"{p.pid}")
@@ -457,6 +461,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                     try:
                         if "LAUNCHED_BUNDLE" in p.environ():
                             pname = os.path.basename(p.environ()["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
+
                     except psutil.AccessDenied:
                         pass
 
@@ -556,7 +561,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                         filtered_row = None
 
                 if combo_box_current_index == 7:
-                    if not p.terminal():
+                    if environ and "LAUNCHED_BUNDLE" in p.environ() and not p.terminal():
                         filtered_row = self.filter_by_line(filtered_row, p.name())
                     else:
                         filtered_row = None
