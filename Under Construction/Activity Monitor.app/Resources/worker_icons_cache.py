@@ -33,32 +33,37 @@ class IconsCacheWorker(QObject):
                         # AppDir
                         os.path.exists(os.path.join(bundle_path, "DirIcon"))
                         if os.path.exists(os.path.join(bundle_path, "DirIcon")):
-                            self.updated_icons_cache.emit({p.name(): QIcon(os.path.join(bundle_path, "DirIcon"))})
+                            # self.updated_icons_cache.emit({p.name(): QIcon(os.path.join(bundle_path, "DirIcon"))})
+                            self.updated_icons_cache.emit({bundle_name: QIcon(os.path.join(bundle_path, "DirIcon"))})
                         else:
                             # .app
                             for icon_suffix in ["png", "jpg", "xpg", "svg", "xpm"]:
                                 # Normal
                                 icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.lower())
                                 if os.path.exists(icon_path):
-                                    self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
+                                    # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
+                                    self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
                                     break
                                 # Capital
                                 icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.upper())
                                 if os.path.exists(icon_path):
-                                    self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
+                                    self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
+                                    # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
                                     break
                                 # Title
                                 icon_path = os.path.join(bundle_path, "Resources", bundle_name + "." + icon_suffix.title())
                                 if os.path.exists(icon_path):
-                                    self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
+                                    self.updated_icons_cache.emit({bundle_name: QIcon(icon_path)})
+                                    # self.updated_icons_cache.emit({p.name(): QIcon(icon_path)})
                                     break
                         # XDG thumbnails for AppImages; TODO: Test this
                         if bundle_path.endswith(".AppImage"):
                             # xdg_thumbnail_path = os.path.join(xdg.BaseDirectory.xdg_cache_home, "thumbnails", "normal")
                             xdg_thumbnail_path = os.path.expanduser("~/.cache/thumbnails/normal")
-                            print(xdg_thumbnail_path)
-                            xdg_thumbnail_path = os.path.join(xdg_thumbnail_path,
-                                                              hashlib.md5(bundle_path.encode("utf-8")).hexdigest() + ".png")
+                            # print(xdg_thumbnail_path)
+                            xdg_thumbnail_path = os.path.join(
+                                xdg_thumbnail_path,
+                                hashlib.md5(bundle_path.encode("utf-8")).hexdigest() + ".png")
                             if os.path.exists(xdg_thumbnail_path):
                                 icon = QIcon(xdg_thumbnail_path)
                                 self.updated_icons_cache.emit({p.name(): icon})

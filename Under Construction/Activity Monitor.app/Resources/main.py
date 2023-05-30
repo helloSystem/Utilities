@@ -3,6 +3,7 @@
 import sys
 import psutil
 import time
+import os
 
 # Qt import
 from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool
@@ -453,8 +454,16 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 if self.ActionViewColumnProcessName.isChecked():
                     item = QStandardItem(f"{p.name()}")
                     item.setData(p.name())
-                    if p.name() in self.__icons:
-                        item.setIcon(self.__icons[p.name()])
+
+                    pname = p.name()
+                    try:
+                        if "LAUNCHED_BUNDLE" in p.environ():
+                            pname = os.path.basename(p.environ()["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
+                    except psutil.AccessDenied:
+                        pass
+
+                    if pname in self.__icons:
+                        item.setIcon(self.__icons[pname])
                     row.append(item)
 
                 if self.ActionViewColumnUser.isChecked():
