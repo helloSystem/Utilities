@@ -17,6 +17,7 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtWidgets import QWidget
 from dialog_inspect_process_ui import Ui_InspectProcess
+from utility_application_name import get_application_name
 
 ACCESS_DENIED = ''
 NON_VERBOSE_ITERATIONS = 4
@@ -103,7 +104,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         # Title
         self.print_('pid', pinfo['pid'])
         self.print_('name', pinfo['name'])
-        self.setWindowTitle(f"{pinfo['name']} ({pinfo['pid']})")
+        self.setWindowTitle(f"{get_application_name(self.process)} ({pinfo['pid']})")
 
         # Parent
         self.print_('parent', '%s %s' % (pinfo['ppid'], parent))
@@ -193,7 +194,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         self.print_('user', pinfo['username'])
         if psutil.POSIX:
             self.print_('uids', self.str_ntuple(pinfo['uids']))
-            self.user_value.setText(f"{pinfo['username']} ({pinfo['uids'].effective})")
+            self.user_value.setText(f"{pinfo['uids'].effective} ({pinfo['username']})")
 
         # Group
         if psutil.POSIX:

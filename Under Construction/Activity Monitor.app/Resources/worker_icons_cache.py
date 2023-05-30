@@ -10,6 +10,8 @@ from PyQt5.QtCore import (
     QObject,
 )
 
+from utility_application_name import get_application_name
+
 
 class IconsCacheWorker(QObject):
     finished = pyqtSignal()
@@ -28,9 +30,11 @@ class IconsCacheWorker(QObject):
             except psutil.AccessDenied:
                 environ = None
 
-            # Try helloSystem app first
+            # Get the application name to display
+            application_name = get_application_name(p)
+
+            # Try BUNDLE first
             if environ and "LAUNCHED_BUNDLE" in environ:
-                application_name = os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
                 # XDG thumbnails for AppImages; TODO: Test this
                 if environ["LAUNCHED_BUNDLE"].endswith(".AppImage"):
                     for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
@@ -44,8 +48,14 @@ class IconsCacheWorker(QObject):
 
                 if icon is None:
                     # AppDir
-                    if os.path.exists(os.path.join(environ["LAUNCHED_BUNDLE"], "DirIcon")):
-                        icon = QIcon(os.path.join(environ["LAUNCHED_BUNDLE"], "DirIcon"))
+                    if os.path.exists(os.path.join(
+                            environ["LAUNCHED_BUNDLE"],
+                            "DirIcon")
+                    ):
+                        icon = QIcon(os.path.join(
+                            environ["LAUNCHED_BUNDLE"],
+                            "DirIcon")
+                        )
                 # .app
                 if icon is None:
                     for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
@@ -57,13 +67,17 @@ class IconsCacheWorker(QObject):
                         if os.path.exists(icon_path):
                             icon = QIcon(icon_path)
                             break
-            else:
-                application_name = p.name()
 
-            # Default case
+            # Default case back to X11 theme support for get icon
             if icon is None:
-                icon = QIcon.fromTheme(p.name().lower())
+                icon = QIcon.fromTheme(application_name.lower())
+
+            # Application by application emit a signal it contain data
             if application_name not in self.cache:
-                self.updated_icons_cache.emit({application_name: icon})
+                self.updated_icons_cache.emit(
+                    {
+                        application_name: icon
+                    }
+                )
 
         self.finished.emit()

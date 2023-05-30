@@ -45,7 +45,9 @@ from worker import PSUtilsWorker
 from worker_cpu import CPUWorker
 from worker_system_memory import SystemMemoryWorker
 from worker_icons_cache import IconsCacheWorker
+
 from utility_bytes2human import bytes2human
+from utility_application_name import get_application_name
 
 
 class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
@@ -443,15 +445,11 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             QApplication.processEvents()
 
             with p.oneshot():
-
                 try:
                     environ = p.environ()
                 except psutil.AccessDenied:
                     environ = None
-                if environ and "LAUNCHED_BUNDLE" in environ:
-                    application_name = os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
-                else:
-                    application_name = p.name()
+                application_name = get_application_name(p)
 
                 row = []
                 # PID can't be disabled because it is use for selection tracking
@@ -581,7 +579,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             else:
                 filtered_row = None
         elif self.filterComboBox.currentIndex() == 7:
-            if environ and "LAUNCHED_BUNDLE" in environ:
+            if environ and "LAUNCHED_BUNDLE" in p.environ:
                 filtered_row = self.filter_by_line(filtered_row, application_name)
             else:
                 filtered_row = None
@@ -597,10 +595,10 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 filtered_row = None
         return filtered_row
 
-    def _refresh_icons_cache(self, icons):
-        for pname, icon in icons.items():
-            if f"{pname}" not in self.__icons:
-                self.__icons[f"{pname}"] = icon
+    def _refresh_icons_cache(self, application_icons):
+        for application_name, icon in application_icons.items():
+            if application_name not in self.__icons:
+                self.__icons[application_name] = icon
 
     def _showInspectProcessDialog(self):
         if self.ActionMenuViewInspectProcess.isEnabled():

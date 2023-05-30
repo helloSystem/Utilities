@@ -4,6 +4,7 @@ import signal
 from PyQt5.QtWidgets import QDialog
 from PyQt5.QtCore import pyqtSignal, Qt
 from dialog_kill_process_ui import Ui_KillDialog
+from utility_application_name import get_application_name
 
 
 class KillProcessDialog(QDialog):
@@ -16,7 +17,7 @@ class KillProcessDialog(QDialog):
         self.process = process
         self.ui = Ui_KillDialog()
         self.ui.setupUi(self)
-        self.ui.Label.setText(self.ui.Label.text() % self.process.name())
+        self.ui.Label.setText(self.ui.Label.text() % get_application_name(self.process))
 
         self.setFixedSize(self.size())
 

@@ -3,6 +3,7 @@ import signal
 
 from PyQt5.QtWidgets import QDialog
 from dialog_send_signal_ui import Ui_SendSignalDialog
+from utility_application_name import get_application_name
 
 
 class SendSignalDialog(QDialog):
@@ -11,7 +12,7 @@ class SendSignalDialog(QDialog):
         self.process = process
         self.ui = Ui_SendSignalDialog()
         self.ui.setupUi(self)
-        self.ui.Label.setText(self.ui.Label.text() % self.process.name())
+        self.ui.Label.setText(self.ui.Label.text() % get_application_name(self.process))
 
         self.setFixedSize(self.size())
 
