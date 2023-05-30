@@ -189,7 +189,6 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 self.stack_size_label.hide()
                 self.stack_size_value.hide()
 
-
         # User
         self.print_('user', pinfo['username'])
         if psutil.POSIX:
