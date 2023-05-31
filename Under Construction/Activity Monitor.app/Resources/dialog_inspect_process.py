@@ -51,7 +51,6 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         self.open_files_model = QStandardItemModel()
 
         self.buttonQuit.clicked.connect(self.quit)
-        self.buttonSample.clicked.connect(self.run)
 
         self.sample_text = ""
 

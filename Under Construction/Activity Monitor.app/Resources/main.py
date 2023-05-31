@@ -605,6 +605,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
     def _showInspectProcessDialog(self):
         if self.ActionMenuViewInspectProcess.isEnabled():
             self.inspect_process_dialog = InspectProcess(process=psutil.Process(self.selected_pid))
+            self.inspect_process_dialog.buttonSample.clicked.connect(self._showSampleProcessDialog)
             self.inspect_process_dialog.run()
             self.inspect_process_dialog.show()
 
@@ -612,7 +613,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         if self.ActionToolBarSampleProcess.isEnabled():
             self.sample_process_dialog = SampleProcess(process=psutil.Process(self.selected_pid))
             self.sample_process_dialog.show()
-
 
     def _showSendSignalDialog(self):
         if self.ActionMenuViewSendSignaltoProcesses.isEnabled():
