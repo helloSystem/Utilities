@@ -24,6 +24,7 @@ class TreeViewProcess(object):
     ActionToolBarQuitProcess: QAction
     ActionMenuViewKillDialog: QAction
     ActionToolBarInspectProcess: QAction
+    ActionToolBarSampleProcess: QAction
 
     def __init__(self):
 
@@ -45,6 +46,8 @@ class TreeViewProcess(object):
         self.process_tree.clearSelection()
 
         self.ActionToolBarQuitProcess.setEnabled(False)
+        self.ActionToolBarSampleProcess.setEnabled(False)
+        self.ActionToolBarInspectProcess.setEnabled(False)
 
         if self.filterComboBox.currentIndex() == 8:
             self.filterComboBox.setCurrentIndex(0)
@@ -53,7 +56,6 @@ class TreeViewProcess(object):
         self.ActionMenuViewSelectedProcesses.setEnabled(False)
         self.ActionMenuViewKillDialog.setEnabled(False)
         self.ActionMenuViewSendSignaltoProcesses.setEnabled(False)
-        self.ActionToolBarInspectProcess.setEnabled(False)
 
     def selectItem(self, itemOrText):
         # oldIndex = self.process_tree.selectionModel().currentIndex()
@@ -80,6 +82,7 @@ class TreeViewProcess(object):
             if self.selected_pid:
                 self.ActionToolBarQuitProcess.setEnabled(True)
                 self.ActionToolBarInspectProcess.setEnabled(True)
+                self.ActionToolBarSampleProcess.setEnabled(True)
                 self.filterComboBox.model().item(8).setEnabled(True)
                 self.ActionMenuViewSendSignaltoProcesses.setEnabled(True)
                 self.ActionMenuViewSelectedProcesses.setEnabled(True)

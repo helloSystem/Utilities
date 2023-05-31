@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>753</width>
-    <height>633</height>
+    <width>578</width>
+    <height>636</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2331,7 +2331,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>753</width>
+     <width>578</width>
      <height>24</height>
     </rect>
    </property>
@@ -2838,7 +2838,7 @@
    </property>
    <property name="icon">
     <iconset resource="qressources.qrc">
-     <normaloff>:/Inspect.png</normaloff>:/Inspect.png</iconset>
+     <normaloff>:/SampleProcess.png</normaloff>:/SampleProcess.png</iconset>
    </property>
    <property name="text">
     <string>Sample Process</string>

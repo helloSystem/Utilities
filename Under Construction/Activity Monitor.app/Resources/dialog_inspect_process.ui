@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>909</width>
-    <height>615</height>
+    <height>430</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -144,7 +144,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>3</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab_Memory">
         <attribute name="title">

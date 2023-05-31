@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string> </string>
+   <string/>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -198,6 +198,7 @@
  </widget>
  <resources>
   <include location="qressources.qrc"/>
+  <include location="../../../../../../.designer/backup/qressources.qrc"/>
  </resources>
  <connections/>
 </ui>

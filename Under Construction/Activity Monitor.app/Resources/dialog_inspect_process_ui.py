@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_InspectProcess(object):
     def setupUi(self, InspectProcess):
         InspectProcess.setObjectName("InspectProcess")
-        InspectProcess.resize(909, 615)
+        InspectProcess.resize(909, 430)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(InspectProcess)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.gridLayout = QtWidgets.QGridLayout()
@@ -264,7 +264,7 @@ class Ui_InspectProcess(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_6)
 
         self.retranslateUi(InspectProcess)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(InspectProcess)
 
     def retranslateUi(self, InspectProcess):

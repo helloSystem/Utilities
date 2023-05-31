@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(753, 633)
+        MainWindow.resize(578, 636)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Processes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -822,7 +822,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.central_widget_tabs)
         MainWindow.setCentralWidget(self.central_widget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 753, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 578, 24))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -992,7 +992,9 @@ class Ui_MainWindow(object):
         self.actionEnter_Full_Screen.setObjectName("actionEnter_Full_Screen")
         self.ActionToolBarSampleProcess = QtWidgets.QAction(MainWindow)
         self.ActionToolBarSampleProcess.setEnabled(False)
-        self.ActionToolBarSampleProcess.setIcon(icon2)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(":/SampleProcess.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.ActionToolBarSampleProcess.setIcon(icon3)
         self.ActionToolBarSampleProcess.setObjectName("ActionToolBarSampleProcess")
         self.menuFile.addAction(self.actionQuit)
         self.menuViewFrequency.addAction(self.ActionUpdateFrequencyTo1Sec)
