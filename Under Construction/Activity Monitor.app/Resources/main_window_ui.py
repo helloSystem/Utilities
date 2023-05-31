@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(578, 636)
+        MainWindow.resize(758, 627)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Processes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -822,7 +822,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.central_widget_tabs)
         MainWindow.setCentralWidget(self.central_widget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 578, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 758, 24))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -837,10 +837,12 @@ class Ui_MainWindow(object):
         MainWindow.setMenuBar(self.menubar)
         self.toolBar = QtWidgets.QToolBar(MainWindow)
         self.toolBar.setEnabled(True)
+        self.toolBar.setStyleSheet("QToolBar{spacing:3px;}")
         self.toolBar.setMovable(False)
         self.toolBar.setAllowedAreas(QtCore.Qt.TopToolBarArea)
         self.toolBar.setIconSize(QtCore.QSize(32, 32))
         self.toolBar.setToolButtonStyle(QtCore.Qt.ToolButtonTextUnderIcon)
+        self.toolBar.setFloatable(False)
         self.toolBar.setObjectName("toolBar")
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.actionQuit = QtWidgets.QAction(MainWindow)
@@ -996,6 +998,9 @@ class Ui_MainWindow(object):
         icon3.addPixmap(QtGui.QPixmap(":/SampleProcess.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ActionToolBarSampleProcess.setIcon(icon3)
         self.ActionToolBarSampleProcess.setObjectName("ActionToolBarSampleProcess")
+        self.ActionMenuViewSample = QtWidgets.QAction(MainWindow)
+        self.ActionMenuViewSample.setEnabled(False)
+        self.ActionMenuViewSample.setObjectName("ActionMenuViewSample")
         self.menuFile.addAction(self.actionQuit)
         self.menuViewFrequency.addAction(self.ActionUpdateFrequencyTo1Sec)
         self.menuViewFrequency.addAction(self.ActionUpdateFrequencyTo3Secs)
@@ -1024,6 +1029,7 @@ class Ui_MainWindow(object):
         self.menuView.addSeparator()
         self.menuView.addAction(self.ActionMenuViewFilterProcesses)
         self.menuView.addAction(self.ActionMenuViewInspectProcess)
+        self.menuView.addAction(self.ActionMenuViewSample)
         self.menuView.addAction(self.ActionMenuViewKillDialog)
         self.menuView.addAction(self.ActionMenuViewSendSignaltoProcesses)
         self.menuView.addSeparator()
@@ -1166,6 +1172,7 @@ class Ui_MainWindow(object):
         self.actionEnter_Full_Screen.setText(_translate("MainWindow", "Enter Full Screen"))
         self.ActionToolBarSampleProcess.setText(_translate("MainWindow", "Sample Process"))
         self.ActionToolBarSampleProcess.setToolTip(_translate("MainWindow", "Sample selected process"))
+        self.ActionMenuViewSample.setText(_translate("MainWindow", "Sample Process"))
 from widget_chartpie import ChartPie
 from widget_color_pickup import ColorButton
 from widget_cpugraphbar import CPUGraphBar

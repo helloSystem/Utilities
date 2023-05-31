@@ -38,6 +38,7 @@ from dialog_send_signal import SendSignalDialog
 from dialog_kill_process import KillProcessDialog
 from dialog_about import AboutDialog
 from dialog_inspect_process import InspectProcess
+from dialog_sample_process import SampleProcess
 
 # Back end libs
 from widget_chartpie import ChartPieItem
@@ -274,6 +275,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         # Menu and ToolBar
         self.ActionToolBarInspectProcess.triggered.connect(self._showInspectProcessDialog)
+        self.ActionToolBarSampleProcess.triggered.connect(self._showSampleProcessDialog)
         self.ActionUpdateFrequencyTo5Secs.triggered.connect(self._timer_change_for_5_secs)
         self.ActionUpdateFrequencyTo3Secs.triggered.connect(self._timer_change_for_3_secs)
         self.ActionUpdateFrequencyTo1Sec.triggered.connect(self._timer_change_for_1_sec)
@@ -294,6 +296,10 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionMenuViewApplicationInLast12Hours.triggered.connect(self._filter_by_application_in_last_12_hours)
 
         self.ActionMenuViewSendSignaltoProcesses.triggered.connect(self._showSendSignalDialog)
+        self.ActionMenuViewSample.triggered.connect(self._showSampleProcessDialog)
+        self.ActionMenuViewInspectProcess.triggered.connect(self._showInspectProcessDialog)
+
+
         self.ActionMenuViewKillDialog.triggered.connect(self._showKillDialog)
         self.ActionToolBarQuitProcess.triggered.connect(self._showKillDialog)
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
@@ -601,6 +607,12 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             self.inspect_process_dialog = InspectProcess(process=psutil.Process(self.selected_pid))
             self.inspect_process_dialog.run()
             self.inspect_process_dialog.show()
+
+    def _showSampleProcessDialog(self):
+        if self.ActionToolBarSampleProcess.isEnabled():
+            self.sample_process_dialog = SampleProcess(process=psutil.Process(self.selected_pid))
+            self.sample_process_dialog.show()
+
 
     def _showSendSignalDialog(self):
         if self.ActionMenuViewSendSignaltoProcesses.isEnabled():

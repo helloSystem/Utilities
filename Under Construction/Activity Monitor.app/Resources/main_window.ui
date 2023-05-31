@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>578</width>
-    <height>636</height>
+    <width>758</width>
+    <height>627</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2331,7 +2331,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>578</width>
+     <width>758</width>
      <height>24</height>
     </rect>
    </property>
@@ -2382,6 +2382,7 @@
     <addaction name="separator"/>
     <addaction name="ActionMenuViewFilterProcesses"/>
     <addaction name="ActionMenuViewInspectProcess"/>
+    <addaction name="ActionMenuViewSample"/>
     <addaction name="ActionMenuViewKillDialog"/>
     <addaction name="ActionMenuViewSendSignaltoProcesses"/>
     <addaction name="separator"/>
@@ -2404,6 +2405,9 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="styleSheet">
+    <string notr="true">QToolBar{spacing:3px;}</string>
+   </property>
    <property name="movable">
     <bool>false</bool>
    </property>
@@ -2418,6 +2422,9 @@
    </property>
    <property name="toolButtonStyle">
     <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
    </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
@@ -2845,6 +2852,14 @@
    </property>
    <property name="toolTip">
     <string>Sample selected process</string>
+   </property>
+  </action>
+  <action name="ActionMenuViewSample">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Sample Process</string>
    </property>
   </action>
  </widget>
