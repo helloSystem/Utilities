@@ -27,7 +27,7 @@ class IconsCacheWorker(QObject):
 
             try:
                 environ = p.environ()
-            except psutil.AccessDenied:
+            except (psutil.AccessDenied, psutil.ZombieProcess):
                 environ = None
 
             # Get the application name to display
