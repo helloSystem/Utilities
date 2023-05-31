@@ -447,7 +447,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             with p.oneshot():
                 try:
                     environ = p.environ()
-                except psutil.AccessDenied:
+                except (psutil.AccessDenied, psutil.ZombieProcess):
                     environ = None
                 application_name = get_application_name(p)
 

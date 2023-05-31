@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>620</width>
-    <height>628</height>
+    <width>753</width>
+    <height>633</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2331,7 +2331,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>620</width>
+     <width>753</width>
      <height>24</height>
     </rect>
    </property>
@@ -2427,6 +2427,7 @@
    </attribute>
    <addaction name="ActionToolBarQuitProcess"/>
    <addaction name="ActionToolBarInspectProcess"/>
+   <addaction name="ActionToolBarSampleProcess"/>
   </widget>
   <action name="actionQuit">
    <property name="text">
@@ -2829,6 +2830,21 @@
    </property>
    <property name="text">
     <string>Enter Full Screen</string>
+   </property>
+  </action>
+  <action name="ActionToolBarSampleProcess">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="qressources.qrc">
+     <normaloff>:/Inspect.png</normaloff>:/Inspect.png</iconset>
+   </property>
+   <property name="text">
+    <string>Sample Process</string>
+   </property>
+   <property name="toolTip">
+    <string>Sample selected process</string>
    </property>
   </action>
  </widget>

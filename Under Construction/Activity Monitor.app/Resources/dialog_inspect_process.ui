@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>778</width>
-    <height>519</height>
+    <width>909</width>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -49,6 +49,86 @@
        </property>
       </widget>
      </item>
+     <item row="0" column="4" alignment="Qt::AlignLeft">
+      <widget class="QLabel" name="user_label">
+       <property name="text">
+        <string>User:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="5">
+      <widget class="QLabel" name="label_4">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1" alignment="Qt::AlignLeft">
+      <widget class="QLabel" name="parent_process_label">
+       <property name="text">
+        <string>Parent Process:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QLabel" name="process_group_id_value">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="5">
+      <widget class="QLabel" name="user_value">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1" alignment="Qt::AlignLeft">
+      <widget class="QLabel" name="cpu_percent_label">
+       <property name="text">
+        <string>% CPU:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="4" alignment="Qt::AlignLeft">
+      <widget class="QLabel" name="label_9">
+       <property name="text">
+        <string>Recent hangs:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="3">
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
      <item row="3" column="1" colspan="5">
       <widget class="QTabWidget" name="tabWidget">
        <property name="styleSheet">
@@ -64,7 +144,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>3</number>
        </property>
        <widget class="QWidget" name="tab_Memory">
         <attribute name="title">
@@ -483,16 +563,23 @@
         <attribute name="title">
          <string>Connections</string>
         </attribute>
-       </widget>
-       <widget class="QWidget" name="tab_Threads">
-        <attribute name="title">
-         <string>Threads</string>
-        </attribute>
-       </widget>
-       <widget class="QWidget" name="tab_ResourcesLimites">
-        <attribute name="title">
-         <string>Resource Limits</string>
-        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <property name="leftMargin">
+          <number>20</number>
+         </property>
+         <property name="topMargin">
+          <number>30</number>
+         </property>
+         <property name="rightMargin">
+          <number>20</number>
+         </property>
+         <property name="bottomMargin">
+          <number>20</number>
+         </property>
+         <item>
+          <widget class="QTreeView" name="ConnectionsTreeView"/>
+         </item>
+        </layout>
        </widget>
        <widget class="QWidget" name="tab_Environement">
         <attribute name="title">
@@ -517,86 +604,6 @@
         </layout>
        </widget>
       </widget>
-     </item>
-     <item row="0" column="4" alignment="Qt::AlignLeft">
-      <widget class="QLabel" name="user_label">
-       <property name="text">
-        <string>User:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="5">
-      <widget class="QLabel" name="label_4">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1" alignment="Qt::AlignLeft">
-      <widget class="QLabel" name="parent_process_label">
-       <property name="text">
-        <string>Parent Process:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QLabel" name="process_group_id_value">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="5">
-      <widget class="QLabel" name="user_value">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1" alignment="Qt::AlignLeft">
-      <widget class="QLabel" name="cpu_percent_label">
-       <property name="text">
-        <string>% CPU:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="4" alignment="Qt::AlignLeft">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>Recent hangs:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="3">
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>

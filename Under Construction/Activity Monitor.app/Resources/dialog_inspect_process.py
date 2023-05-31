@@ -53,15 +53,16 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
         self.buttonQuit.clicked.connect(self.quit)
         self.buttonSample.clicked.connect(self.run)
+
+        self.sample_text = ""
+
     def quit(self):
         self.close()
 
-    def print_(self, a, b):
-        if sys.stdout.isatty() and psutil.POSIX:
-            fmt = '\x1b[1;32m%-13s\x1b[0m %s' % (a, b)
-        else:
-            fmt = '%-11s %s' % (a, b)
-        print(fmt)
+    def add_to_sample_text(self, a, b):
+        if a != "":
+            a = f"{a.upper()}:"
+        self.sample_text += "%-13s %s\n" % (a, b)
 
     def str_ntuple(self, nt, convert_bytes=False):
         if nt == ACCESS_DENIED:
@@ -69,14 +70,12 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         if not convert_bytes:
             return ", ".join(["%s=%s" % (x, getattr(nt, x)) for x in nt._fields])
         else:
-            return ", ".join(["%s=%s" % (x, bytes2human(getattr(nt, x)))
-                              for x in nt._fields])
+            return ", ".join(["%s=%s" % (x, bytes2human(getattr(nt, x))) for x in nt._fields])
 
     def run(self, verbose=False):
         try:
             proc = self.process
             pinfo = proc.as_dict(ad_value=ACCESS_DENIED)
-            print(pinfo)
         except psutil.NoSuchProcess as err:
             sys.exit(str(err))
 
@@ -102,33 +101,33 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
         # here we go
         # Title
-        self.print_('pid', pinfo['pid'])
-        self.print_('name', pinfo['name'])
+        self.add_to_sample_text('pid', pinfo['pid'])
+        self.add_to_sample_text('name', pinfo['name'])
         self.setWindowTitle(f"{get_application_name(self.process)} ({pinfo['pid']})")
 
         # Parent
-        self.print_('parent', '%s %s' % (pinfo['ppid'], parent))
+        self.add_to_sample_text('parent', '%s %s' % (pinfo['ppid'], parent))
         self.parent_process_value.setText('%s %s' % (pinfo['ppid'], parent))
 
-        self.print_('exe', pinfo['exe'])
-        self.print_('cwd', pinfo['cwd'])
-        self.print_('cmdline', ' '.join(pinfo['cmdline']))
-        self.print_('started', started)
+        self.add_to_sample_text('exe', pinfo['exe'])
+        self.add_to_sample_text('cwd', pinfo['cwd'])
+        self.add_to_sample_text('cmdline', ' '.join(pinfo['cmdline']))
+        self.add_to_sample_text('started', started)
 
         cpu_tot_time = datetime.timedelta(seconds=sum(pinfo['cpu_times']))
         cpu_tot_time = "%s:%s.%s" % (
             cpu_tot_time.seconds // 60 % 60,
             str((cpu_tot_time.seconds % 60)).zfill(2),
             str(cpu_tot_time.microseconds)[:2])
-        self.print_('cpu-tspent', cpu_tot_time)
-        self.print_('cpu-times', self.str_ntuple(pinfo['cpu_times']))
+        self.add_to_sample_text('cpu-tspent', cpu_tot_time)
+        self.add_to_sample_text('cpu-times', self.str_ntuple(pinfo['cpu_times']))
         if hasattr(proc, "cpu_affinity"):
-            self.print_("cpu-affinity", pinfo["cpu_affinity"])
+            self.add_to_sample_text("cpu-affinity", pinfo["cpu_affinity"])
         if hasattr(proc, "cpu_num"):
-            self.print_("cpu-num", pinfo["cpu_num"])
+            self.add_to_sample_text("cpu-num", pinfo["cpu_num"])
 
-        self.print_('memory', self.str_ntuple(pinfo['memory_full_info'], convert_bytes=True))
-        self.print_('memory %', round(pinfo['memory_percent'], 2))
+        self.add_to_sample_text('memory', self.str_ntuple(pinfo['memory_full_info'], convert_bytes=True))
+        self.add_to_sample_text('memory %', round(pinfo['memory_percent'], 2))
         if pinfo['memory_full_info']:
             if hasattr(pinfo['memory_full_info'], "uss"):
                 self.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
@@ -191,24 +190,25 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 self.stack_size_value.hide()
 
         # User
-        self.print_('user', pinfo['username'])
+        self.add_to_sample_text('user', pinfo['username'])
         if psutil.POSIX:
-            self.print_('uids', self.str_ntuple(pinfo['uids']))
+            self.add_to_sample_text('uids', self.str_ntuple(pinfo['uids']))
             self.user_value.setText(f"{pinfo['uids'].effective} ({pinfo['username']})")
 
         # Group
         if psutil.POSIX:
-            self.process_group_id_value.setText(f"{pinfo['gids'].effective}")
+            self.add_to_sample_text('gids', self.str_ntuple(pinfo['gids']))
+            self.process_group_id_value.setText(f"{self.str_ntuple(pinfo['gids'])}")
 
         # CPU
         self.cpu_percent_value.setText(f"{proc.cpu_percent(interval=1)}")
 
         # If run in terminal
         if psutil.POSIX:
-            self.print_('terminal', pinfo['terminal'] or '')
+            self.add_to_sample_text('terminal', pinfo['terminal'] or '')
 
-        self.print_('status', pinfo['status'])
-        self.print_('nice', pinfo['nice'])
+        self.add_to_sample_text('status', pinfo['status'])
+        self.add_to_sample_text('nice', pinfo['nice'])
         if hasattr(proc, "ionice"):
             try:
                 ionice = proc.ionice()
@@ -216,35 +216,35 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 pass
             else:
                 if psutil.WINDOWS:
-                    self.print_("ionice", ionice)
+                    self.add_to_sample_text("ionice", ionice)
                 else:
-                    self.print_("ionice", "class=%s, value=%s" % (
+                    self.add_to_sample_text("ionice", "class=%s, value=%s" % (
                         str(ionice.ioclass), ionice.value))
 
-        self.print_('num-threads', pinfo['num_threads'])
+        self.add_to_sample_text('num-threads', pinfo['num_threads'])
         if psutil.POSIX:
-            self.print_('num-fds', pinfo['num_fds'])
+            self.add_to_sample_text('num-fds', pinfo['num_fds'])
         if psutil.WINDOWS:
-            self.print_('num-handles', pinfo['num_handles'])
+            self.add_to_sample_text('num-handles', pinfo['num_handles'])
 
         if 'io_counters' in pinfo:
-            self.print_('I/O', self.str_ntuple(pinfo['io_counters'], convert_bytes=True))
+            self.add_to_sample_text('I/O', self.str_ntuple(pinfo['io_counters'], convert_bytes=True))
         if 'num_ctx_switches' in pinfo:
-            self.print_("ctx-switches", self.str_ntuple(pinfo['num_ctx_switches']))
+            self.add_to_sample_text("ctx-switches", self.str_ntuple(pinfo['num_ctx_switches']))
         if pinfo['children']:
             template = "%-6s %s"
-            self.print_("children", template % ("PID", "NAME"))
+            self.add_to_sample_text("children", template % ("PID", "NAME"))
             for child in pinfo['children']:
                 try:
-                    self.print_('', template % (child.pid, child.name()))
+                    self.add_to_sample_text('', template % (child.pid, child.name()))
                 except psutil.AccessDenied:
-                    self.print_('', template % (child.pid, ""))
+                    self.add_to_sample_text('', template % (child.pid, ""))
                 except psutil.NoSuchProcess:
                     pass
 
         # Open Files
         if pinfo['open_files']:
-            self.print_('open-files', 'PATH')
+            self.add_to_sample_text('open-files', 'PATH')
             self.open_files_model = QStandardItemModel()
             headers = []
 
@@ -307,7 +307,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
                 if row:
                     self.open_files_model.appendRow(row)
-                self.print_('', file.path)
+                self.add_to_sample_text('', file.path)
 
                 self.open_files_model.setHorizontalHeaderLabels(headers)
 
@@ -318,11 +318,11 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 self.OpenFileTreeView.sortByColumn(0, Qt.AscendingOrder)
 
         else:
-            self.print_('open-files', '')
+            self.add_to_sample_text('open-files', '')
 
         if pinfo['connections']:
             template = '%-5s %-25s %-25s %s'
-            self.print_('connections',
+            self.add_to_sample_text('connections',
                         template % ('PROTO', 'LOCAL ADDR', 'REMOTE ADDR', 'STATUS'))
             for conn in pinfo['connections']:
                 if conn.type == socket.SOCK_STREAM:
@@ -336,25 +336,22 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                     rip, rport = '*', '*'
                 else:
                     rip, rport = conn.raddr
-                self.print_('', template % (
+                self.add_to_sample_text('', template % (
                     type,
                     "%s:%s" % (lip, lport),
                     "%s:%s" % (rip, rport),
                     conn.status))
         else:
-            self.print_('connections', '')
+            self.add_to_sample_text('connections', '')
 
         if pinfo['threads'] and len(pinfo['threads']) > 1:
             template = "%-5s %12s %12s"
-            self.print_('threads', template % ("TID", "USER", "SYSTEM"))
+            self.add_to_sample_text('threads', template % ("TID", "USER", "SYSTEM"))
             for i, thread in enumerate(pinfo['threads']):
-                if not verbose and i >= NON_VERBOSE_ITERATIONS:
-                    self.print_("", "[...]")
-                    break
-                self.print_('', template % thread)
-            self.print_('', "total=%s" % len(pinfo['threads']))
+                self.add_to_sample_text('', template % thread)
+            self.add_to_sample_text('', "total=%s" % len(pinfo['threads']))
         else:
-            self.print_('threads', '')
+            self.add_to_sample_text('threads', '')
 
         if hasattr(proc, "rlimit"):
             res_names = [x for x in dir(psutil) if x.startswith("RLIMIT")]
@@ -368,23 +365,23 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                     resources.append((res_name, soft, hard))
             if resources:
                 template = "%-12s %15s %15s"
-                self.print_("res-limits", template % ("RLIMIT", "SOFT", "HARD"))
+                self.add_to_sample_text("res-limits", template % ("RLIMIT", "SOFT", "HARD"))
                 for res_name, soft, hard in resources:
                     if soft == psutil.RLIM_INFINITY:
                         soft = "infinity"
                     if hard == psutil.RLIM_INFINITY:
                         hard = "infinity"
-                    self.print_('', template % (
+                    self.add_to_sample_text('', template % (
                         RLIMITS_MAP.get(res_name, res_name), soft, hard))
 
         if hasattr(proc, "environ") and pinfo['environ']:
             environment_model = QStandardItemModel()
 
             template = "%-25s %s"
-            self.print_("environ", template % ("NAME", "VALUE"))
+            self.add_to_sample_text("environ", template % ("NAME", "VALUE"))
             for name, value in pinfo['environ'].items():
                 row = []
-                self.print_("", template % (name, value))
+                self.add_to_sample_text("", template % (name, value))
                 item = QStandardItem()
                 item.setText(f"{name}")
                 item.setData(name)
@@ -467,6 +464,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
             self.MapsTreeView.sortByColumn(0, Qt.DescendingOrder)
 
+        print(self.sample_text)
 
 
 
