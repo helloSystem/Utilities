@@ -10,7 +10,7 @@ from PyQt5.QtCore import (
     QObject,
 )
 
-from utility_application_name import get_application_name
+from utility import get_process_application_name, get_process_environ
 
 
 class IconsCacheWorker(QObject):
@@ -23,15 +23,10 @@ class IconsCacheWorker(QObject):
 
     def refresh(self):
         for p in psutil.process_iter():
+
+            application_name = get_process_application_name(p)
+            environ = get_process_environ(p)
             icon = None
-
-            try:
-                environ = p.environ()
-            except (psutil.AccessDenied, psutil.ZombieProcess):
-                environ = None
-
-            # Get the application name to display
-            application_name = get_application_name(p)
 
             # Try BUNDLE first
             if environ and "LAUNCHED_BUNDLE" in environ:

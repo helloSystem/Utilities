@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(620, 677)
+        MainWindow.resize(753, 633)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Processes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -822,7 +822,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.central_widget_tabs)
         MainWindow.setCentralWidget(self.central_widget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 620, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 753, 24))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -990,6 +990,10 @@ class Ui_MainWindow(object):
         self.actionEnter_Full_Screen = QtWidgets.QAction(MainWindow)
         self.actionEnter_Full_Screen.setEnabled(False)
         self.actionEnter_Full_Screen.setObjectName("actionEnter_Full_Screen")
+        self.ActionToolBarSampleProcess = QtWidgets.QAction(MainWindow)
+        self.ActionToolBarSampleProcess.setEnabled(False)
+        self.ActionToolBarSampleProcess.setIcon(icon2)
+        self.ActionToolBarSampleProcess.setObjectName("ActionToolBarSampleProcess")
         self.menuFile.addAction(self.actionQuit)
         self.menuViewFrequency.addAction(self.ActionUpdateFrequencyTo1Sec)
         self.menuViewFrequency.addAction(self.ActionUpdateFrequencyTo3Secs)
@@ -1028,6 +1032,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
         self.toolBar.addAction(self.ActionToolBarQuitProcess)
         self.toolBar.addAction(self.ActionToolBarInspectProcess)
+        self.toolBar.addAction(self.ActionToolBarSampleProcess)
 
         self.retranslateUi(MainWindow)
         self.central_widget_tabs.setCurrentIndex(0)
@@ -1157,6 +1162,8 @@ class Ui_MainWindow(object):
         self.ActionMenuViewClearCPUHistory.setText(_translate("MainWindow", "Clear CPU History"))
         self.ActionMenuViewClearCPUHistory.setShortcut(_translate("MainWindow", "Ctrl+K"))
         self.actionEnter_Full_Screen.setText(_translate("MainWindow", "Enter Full Screen"))
+        self.ActionToolBarSampleProcess.setText(_translate("MainWindow", "Sample Process"))
+        self.ActionToolBarSampleProcess.setToolTip(_translate("MainWindow", "Sample selected process"))
 from widget_chartpie import ChartPie
 from widget_color_pickup import ColorButton
 from widget_cpugraphbar import CPUGraphBar

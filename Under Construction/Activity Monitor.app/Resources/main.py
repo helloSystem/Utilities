@@ -3,7 +3,7 @@
 import sys
 import psutil
 import time
-import os
+
 
 # Qt import
 from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool
@@ -46,8 +46,7 @@ from worker_cpu import CPUWorker
 from worker_system_memory import SystemMemoryWorker
 from worker_icons_cache import IconsCacheWorker
 
-from utility_bytes2human import bytes2human
-from utility_application_name import get_application_name
+from utility import bytes2human, get_process_application_name, get_process_environ
 
 
 class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
@@ -445,11 +444,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             QApplication.processEvents()
 
             with p.oneshot():
-                try:
-                    environ = p.environ()
-                except (psutil.AccessDenied, psutil.ZombieProcess):
-                    environ = None
-                application_name = get_application_name(p)
+                application_name = get_process_application_name(p)
 
                 row = []
                 # PID can't be disabled because it is use for selection tracking
@@ -489,7 +484,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                     row.append(item)
 
                 filtered_row = self.apply_searchline_filter(application_name, row)
-                filtered_row = self.apply_combobox_filter(application_name, environ, filtered_row, p)
+                filtered_row = self.apply_combobox_filter(filtered_row, p)
 
                 # If a after filters it still have something then ad it to the model
                 if filtered_row:
@@ -522,7 +517,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         # Impose the Model to TreeView Processes
         self.process_tree.setModel(self.tree_view_model)
 
-
         # Restore the selection
         if self.selected_pid and self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
@@ -537,7 +531,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             filtered_row = row
         return filtered_row
 
-    def apply_combobox_filter(self, application_name, environ, filtered_row, p):
+    def apply_combobox_filter(self, filtered_row, p):
+        environ = get_process_environ(p)
+        application_name = get_process_application_name(p)
         # Filter by ComboBox index
         #             0: 'All Processes',
         #             1: 'All Processes, Hierarchically',

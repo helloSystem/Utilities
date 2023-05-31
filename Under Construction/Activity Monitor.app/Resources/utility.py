@@ -1,4 +1,26 @@
-#!/usr/bin/env python3
+import psutil
+
+import os
+import psutil
+
+
+def get_process_environ(p):
+    p: psutil.Process
+
+    try:
+        return p.environ()
+    except (psutil.AccessDenied, psutil.ZombieProcess):
+        return None
+
+
+def get_process_application_name(p):
+    p: psutil.Process
+
+    environ = get_process_environ(p)
+    if environ and "LAUNCHED_BUNDLE" in environ:
+        return os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
+    else:
+        return p.name()
 
 
 def bytes2human(n, short=True):
@@ -24,3 +46,4 @@ def bytes2human(n, short=True):
             return f"{int(n)} bytes"
         else:
             return f"{int(n)} byte"
+

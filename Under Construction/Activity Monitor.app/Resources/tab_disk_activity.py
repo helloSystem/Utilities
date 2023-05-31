@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from utility_bytes2human import bytes2human
+from utility import bytes2human
 
 
 class TabDiskActivity(object):

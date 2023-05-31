@@ -1,23 +1,22 @@
 import os
-import signal
-import argparse
 import datetime
 import socket
 import sys
 
 import psutil
-from utility_bytes2human import bytes2human
+
 from PyQt5.QtCore import Qt, QFileInfo
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
     QFileIconProvider,
-    QAbstractScrollArea
 
 )
 from PyQt5.QtWidgets import QWidget
 from dialog_inspect_process_ui import Ui_InspectProcess
-from utility_application_name import get_application_name
+
+from utility import get_process_application_name
+from utility import bytes2human
 
 ACCESS_DENIED = ''
 NON_VERBOSE_ITERATIONS = 4
@@ -103,7 +102,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         # Title
         self.add_to_sample_text('pid', pinfo['pid'])
         self.add_to_sample_text('name', pinfo['name'])
-        self.setWindowTitle(f"{get_application_name(self.process)} ({pinfo['pid']})")
+        self.setWindowTitle(f"{get_process_application_name(self.process)} ({pinfo['pid']})")
 
         # Parent
         self.add_to_sample_text('parent', '%s %s' % (pinfo['ppid'], parent))
