@@ -138,23 +138,60 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         # PID
         self.add_to_sample('pid', pinfo['pid'])
 
+        # PPID
+        self.add_to_sample('parent', '%s %s' % (pinfo['ppid'], parent))
+
         # PNAME
         self.add_to_sample('name', pinfo['name'])
-
-        # PARENT
-        self.add_to_sample('parent', '%s %s' % (pinfo['ppid'], parent))
 
         # EXE
         self.add_to_sample('exe', pinfo['exe'])
 
-        # CWD
-        self.add_to_sample('cwd', pinfo['cwd'])
-
         # CMDLINE
         self.add_to_sample('cmdline', ' '.join(pinfo['cmdline']))
 
-        # STARTED
+        # CREATE TIME
         self.add_to_sample('started', started)
+
+        # STATUS
+        self.add_to_sample('status', pinfo['status'])
+
+        # CWD
+        self.add_to_sample('cwd', pinfo['cwd'])
+
+        # USERNAME
+        self.add_to_sample('user', pinfo['username'])
+
+        # UIDS
+        if psutil.POSIX:
+            self.add_to_sample('uids', self.str_ntuple(pinfo['uids']))
+
+        # GIDS
+        if psutil.POSIX:
+            self.add_to_sample('gids', self.str_ntuple(pinfo['gids']))
+
+        # RUN IN A TERMINAL
+        if psutil.POSIX:
+            self.add_to_sample('terminal', pinfo['terminal'] or None)
+        else:
+            self.add_to_sample('terminal', None)
+
+        # NICE
+        self.add_to_sample('nice', pinfo['nice'])
+
+        # IO NICE
+        if hasattr(proc, "ionice"):
+            try:
+                ionice = proc.ionice()
+            except psutil.Error:
+                pass
+            else:
+                if psutil.WINDOWS:
+                    self.add_to_sample("ionice", ionice)
+                else:
+                    self.add_to_sample("ionice", "class=%s, value=%s" % (str(ionice.ioclass), ionice.value))
+
+
 
         # CPUTIME
         cpu_tot_time = datetime.timedelta(seconds=sum(pinfo['cpu_times']))
@@ -189,40 +226,11 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         # MEMORY PERCENT
         self.add_to_sample('memory %', round(pinfo['memory_percent'], 2))
 
-        # USER
-        self.add_to_sample('user', pinfo['username'])
 
-        # UIDS
-        if psutil.POSIX:
-            self.add_to_sample('uids', self.str_ntuple(pinfo['uids']))
 
-        # GIDS
-        if psutil.POSIX:
-            self.add_to_sample('gids', self.str_ntuple(pinfo['gids']))
 
-        # RUN IN A TERMINAL
-        if psutil.POSIX:
-            self.add_to_sample('terminal', pinfo['terminal'] or None)
-        else:
-            self.add_to_sample('terminal', None)
 
-        # STATUS
-        self.add_to_sample('status', pinfo['status'])
 
-        # NICE
-        self.add_to_sample('nice', pinfo['nice'])
-
-        # IO NICE
-        if hasattr(proc, "ionice"):
-            try:
-                ionice = proc.ionice()
-            except psutil.Error:
-                pass
-            else:
-                if psutil.WINDOWS:
-                    self.add_to_sample("ionice", ionice)
-                else:
-                    self.add_to_sample("ionice", "class=%s, value=%s" % (str(ionice.ioclass), ionice.value))
 
         # THREADS NUMBER
         self.add_to_sample('num-threads', pinfo['num_threads'])
@@ -251,13 +259,43 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         else:
             self.add_to_sample('ctx-switches', 'None')
 
+        # RLIMIT
+        if hasattr(proc, "rlimit"):
+            res_names = [x for x in dir(psutil) if x.startswith("RLIMIT")]
+            resources = []
+            for res_name in res_names:
+                try:
+                    soft, hard = proc.rlimit(getattr(psutil, res_name))
+                except psutil.AccessDenied:
+                    pass
+                else:
+                    resources.append((res_name, soft, hard))
+            if resources:
+                self.sample_markdown += "## rlimit\n"
+                self.sample_markdown += "RLIMIT | SOFT | HARD\n"
+                self.sample_markdown += "--- | --- | ---\n"
+                template = "%-12s %15s %15s"
+                self.add_to_sample_text("res-limits", template % ("RLIMIT", "SOFT", "HARD"))
+                for res_name, soft, hard in resources:
+                    if soft == psutil.RLIM_INFINITY:
+                        soft = "infinity"
+                    if hard == psutil.RLIM_INFINITY:
+                        hard = "infinity"
+                    self.add_to_sample_text('', template % (RLIMITS_MAP.get(res_name, res_name), soft, hard))
+                    self.sample_markdown += f"{RLIMITS_MAP.get(res_name, res_name)} | {soft} | {hard}\n"
+                self.sample_markdown += "\n"
+        else:
+            self.add_to_sample('rlimit', None)
+
         # CHILDREN
         if pinfo['children']:
             template = "%-6s %s"
             self.sample_markdown += "## Children\n"
-            self.sample_markdown += "``` text\n"
+            self.sample_markdown += "PID | NAME\n"
+            self.sample_markdown += "--- | ---\n"
 
             self.add_to_sample("children", template % ("PID", "NAME"))
+
             for child in pinfo['children']:
                 try:
                     self.add_to_sample('', template % (child.pid, child.name()))
@@ -266,6 +304,8 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                 except psutil.NoSuchProcess:
                     pass
             self.sample_markdown += "```\n\n"
+        else:
+            self.add_to_sample('children', '``None``')
 
         # Open Files
         if pinfo['open_files']:
@@ -332,43 +372,22 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                     "%s:%s" % (rip, rport),
                     conn.status))
         else:
-            self.add_to_sample_text('connections', '')
+            self.add_to_sample_text('connections', '``None``')
 
         if pinfo['threads'] and len(pinfo['threads']) > 1:
+
+            self.sample_markdown += "## Threads\n"
+            self.sample_markdown += "TID | USER | SYSTEM\n"
+            self.sample_markdown += "--- | --- | ---\n"
+
             template = "%-5s %12s %12s"
             self.add_to_sample_text('threads', template % ("TID", "USER", "SYSTEM"))
             for i, thread in enumerate(pinfo['threads']):
                 self.add_to_sample_text('', template % thread)
+                self.sample_markdown += f"{thread.id} | {thread.user_time} | {thread.system_time}\n"
             self.add_to_sample_text('', "total=%s" % len(pinfo['threads']))
         else:
-            self.add_to_sample('threads', None)
-
-        if hasattr(proc, "rlimit"):
-            res_names = [x for x in dir(psutil) if x.startswith("RLIMIT")]
-            resources = []
-            for res_name in res_names:
-                try:
-                    soft, hard = proc.rlimit(getattr(psutil, res_name))
-                except psutil.AccessDenied:
-                    pass
-                else:
-                    resources.append((res_name, soft, hard))
-            if resources:
-                self.sample_markdown += "## rlimit\n"
-                self.sample_markdown += "RLIMIT | SOFT | HARD\n"
-                self.sample_markdown += "--- | --- | ---\n"
-                template = "%-12s %15s %15s"
-                self.add_to_sample_text("res-limits", template % ("RLIMIT", "SOFT", "HARD"))
-                for res_name, soft, hard in resources:
-                    if soft == psutil.RLIM_INFINITY:
-                        soft = "infinity"
-                    if hard == psutil.RLIM_INFINITY:
-                        hard = "infinity"
-                    self.add_to_sample_text('', template % (RLIMITS_MAP.get(res_name, res_name), soft, hard))
-                    self.sample_markdown += f"{RLIMITS_MAP.get(res_name, res_name)} | {soft} | {hard}\n"
-                self.sample_markdown += "\n"
-        else:
-            self.add_to_sample('rlimit', None)
+            self.add_to_sample('threads', '``None``')
 
         # Environment
         if hasattr(proc, "environ") and pinfo['environ']:
