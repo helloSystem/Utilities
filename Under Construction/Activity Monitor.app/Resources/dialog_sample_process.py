@@ -385,6 +385,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             for i, thread in enumerate(pinfo['threads']):
                 self.add_to_sample_text('', template % thread)
                 self.sample_markdown += f"{thread.id} | {thread.user_time} | {thread.system_time}\n"
+            self.sample_markdown += "\n"
             self.add_to_sample_text('', "total=%s" % len(pinfo['threads']))
         else:
             self.add_to_sample('threads', '``None``')

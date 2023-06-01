@@ -308,7 +308,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionMenuViewSample.triggered.connect(self._showSampleProcessDialog)
         self.ActionMenuViewInspectProcess.triggered.connect(self._showInspectProcessDialog)
 
-
         self.ActionMenuViewKillDialog.triggered.connect(self._showKillDialog)
         self.ActionToolBarQuitProcess.triggered.connect(self._showKillDialog)
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
@@ -339,6 +338,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.mounted_disk_partitions_changed.connect(self.combobox_refresh)
         self.color_button_space_free.colorChanged.connect(self.refresh_color_space_free)
         self.color_button_space_utilized.colorChanged.connect(self.refresh_color_space_utilized)
+
+        # Tab Network
+        self.network_packets_radiobutton.toggled.connect(self.refresh_network_bandwidth)
 
         # TreeView
         self.process_tree.clicked.connect(self.onClicked)
@@ -645,6 +647,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         if self.process_tree.hasFocus():
             self.selectClear()
         if self.searchLineEdit.hasFocus():
+            self.process_tree.setFocus()
+        if self.filterComboBox.hasFocus():
             self.process_tree.setFocus()
 
     def _timer_change_for_1_sec(self):

@@ -118,7 +118,7 @@
        </string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>4</number>
       </property>
       <widget class="QWidget" name="tab_cpu">
        <attribute name="title">
@@ -1853,7 +1853,7 @@
              </spacer>
             </item>
             <item row="3" column="2">
-             <widget class="QLabel" name="label_packets_out_sec_value">
+             <widget class="QLabel" name="network_packets_out_sec_value">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -1869,7 +1869,7 @@
              </widget>
             </item>
             <item row="1" column="2">
-             <widget class="QLabel" name="label_packets_out_value">
+             <widget class="QLabel" name="network_packets_out_value">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -1885,7 +1885,7 @@
              </widget>
             </item>
             <item row="2" column="2">
-             <widget class="QLabel" name="label_packets_in_sec_value">
+             <widget class="QLabel" name="network_packets_in_sec_value">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -1901,7 +1901,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLabel" name="label_packets_in_sec">
+             <widget class="QLabel" name="network_packets_in_sec">
               <property name="text">
                <string>Packets in/sec:</string>
               </property>
@@ -1911,7 +1911,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLabel" name="label_packets_out">
+             <widget class="QLabel" name="network_packets_out">
               <property name="text">
                <string>Packets out:</string>
               </property>
@@ -1921,7 +1921,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="label_packets_in">
+             <widget class="QLabel" name="network_packets_in">
               <property name="text">
                <string>Packets in:</string>
               </property>
@@ -1931,7 +1931,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLabel" name="label_packets_out_sec">
+             <widget class="QLabel" name="network_packets_out_sec">
               <property name="text">
                <string>Packets out/sec:</string>
               </property>
@@ -1954,7 +1954,7 @@
              </spacer>
             </item>
             <item row="0" column="2">
-             <widget class="QLabel" name="label_packets_in_value">
+             <widget class="QLabel" name="network_packets_in_value">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -2019,7 +2019,7 @@
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_data_received_sec">
+             <widget class="QLabel" name="network_data_received_sec">
               <property name="text">
                <string>Data received/sec:</string>
               </property>
@@ -2029,7 +2029,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_data_sent">
+             <widget class="QLabel" name="network_data_sent">
               <property name="text">
                <string>Data sent:</string>
               </property>
@@ -2039,7 +2039,7 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="label_data_sent_sec">
+             <widget class="QLabel" name="network_data_sent_sec">
               <property name="text">
                <string>Data sent/sec:</string>
               </property>
@@ -2049,7 +2049,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_data_received">
+             <widget class="QLabel" name="nerwork_data_received">
               <property name="text">
                <string>Data received:</string>
               </property>
@@ -2059,7 +2059,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLabel" name="label_data_sent_sec_value">
+             <widget class="QLabel" name="network_data_sent_sec_value">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -2075,7 +2075,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLabel" name="label_data_sent_value">
+             <widget class="QLabel" name="network_data_sent_value">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -2091,7 +2091,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLabel" name="label_data_received_sec_value">
+             <widget class="QLabel" name="network_data_received_sec_value">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -2107,7 +2107,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="label_data_received_value">
+             <widget class="QLabel" name="network_data_received_value">
               <property name="minimumSize">
                <size>
                 <width>20</width>
@@ -2187,7 +2187,7 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QRadioButton" name="radioButton_3">
+               <widget class="QRadioButton" name="network_packets_radiobutton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -2200,7 +2200,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QRadioButton" name="radioButton_4">
+               <widget class="QRadioButton" name="network_data_radiobutton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -2236,7 +2236,7 @@
                </spacer>
               </item>
               <item alignment="Qt::AlignRight|Qt::AlignVCenter">
-               <widget class="QLabel" name="label_bandwidth_2">
+               <widget class="QLabel" name="network_bandwidth">
                 <property name="text">
                  <string>Peak:</string>
                 </property>
@@ -2259,14 +2259,17 @@
                </spacer>
               </item>
               <item alignment="Qt::AlignRight|Qt::AlignVCenter">
-               <widget class="QLabel" name="label_bandwidth_value_2">
+               <widget class="QLabel" name="network_bandwidth_value">
+                <property name="toolTip">
+                 <string notr="true"/>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
                </widget>
               </item>
               <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
-               <widget class="QLabel" name="label_bandwidth_unit_2">
+               <widget class="QLabel" name="network_bandwidth_unit">
                 <property name="text">
                  <string>/sec</string>
                 </property>
