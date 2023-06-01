@@ -333,6 +333,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.color_picker_inactive_value.colorChanged.connect(self.refresh_color_inactive)
         self.color_picker_wired_value.colorChanged.connect(self.refresh_color_wired)
 
+        # Tab Disk Activity
+        self.disk_activity_data_radiobutton.toggled.connect(self.refresh_disk_activity_bandwidth)
+
         # Tab Disk Usage
         self.combobox_devices.currentIndexChanged.connect(self.combobox_index_changed)
         self.mounted_disk_partitions_changed.connect(self.combobox_refresh)

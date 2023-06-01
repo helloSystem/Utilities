@@ -118,7 +118,7 @@
        </string>
       </property>
       <property name="currentIndex">
-       <number>4</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab_cpu">
        <attribute name="title">
@@ -1077,7 +1077,7 @@
              <number>20</number>
             </property>
             <item row="3" column="1">
-             <widget class="QLabel" name="label_writes_out_sec_value">
+             <widget class="QLabel" name="disk_activity_writes_out_sec_value">
               <property name="text">
                <string/>
               </property>
@@ -1087,7 +1087,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLabel" name="label_reads_in_sec_value">
+             <widget class="QLabel" name="disk_activity_reads_in_sec_value">
               <property name="text">
                <string/>
               </property>
@@ -1097,7 +1097,7 @@
              </widget>
             </item>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_writes_out">
+             <widget class="QLabel" name="disk_activity_writes_out">
               <property name="text">
                <string>Writes out:</string>
               </property>
@@ -1107,7 +1107,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLabel" name="label_writes_out_value">
+             <widget class="QLabel" name="disk_activity_writes_out_value">
               <property name="text">
                <string/>
               </property>
@@ -1117,7 +1117,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_reads_in">
+             <widget class="QLabel" name="disk_activity_reads_in">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                 <horstretch>0</horstretch>
@@ -1133,7 +1133,7 @@
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_reads_in_sec">
+             <widget class="QLabel" name="disk_activity_reads_in_sec">
               <property name="text">
                <string>Reads in/sec:</string>
               </property>
@@ -1143,7 +1143,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="label_reads_in_value">
+             <widget class="QLabel" name="disk_activity_reads_in_value">
               <property name="text">
                <string/>
               </property>
@@ -1166,7 +1166,7 @@
              </spacer>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="label_writes_out_sec">
+             <widget class="QLabel" name="disk_activity_writes_out_sec">
               <property name="text">
                <string>Writes out/sec:</string>
               </property>
@@ -1202,7 +1202,7 @@
              <number>20</number>
             </property>
             <item row="1" column="0">
-             <widget class="QLabel" name="label_data_written">
+             <widget class="QLabel" name="disk_activity_data_written">
               <property name="text">
                <string>Data written:</string>
               </property>
@@ -1212,7 +1212,7 @@
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLabel" name="label_data_written_value">
+             <widget class="QLabel" name="disk_activity_data_written_value">
               <property name="text">
                <string/>
               </property>
@@ -1222,7 +1222,7 @@
              </widget>
             </item>
             <item row="0" column="0">
-             <widget class="QLabel" name="label_data_read">
+             <widget class="QLabel" name="disk_activity_data_read">
               <property name="text">
                <string>Data read:</string>
               </property>
@@ -1232,7 +1232,7 @@
              </widget>
             </item>
             <item row="3" column="1">
-             <widget class="QLabel" name="label_data_written_sec_value">
+             <widget class="QLabel" name="disk_activity_data_written_sec_value">
               <property name="text">
                <string/>
               </property>
@@ -1252,7 +1252,7 @@
              </widget>
             </item>
             <item row="2" column="0">
-             <widget class="QLabel" name="label_data_read_sec">
+             <widget class="QLabel" name="disk_activity_data_read_sec">
               <property name="text">
                <string>Data read/sec:</string>
               </property>
@@ -1262,7 +1262,7 @@
              </widget>
             </item>
             <item row="3" column="0">
-             <widget class="QLabel" name="label_data_written_sec">
+             <widget class="QLabel" name="disk_activity_data_written_sec">
               <property name="text">
                <string>Data written/sec:</string>
               </property>
@@ -1282,7 +1282,7 @@
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLabel" name="label_data_read_value">
+             <widget class="QLabel" name="disk_activity_data_read_value">
               <property name="text">
                <string/>
               </property>
@@ -1292,7 +1292,7 @@
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLabel" name="label_data_read_sec_value">
+             <widget class="QLabel" name="disk_activity_data_read_sec_value">
               <property name="text">
                <string/>
               </property>
@@ -1353,7 +1353,7 @@
             <item row="2" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item alignment="Qt::AlignRight">
-               <widget class="QRadioButton" name="radioButton">
+               <widget class="QRadioButton" name="disk_activity_io_radiobutton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -1366,7 +1366,7 @@
                </widget>
               </item>
               <item alignment="Qt::AlignLeft">
-               <widget class="QRadioButton" name="radioButton_2">
+               <widget class="QRadioButton" name="disk_activity_data_radiobutton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
                   <horstretch>0</horstretch>
@@ -1405,7 +1405,7 @@
                </spacer>
               </item>
               <item alignment="Qt::AlignRight|Qt::AlignVCenter">
-               <widget class="QLabel" name="label_bandwidth">
+               <widget class="QLabel" name="dick_activity__bandwidth">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -1440,7 +1440,7 @@
                </spacer>
               </item>
               <item alignment="Qt::AlignRight|Qt::AlignVCenter">
-               <widget class="QLabel" name="label_bandwidth_value">
+               <widget class="QLabel" name="disk_activity_bandwidth_value">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                   <horstretch>0</horstretch>
@@ -1456,7 +1456,7 @@
                </widget>
               </item>
               <item alignment="Qt::AlignLeft|Qt::AlignVCenter">
-               <widget class="QLabel" name="label_bandwidth_unit">
+               <widget class="QLabel" name="disk_activity_bandwidth_unit">
                 <property name="text">
                  <string>/sec</string>
                 </property>
