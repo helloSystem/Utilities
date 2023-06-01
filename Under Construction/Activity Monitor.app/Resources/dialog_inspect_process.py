@@ -46,11 +46,12 @@ class InspectProcess(QWidget, Ui_InspectProcess):
     def __init__(self, parent=None, process=None):
         super(InspectProcess, self).__init__(parent)
         Ui_InspectProcess.__init__(self)
-        self.process = process
         self.setupUi(self)
+        self.process = process
         self.open_files_model = QStandardItemModel()
 
         self.buttonQuit.clicked.connect(self.quit)
+        self.setWindowTitle(f"{get_process_application_name(self.process)} ({self.process.pid})")
 
         self.sample_text = ""
 
@@ -101,7 +102,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         # Title
         self.add_to_sample_text('pid', pinfo['pid'])
         self.add_to_sample_text('name', pinfo['name'])
-        self.setWindowTitle(f"{get_process_application_name(self.process)} ({pinfo['pid']})")
+
 
         # Parent
         self.add_to_sample_text('parent', '%s %s' % (pinfo['ppid'], parent))
@@ -112,12 +113,14 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         self.add_to_sample_text('cmdline', ' '.join(pinfo['cmdline']))
         self.add_to_sample_text('started', started)
 
+        # CPU Time
         cpu_tot_time = datetime.timedelta(seconds=sum(pinfo['cpu_times']))
         cpu_tot_time = "%s:%s.%s" % (
             cpu_tot_time.seconds // 60 % 60,
             str((cpu_tot_time.seconds % 60)).zfill(2),
             str(cpu_tot_time.microseconds)[:2])
-        self.add_to_sample_text('cpu-tspent', cpu_tot_time)
+        self.cpu_time_value.setText(f"{cpu_tot_time}")
+
         self.add_to_sample_text('cpu-times', self.str_ntuple(pinfo['cpu_times']))
         if hasattr(proc, "cpu_affinity"):
             self.add_to_sample_text("cpu-affinity", pinfo["cpu_affinity"])
@@ -201,12 +204,12 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         # CPU
         self.cpu_percent_value.setText(f"{proc.cpu_percent(interval=1)}")
 
-        # If run in terminal
-        if psutil.POSIX:
-            self.add_to_sample_text('terminal', pinfo['terminal'] or '')
+        # Status
+        self.status_value.setText(f"{pinfo['status']}")
 
-        self.add_to_sample_text('status', pinfo['status'])
-        self.add_to_sample_text('nice', pinfo['nice'])
+        # Nice
+        self.nice_value.setText(f"{pinfo['nice']}")
+
         if hasattr(proc, "ionice"):
             try:
                 ionice = proc.ionice()
@@ -219,16 +222,21 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                     self.add_to_sample_text("ionice", "class=%s, value=%s" % (
                         str(ionice.ioclass), ionice.value))
 
-        self.add_to_sample_text('num-threads', pinfo['num_threads'])
+        # Threads Number
+        self.threads_number_value.setText(f"{pinfo['num_threads']}")
+
         if psutil.POSIX:
-            self.add_to_sample_text('num-fds', pinfo['num_fds'])
-        if psutil.WINDOWS:
-            self.add_to_sample_text('num-handles', pinfo['num_handles'])
+            self.file_descriptors_value.setText(f"{pinfo['num_fds']}")
 
         if 'io_counters' in pinfo:
             self.add_to_sample_text('I/O', self.str_ntuple(pinfo['io_counters'], convert_bytes=True))
+
         if 'num_ctx_switches' in pinfo:
-            self.add_to_sample_text("ctx-switches", self.str_ntuple(pinfo['num_ctx_switches']))
+            # self.add_to_sample_text("ctx-switches", self.str_ntuple(pinfo['num_ctx_switches']))
+            self.context_switches_value.setText(f"{self.str_ntuple(pinfo['num_ctx_switches'])}")
+        else:
+            pass
+
         if pinfo['children']:
             template = "%-6s %s"
             self.add_to_sample_text("children", template % ("PID", "NAME"))
@@ -318,10 +326,10 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         else:
             self.add_to_sample_text('open-files', '')
 
+        # Connections
+        num_ports = 0
         if pinfo['connections']:
-            template = '%-5s %-25s %-25s %s'
-            self.add_to_sample_text('connections',
-                        template % ('PROTO', 'LOCAL ADDR', 'REMOTE ADDR', 'STATUS'))
+            connections_model = QStandardItemModel()
             for conn in pinfo['connections']:
                 if conn.type == socket.SOCK_STREAM:
                     type = 'TCP'
@@ -334,13 +342,28 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                     rip, rport = '*', '*'
                 else:
                     rip, rport = conn.raddr
-                self.add_to_sample_text('', template % (
-                    type,
-                    "%s:%s" % (lip, lport),
-                    "%s:%s" % (rip, rport),
-                    conn.status))
+                connections_model.appendRow(
+                    [
+                        QStandardItem(f"{type}"),
+                        QStandardItem(f"{lip}:{lport}"),
+                        QStandardItem(f"{rip}:{rport}"),
+                        QStandardItem(f"{conn.status}"),
+                    ]
+                )
+                # Ports Number
+                # if conn.status == psutil.CONN_LISTEN:
+                num_ports += 1
+            self.ports_value.setText(f"{num_ports}")
+            connections_model.setHorizontalHeaderLabels(('Protocol', 'Local Address', 'Remote Address', 'Status'))
+            self.ConnectionsTreeView.setModel(connections_model)
+            for header_pos in range(len(self.ConnectionsTreeView.header())):
+                self.ConnectionsTreeView.resizeColumnToContents(header_pos)
+            self.ConnectionsTreeView.sortByColumn(0, Qt.AscendingOrder)
+
+
         else:
             self.add_to_sample_text('connections', '')
+            self.ports_value.setText(f"{num_ports}")
 
         if pinfo['threads'] and len(pinfo['threads']) > 1:
             template = "%-5s %12s %12s"

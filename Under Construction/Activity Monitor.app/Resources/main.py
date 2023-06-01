@@ -187,6 +187,15 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         }
         self.system_memory_total_value.setText("%s" % bytes2human(virtual_memory.total))
 
+        if self.memory_os_capability["wired"] is False:
+            self.label_wired.hide()
+            self.label_wired_value.hide()
+            self.color_picker_wired_value.hide()
+
+        if self.memory_os_capability["slab"] is False:
+            self.label_slab.hide()
+            self.label_slab_value.hide()
+
         self.tree_view_model = QStandardItemModel()
         self.process_tree.setModel(self.tree_view_model)
         self.process_tree.sortByColumn(3, Qt.DescendingOrder)

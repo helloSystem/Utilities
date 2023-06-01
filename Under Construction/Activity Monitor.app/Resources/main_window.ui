@@ -118,7 +118,7 @@
        </string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_cpu">
        <attribute name="title">
@@ -2750,7 +2750,7 @@
      <normaloff>:/Inspect.png</normaloff>:/Inspect.png</iconset>
    </property>
    <property name="text">
-    <string>Inspect Process</string>
+    <string>Inspect</string>
    </property>
    <property name="toolTip">
     <string>Inspect selected process</string>

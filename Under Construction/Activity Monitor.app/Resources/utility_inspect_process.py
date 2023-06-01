@@ -207,7 +207,10 @@ def run(pid, verbose=False):
                 print_("ionice", "class=%s, value=%s" % (
                     str(ionice.ioclass), ionice.value))
 
+    # Threads Number
     print_('num-threads', pinfo['num_threads'])
+
+
     if psutil.POSIX:
         print_('num-fds', pinfo['num_fds'])
     if psutil.WINDOWS:

@@ -1043,7 +1043,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.ActionToolBarSampleProcess)
 
         self.retranslateUi(MainWindow)
-        self.central_widget_tabs.setCurrentIndex(0)
+        self.central_widget_tabs.setCurrentIndex(1)
         self.actionQuit.triggered.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -1156,7 +1156,7 @@ class Ui_MainWindow(object):
         self.ActionViewColumnVirtualMemory.setText(_translate("MainWindow", "Virtual Memory"))
         self.ActionToolBarQuitProcess.setText(_translate("MainWindow", "Quit Process"))
         self.ActionToolBarQuitProcess.setToolTip(_translate("MainWindow", "Quit the selected process"))
-        self.ActionToolBarInspectProcess.setText(_translate("MainWindow", "Inspect Process"))
+        self.ActionToolBarInspectProcess.setText(_translate("MainWindow", "Inspect"))
         self.ActionToolBarInspectProcess.setToolTip(_translate("MainWindow", "Inspect selected process"))
         self.ActionMenuViewFilterProcesses.setText(_translate("MainWindow", "Filter Processes"))
         self.ActionMenuViewInspectProcess.setText(_translate("MainWindow", "Inspect Process"))
