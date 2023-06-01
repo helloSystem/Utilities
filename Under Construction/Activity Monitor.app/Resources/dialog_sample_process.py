@@ -50,6 +50,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         self.setupUi(self)
         self.open_files_model = QStandardItemModel()
 
+        self.setWindowTitle(f"{get_process_application_name(self.process)} ({self.process.pid})")
         self.buttonQuit.clicked.connect(self.quit)
         self.buttonRefresh.clicked.connect(self.run)
         self.comboBox.currentIndexChanged.connect(self.combobox_changed)
@@ -67,7 +68,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
     def combobox_changed(self):
         if self.comboBox.currentIndex() == 0:
             self.textBrowser.setPlainText(self.sample_text)
-            self.textBrowser.setFont(QFont("Roboto Mono for Powerline"))
+            self.textBrowser.setFont(QFont("Monospace"))
             self.textBrowser.setWordWrapMode(False)
         elif self.comboBox.currentIndex() == 1:
             self.textBrowser.setMarkdown(self.sample_markdown)

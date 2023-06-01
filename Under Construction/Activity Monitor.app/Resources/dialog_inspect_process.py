@@ -2,6 +2,7 @@ import os
 import datetime
 import socket
 import sys
+import grp
 
 import psutil
 
@@ -51,6 +52,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         self.open_files_model = QStandardItemModel()
 
         self.buttonQuit.clicked.connect(self.quit)
+
         self.setWindowTitle(f"{get_process_application_name(self.process)} ({self.process.pid})")
 
         self.sample_text = ""
@@ -83,35 +85,23 @@ class InspectProcess(QWidget, Ui_InspectProcess):
             try:
                 parent = proc.parent()
                 if parent:
-                    parent = '(%s)' % parent.name()
+                    parent = parent.name()
                 else:
                     parent = ''
             except psutil.Error:
                 parent = ''
-            try:
-                pinfo['children'] = proc.children()
-            except psutil.Error:
-                pinfo['children'] = []
-            if pinfo['create_time']:
-                started = datetime.datetime.fromtimestamp(
-                    pinfo['create_time']).strftime('%Y-%m-%d %H:%M')
-            else:
-                started = ACCESS_DENIED
-
-        # here we go
-        # Title
-        self.add_to_sample_text('pid', pinfo['pid'])
-        self.add_to_sample_text('name', pinfo['name'])
-
 
         # Parent
-        self.add_to_sample_text('parent', '%s %s' % (pinfo['ppid'], parent))
-        self.parent_process_value.setText('%s %s' % (pinfo['ppid'], parent))
+        self.parent_process_value.setText(f"{parent} ({pinfo['ppid']})")
 
-        self.add_to_sample_text('exe', pinfo['exe'])
-        self.add_to_sample_text('cwd', pinfo['cwd'])
-        self.add_to_sample_text('cmdline', ' '.join(pinfo['cmdline']))
-        self.add_to_sample_text('started', started)
+        # User
+        self.add_to_sample_text('user', pinfo['username'])
+        if psutil.POSIX:
+            self.user_value.setText(f"{pinfo['username']} ({pinfo['uids'].effective})")
+
+        # Group
+        if psutil.POSIX:
+            self.process_group_id_value.setText(f"{grp.getgrgid(pinfo['gids'].effective)[0]} ({pinfo['gids'].effective})")
 
         # CPU Time
         cpu_tot_time = datetime.timedelta(seconds=sum(pinfo['cpu_times']))
@@ -121,14 +111,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
             str(cpu_tot_time.microseconds)[:2])
         self.cpu_time_value.setText(f"{cpu_tot_time}")
 
-        self.add_to_sample_text('cpu-times', self.str_ntuple(pinfo['cpu_times']))
-        if hasattr(proc, "cpu_affinity"):
-            self.add_to_sample_text("cpu-affinity", pinfo["cpu_affinity"])
-        if hasattr(proc, "cpu_num"):
-            self.add_to_sample_text("cpu-num", pinfo["cpu_num"])
-
-        self.add_to_sample_text('memory', self.str_ntuple(pinfo['memory_full_info'], convert_bytes=True))
-        self.add_to_sample_text('memory %', round(pinfo['memory_percent'], 2))
+        # Memory Info
         if pinfo['memory_full_info']:
             if hasattr(pinfo['memory_full_info'], "uss"):
                 self.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
@@ -190,16 +173,17 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 self.stack_size_label.hide()
                 self.stack_size_value.hide()
 
-        # User
-        self.add_to_sample_text('user', pinfo['username'])
-        if psutil.POSIX:
-            self.add_to_sample_text('uids', self.str_ntuple(pinfo['uids']))
-            self.user_value.setText(f"{pinfo['uids'].effective} ({pinfo['username']})")
+            if hasattr(pinfo['memory_full_info'], "pfaults"):
+                self.fault_value.setText(f"{pinfo['memory_full_info'].pfaults}")
+            else:
+                self.fault.hide()
+                self.fault_value.hide()
 
-        # Group
-        if psutil.POSIX:
-            self.add_to_sample_text('gids', self.str_ntuple(pinfo['gids']))
-            self.process_group_id_value.setText(f"{self.str_ntuple(pinfo['gids'])}")
+            if hasattr(pinfo['memory_full_info'], "pageins"):
+                self.fault_value.setText(f"{pinfo['memory_full_info'].pageins}")
+            else:
+                self.pageins.hide()
+                self.pageins_value.hide()
 
         # CPU
         self.cpu_percent_value.setText(f"{proc.cpu_percent(interval=1)}")
@@ -210,43 +194,67 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         # Nice
         self.nice_value.setText(f"{pinfo['nice']}")
 
-        if hasattr(proc, "ionice"):
-            try:
-                ionice = proc.ionice()
-            except psutil.Error:
-                pass
-            else:
-                if psutil.WINDOWS:
-                    self.add_to_sample_text("ionice", ionice)
-                else:
-                    self.add_to_sample_text("ionice", "class=%s, value=%s" % (
-                        str(ionice.ioclass), ionice.value))
-
         # Threads Number
         self.threads_number_value.setText(f"{pinfo['num_threads']}")
 
         if psutil.POSIX:
             self.file_descriptors_value.setText(f"{pinfo['num_fds']}")
+        else:
+            self.file_descriptors_value.hide()
+            self.file_descriptors.hide()
 
         if 'io_counters' in pinfo:
-            self.add_to_sample_text('I/O', self.str_ntuple(pinfo['io_counters'], convert_bytes=True))
+            if hasattr(pinfo['io_counters'], "read_count"):
+                self.read_count_value.setText(f"{pinfo['io_counters'].read_count}")
+            else:
+                self.read_count.hide()
+                self.read_count_value.hide()
 
+            if hasattr(pinfo['io_counters'], "write_count"):
+                self.write_count_value.setText(f"{pinfo['io_counters'].write_count}")
+            else:
+                self.write_count.hide()
+                self.write_count_value.hide()
+
+            if hasattr(pinfo['io_counters'], "read_bytes") and pinfo['io_counters'].read_bytes != -1:
+                self.read_bytes_value.setText(f"{bytes2human(pinfo['io_counters'].read_bytes)}")
+            else:
+                self.read_bytes.hide()
+                self.read_bytes_value.hide()
+
+            if hasattr(pinfo['io_counters'], "write_bytes") and pinfo['io_counters'].write_bytes != -1:
+                self.write_bytes_value.setText(f"{bytes2human(pinfo['io_counters'].write_bytes)}")
+            else:
+                self.write_bytes.hide()
+                self.write_bytes_value.hide()
+
+            if hasattr(pinfo['io_counters'], "read_chars"):
+                self.read_chars_value.setText(f"{pinfo['io_counters'].read_chars}")
+            else:
+                self.read_chars.hide()
+                self.read_chars_value.hide()
+
+            if hasattr(pinfo['io_counters'], "write_chars"):
+                self.write_chars_value.setText(f"{pinfo['io_counters'].write_chars}")
+            else:
+                self.write_chars.hide()
+                self.write_chars_value.hide()
+
+            if hasattr(pinfo['io_counters'], "other_count"):
+                self.other_count_value.setText(f"{pinfo['io_counters'].other_count}")
+            else:
+                self.other_count.hide()
+                self.other_count_value.hide()
+
+            if hasattr(pinfo['io_counters'], "other_bytes"):
+                self.other_bytes_value.setText(f"{bytes2human(pinfo['io_counters'].other_bytes)}")
+            else:
+                self.other_bytes.hide()
+                self.other_bytes_value.hide()
+
+        # CTX Switches
         if 'num_ctx_switches' in pinfo:
-            # self.add_to_sample_text("ctx-switches", self.str_ntuple(pinfo['num_ctx_switches']))
-            self.context_switches_value.setText(f"{self.str_ntuple(pinfo['num_ctx_switches'])}")
-        else:
-            pass
-
-        if pinfo['children']:
-            template = "%-6s %s"
-            self.add_to_sample_text("children", template % ("PID", "NAME"))
-            for child in pinfo['children']:
-                try:
-                    self.add_to_sample_text('', template % (child.pid, child.name()))
-                except psutil.AccessDenied:
-                    self.add_to_sample_text('', template % (child.pid, ""))
-                except psutil.NoSuchProcess:
-                    pass
+            self.context_switches_value.setText(f"{pinfo['num_ctx_switches'].voluntary}")
 
         # Open Files
         if pinfo['open_files']:
@@ -323,9 +331,6 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                     self.OpenFileTreeView.resizeColumnToContents(header_pos)
                 self.OpenFileTreeView.sortByColumn(0, Qt.AscendingOrder)
 
-        else:
-            self.add_to_sample_text('open-files', '')
-
         # Connections
         num_ports = 0
         if pinfo['connections']:
@@ -364,65 +369,6 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         else:
             self.add_to_sample_text('connections', '')
             self.ports_value.setText(f"{num_ports}")
-
-        if pinfo['threads'] and len(pinfo['threads']) > 1:
-            template = "%-5s %12s %12s"
-            self.add_to_sample_text('threads', template % ("TID", "USER", "SYSTEM"))
-            for i, thread in enumerate(pinfo['threads']):
-                self.add_to_sample_text('', template % thread)
-            self.add_to_sample_text('', "total=%s" % len(pinfo['threads']))
-        else:
-            self.add_to_sample_text('threads', '')
-
-        if hasattr(proc, "rlimit"):
-            res_names = [x for x in dir(psutil) if x.startswith("RLIMIT")]
-            resources = []
-            for res_name in res_names:
-                try:
-                    soft, hard = proc.rlimit(getattr(psutil, res_name))
-                except psutil.AccessDenied:
-                    pass
-                else:
-                    resources.append((res_name, soft, hard))
-            if resources:
-                template = "%-12s %15s %15s"
-                self.add_to_sample_text("res-limits", template % ("RLIMIT", "SOFT", "HARD"))
-                for res_name, soft, hard in resources:
-                    if soft == psutil.RLIM_INFINITY:
-                        soft = "infinity"
-                    if hard == psutil.RLIM_INFINITY:
-                        hard = "infinity"
-                    self.add_to_sample_text('', template % (
-                        RLIMITS_MAP.get(res_name, res_name), soft, hard))
-
-        if hasattr(proc, "environ") and pinfo['environ']:
-            environment_model = QStandardItemModel()
-
-            template = "%-25s %s"
-            self.add_to_sample_text("environ", template % ("NAME", "VALUE"))
-            for name, value in pinfo['environ'].items():
-                row = []
-                self.add_to_sample_text("", template % (name, value))
-                item = QStandardItem()
-                item.setText(f"{name}")
-                item.setData(name)
-                row.append(item)
-
-                item = QStandardItem()
-                item.setText(f"{value}")
-                item.setData(value)
-                row.append(item)
-
-                if row:
-                    environment_model.appendRow(row)
-
-            environment_model.setHorizontalHeaderLabels(["Name", "Value"])
-
-            self.treeViewEnvironement.setModel(environment_model)
-
-            for header_pos in range(len(self.treeViewEnvironement.header())):
-                self.treeViewEnvironement.resizeColumnToContents(header_pos)
-            self.treeViewEnvironement.sortByColumn(0, Qt.AscendingOrder)
 
         if pinfo.get('memory_maps', None):
             environment_model = QStandardItemModel()
@@ -485,7 +431,23 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
             self.MapsTreeView.sortByColumn(0, Qt.DescendingOrder)
 
-        print(self.sample_text)
+        if hasattr(proc, "environ") and pinfo['environ']:
+            environment_model = QStandardItemModel()
+            for name, value in pinfo['environ'].items():
+                environment_model.appendRow(
+                    [
+                        QStandardItem(f"{name}"),
+                        QStandardItem(f"{value}")
+                    ]
+                )
+            environment_model.setHorizontalHeaderLabels(["Name", "Value"])
+
+            self.treeViewEnvironement.setModel(environment_model)
+
+            for header_pos in range(len(self.treeViewEnvironement.header())):
+                self.treeViewEnvironement.resizeColumnToContents(header_pos)
+            self.treeViewEnvironement.sortByColumn(0, Qt.AscendingOrder)
+
 
 
 

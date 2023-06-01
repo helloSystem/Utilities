@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(758, 627)
+        MainWindow.resize(676, 627)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Processes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -822,7 +822,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.central_widget_tabs)
         MainWindow.setCentralWidget(self.central_widget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 758, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 676, 24))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -1043,7 +1043,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.ActionToolBarSampleProcess)
 
         self.retranslateUi(MainWindow)
-        self.central_widget_tabs.setCurrentIndex(1)
+        self.central_widget_tabs.setCurrentIndex(0)
         self.actionQuit.triggered.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
