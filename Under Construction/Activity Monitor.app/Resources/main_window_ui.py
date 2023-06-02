@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(676, 627)
+        MainWindow.resize(578, 627)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Processes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
@@ -823,7 +823,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.central_widget_tabs)
         MainWindow.setCentralWidget(self.central_widget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 676, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 578, 24))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -1193,11 +1193,11 @@ class Ui_MainWindow(object):
         self.ActionMenuViewSample.setText(_translate("MainWindow", "Sample Process"))
         self.actionMinimize.setText(_translate("MainWindow", "Minimize"))
         self.ActionMenuWindowActivityMonitor.setText(_translate("MainWindow", "Activity Monitor"))
-        self.ActionMenuWindowActivityMonitor.setShortcut(_translate("MainWindow", "Alt+1"))
+        self.ActionMenuWindowActivityMonitor.setShortcut(_translate("MainWindow", "Ctrl+1"))
         self.ActionMenuWindowCPUUsage.setText(_translate("MainWindow", "CPU Usage"))
-        self.ActionMenuWindowCPUUsage.setShortcut(_translate("MainWindow", "Alt+2"))
+        self.ActionMenuWindowCPUUsage.setShortcut(_translate("MainWindow", "Ctrl+2"))
         self.ActionMenuWindowCPUHistory.setText(_translate("MainWindow", "CPU History"))
-        self.ActionMenuWindowCPUHistory.setShortcut(_translate("MainWindow", "Alt+3"))
+        self.ActionMenuWindowCPUHistory.setShortcut(_translate("MainWindow", "Ctrl+3"))
 from widget_chartpie import ChartPie
 from widget_color_pickup import ColorButton
 from widget_cpugraphbar import CPUGraphBar

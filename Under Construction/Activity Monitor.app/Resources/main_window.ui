@@ -2886,7 +2886,7 @@
     <string>Activity Monitor</string>
    </property>
    <property name="shortcut">
-    <string>Alt+1</string>
+    <string>Ctrl+1</string>
    </property>
   </action>
   <action name="ActionMenuWindowCPUUsage">
@@ -2894,7 +2894,7 @@
     <string>CPU Usage</string>
    </property>
    <property name="shortcut">
-    <string>Alt+2</string>
+    <string>Ctrl+2</string>
    </property>
   </action>
   <action name="ActionMenuWindowCPUHistory">
@@ -2902,7 +2902,7 @@
     <string>CPU History</string>
    </property>
    <property name="shortcut">
-    <string>Alt+3</string>
+    <string>Ctrl+3</string>
    </property>
   </action>
  </widget>

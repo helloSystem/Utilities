@@ -657,6 +657,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             self.cpu_history_dialog.hide()
         else:
             self.cpu_history_dialog.show()
+        self.activateWindow()
+        self.setFocus()
 
         # self.cpu_history_dialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
         # self.cpu_history_dialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
