@@ -154,6 +154,7 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
             self.bars[i].color_user = self.bars[i - 1].color_user
             self.bars[i].color_nice = self.bars[i - 1].color_nice
             self.bars[i].color_nirq = self.bars[i - 1].color_irq
+        self.repaint()
 
     def refresh_system(self):
         self.bars[0].system = self.system
@@ -173,22 +174,27 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
     def refresh_color_system(self):
         for bar in self.bars:
             bar.color_system = self.color_system
+        self.repaint()
 
     def refresh_color_user(self):
         for bar in self.bars:
             bar.color_user = self.color_user
+        self.repaint()
 
     def refresh_color_idle(self):
         for bar in self.bars:
             bar.color_idle = self.color_idle
+        self.repaint()
 
     def refresh_color_nice(self):
         for bar in self.bars:
             bar.color_nice = self.color_nice
+        self.repaint()
 
     def refresh_color_irq(self):
         for bar in self.bars:
             bar.color_irq = self.color_irq
+        self.repaint()
 
     def clear_history(self):
         for i in range(len(self.bars) - 1, 0, -1):
@@ -197,7 +203,7 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
             self.bars[i].idle = 0.0
             self.bars[i].irq = 0.0
             self.bars[i].nice = 0.0
-            self.repaint()
+        self.repaint()
 
 
 if __name__ == "__main__":

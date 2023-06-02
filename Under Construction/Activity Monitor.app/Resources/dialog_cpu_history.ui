@@ -35,7 +35,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="CPUGraphBar" name="CPUGraph" native="true"/>
+      <widget class="CPUGraphBar" name="cpu_history_graph" native="true"/>
      </item>
     </layout>
    </item>

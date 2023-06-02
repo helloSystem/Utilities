@@ -22,9 +22,9 @@ class Ui_CPUHistory(object):
         self.CPUHistoryLayout = QtWidgets.QHBoxLayout()
         self.CPUHistoryLayout.setSpacing(0)
         self.CPUHistoryLayout.setObjectName("CPUHistoryLayout")
-        self.CPUGraph = CPUGraphBar(CPUHistory)
-        self.CPUGraph.setObjectName("CPUGraph")
-        self.CPUHistoryLayout.addWidget(self.CPUGraph)
+        self.cpu_history_graph = CPUGraphBar(CPUHistory)
+        self.cpu_history_graph.setObjectName("cpu_history_graph")
+        self.CPUHistoryLayout.addWidget(self.cpu_history_graph)
         self.horizontalLayout.addLayout(self.CPUHistoryLayout)
 
         self.retranslateUi(CPUHistory)

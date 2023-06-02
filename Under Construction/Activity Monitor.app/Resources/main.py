@@ -471,6 +471,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         for thread in self.threads:
             thread.start()
 
+
     def refresh_treeview_model(self):
 
         self.tree_view_model = QStandardItemModel()
@@ -765,6 +766,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
     def _clear_cpu_history(self):
         self.cpu_widget_graph.clear_history()
+        self.cpu_history_dialog.cpu_history_graph.clear_history()
 
 
 if __name__ == "__main__":
