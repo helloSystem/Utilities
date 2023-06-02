@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 
-from PyQt5.QtCore import Qt, QRect, QSize, pyqtProperty, pyqtSignal
+from PyQt5.QtCore import Qt, QRect, QSize, pyqtSignal
 from PyQt5.QtGui import QPainter, QBrush, QColor
 from PyQt5.QtWidgets import (
     QWidget,
@@ -10,21 +10,25 @@ from PyQt5.QtWidgets import (
     QSizePolicy
 )
 
+from property_cpu_times_percent import CPUTimesPercent
 
-class CPUBar(QWidget):
-    color1_value_changed = pyqtSignal(object)
-    color2_value_changed = pyqtSignal(object)
-    color3_value_changed = pyqtSignal(object)
-    value1_value_changed = pyqtSignal(object)
-    value2_value_changed = pyqtSignal(object)
+
+class CPUBar(QWidget, CPUTimesPercent):
+    user: float
+    system: float
+    idle: float
+    nice: float
+    irq: float
+
+    color_user: QColor
+    color_system: QColor
+    color_idle: QColor
+    color_nice: QColor
+    color_irq: QColor
 
     def __init__(self, *args, **kwargs):
         super(CPUBar, self).__init__(*args, **kwargs)
-        self.__system = 0.0
-        self.__user = 0.0
-        self.__color_system = QColor("black")
-        self.__color_user = QColor("black")
-        self.__color_idle = QColor("black")
+        CPUTimesPercent.__init__(self)
 
         self.setContentsMargins(0, 0, 0, 0)
         self.setSizePolicy(
@@ -34,51 +38,6 @@ class CPUBar(QWidget):
 
         self.__step_number = 50
         self.qp = None
-
-    @pyqtProperty(float)
-    def system(self):
-        return self.__system
-
-    @system.setter
-    def system(self, value):
-        if self.__system != value:
-            self.__system = value
-
-    @pyqtProperty(float)
-    def user(self):
-        return self.__user
-
-    @user.setter
-    def user(self, value):
-        if self.__user != value:
-            self.__user = value
-
-    @pyqtProperty(QColor)
-    def color_system(self):
-        return self.__color_system
-
-    @color_system.setter
-    def color_system(self, value):
-        if self.__color_system != value:
-            self.__color_system = value
-
-    @pyqtProperty(QColor)
-    def color_user(self):
-        return self.__color_user
-
-    @color_user.setter
-    def color_user(self, value):
-        if self.__color_user != value:
-            self.__color_user = value
-
-    @pyqtProperty(QColor)
-    def color_idle(self):
-        return self.__color_idle
-
-    @color_idle.setter
-    def color_idle(self, value):
-        if self.__color_idle != value:
-            self.__color_idle = value
 
     def sizeHint(self):
         return QSize(4, 100)
@@ -101,7 +60,7 @@ class CPUBar(QWidget):
         step_size = int((self.qp.device().height() / self.__step_number))
 
         # Background
-        brush.setColor(QColor(self.__color_idle))
+        brush.setColor(QColor(self.color_idle))
         x = 0
         rect = QRect(x, 0, self.qp.device().width(), self.qp.device().height())
         self.qp.fillRect(rect, brush)
@@ -109,88 +68,46 @@ class CPUBar(QWidget):
         pos_y = 0
         for i in range(0, self.__step_number):
             # First Value
-            if i >= self.__step_number - self.__system:
-                brush.setColor(QColor(self.__color_system))
-            # Second Value just follow location of the first value
-            elif i >= self.__step_number - (self.__system + self.__user):
-                brush.setColor(QColor(self.__color_user))
+            if type(self.system) == float and type(self.user) == float:
+                if i >= self.__step_number - self.system:
+                    brush.setColor(QColor(self.color_system))
+                # Second Value just follow location of the first value
+                elif i >= self.__step_number - (self.system + self.user):
+                    brush.setColor(QColor(self.color_user))
 
-            rect = QRect(x, pos_y, self.qp.device().width(), step_size)
-            self.qp.fillRect(rect, brush)
-            pos_y += step_size
+                rect = QRect(x, pos_y, self.qp.device().width(), step_size)
+                self.qp.fillRect(rect, brush)
+                pos_y += step_size
 
 
-class CPUGraphBar(QWidget):
+class CPUGraphBar(QWidget, CPUTimesPercent):
     color_system_changed = pyqtSignal()
     color_user_changed = pyqtSignal()
     color_idle_changed = pyqtSignal()
     user_changed = pyqtSignal()
     system_changed = pyqtSignal()
 
+    user: float
+    system: float
+    idle: float
+    nice: float
+    irq: float
+
+    color_user: QColor
+    color_system: QColor
+    color_idle: QColor
+    color_nice: QColor
+    color_irq: QColor
+
     def __init__(self, *args, **kwargs):
         super(CPUGraphBar, self).__init__(*args, **kwargs)
+        CPUTimesPercent.__init__(self)
 
         self.bars = []
         self.__bars_number = 25
 
-        self.__system = 0.0
-        self.__user = 0.0
-        self.__color_system = QColor("red")
-        self.__color_user = QColor("green")
-        self.__color_idle = QColor("black")
-
         self.setupUI()
         self.setupConnect()
-
-    @pyqtProperty(float)
-    def system(self):
-        return self.__system
-
-    @system.setter
-    def system(self, value):
-        if self.__system != value:
-            self.__system = value
-            self.system_changed.emit()
-
-    @pyqtProperty(float)
-    def user(self):
-        return self.__user
-
-    @user.setter
-    def user(self, value):
-        if self.__user != value:
-            self.__user = value
-            self.user_changed.emit()
-
-    @pyqtProperty(QColor)
-    def color_system(self):
-        return self.__color_system
-
-    @color_system.setter
-    def color_system(self, value):
-        if self.__color_system != value:
-            self.__color_system = value
-            self.color_system_changed.emit()
-
-    @pyqtProperty(QColor)
-    def color_user(self):
-        return self.__color_user
-
-    @color_user.setter
-    def color_user(self, value):
-        if self.__color_user != value:
-            self.__color_user = value
-            self.color_user_changed.emit()
-
-    @pyqtProperty(QColor)
-    def color_idle(self):
-        return self.__color_idle
-
-    @color_idle.setter
-    def color_idle(self, value):
-        if self.__color_idle != value:
-            self.__color_idle = value
-            self.color_idle_changed.emit()
 
     def setupUI(self):
         layout = QHBoxLayout()
@@ -201,11 +118,11 @@ class CPUGraphBar(QWidget):
         # Create Bars
         for i in range(0, self.__bars_number):
             bar = CPUBar()
-            bar.color_system = self.__color_system
-            bar.color_user = self.__color_user
-            bar.color_idle = self.__color_idle
-            bar.user = self.__user
-            bar.system = self.__system
+            bar.color_system = self.color_system
+            bar.color_user = self.color_user
+            bar.color_idle = self.color_idle
+            bar.user = self.user
+            bar.system = self.system
             self.bars.append(bar)
 
         # Pack end bars in Layout
@@ -213,42 +130,73 @@ class CPUGraphBar(QWidget):
             layout.addWidget(bar)
 
     def setupConnect(self):
-        self.user_changed.connect(self.refresh_user)
-        self.system_changed.connect(self.refresh_system)
-        self.color_system_changed.connect(self.refresh_color_system)
-        self.color_user_changed.connect(self.refresh_color_user)
-        self.color_idle_changed.connect(self.refresh_color_idle)
+        self.cpu_idle_changed.connect(self.refresh_idle)
+        self.cpu_user_changed.connect(self.refresh_user)
+        self.cpu_system_changed.connect(self.refresh_system)
+        self.cpu_nice_changed.connect(self.refresh_nice)
+        self.cpu_irq_changed.connect(self.refresh_irq)
+
+        self.cpu_user_color_changed.connect(self.refresh_color_user)
+        self.cpu_system_color_changed.connect(self.refresh_color_system)
+        self.cpu_idle_color_changed.connect(self.refresh_color_idle)
+        self.cpu_nice_color_changed.connect(self.refresh_color_nice)
+        self.cpu_irq_color_changed.connect(self.refresh_color_irq)
 
     def refresh(self):
         for i in range(len(self.bars) - 1, 0, -1):
-            self.bars[i].system = self.bars[i - 1].system
+            self.bars[i].idle = self.bars[i - 1].idle
             self.bars[i].user = self.bars[i - 1].user
+            self.bars[i].system = self.bars[i - 1].system
+            self.bars[i].nice = self.bars[i - 1].nice
+            self.bars[i].irq = self.bars[i - 1].irq
+            self.bars[i].color_idle = self.bars[i - 1].color_idle
             self.bars[i].color_system = self.bars[i - 1].color_system
             self.bars[i].color_user = self.bars[i - 1].color_user
-            self.bars[i].color_idle = self.bars[i - 1].color_idle
+            self.bars[i].color_nice = self.bars[i - 1].color_nice
+            self.bars[i].color_nirq = self.bars[i - 1].color_irq
 
     def refresh_system(self):
-        self.bars[0].system = self.__system
+        self.bars[0].system = self.system
 
     def refresh_user(self):
-        self.bars[0].user = self.__user
+        self.bars[0].user = self.user
+
+    def refresh_idle(self):
+        self.bars[0].idle = self.idle
+
+    def refresh_nice(self):
+        self.bars[0].nice = self.nice
+
+    def refresh_irq(self):
+        self.bars[0].irq = self.irq
 
     def refresh_color_system(self):
         for bar in self.bars:
-            bar.color_system = self.__color_system
+            bar.color_system = self.color_system
 
     def refresh_color_user(self):
         for bar in self.bars:
-            bar.color_user = self.__color_user
+            bar.color_user = self.color_user
 
     def refresh_color_idle(self):
         for bar in self.bars:
-            bar.color_idle = self.__color_idle
+            bar.color_idle = self.color_idle
+
+    def refresh_color_nice(self):
+        for bar in self.bars:
+            bar.color_nice = self.color_nice
+
+    def refresh_color_irq(self):
+        for bar in self.bars:
+            bar.color_irq = self.color_irq
 
     def clear_history(self):
         for i in range(len(self.bars) - 1, 0, -1):
             self.bars[i].user = 0.0
             self.bars[i].system = 0.0
+            self.bars[i].idle = 0.0
+            self.bars[i].irq = 0.0
+            self.bars[i].nice = 0.0
             self.repaint()
 
 

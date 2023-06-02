@@ -6,9 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>578</width>
+    <width>691</width>
     <height>627</height>
    </rect>
+  </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
    <string>Activity Monitor</string>
@@ -541,7 +544,7 @@
              </spacer>
             </item>
             <item row="1" column="0">
-             <widget class="CPUGraphBar" name="widget_graph" native="true">
+             <widget class="CPUGraphBar" name="cpu_widget_graph" native="true">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                 <horstretch>0</horstretch>
@@ -2334,7 +2337,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>578</width>
+     <width>691</width>
      <height>24</height>
     </rect>
    </property>

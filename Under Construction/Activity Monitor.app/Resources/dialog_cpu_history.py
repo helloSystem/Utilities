@@ -13,3 +13,6 @@ class CPUHistory(QWidget, Ui_AboutDialog):
     def __init__(self, parent=None, process=None):
         super(CPUHistory, self).__init__(parent)
         self.process = process
+
+    def close(self):
+        self.hide()

@@ -115,6 +115,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         for header_pos in range(len(self.process_tree.header())):
             self.process_tree.resizeColumnToContents(header_pos)
 
+    def focusOutEvent(self, event):
+        self.showNormal()
+
     def setupCustomUi(self):
         self.setupCustomUiGroups()
         self.setupCustomUiToolBar()
@@ -166,6 +169,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 self.chart_pie_item_free,
             ]
         )
+
 
     def setupInitialState(self):
         # Set Menu ShortCut With Meta Key
@@ -323,11 +327,11 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionMenuWindowCPUHistory.triggered.connect(self._showCPUHistoryDialog)
 
         # Tab CPU
-        self.data_idle_changed.connect(self.refresh_idle)
-        self.data_user_changed.connect(self.refresh_user)
-        self.data_system_changed.connect(self.refresh_system)
-        self.data_nice_changed.connect(self.refresh_nice)
-        self.data_irq_changed.connect(self.refresh_irq)
+        self.cpu_idle_changed.connect(self.refresh_idle)
+        self.cpu_user_changed.connect(self.refresh_user)
+        self.cpu_system_changed.connect(self.refresh_system)
+        self.cpu_nice_changed.connect(self.refresh_nice)
+        self.cpu_irq_changed.connect(self.refresh_irq)
 
         self.color_picker_system_value.colorChanged.connect(self.refresh_color_system)
         self.color_picker_user_value.colorChanged.connect(self.refresh_color_user)
@@ -760,7 +764,7 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.searchLineEdit.setFocus()
 
     def _clear_cpu_history(self):
-        self.widget_graph.clear_history()
+        self.cpu_widget_graph.clear_history()
 
 
 if __name__ == "__main__":
