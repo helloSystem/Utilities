@@ -39,6 +39,7 @@ from dialog_kill_process import KillProcessDialog
 from dialog_about import AboutDialog
 from dialog_inspect_process import InspectProcess
 from dialog_sample_process import SampleProcess
+from dialog_cpu_history import CPUHistory
 
 # Back end libs
 from widget_chartpie import ChartPieItem
@@ -84,6 +85,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.searchLineEdit = None
         self.filterComboBox = None
 
+        self.cpu_history_dialog = None
+
         # Tab System Memory
         self.memory_os_capability = None
         self.chart_pie_item_memory_free = None
@@ -115,6 +118,10 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
     def setupCustomUi(self):
         self.setupCustomUiGroups()
         self.setupCustomUiToolBar()
+
+        # CPU History
+        self.cpu_history_dialog = CPUHistory()
+        self.cpu_history_dialog.hide()
 
         # Configure Chart Data
         # System Memory
@@ -311,6 +318,9 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.ActionMenuViewKillDialog.triggered.connect(self._showKillDialog)
         self.ActionToolBarQuitProcess.triggered.connect(self._showKillDialog)
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
+
+        # CPU History
+        self.ActionMenuWindowCPUHistory.triggered.connect(self._showCPUHistoryDialog)
 
         # Tab CPU
         self.data_idle_changed.connect(self.refresh_idle)
@@ -641,6 +651,17 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             self.KillDialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
 
             self.KillDialog.show()
+
+    def _showCPUHistoryDialog(self):
+        if self.cpu_history_dialog.isVisible():
+            self.cpu_history_dialog.hide()
+        else:
+            self.cpu_history_dialog.show()
+
+        # self.cpu_history_dialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
+        # self.cpu_history_dialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
+        #
+        # self.cpu_history_dialog.show()
 
     def _showAboutDialog(self):
         self.AboutDialog = AboutDialog()
