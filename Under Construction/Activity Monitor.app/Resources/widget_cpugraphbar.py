@@ -39,7 +39,7 @@ class CPUBar(QWidget, CPUTimesPercent):
             QSizePolicy.MinimumExpanding,
         )
 
-        self.__step_number = 50
+        self.__step_number = 100
         self.qp = None
 
     def paintEvent(self, e):
@@ -64,16 +64,14 @@ class CPUBar(QWidget, CPUTimesPercent):
 
         pos_y = 0
         for i in range(0, self.__step_number):
-            # First Value
             if i >= self.__step_number - self.system:
                 brush.setColor(QColor(self.color_system))
-            # Second Value just follow location of the first value
             elif i >= self.__step_number - (self.system + self.user):
                 brush.setColor(QColor(self.color_user))
             elif i >= self.__step_number - (self.system + self.user + self.nice):
                 brush.setColor(QColor(self.color_nice))
-            elif i >= self.__step_number - (self.system + self.user + self.nice + self.idle):
-                brush.setColor(QColor(self.color_idle))
+            elif i >= self.__step_number - (self.system + self.user + self.nice + self.irq):
+                brush.setColor(QColor(self.color_irq))
 
             rect = QRect(x, pos_y, self.bar_width, step_size)
             self.qp.fillRect(rect, brush)
@@ -108,7 +106,6 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
 
         self.setupUI()
         self.setupConnect()
-        self.irq = 5.0
 
     # def sizeHint(self):
     #     return QSize(100, 100)
@@ -172,6 +169,8 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
         self.bars[max_value + 1] = CPUBar()
         self.bars[max_value + 1].user = self.user
         self.bars[max_value + 1].system = self.system
+        self.bars[max_value + 1].irq = self.irq
+        self.bars[max_value + 1].nice = self.nice
         self.bars[max_value + 1].idle = self.idle
 
     def setupConnect(self):

@@ -45,13 +45,13 @@ class TabCpu(CPUTimesPercent):
 
     def refresh_user(self):
         self.label_user_value.setText(f"{self.user}")
-        self.cpu_widget_graph.user = self.user / 2
-        self.cpu_history_dialog.cpu_history_graph.user = self.user / 2
+        self.cpu_widget_graph.user = self.user
+        self.cpu_history_dialog.cpu_history_graph.user = self.user
 
     def refresh_system(self):
         self.label_system_value.setText(f"{self.system}")
-        self.cpu_widget_graph.system = self.system / 2
-        self.cpu_history_dialog.cpu_history_graph.system = self.system / 2
+        self.cpu_widget_graph.system = self.system
+        self.cpu_history_dialog.cpu_history_graph.system = self.system
 
     def refresh_idle(self):
         self.label_idle_value.setText(f"{self.idle}")
@@ -61,13 +61,13 @@ class TabCpu(CPUTimesPercent):
 
     def refresh_nice(self):
         self.label_nice_value.setText(f"{self.nice}")
-        self.cpu_widget_graph.nice = self.nice / 2
-        self.cpu_history_dialog.cpu_history_graph.nice = self.nice / 2
+        self.cpu_widget_graph.nice = self.nice
+        self.cpu_history_dialog.cpu_history_graph.nice = self.nice
 
     def refresh_irq(self):
         self.label_irq_value.setText(f"{self.irq}")
-        self.cpu_widget_graph.irq = self.irq / 2
-        self.cpu_history_dialog.cpu_history_graph.irq = self.irq / 2
+        self.cpu_widget_graph.irq = self.irq
+        self.cpu_history_dialog.cpu_history_graph.irq = self.irq
 
     def refresh_process_number(self, process_number: int):
         self.label_processes_value.setText("%d" % process_number)
