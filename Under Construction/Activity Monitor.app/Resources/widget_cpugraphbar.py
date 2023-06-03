@@ -222,7 +222,7 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
             self.bars[i].color_system = self.bars[i - 1].color_system
             self.bars[i].color_user = self.bars[i - 1].color_user
             self.bars[i].color_nice = self.bars[i - 1].color_nice
-            self.bars[i].color_nirq = self.bars[i - 1].color_irq
+            self.bars[i].color_irq = self.bars[i - 1].color_irq
         self.refresh_layout_display()
         self.repaint()
 
