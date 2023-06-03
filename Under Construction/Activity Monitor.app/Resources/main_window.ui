@@ -235,7 +235,7 @@
                <string notr="true"/>
               </property>
               <property name="text">
-               <string/>
+               <string>0.0</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -288,7 +288,7 @@
                <string/>
               </property>
               <property name="text">
-               <string/>
+               <string>0.0</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -308,7 +308,7 @@
                <string/>
               </property>
               <property name="text">
-               <string/>
+               <string>0.0</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -334,7 +334,7 @@
                <string/>
               </property>
               <property name="text">
-               <string/>
+               <string>0.0</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -393,7 +393,7 @@
                <string notr="true">QToolTip { color: #ffffff; border: 0px; }</string>
               </property>
               <property name="text">
-               <string/>
+               <string>0.0</string>
               </property>
               <property name="alignment">
                <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>

@@ -92,7 +92,6 @@ class Ui_MainWindow(object):
         self.label_system_value = QtWidgets.QLabel(self.tab_cpu)
         self.label_system_value.setToolTip("")
         self.label_system_value.setStyleSheet("")
-        self.label_system_value.setText("")
         self.label_system_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_system_value.setObjectName("label_system_value")
         self.CPUgridLayout.addWidget(self.label_system_value, 1, 1, 1, 1)
@@ -112,7 +111,6 @@ class Ui_MainWindow(object):
         self.CPUgridLayout.addWidget(self.label_system, 1, 0, 1, 1)
         self.label_irq_value = QtWidgets.QLabel(self.tab_cpu)
         self.label_irq_value.setToolTip("")
-        self.label_irq_value.setText("")
         self.label_irq_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_irq_value.setObjectName("label_irq_value")
         self.CPUgridLayout.addWidget(self.label_irq_value, 3, 1, 1, 1)
@@ -121,7 +119,6 @@ class Ui_MainWindow(object):
         self.CPUgridLayout.addWidget(self.label_irq_unit, 3, 2, 1, 1)
         self.label_idle_value = QtWidgets.QLabel(self.tab_cpu)
         self.label_idle_value.setToolTip("")
-        self.label_idle_value.setText("")
         self.label_idle_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_idle_value.setObjectName("label_idle_value")
         self.CPUgridLayout.addWidget(self.label_idle_value, 4, 1, 1, 1)
@@ -131,7 +128,6 @@ class Ui_MainWindow(object):
         self.CPUgridLayout.addWidget(self.label_idle, 4, 0, 1, 1)
         self.label_nice_value = QtWidgets.QLabel(self.tab_cpu)
         self.label_nice_value.setToolTip("")
-        self.label_nice_value.setText("")
         self.label_nice_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_nice_value.setObjectName("label_nice_value")
         self.CPUgridLayout.addWidget(self.label_nice_value, 2, 1, 1, 1)
@@ -152,7 +148,6 @@ class Ui_MainWindow(object):
         self.label_user_value = QtWidgets.QLabel(self.tab_cpu)
         self.label_user_value.setToolTip("")
         self.label_user_value.setStyleSheet("QToolTip { color: #ffffff; border: 0px; }")
-        self.label_user_value.setText("")
         self.label_user_value.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
         self.label_user_value.setObjectName("label_user_value")
         self.CPUgridLayout.addWidget(self.label_user_value, 0, 1, 1, 1)
@@ -1069,6 +1064,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Activity Monitor"))
         self.label_system_unit.setText(_translate("MainWindow", "%"))
+        self.label_system_value.setText(_translate("MainWindow", "0.0"))
         self.label_user.setToolTip(_translate("MainWindow", "<html><head/><body><p>Time spent by normal processes executing in user\n"
 "                mode</p></body></html>\n"
 "               "))
@@ -1078,9 +1074,12 @@ class Ui_MainWindow(object):
 "                spent by processes executing in kernel mode.</p></body></html>\n"
 "               ", "toolTip information"))
         self.label_system.setText(_translate("MainWindow", "System:"))
+        self.label_irq_value.setText(_translate("MainWindow", "0.0"))
         self.label_irq_unit.setText(_translate("MainWindow", "%"))
+        self.label_idle_value.setText(_translate("MainWindow", "0.0"))
         self.label_idle.setToolTip(_translate("MainWindow", "Time spent doing nothing"))
         self.label_idle.setText(_translate("MainWindow", "Idle:"))
+        self.label_nice_value.setText(_translate("MainWindow", "0.0"))
         self.label_nice.setToolTip(_translate("MainWindow", "<html><head/><body><p>Time spent by niced (prioritized) processes\n"
 "                executing in\n"
 "                user mode</p></body></html>\n"
@@ -1090,6 +1089,7 @@ class Ui_MainWindow(object):
         self.label_irq.setToolTip(_translate("MainWindow", "<html><head/><body><p>Time spent for servicing hardware interrupts</p></body></html>"))
         self.label_irq.setText(_translate("MainWindow", "Irq:"))
         self.label_nice_unit.setText(_translate("MainWindow", "%"))
+        self.label_user_value.setText(_translate("MainWindow", "0.0"))
         self.label_threads.setText(_translate("MainWindow", "Threads:"))
         self.label_processes.setText(_translate("MainWindow", "Processes:"))
         self.label_cpu_usage.setText(_translate("MainWindow", "CPU Usage"))
