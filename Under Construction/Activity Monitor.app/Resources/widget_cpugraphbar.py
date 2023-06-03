@@ -2,7 +2,7 @@
 import sys
 
 from PyQt5.QtCore import Qt, QRect, QSize, pyqtSignal
-from PyQt5.QtGui import QPainter, QBrush, QColor
+from PyQt5.QtGui import QPainter, QBrush, QColor, QPen
 from PyQt5.QtWidgets import (
     QWidget,
     QGridLayout,
@@ -39,7 +39,7 @@ class CPUBar(QWidget, CPUTimesPercent):
             QSizePolicy.MinimumExpanding,
         )
 
-        self.__step_number = 100
+        self.grid_size = 10
         self.qp = None
 
     def paintEvent(self, e):
@@ -54,7 +54,9 @@ class CPUBar(QWidget, CPUTimesPercent):
         brush.setStyle(Qt.SolidPattern)
 
         # Dynamic size
-        step_size = int((self.height() / self.__step_number))
+        #  (value() - minimum()) divided by maximum() - minimum().
+
+        step_size = int((self.height() / 100))
 
         # Background
         brush.setColor(QColor(self.color_idle))
@@ -63,19 +65,28 @@ class CPUBar(QWidget, CPUTimesPercent):
         self.qp.fillRect(rect, brush)
 
         pos_y = 0
-        for i in range(0, self.__step_number):
-            if i >= self.__step_number - self.system:
+        for i in range(0, 100):
+            if i >= 100 - self.system:
                 brush.setColor(QColor(self.color_system))
-            elif i >= self.__step_number - (self.system + self.user):
+            elif i >= 100 - (self.system + self.user):
                 brush.setColor(QColor(self.color_user))
-            elif i >= self.__step_number - (self.system + self.user + self.nice):
+            elif i >= 100 - (self.system + self.user + self.nice):
                 brush.setColor(QColor(self.color_nice))
-            elif i >= self.__step_number - (self.system + self.user + self.nice + self.irq):
+            elif i >= 100 - (self.system + self.user + self.nice + self.irq):
                 brush.setColor(QColor(self.color_irq))
 
-            rect = QRect(x, pos_y, self.bar_width, step_size)
+            rect = QRect(x + 1, pos_y + 1, self.bar_width - 1, step_size)
             self.qp.fillRect(rect, brush)
             pos_y += step_size
+        self.qp.setPen(QPen(QColor(self.color_idle)))
+        for r in range(int(self.height()/self.grid_size)):
+            self.qp.drawLine(0, self.grid_size * r, self.width(), self.grid_size * r)
+
+            # if self.grid_size * r / 100 <= 100 - self.system:
+            #     brush.setColor(QColor(self.color_system))
+            #     rect = QRect(x + 1, self.grid_size * r, self.bar_width - 1, self.grid_size)
+            #     self.qp.fillRect(rect, brush)
+            pos_y += self.grid_size
 
 
 class CPUGraphBar(QWidget, CPUTimesPercent):
@@ -107,24 +118,21 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
         self.setupUI()
         self.setupConnect()
 
-    # def sizeHint(self):
-    #     return QSize(100, 100)
+    def sizeHint(self):
+        return QSize(100, 100)
 
     def resizeEvent(self, event):
         super(CPUGraphBar, self).resizeEvent(event)
         self.remove_unneeded_bar()
         self.add_needed_bar()
-        print("bar_it_can_be_display = %s" % self.get_bars_number_it_can_be_display())
-        print("Bar list size = %s" % len(self.bars))
-        # self.clear_history()
+        # print("bar_it_can_be_display = %s" % self.get_bars_number_it_can_be_display())
+        # print("Bar list size = %s" % len(self.bars))
 
     def setupUI(self):
         self.layout = QGridLayout()
         self.layout.setSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
 
-        # Must add one bar at first
-        # self.add_a_bar()
         self.add_needed_bar()
 
         # Create Bars
@@ -186,33 +194,9 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
         self.cpu_nice_color_changed.connect(self.refresh_color_nice)
         self.cpu_irq_color_changed.connect(self.refresh_color_irq)
 
-    def refresh(self):
-        # Slice from List
-        # for i in range(len(self.bars) - 1, 0, -1):
-        #     self.bars[i].idle = self.bars[i - 1].idle
-        #     self.bars[i].user = self.bars[i - 1].user
-        #     self.bars[i].system = self.bars[i - 1].system
-        #     self.bars[i].nice = self.bars[i - 1].nice
-        #     self.bars[i].irq = self.bars[i - 1].irq
-        #     self.bars[i].color_idle = self.bars[i - 1].color_idle
-        #     self.bars[i].color_system = self.bars[i - 1].color_system
-        #     self.bars[i].color_user = self.bars[i - 1].color_user
-        #     self.bars[i].color_nice = self.bars[i - 1].color_nice
-        #     self.bars[i].color_nirq = self.bars[i - 1].color_irq
-        # Slice from a dict
-        # self.bars[1] = CPUBar()
-        # self.bars[1].idle = self.idle
-        # self.bars[1].user = self.user
-        # self.bars[1].system = self.system
-        # self.bars[1].nice = self.nice
-        # self.bars[1].irq = self.irq
-        # self.bars[1].color_idle = self.color_idle
-        # self.bars[1].color_system = self.color_system
-        # self.bars[1].color_user = self.color_user
-        # self.bars[1].color_nice = self.color_nice
-        # self.bars[1].color_nirq = self.color_irq
+    def slice(self):
         for i in range(self.get_bars_number_it_can_be_display(), 1, - 1):
-            print("Move data from bar%s to bar%s" % (i, i - 1))
+            # print("Move data from bar%s to bar%s" % (i, i - 1))
             self.bars[i].idle = self.bars[i - 1].idle
             self.bars[i].user = self.bars[i - 1].user
             self.bars[i].system = self.bars[i - 1].system
@@ -244,27 +228,22 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
     def refresh_color_system(self):
         for keyname, bar in self.bars.items():
             bar.color_system = self.color_system
-        self.repaint()
 
     def refresh_color_user(self):
         for keyname, bar in self.bars.items():
             bar.color_user = self.color_user
-        self.repaint()
 
     def refresh_color_idle(self):
         for keyname, bar in self.bars.items():
             bar.color_idle = self.color_idle
-        self.repaint()
 
     def refresh_color_nice(self):
         for keyname, bar in self.bars.items():
             bar.color_nice = self.color_nice
-        self.repaint()
 
     def refresh_color_irq(self):
         for keyname, bar in self.bars.items():
             bar.color_irq = self.color_irq
-        self.repaint()
 
     def clear_history(self):
         for i in range(len(self.bars) - 1, 0, -1):
@@ -284,6 +263,6 @@ if __name__ == "__main__":
     graph.color_system = Qt.red
     graph.color_user = Qt.green
     graph.color_idle = Qt.darkGray
-    graph.refresh()
+    graph.slice()
     graph.show()
     sys.exit(app.exec())

@@ -56,8 +56,8 @@ class TabCpu(CPUTimesPercent):
     def refresh_idle(self):
         self.label_idle_value.setText(f"{self.idle}")
         # idle color is just the background color, then it is bind to refresh
-        self.cpu_widget_graph.refresh()
-        self.cpu_history_dialog.cpu_history_graph.refresh()
+        self.cpu_widget_graph.slice()
+        self.cpu_history_dialog.cpu_history_graph.slice()
 
     def refresh_nice(self):
         self.label_nice_value.setText(f"{self.nice}")
