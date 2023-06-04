@@ -118,6 +118,13 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             return ", ".join(["%s=%s" % (x, bytes2human(getattr(nt, x))) for x in nt._fields])
 
     def run(self):
+        try:
+            psutil.Process(self.process.pid).is_running()
+        except psutil.NoSuchProcess:
+            self.buttonRefresh.setEnabled(False)
+            self.StatusText.setText(f"NoSuchProcess")
+            return
+
         self.sample_run_processing.emit()
         self.sample_text = ""
         self.sample_markdown = ""
