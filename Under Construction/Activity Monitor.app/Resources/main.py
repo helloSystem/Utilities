@@ -349,6 +349,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         # Tab Disk Activity
         self.disk_activity_data_radiobutton.toggled.connect(self.refresh_disk_activity_bandwidth)
+        self.color_picker_data_read_sec_value.colorChanged.connect(self.refresh_color_data_read_sec)
+        self.color_picker_data_written_sec_value.colorChanged.connect(self.refresh_color_data_written_sec)
 
         # Tab Disk Usage
         self.combobox_devices.currentIndexChanged.connect(self.combobox_index_changed)

@@ -5,10 +5,13 @@ from PyQt5.QtCore import (
 
 from PyQt5.QtWidgets import (
     QFileIconProvider,
+    QComboBox,
 )
 
 
 class TabDiskUsage(object):
+    combobox_devices: QComboBox
+
     mounted_disk_partitions_changed = pyqtSignal()
 
     def __init__(self, parent=None):
@@ -35,7 +38,10 @@ class TabDiskUsage(object):
             index = 0
         self.combobox_devices.clear()
         for item_number, data in self.__mounted_disk_partitions.items():
-            self.combobox_devices.addItem(QFileIconProvider().icon(QFileIconProvider.Drive), data["mountpoint"])
+            self.combobox_devices.addItem(
+                QFileIconProvider().icon(QFileIconProvider.Drive),
+                data["mountpoint"]
+            )
         self.combobox_devices.setCurrentIndex(index)
 
     def combobox_index_changed(self):

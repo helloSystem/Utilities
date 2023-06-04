@@ -63,10 +63,7 @@ class TabDiskActivity(object):
             self.data_read_old_value = self.data_read_value
             self.data_read_value = data_read
             self.disk_activity_data_read_sec_value.setText(
-                "<font color=%s>%s</font>" % (
-                    self.color_picker_data_read_sec_value.color(),
-                    bytes2human((self.data_read_value - self.data_read_old_value) / self.timer_value)
-                )
+                f"{bytes2human((self.data_read_value - self.data_read_old_value) / self.timer_value)}"
             )
         else:
             self.data_read_value = data_read
@@ -79,10 +76,7 @@ class TabDiskActivity(object):
             self.data_written_old_value = self.data_written_value
             self.data_written_value = data_written
             self.disk_activity_data_written_sec_value.setText(
-                "<font color=%s>%s</font>" % (
-                    self.color_picker_data_written_sec_value.color(),
-                    bytes2human((self.data_written_value - self.data_written_old_value) / self.timer_value)
-                )
+                f"{bytes2human((self.data_written_value - self.data_written_old_value) / self.timer_value)}"
             )
         else:
             self.data_written_value = data_written
@@ -92,22 +86,32 @@ class TabDiskActivity(object):
         self.refresh_disk_activity_bandwidth()
 
     def refresh_disk_activity_bandwidth(self):
-        if self.disk_activity_data_radiobutton.isChecked():
-            delta1 = (
-                    (self.data_written_value - self.data_written_old_value) / self.timer_value
-            )
-            delta2 = (
-                    (self.data_read_value - self.data_read_old_value) / self.timer_value
-            )
-            self.disk_activity_bandwidth_value.setText("%s" % bytes2human(delta1 + delta2))
-        else:
-            delta1 = (
-                    (self.writes_out_value - self.writes_out_old_value) / self.timer_value
-            )
-            delta2 = (
-                    (self.reads_in_value - self.reads_in_old_value) / self.timer_value
-            )
-            io_number = int(round(delta1 + delta2))
+        if self.disk_activity_data_radiobutton.isVisible():
+            if self.disk_activity_data_radiobutton.isChecked():
+                delta1 = (
+                        (self.data_written_value - self.data_written_old_value) / self.timer_value
+                )
+                delta2 = (
+                        (self.data_read_value - self.data_read_old_value) / self.timer_value
+                )
+                self.disk_activity_bandwidth_value.setText("%s" % bytes2human(delta1 + delta2))
+            else:
+                delta1 = (
+                        (self.writes_out_value - self.writes_out_old_value) / self.timer_value
+                )
+                delta2 = (
+                        (self.reads_in_value - self.reads_in_old_value) / self.timer_value
+                )
+                io_number = int(round(delta1 + delta2))
 
-            self.disk_activity_bandwidth_value.setText(f"{io_number} ")
+                self.disk_activity_bandwidth_value.setText(f"{io_number} ")
 
+    def refresh_color_data_read_sec(self):
+        self.disk_activity_data_read_sec_value.setStyleSheet(
+            "color: %s;" % self.color_picker_data_read_sec_value.color()
+        )
+
+    def refresh_color_data_written_sec(self):
+        self.disk_activity_data_written_sec_value.setStyleSheet(
+            "color: %s;" % self.color_picker_data_written_sec_value.color()
+        )
