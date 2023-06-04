@@ -92,6 +92,7 @@ class ChartPie(QWidget):
         self.data = None
 
     def setupUI(self):
+        self.qp = QPainter()
         self.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         self.setContentsMargins(0, 0, 0, 0)
         self.setBaseSize(100, 100)
@@ -102,11 +103,11 @@ class ChartPie(QWidget):
         self.show()
 
     def paintEvent(self, e):
-        self.qp = QPainter()
-        self.qp.begin(self)
-        self.qp.setRenderHint(QPainter.Antialiasing)
-        self.draw_pie()
-        self.qp.end()
+        if self.isVisible():
+            self.qp.begin(self)
+            self.qp.setRenderHint(QPainter.Antialiasing)
+            self.draw_pie()
+            self.qp.end()
 
     def draw_pie(self):
         pen_size = 1

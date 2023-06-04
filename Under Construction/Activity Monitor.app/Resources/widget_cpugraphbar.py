@@ -47,11 +47,11 @@ class CPUBar(QWidget, CPUTimesPercent):
         self.pen = QPen(QColor(self.color_idle))
         self.pen.setWidth(self.grid_spacing)
 
-
     def paintEvent(self, e):
-        self.qp.begin(self)
-        self.draw_graph()
-        self.qp.end()
+        if self.isVisible():
+            self.qp.begin(self)
+            self.draw_graph()
+            self.qp.end()
 
     def draw_graph(self):
         step_size = int(self.height() / 100)
@@ -141,10 +141,11 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
         self.add_needed_bar()
 
     def paintEvent(self, e):
-        self.qp.begin(self)
-        rect = QRect(self.grid_size, 0, self.width() - self.grid_size, self.height())
-        self.qp.fillRect(rect, self.brush)
-        self.qp.end()
+        if self.isVisible():
+            self.qp.begin(self)
+            rect = QRect(self.grid_size, 0, self.width() - self.grid_size, self.height())
+            self.qp.fillRect(rect, self.brush)
+            self.qp.end()
 
     def get_bars_number_it_can_be_display(self):
         count = 0
