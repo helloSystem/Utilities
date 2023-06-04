@@ -64,7 +64,8 @@ class InspectProcess(QWidget, Ui_InspectProcess):
             a = f"{a.upper()}:"
         self.sample_text += "%-13s %s\n" % (a, b)
 
-    def str_ntuple(self, nt, convert_bytes=False):
+    @staticmethod
+    def str_named_tuple(nt, convert_bytes=False):
         if nt == ACCESS_DENIED:
             return ""
         if not convert_bytes:
@@ -72,7 +73,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         else:
             return ", ".join(["%s=%s" % (x, bytes2human(getattr(nt, x))) for x in nt._fields])
 
-    def run(self, verbose=False):
+    def run(self):
         try:
             proc = self.process
             pinfo = proc.as_dict(ad_value=ACCESS_DENIED)
@@ -343,11 +344,11 @@ class InspectProcess(QWidget, Ui_InspectProcess):
             connections_model = QStandardItemModel()
             for conn in pinfo["connections"]:
                 if conn.type == socket.SOCK_STREAM:
-                    type = "TCP"
+                    prototype = "TCP"
                 elif conn.type == socket.SOCK_DGRAM:
-                    type = "UDP"
+                    prototype = "UDP"
                 else:
-                    type = "UNIX"
+                    prototype = "UNIX"
                 lip, lport = conn.laddr
                 if not conn.raddr:
                     rip, rport = "*", "*"
@@ -355,7 +356,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                     rip, rport = conn.raddr
                 connections_model.appendRow(
                     [
-                        QStandardItem(f"{type}"),
+                        QStandardItem(f"{prototype}"),
                         QStandardItem(f"{lip}:{lport}"),
                         QStandardItem(f"{rip}:{rport}"),
                         QStandardItem(f"{conn.status}"),

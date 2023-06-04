@@ -5,12 +5,11 @@ import sys
 
 import psutil
 
-from PyQt5.QtCore import Qt, QFileInfo
+from PyQt5.QtCore import Qt, QFileInfo, pyqtSignal
 from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon, QFont
 from PyQt5.QtWidgets import (
     QApplication,
-    QFileIconProvider,
-
+    QFileDialog,
 )
 from PyQt5.QtWidgets import QWidget
 from dialog_sample_process_ui import Ui_SampleProcess
@@ -18,7 +17,7 @@ from dialog_sample_process_ui import Ui_SampleProcess
 from utility import get_process_application_name
 from utility import bytes2human
 
-ACCESS_DENIED = ''
+ACCESS_DENIED = ""
 NON_VERBOSE_ITERATIONS = 4
 RLIMITS_MAP = {
     "RLIMIT_AS": "virtualmem",
@@ -43,9 +42,13 @@ RLIMITS_MAP = {
 
 
 class SampleProcess(QWidget, Ui_SampleProcess):
+    sample_run_processing = pyqtSignal()
+    sample_finish_processing = pyqtSignal()
+
     def __init__(self, parent=None, process=None):
         super(SampleProcess, self).__init__(parent)
         Ui_SampleProcess.__init__(self)
+        self.fileName = None
         self.process = process
         self.setupUi(self)
         self.open_files_model = QStandardItemModel()
@@ -54,6 +57,9 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         self.buttonQuit.clicked.connect(self.quit)
         self.buttonRefresh.clicked.connect(self.run)
         self.comboBox.currentIndexChanged.connect(self.combobox_changed)
+        self.sample_run_processing.connect(lambda: self.buttonRefresh.setEnabled(False))
+        self.sample_finish_processing.connect(lambda: self.buttonRefresh.setEnabled(True))
+        self.buttonSave.clicked.connect(self.save)
 
         self.sample_text = ""
         self.sample_markdown = ""
@@ -61,6 +67,16 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         self.status_text_template = self.StatusText.text()
         self.run()
         self.comboBox.setCurrentIndex(1)
+
+    def save(self):
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(
+            self, "Save File", "", "All Files(*);;Text Files(*.txt)", options=options
+        )
+        if fileName:
+            with open(fileName, "w") as f:
+                f.write(self.sample_text)
 
     def quit(self):
         self.close()
@@ -85,7 +101,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
     def add_to_sample_markdown(self, a, b):
         if a != "":
             a = f"{a.title()}"
-        if b is None or b == 'None':
+        if b is None or b == "None":
             b = f"``None``"
         self.sample_markdown += "**%s**: %s\n\n" % (a, b)
 
@@ -102,6 +118,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             return ", ".join(["%s=%s" % (x, bytes2human(getattr(nt, x))) for x in nt._fields])
 
     def run(self):
+        self.sample_run_processing.emit()
         self.sample_text = ""
         self.sample_markdown = ""
         try:
@@ -115,69 +132,68 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             try:
                 parent = proc.parent()
                 if parent:
-                    parent = '(%s)' % parent.name()
+                    parent = "(%s)" % parent.name()
                 else:
-                    parent = ''
+                    parent = ""
             except psutil.Error:
-                parent = ''
+                parent = ""
             try:
-                pinfo['children'] = proc.children()
+                pinfo["children"] = proc.children()
             except psutil.Error:
-                pinfo['children'] = []
-            if pinfo['create_time']:
-                started = datetime.datetime.fromtimestamp(
-                    pinfo['create_time']).strftime('%Y-%m-%d %H:%M')
+                pinfo["children"] = []
+            if pinfo["create_time"]:
+                started = datetime.datetime.fromtimestamp(pinfo["create_time"]).strftime("%Y-%m-%d %H:%M")
             else:
                 started = ACCESS_DENIED
 
         # here we go
         # Title
-        self.sample_markdown += "# %s (%s)\n" % (pinfo['name'], pinfo['pid'])
+        self.sample_markdown += "# %s (%s)\n" % (pinfo["name"], pinfo["pid"])
         self.sample_markdown += "## General\n"
 
         # PID
-        self.add_to_sample('pid', pinfo['pid'])
+        self.add_to_sample("pid", pinfo["pid"])
 
         # PPID
-        self.add_to_sample('parent', '%s %s' % (pinfo['ppid'], parent))
+        self.add_to_sample("parent", "%s %s" % (pinfo["ppid"], parent))
 
         # PNAME
-        self.add_to_sample('name', pinfo['name'])
+        self.add_to_sample("name", pinfo["name"])
 
         # EXE
-        self.add_to_sample('exe', pinfo['exe'])
+        self.add_to_sample("exe", pinfo["exe"])
 
         # CMDLINE
-        self.add_to_sample('cmdline', ' '.join(pinfo['cmdline']))
+        self.add_to_sample("cmdline", " ".join(pinfo["cmdline"]))
 
         # CREATE TIME
-        self.add_to_sample('started', started)
+        self.add_to_sample("started", started)
 
         # STATUS
-        self.add_to_sample('status', pinfo['status'])
+        self.add_to_sample("status", pinfo["status"])
 
         # CWD
-        self.add_to_sample('cwd', pinfo['cwd'])
+        self.add_to_sample("cwd", pinfo["cwd"])
 
         # USERNAME
-        self.add_to_sample('user', pinfo['username'])
+        self.add_to_sample("user", pinfo["username"])
 
         # UIDS
         if psutil.POSIX:
-            self.add_to_sample('uids', self.str_ntuple(pinfo['uids']))
+            self.add_to_sample("uids", self.str_ntuple(pinfo["uids"]))
 
         # GIDS
         if psutil.POSIX:
-            self.add_to_sample('gids', self.str_ntuple(pinfo['gids']))
+            self.add_to_sample("gids", self.str_ntuple(pinfo["gids"]))
 
         # RUN IN A TERMINAL
         if psutil.POSIX:
-            self.add_to_sample('terminal', pinfo['terminal'] or None)
+            self.add_to_sample("terminal", pinfo["terminal"] or None)
         else:
-            self.add_to_sample('terminal', None)
+            self.add_to_sample("terminal", None)
 
         # NICE
-        self.add_to_sample('nice', pinfo['nice'])
+        self.add_to_sample("nice", pinfo["nice"])
 
         # IO NICE
         if hasattr(proc, "ionice"):
@@ -191,73 +207,66 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                 else:
                     self.add_to_sample("ionice", "class=%s, value=%s" % (str(ionice.ioclass), ionice.value))
 
-
-
         # CPUTIME
-        cpu_tot_time = datetime.timedelta(seconds=sum(pinfo['cpu_times']))
+        cpu_tot_time = datetime.timedelta(seconds=sum(pinfo["cpu_times"]))
         cpu_tot_time = "%s:%s.%s" % (
             cpu_tot_time.seconds // 60 % 60,
             str((cpu_tot_time.seconds % 60)).zfill(2),
-            str(cpu_tot_time.microseconds)[:2])
-        self.add_to_sample('cpu-tspent', cpu_tot_time)
-        self.add_to_sample('cpu-times', self.str_ntuple(pinfo['cpu_times']))
+            str(cpu_tot_time.microseconds)[:2],
+        )
+        self.add_to_sample("cpu-tspent", cpu_tot_time)
+        self.add_to_sample("cpu-times", self.str_ntuple(pinfo["cpu_times"]))
 
         # CPU AFFINITY
-        if hasattr(proc, "cpu_affinity") and len(pinfo['cpu_affinity']) > 0:
+        if hasattr(proc, "cpu_affinity") and len(pinfo["cpu_affinity"]) > 0:
             self.add_to_sample("cpu-affinity", pinfo["cpu_affinity"])
         else:
-            self.add_to_sample('cpu-affinity', 'None')
+            self.add_to_sample("cpu-affinity", "None")
 
         # CPU NUMBER
         if hasattr(proc, "cpu_num"):
             self.add_to_sample("cpu-num", pinfo["cpu_num"])
         else:
-            self.add_to_sample('cpu-num', None)
+            self.add_to_sample("cpu-num", None)
 
         # CPU
-        self.add_to_sample('cpu %', f"{proc.cpu_percent(interval=1)}")
+        self.add_to_sample("cpu %", f"{proc.cpu_percent(interval=1)}")
 
         # MEMORY FULL INFO
-        if hasattr(proc, "memory_full_info") and len(pinfo['memory_full_info']) > 0:
-            self.add_to_sample('memory', self.str_ntuple(pinfo['memory_full_info'], convert_bytes=True))
+        if hasattr(proc, "memory_full_info") and len(pinfo["memory_full_info"]) > 0:
+            self.add_to_sample("memory", self.str_ntuple(pinfo["memory_full_info"], convert_bytes=True))
         else:
-            self.add_to_sample('memory', 'None')
+            self.add_to_sample("memory", "None")
 
         # MEMORY PERCENT
-        self.add_to_sample('memory %', round(pinfo['memory_percent'], 2))
-
-
-
-
-
-
+        self.add_to_sample("memory %", round(pinfo["memory_percent"], 2))
 
         # THREADS NUMBER
-        self.add_to_sample('num-threads', pinfo['num_threads'])
+        self.add_to_sample("num-threads", pinfo["num_threads"])
 
         #  FILE DESCRIPTOR NUMBER
         if psutil.POSIX:
-            self.add_to_sample('num-fds', pinfo['num_fds'])
+            self.add_to_sample("num-fds", pinfo["num_fds"])
         else:
-            self.add_to_sample('num-fds', 'None')
+            self.add_to_sample("num-fds", "None")
 
         # HANDLES NUMBER
         if psutil.WINDOWS:
-            self.add_to_sample('num-handles', pinfo['num_handles'])
+            self.add_to_sample("num-handles", pinfo["num_handles"])
         else:
-            self.add_to_sample('num-handles', 'None')
+            self.add_to_sample("num-handles", "None")
 
         # I/O COUNTERS
-        if 'io_counters' in pinfo:
-            self.add_to_sample('I/O', self.str_ntuple(pinfo['io_counters'], convert_bytes=True))
+        if "io_counters" in pinfo:
+            self.add_to_sample("I/O", self.str_ntuple(pinfo["io_counters"], convert_bytes=True))
         else:
-            self.add_to_sample('I/O', 'None')
+            self.add_to_sample("I/O", "None")
 
         # NUMBER CTX SWITCHRS
-        if 'num_ctx_switches' in pinfo:
-            self.add_to_sample("ctx-switches", self.str_ntuple(pinfo['num_ctx_switches']))
+        if "num_ctx_switches" in pinfo:
+            self.add_to_sample("ctx-switches", self.str_ntuple(pinfo["num_ctx_switches"]))
         else:
-            self.add_to_sample('ctx-switches', 'None')
+            self.add_to_sample("ctx-switches", "None")
 
         # RLIMIT
         if hasattr(proc, "rlimit"):
@@ -281,14 +290,14 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                         soft = "infinity"
                     if hard == psutil.RLIM_INFINITY:
                         hard = "infinity"
-                    self.add_to_sample_text('', template % (RLIMITS_MAP.get(res_name, res_name), soft, hard))
+                    self.add_to_sample_text("", template % (RLIMITS_MAP.get(res_name, res_name), soft, hard))
                     self.sample_markdown += f"{RLIMITS_MAP.get(res_name, res_name)} | {soft} | {hard}\n"
                 self.sample_markdown += "\n"
         else:
-            self.add_to_sample('rlimit', None)
+            self.add_to_sample("rlimit", None)
 
         # CHILDREN
-        if pinfo['children']:
+        if pinfo["children"]:
             template = "%-6s %s"
             self.sample_markdown += "## Children\n"
             self.sample_markdown += "PID | NAME\n"
@@ -296,24 +305,24 @@ class SampleProcess(QWidget, Ui_SampleProcess):
 
             self.add_to_sample("children", template % ("PID", "NAME"))
 
-            for child in pinfo['children']:
+            for child in pinfo["children"]:
                 try:
-                    self.add_to_sample('', template % (child.pid, child.name()))
+                    self.add_to_sample("", template % (child.pid, child.name()))
                 except psutil.AccessDenied:
-                    self.add_to_sample('', template % (child.pid, ""))
+                    self.add_to_sample("", template % (child.pid, ""))
                 except psutil.NoSuchProcess:
                     pass
             self.sample_markdown += "```\n\n"
         else:
-            self.add_to_sample('children', '``None``')
+            self.add_to_sample("children", "``None``")
 
         # Open Files
-        if pinfo['open_files']:
-            self.add_to_sample_text('open-files', 'PATH')
+        if pinfo["open_files"]:
+            self.add_to_sample_text("open-files", "PATH")
             model = []
             headers = []
 
-            for i, file in enumerate(pinfo['open_files']):
+            for i, file in enumerate(pinfo["open_files"]):
                 row = []
                 if hasattr(file, "path"):
                     row.append(f"{file.path}")
@@ -343,55 +352,51 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                 if row:
                     model.append(row)
 
-                self.add_to_sample_text('open-files', " ".join(headers))
+                self.add_to_sample_text("open-files", " ".join(headers))
                 for file in model:
-                    self.add_to_sample_text('', " ".join(file))
+                    self.add_to_sample_text("", " ".join(file))
 
         else:
-            self.add_to_sample('open-files', '``None``')
+            self.add_to_sample("open-files", "``None``")
 
-        if pinfo['connections']:
-            template = '%-5s %-25s %-25s %s'
-            self.add_to_sample_text('connections',
-                                    template % ('PROTO', 'LOCAL ADDR', 'REMOTE ADDR', 'STATUS'))
-            for conn in pinfo['connections']:
+        if pinfo["connections"]:
+            template = "%-5s %-25s %-25s %s"
+            self.add_to_sample_text("connections", template % ("PROTO", "LOCAL ADDR", "REMOTE ADDR", "STATUS"))
+            for conn in pinfo["connections"]:
                 if conn.type == socket.SOCK_STREAM:
-                    type = 'TCP'
+                    type = "TCP"
                 elif conn.type == socket.SOCK_DGRAM:
-                    type = 'UDP'
+                    type = "UDP"
                 else:
-                    type = 'UNIX'
+                    type = "UNIX"
                 lip, lport = conn.laddr
                 if not conn.raddr:
-                    rip, rport = '*', '*'
+                    rip, rport = "*", "*"
                 else:
                     rip, rport = conn.raddr
-                self.add_to_sample_text('', template % (
-                    type,
-                    "%s:%s" % (lip, lport),
-                    "%s:%s" % (rip, rport),
-                    conn.status))
+                self.add_to_sample_text(
+                    "", template % (type, "%s:%s" % (lip, lport), "%s:%s" % (rip, rport), conn.status)
+                )
         else:
-            self.add_to_sample_text('connections', '``None``')
+            self.add_to_sample_text("connections", "``None``")
 
-        if pinfo['threads'] and len(pinfo['threads']) > 1:
-
+        if pinfo["threads"] and len(pinfo["threads"]) > 1:
             self.sample_markdown += "## Threads\n"
             self.sample_markdown += "TID | USER | SYSTEM\n"
             self.sample_markdown += "--- | --- | ---\n"
 
             template = "%-5s %12s %12s"
-            self.add_to_sample_text('threads', template % ("TID", "USER", "SYSTEM"))
-            for i, thread in enumerate(pinfo['threads']):
-                self.add_to_sample_text('', template % thread)
+            self.add_to_sample_text("threads", template % ("TID", "USER", "SYSTEM"))
+            for i, thread in enumerate(pinfo["threads"]):
+                self.add_to_sample_text("", template % thread)
                 self.sample_markdown += f"{thread.id} | {thread.user_time} | {thread.system_time}\n"
             self.sample_markdown += "\n"
-            self.add_to_sample_text('', "total=%s" % len(pinfo['threads']))
+            self.add_to_sample_text("", "total=%s" % len(pinfo["threads"]))
         else:
-            self.add_to_sample('threads', '``None``')
+            self.add_to_sample("threads", "``None``")
 
         # Environment
-        if hasattr(proc, "environ") and pinfo['environ']:
+        if hasattr(proc, "environ") and pinfo["environ"]:
             self.sample_markdown += "## Environment\n"
             self.sample_markdown += "NAME | VALUE\n"
             self.sample_markdown += "--- | ---\n"
@@ -399,12 +404,12 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             template = "%-25s %s"
             self.add_to_sample_text("environ", template % ("NAME", "VALUE"))
 
-            for name, value in pinfo['environ'].items():
+            for name, value in pinfo["environ"].items():
                 self.add_to_sample_text("", template % (name, value))
                 self.sample_markdown += f"{name} | {value}\n"
             self.sample_markdown += "\n"
         else:
-            self.add_to_sample('environ', None)
+            self.add_to_sample("environ", None)
 
         # if pinfo.get('memory_maps', None):
         #     environment_model = QStandardItemModel()
@@ -468,8 +473,9 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         #     self.MapsTreeView.sortByColumn(0, Qt.DescendingOrder)
 
         self.count += 1
-        self.StatusText.setText(self.status_text_template % (pinfo['pid'], self.count))
+        self.StatusText.setText(self.status_text_template % (pinfo["pid"], self.count))
         self.comboBox.setCurrentIndex(self.comboBox.currentIndex())
+        self.sample_finish_processing.emit()
 
 
 if __name__ == "__main__":
