@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import (
-    QLabel
-)
+from PyQt5.QtWidgets import QLabel
 from widget_color_pickup import ColorButton
 from widget_chartpie import ChartPieItem, ChartPie
 

@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 
 
-from PyQt5.QtWidgets import (
-    QLabel
-)
+from PyQt5.QtWidgets import QLabel
 from property_cpu_times_percent import CPUTimesPercent
 from widget_cpugraphbar import CPUGraphBar
 from widget_color_pickup import ColorButton

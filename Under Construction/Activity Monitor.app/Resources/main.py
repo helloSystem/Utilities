@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QShortcut,
 )
+
 # The Main Window
 from main_window_ui import Ui_MainWindow
 
@@ -51,8 +52,9 @@ from worker_icons_cache import IconsCacheWorker
 from utility import bytes2human, get_process_application_name, get_process_environ
 
 
-class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
-             TabDiskActivity, TabDiskUsage, TabNetwork, TreeViewProcess):
+class Window(
+    QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivity, TabDiskUsage, TabNetwork, TreeViewProcess
+):
     def __init__(self, parent=None):
         super().__init__(parent)
         TabCpu.__init__(self)
@@ -144,12 +146,14 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
         self.chart_pie_item_memory_inactive.setColor(Qt.black)
         self.chart_pie_item_memory_inactive.setData(0)
 
-        self.system_memory_chart_pie.addItems([
-            self.chart_pie_item_memory_free,
-            self.chart_pie_item_memory_wired,
-            self.chart_pie_item_memory_active,
-            self.chart_pie_item_memory_inactive,
-        ])
+        self.system_memory_chart_pie.addItems(
+            [
+                self.chart_pie_item_memory_free,
+                self.chart_pie_item_memory_wired,
+                self.chart_pie_item_memory_active,
+                self.chart_pie_item_memory_inactive,
+            ]
+        )
 
         # Disk Usage
         self.chart_pie_item_utilized = None
@@ -169,7 +173,6 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
                 self.chart_pie_item_free,
             ]
         )
-
 
     def setupInitialState(self):
         # Set Menu ShortCut With Meta Key
@@ -360,6 +363,8 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
 
         # Tab Network
         self.network_packets_radiobutton.toggled.connect(self.refresh_network_bandwidth)
+        self.color_picker_data_received_sec_value.colorChanged.connect(self.refresh_color_data_received_sec)
+        self.color_picker_data_sent_sec_value.colorChanged.connect(self.refresh_color_data_sent_sec)
 
         # TreeView
         self.process_tree.clicked.connect(self.onClicked)
@@ -468,14 +473,12 @@ class Window(QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory,
             self.createSystemMemoryThread(),
             self.createCPUThread(),
             self.createPSUtilsThread(),
-            self.createIconsCacheThread()
+            self.createIconsCacheThread(),
         ]
         for thread in self.threads:
             thread.start()
 
-
     def refresh_treeview_model(self):
-
         self.tree_view_model = QStandardItemModel()
         for p in psutil.process_iter():
             QApplication.processEvents()
