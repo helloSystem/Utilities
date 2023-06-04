@@ -44,36 +44,43 @@ class TabCpu(CPUTimesPercent):
         CPUTimesPercent.__init__(self)
 
     def refresh_user(self):
-        self.label_user_value.setText(f"{self.user}")
+        if self.label_user_value.isVisible() and self.label_user_value.text() != f"{self.user}":
+            self.label_user_value.setText(f"{self.user}")
         self.cpu_widget_graph.user = self.user
         self.cpu_history_dialog.cpu_history_graph.user = self.user
 
     def refresh_system(self):
-        self.label_system_value.setText(f"{self.system}")
+        if self.label_system_value.isVisible() and self.label_system_value.text() != f"{self.system}":
+            self.label_system_value.setText(f"{self.system}")
         self.cpu_widget_graph.system = self.system
         self.cpu_history_dialog.cpu_history_graph.system = self.system
 
     def refresh_idle(self):
-        self.label_idle_value.setText(f"{self.idle}")
+        if self.label_idle_value.isVisible() and self.label_idle_value.text() != f"{self.idle}":
+            self.label_idle_value.setText(f"{self.idle}")
         # idle color is just the background color, then it is bind to refresh
         self.cpu_widget_graph.slice()
         self.cpu_history_dialog.cpu_history_graph.slice()
 
     def refresh_nice(self):
-        self.label_nice_value.setText(f"{self.nice}")
+        if self.label_nice_value.isVisible() and self.label_nice_value.text() != f"{self.nice}":
+            self.label_nice_value.setText(f"{self.nice}")
         self.cpu_widget_graph.nice = self.nice
         self.cpu_history_dialog.cpu_history_graph.nice = self.nice
 
     def refresh_irq(self):
-        self.label_irq_value.setText(f"{self.irq}")
+        if self.label_irq_value.isVisible() and self.label_irq_value.text() != f"{self.irq}":
+            self.label_irq_value.setText(f"{self.irq}")
         self.cpu_widget_graph.irq = self.irq
         self.cpu_history_dialog.cpu_history_graph.irq = self.irq
 
     def refresh_process_number(self, process_number: int):
-        self.label_processes_value.setText("%d" % process_number)
+        if self.label_processes_value.isVisible() and self.label_processes_value.text() != f"{process_number}":
+            self.label_processes_value.setText(f"{process_number}")
 
     def refresh_cumulative_threads(self, cumulative_threads: int):
-        self.label_threads_value.setText(f"{cumulative_threads}")
+        if self.label_threads_value.isVisible() and self.label_threads_value.text() != f"{cumulative_threads}":
+            self.label_threads_value.setText(f"{cumulative_threads}")
 
     def refresh_color_system(self):
         self.label_system_value.setStyleSheet("color: %s;" % self.color_picker_system_value.color())
