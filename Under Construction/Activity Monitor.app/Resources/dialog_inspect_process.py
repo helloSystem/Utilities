@@ -11,7 +11,6 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
     QFileIconProvider,
-
 )
 from PyQt5.QtWidgets import QWidget
 from dialog_inspect_process_ui import Ui_InspectProcess
@@ -19,7 +18,7 @@ from dialog_inspect_process_ui import Ui_InspectProcess
 from utility import get_process_application_name
 from utility import bytes2human
 
-ACCESS_DENIED = ''
+ACCESS_DENIED = ""
 NON_VERBOSE_ITERATIONS = 4
 RLIMITS_MAP = {
     "RLIMIT_AS": "virtualmem",
@@ -87,99 +86,102 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 if parent:
                     parent = parent.name()
                 else:
-                    parent = ''
+                    parent = ""
             except psutil.Error:
-                parent = ''
+                parent = ""
 
         # Parent
         self.parent_process_value.setText(f"{parent} ({pinfo['ppid']})")
 
         # User
-        self.add_to_sample_text('user', pinfo['username'])
+        self.add_to_sample_text("user", pinfo["username"])
         if psutil.POSIX:
             self.user_value.setText(f"{pinfo['username']} ({pinfo['uids'].effective})")
 
         # Group
         if psutil.POSIX:
-            self.process_group_id_value.setText(f"{grp.getgrgid(pinfo['gids'].effective)[0]} ({pinfo['gids'].effective})")
+            self.process_group_id_value.setText(
+                f"{grp.getgrgid(pinfo['gids'].effective)[0]} ({pinfo['gids'].effective})"
+            )
 
         # CPU Time
-        cpu_tot_time = datetime.timedelta(seconds=sum(pinfo['cpu_times']))
+        cpu_tot_time = datetime.timedelta(seconds=sum(pinfo["cpu_times"]))
         cpu_tot_time = "%s:%s.%s" % (
             cpu_tot_time.seconds // 60 % 60,
             str((cpu_tot_time.seconds % 60)).zfill(2),
-            str(cpu_tot_time.microseconds)[:2])
+            str(cpu_tot_time.microseconds)[:2],
+        )
         self.cpu_time_value.setText(f"{cpu_tot_time}")
 
         # Memory Info
-        if pinfo['memory_full_info']:
-            if hasattr(pinfo['memory_full_info'], "uss"):
+        if pinfo["memory_full_info"]:
+            if hasattr(pinfo["memory_full_info"], "uss"):
                 self.unique_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].uss)}")
             else:
                 self.unique_set_size_label.hide()
                 self.unique_set_size_value.hide()
 
-            if hasattr(pinfo['memory_full_info'], "vms"):
+            if hasattr(pinfo["memory_full_info"], "vms"):
                 self.virtual_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].vms)}")
             else:
                 self.virtual_memory_size_value.hide()
                 self.virtual_memory_size_label.hide()
 
-            if hasattr(pinfo['memory_full_info'], "rss"):
+            if hasattr(pinfo["memory_full_info"], "rss"):
                 self.resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].rss)}")
             else:
                 self.resident_set_size_value.hide()
                 self.resident_set_size_label.hide()
 
-            if hasattr(pinfo['memory_full_info'], "shared"):
+            if hasattr(pinfo["memory_full_info"], "shared"):
                 self.shared_memory_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].shared)}")
             else:
                 self.shared_memory_size_value.hide()
                 self.shared_memory_size_label.hide()
 
-            if hasattr(pinfo['memory_full_info'], "text"):
+            if hasattr(pinfo["memory_full_info"], "text"):
                 self.text_resitent_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].text)}")
             else:
                 self.text_resitent_set_size_value.hide()
                 self.text_resitent_set_size_label.hide()
 
-            if hasattr(pinfo['memory_full_info'], "data"):
+            if hasattr(pinfo["memory_full_info"], "data"):
                 self.data_resident_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].data)}")
             else:
                 self.data_resident_set_size_value.hide()
                 self.data_resident_set_size_label.hide()
 
-            if hasattr(pinfo['memory_full_info'], "swap"):
+            if hasattr(pinfo["memory_full_info"], "swap"):
                 self.swapped_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].swap)}")
             else:
                 self.swapped_size_value.hide()
                 self.swapped_size_label.hide()
 
-            if hasattr(pinfo['memory_full_info'], "lib"):
+            if hasattr(pinfo["memory_full_info"], "lib"):
                 self.shared_libraries_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].lib)}")
             else:
                 self.shared_libraries_size_value.hide()
                 self.shared_libraries_size_label.hide()
 
-            if hasattr(pinfo['memory_full_info'], "pss"):
+            if hasattr(pinfo["memory_full_info"], "pss"):
                 self.proportional_set_size_value.setText(f"{bytes2human(pinfo['memory_full_info'].pss)}")
             else:
                 self.proportional_set_size_value.hide()
                 self.proportional_set_size_label.hide()
 
-            if hasattr(pinfo['memory_full_info'], "stack"):
+            if hasattr(pinfo["memory_full_info"], "stack"):
                 self.stack_size_value.setText(f"{pinfo['memory_full_info'].stack}")
             else:
                 self.stack_size_label.hide()
                 self.stack_size_value.hide()
 
-            if hasattr(pinfo['memory_full_info'], "pfaults"):
+            if hasattr(pinfo["memory_full_info"], "pfaults"):
                 self.fault_value.setText(f"{pinfo['memory_full_info'].pfaults}")
             else:
                 self.fault.hide()
                 self.fault_value.hide()
 
-            if hasattr(pinfo['memory_full_info'], "pageins"):
+            if hasattr(pinfo["memory_full_info"], "pageins"):
                 self.fault_value.setText(f"{pinfo['memory_full_info'].pageins}")
             else:
                 self.pageins.hide()
@@ -203,66 +205,66 @@ class InspectProcess(QWidget, Ui_InspectProcess):
             self.file_descriptors_value.hide()
             self.file_descriptors.hide()
 
-        if 'io_counters' in pinfo:
-            if hasattr(pinfo['io_counters'], "read_count"):
+        if "io_counters" in pinfo:
+            if hasattr(pinfo["io_counters"], "read_count"):
                 self.read_count_value.setText(f"{pinfo['io_counters'].read_count}")
             else:
                 self.read_count.hide()
                 self.read_count_value.hide()
 
-            if hasattr(pinfo['io_counters'], "write_count"):
+            if hasattr(pinfo["io_counters"], "write_count"):
                 self.write_count_value.setText(f"{pinfo['io_counters'].write_count}")
             else:
                 self.write_count.hide()
                 self.write_count_value.hide()
 
-            if hasattr(pinfo['io_counters'], "read_bytes") and pinfo['io_counters'].read_bytes != -1:
+            if hasattr(pinfo["io_counters"], "read_bytes") and pinfo["io_counters"].read_bytes != -1:
                 self.read_bytes_value.setText(f"{bytes2human(pinfo['io_counters'].read_bytes)}")
             else:
                 self.read_bytes.hide()
                 self.read_bytes_value.hide()
 
-            if hasattr(pinfo['io_counters'], "write_bytes") and pinfo['io_counters'].write_bytes != -1:
+            if hasattr(pinfo["io_counters"], "write_bytes") and pinfo["io_counters"].write_bytes != -1:
                 self.write_bytes_value.setText(f"{bytes2human(pinfo['io_counters'].write_bytes)}")
             else:
                 self.write_bytes.hide()
                 self.write_bytes_value.hide()
 
-            if hasattr(pinfo['io_counters'], "read_chars"):
+            if hasattr(pinfo["io_counters"], "read_chars"):
                 self.read_chars_value.setText(f"{pinfo['io_counters'].read_chars}")
             else:
                 self.read_chars.hide()
                 self.read_chars_value.hide()
 
-            if hasattr(pinfo['io_counters'], "write_chars"):
+            if hasattr(pinfo["io_counters"], "write_chars"):
                 self.write_chars_value.setText(f"{pinfo['io_counters'].write_chars}")
             else:
                 self.write_chars.hide()
                 self.write_chars_value.hide()
 
-            if hasattr(pinfo['io_counters'], "other_count"):
+            if hasattr(pinfo["io_counters"], "other_count"):
                 self.other_count_value.setText(f"{pinfo['io_counters'].other_count}")
             else:
                 self.other_count.hide()
                 self.other_count_value.hide()
 
-            if hasattr(pinfo['io_counters'], "other_bytes"):
+            if hasattr(pinfo["io_counters"], "other_bytes"):
                 self.other_bytes_value.setText(f"{bytes2human(pinfo['io_counters'].other_bytes)}")
             else:
                 self.other_bytes.hide()
                 self.other_bytes_value.hide()
 
         # CTX Switches
-        if 'num_ctx_switches' in pinfo:
+        if "num_ctx_switches" in pinfo:
             self.context_switches_value.setText(f"{pinfo['num_ctx_switches'].voluntary}")
 
         # Open Files
-        if pinfo['open_files']:
-            self.add_to_sample_text('open-files', 'PATH')
+        if pinfo["open_files"]:
+            self.add_to_sample_text("open-files", "PATH")
             self.open_files_model = QStandardItemModel()
             headers = []
 
-            for i, file in enumerate(pinfo['open_files']):
+            for i, file in enumerate(pinfo["open_files"]):
                 row = []
                 if hasattr(file, "path"):
                     item = QStandardItem(f"{file.path}")
@@ -294,20 +296,24 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                     elif f"{file.mode}" == "r+" or f"{file.mode}" == "r+b":
                         item.setToolTip("<html><head/><body><p>Open the file with no truncation</p></body></html>\n")
                     elif f"{file.mode}" == "w":
-                        item.setToolTip("<html><head/><body><p>Open for writing, truncating the file "
-                                        "first</p></body></html>\n")
+                        item.setToolTip(
+                            "<html><head/><body><p>Open for writing, truncating the file " "first</p></body></html>\n"
+                        )
                     elif f"{file.mode}" == "w+" or f"{file.mode}" == "w+b":
                         item.setToolTip("<html><head/><body><p>Open and truncate the file</p></body></html>\n")
                     elif f"{file.mode}" == "a":
-                        item.setToolTip("<html><head/><body><p>Open for writing, appending to the end of file if it "
-                                        "exists</p></body></html>\n")
+                        item.setToolTip(
+                            "<html><head/><body><p>Open for writing, appending to the end of file if it "
+                            "exists</p></body></html>\n"
+                        )
                     elif f"{file.mode}" == "b":
                         item.setToolTip("<html><head/><body><p>Binary mode</p></body></html>\n")
                     elif f"{file.mode}" == "t":
                         item.setToolTip("<html><head/><body><p>Text mode</p></body></html>\n")
                     elif f"{file.mode}" == "+":
-                        item.setToolTip("<html><head/><body><p>Open for updating (reading and "
-                                        "writing)</p></body></html>\n")
+                        item.setToolTip(
+                            "<html><head/><body><p>Open for updating (reading and " "writing)</p></body></html>\n"
+                        )
 
                     row.append(item)
                     if "Mode" not in headers:
@@ -321,7 +327,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
                 if row:
                     self.open_files_model.appendRow(row)
-                self.add_to_sample_text('', file.path)
+                self.add_to_sample_text("", file.path)
 
                 self.open_files_model.setHorizontalHeaderLabels(headers)
 
@@ -333,18 +339,18 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
         # Connections
         num_ports = 0
-        if pinfo['connections']:
+        if pinfo["connections"]:
             connections_model = QStandardItemModel()
-            for conn in pinfo['connections']:
+            for conn in pinfo["connections"]:
                 if conn.type == socket.SOCK_STREAM:
-                    type = 'TCP'
+                    type = "TCP"
                 elif conn.type == socket.SOCK_DGRAM:
-                    type = 'UDP'
+                    type = "UDP"
                 else:
-                    type = 'UNIX'
+                    type = "UNIX"
                 lip, lport = conn.laddr
                 if not conn.raddr:
-                    rip, rport = '*', '*'
+                    rip, rport = "*", "*"
                 else:
                     rip, rport = conn.raddr
                 connections_model.appendRow(
@@ -359,18 +365,17 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 # if conn.status == psutil.CONN_LISTEN:
                 num_ports += 1
             self.ports_value.setText(f"{num_ports}")
-            connections_model.setHorizontalHeaderLabels(('Protocol', 'Local Address', 'Remote Address', 'Status'))
+            connections_model.setHorizontalHeaderLabels(("Protocol", "Local Address", "Remote Address", "Status"))
             self.ConnectionsTreeView.setModel(connections_model)
             for header_pos in range(len(self.ConnectionsTreeView.header())):
                 self.ConnectionsTreeView.resizeColumnToContents(header_pos)
             self.ConnectionsTreeView.sortByColumn(0, Qt.AscendingOrder)
 
-
         else:
-            self.add_to_sample_text('connections', '')
+            self.add_to_sample_text("connections", "")
             self.ports_value.setText(f"{num_ports}")
 
-        if pinfo.get('memory_maps', None):
+        if pinfo.get("memory_maps", None):
             environment_model = QStandardItemModel()
             headers = []
             for m in proc.memory_maps(grouped=False):
@@ -431,15 +436,10 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
             self.MapsTreeView.sortByColumn(0, Qt.DescendingOrder)
 
-        if hasattr(proc, "environ") and pinfo['environ']:
+        if hasattr(proc, "environ") and pinfo["environ"]:
             environment_model = QStandardItemModel()
-            for name, value in pinfo['environ'].items():
-                environment_model.appendRow(
-                    [
-                        QStandardItem(f"{name}"),
-                        QStandardItem(f"{value}")
-                    ]
-                )
+            for name, value in pinfo["environ"].items():
+                environment_model.appendRow([QStandardItem(f"{name}"), QStandardItem(f"{value}")])
             environment_model.setHorizontalHeaderLabels(["Name", "Value"])
 
             self.treeViewEnvironement.setModel(environment_model)
@@ -447,8 +447,6 @@ class InspectProcess(QWidget, Ui_InspectProcess):
             for header_pos in range(len(self.treeViewEnvironement.header())):
                 self.treeViewEnvironement.resizeColumnToContents(header_pos)
             self.treeViewEnvironement.sortByColumn(0, Qt.AscendingOrder)
-
-
 
 
 if __name__ == "__main__":
