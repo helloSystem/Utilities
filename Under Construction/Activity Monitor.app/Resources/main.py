@@ -44,9 +44,7 @@ from dialog_cpu_history import CPUHistory
 
 # Back end libs
 from widget_chartpie import ChartPieItem
-from worker import PSUtilsWorker
-from worker_cpu import CPUWorker
-from worker_system_memory import SystemMemoryWorker
+from worker_psutil import PSUtilsWorker
 from worker_icons_cache import IconsCacheWorker
 
 from utility import bytes2human, get_process_application_name, get_process_environ
@@ -377,6 +375,33 @@ class Window(
         worker.moveToThread(thread)
         thread.started.connect(lambda: worker.refresh())
 
+        # CPU
+        worker.updated_cpu_user.connect(self.set_user)
+        worker.updated_cpu_system.connect(self.set_system)
+        worker.updated_cpu_idle.connect(self.set_idle)
+        worker.updated_cpu_nice.connect(self.set_nice)
+        worker.updated_cpu_irq.connect(self.set_irq)
+        worker.updated_cpu_cumulative_threads.connect(self.refresh_cumulative_threads)
+        worker.updated_cpu_process_number.connect(self.refresh_process_number)
+
+        # System Memory
+        worker.updated_system_memory_available.connect(self.refresh_available)
+        worker.updated_system_memory_used.connect(self.refresh_used)
+        worker.updated_system_memory_free.connect(self.refresh_free)
+        worker.updated_system_memory_active.connect(self.refresh_active)
+        worker.updated_system_memory_inactive.connect(self.refresh_inactive)
+        worker.updated_system_memory_buffers.connect(self.refresh_buffers)
+        worker.updated_system_memory_cached.connect(self.refresh_cached)
+        worker.updated_system_memory_shared.connect(self.refresh_shared)
+        worker.updated_system_memory_slab.connect(self.refresh_slab)
+        worker.updated_system_memory_wired.connect(self.refresh_wired)
+
+        # System Memory Chart Pie
+        worker.updated_system_memory_free_raw.connect(self.refresh_free_raw)
+        worker.updated_system_memory_wired_raw.connect(self.refresh_wired_raw)
+        worker.updated_system_memory_active_raw.connect(self.refresh_active_raw)
+        worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
+
         # Disk Usage
         worker.updated_mounted_disk_partitions.connect(self.setMoutedDiskPartitions)
 
@@ -413,65 +438,11 @@ class Window(
 
         return thread
 
-    def createCPUThread(self):
-        thread = QThread()
-        worker = CPUWorker()
-        worker.moveToThread(thread)
-        thread.started.connect(lambda: worker.refresh())
-
-        # CPU
-        worker.updated_cpu_user.connect(self.set_user)
-        worker.updated_cpu_system.connect(self.set_system)
-        worker.updated_cpu_idle.connect(self.set_idle)
-        worker.updated_cpu_nice.connect(self.set_nice)
-        worker.updated_cpu_irq.connect(self.set_irq)
-        worker.updated_cpu_cumulative_threads.connect(self.refresh_cumulative_threads)
-        worker.updated_cpu_process_number.connect(self.refresh_process_number)
-
-        worker.finished.connect(thread.quit)
-        worker.finished.connect(worker.deleteLater)
-        thread.finished.connect(thread.deleteLater)
-
-        # self.threadpool.start(worker)
-        return thread
-
-    def createSystemMemoryThread(self):
-        thread = QThread()
-        worker = SystemMemoryWorker()
-        worker.moveToThread(thread)
-        thread.started.connect(lambda: worker.refresh())
-
-        # System Memory
-        worker.updated_system_memory_available.connect(self.refresh_available)
-        worker.updated_system_memory_used.connect(self.refresh_used)
-        worker.updated_system_memory_free.connect(self.refresh_free)
-        worker.updated_system_memory_active.connect(self.refresh_active)
-        worker.updated_system_memory_inactive.connect(self.refresh_inactive)
-        worker.updated_system_memory_buffers.connect(self.refresh_buffers)
-        worker.updated_system_memory_cached.connect(self.refresh_cached)
-        worker.updated_system_memory_shared.connect(self.refresh_shared)
-        worker.updated_system_memory_slab.connect(self.refresh_slab)
-        worker.updated_system_memory_wired.connect(self.refresh_wired)
-
-        # System Memory Chart Pie
-        worker.updated_system_memory_free_raw.connect(self.refresh_free_raw)
-        worker.updated_system_memory_wired_raw.connect(self.refresh_wired_raw)
-        worker.updated_system_memory_active_raw.connect(self.refresh_active_raw)
-        worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
-
-        worker.finished.connect(thread.quit)
-        worker.finished.connect(worker.deleteLater)
-        thread.finished.connect(thread.deleteLater)
-
-        return thread
-
     def refresh(self):
         self.refresh_treeview_model()
 
         self.threads.clear()
         self.threads = [
-            self.createSystemMemoryThread(),
-            self.createCPUThread(),
             self.createPSUtilsThread(),
             self.createIconsCacheThread(),
         ]

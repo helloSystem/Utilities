@@ -32,7 +32,7 @@ class IconsCacheWorker(QObject):
             if environ and "LAUNCHED_BUNDLE" in environ:
                 # XDG thumbnails for AppImages; TODO: Test this
                 if environ["LAUNCHED_BUNDLE"].endswith(".AppImage"):
-                    for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
+                    for icon_suffix in [".png", ".svg", ".svgx"]:
                         xdg_thumbnail_path = os.path.join(
                             os.path.expanduser("~/.cache/thumbnails/normal"),
                             f"{hashlib.md5(environ['LAUNCHED_BUNDLE'].encode('utf-8')).hexdigest()}{icon_suffix}"
@@ -53,7 +53,7 @@ class IconsCacheWorker(QObject):
                         )
                 # .app
                 if icon is None:
-                    for icon_suffix in [".png", ".jpg", ".xpg", ".svg", ".xpm"]:
+                    for icon_suffix in [".png", ".svg", ".svgx"]:
                         icon_path = os.path.join(
                             environ["LAUNCHED_BUNDLE"],
                             "Resources",
