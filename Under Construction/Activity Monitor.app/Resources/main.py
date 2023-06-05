@@ -482,51 +482,57 @@ class Window(
         self.tree_view_model = QStandardItemModel()
         for p in psutil.process_iter():
             QApplication.processEvents()
-
             with p.oneshot():
                 application_name = get_process_application_name(p)
 
                 row = []
                 # PID can't be disabled because it is use for selection tracking
                 item = QStandardItem(f"{p.pid}")
+                item.setData(p.pid, Qt.UserRole)
                 item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                 row.append(item)
 
                 if self.ActionViewColumnProcessName.isChecked():
-                    item = QStandardItem()
+                    item = QStandardItem(application_name)
                     if application_name in self.__icons:
                         item.setIcon(self.__icons[application_name])
-                    item.setText(application_name)
+                    item.setData(application_name, Qt.UserRole)
                     row.append(item)
 
                 if self.ActionViewColumnUser.isChecked():
-                    item = QStandardItem(f"{p.username()}")
+                    item = QStandardItem(p.username())
+                    item.setData(p.username(), Qt.UserRole)
                     row.append(item)
 
                 if self.ActionViewColumnPercentCPU.isChecked():
-                    item = QStandardItem(f"{p.cpu_percent()}")
+                    data = p.cpu_percent()
+                    item = QStandardItem(f"{data}")
+                    item.setData(data, Qt.UserRole)
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
 
                 if self.ActionViewColumnNumThreads.isChecked():
                     item = QStandardItem(f"{p.num_threads()}")
+                    item.setData(p.num_threads(), Qt.UserRole)
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
 
                 if self.ActionViewColumnRealMemory.isChecked():
-                    item = QStandardItem(f"{bytes2human(p.memory_info().rss)}")
+                    item = QStandardItem(bytes2human(p.memory_info().rss))
+                    item.setData(p.memory_info().rss, Qt.UserRole)
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
 
                 if self.ActionViewColumnVirtualMemory.isChecked():
-                    item = QStandardItem(f"{bytes2human(p.memory_info().vms)}")
+                    item = QStandardItem(bytes2human(p.memory_info().vms))
+                    item.setData(p.memory_info().vms, Qt.UserRole)
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
 
-                filtered_row = self.apply_searchline_filter(application_name, row)
+                filtered_row = self.apply_search_line_filter(application_name, row)
                 filtered_row = self.apply_combobox_filter(filtered_row, p)
 
-                # If a after filters it still have something then ad it to the model
+                # If after filters it still have something then ad it to the model
                 if filtered_row:
                     self.tree_view_model.appendRow(filtered_row)
 
@@ -555,13 +561,16 @@ class Window(
             pos += 1
 
         # Impose the Model to TreeView Processes
+        self.tree_view_model.setSortRole(Qt.UserRole)
+        self.process_tree.setSortingEnabled(False)
         self.process_tree.setModel(self.tree_view_model)
+        self.process_tree.setSortingEnabled(True)
 
         # Restore the selection
         if self.selected_pid and self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
 
-    def apply_searchline_filter(self, application_name, row):
+    def apply_search_line_filter(self, application_name, row):
         # Filter Line
         filtered_row = None
         if self.searchLineEdit.text():
@@ -595,7 +604,7 @@ class Window(
             else:
                 filtered_row = None
         elif self.filterComboBox.currentIndex() == 3:
-            if p.uids().real < 1000:
+            if p.uids().real < 1000:  # Not totally exact but the result is the same
                 filtered_row = self.filter_by_line(filtered_row, application_name)
             else:
                 filtered_row = None

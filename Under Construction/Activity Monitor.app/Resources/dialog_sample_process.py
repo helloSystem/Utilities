@@ -230,6 +230,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                 else:
                     self.add_to_sample("ionice", "class=%s, value=%s" % (str(ionice.ioclass), ionice.value))
 
+
         # CPUTIME
         cpu_tot_time = datetime.timedelta(seconds=sum(pinfo["cpu_times"]))
         cpu_tot_time = "%s:%s.%s" % (
