@@ -44,8 +44,6 @@ class CPUBar(QWidget, CPUTimesPercent):
         self.qp = QPainter()
         self.brush = QBrush()
         self.brush.setStyle(Qt.SolidPattern)
-        self.pen = QPen(QColor(self.color_idle))
-        self.pen.setWidth(self.grid_spacing)
 
     def paintEvent(self, e):
         if self.isVisible():
@@ -54,33 +52,40 @@ class CPUBar(QWidget, CPUTimesPercent):
             self.qp.end()
 
     def draw_graph(self):
-        step_size = int(self.height() / 100)
+        height_by_100 = self.height() / 100
+        len_user = height_by_100 * self.user
+        len_system = height_by_100 * self.system
+        len_irq = height_by_100 * self.irq
+        len_nice = height_by_100 * self.nice
+        y_user = self.height() - (len_user + len_system + len_irq + len_nice)
+        y_system = self.height() - (len_system + len_irq + len_nice)
+        y_irq = self.height() - (len_irq + len_nice)
+        y_nice = self.height() - len_nice
 
         # Background
         self.brush.setColor(QColor(self.color_idle))
         rect = QRect(0, 0, self.grid_size, self.height())
         self.qp.fillRect(rect, self.brush)
 
-        pos_y = 0
-        for i in range(0, 100):
-            if i >= 100 - self.system:
-                self.brush.setColor(QColor(self.color_system))
-            elif i >= 100 - (self.system + self.user):
-                self.brush.setColor(QColor(self.color_user))
-            elif i >= 100 - (self.system + self.user + self.nice):
-                self.brush.setColor(QColor(self.color_nice))
-            elif i >= 100 - (self.system + self.user + self.nice + self.irq):
-                self.brush.setColor(QColor(self.color_irq))
+        # Draw user
+        self.brush.setColor(QColor(self.color_user))
+        rect = QRect(0, y_user, self.grid_size, len_user)
+        self.qp.fillRect(rect, self.brush)
 
-            rect = QRect(0, pos_y, self.grid_size, step_size)
-            self.qp.fillRect(rect, self.brush)
-            pos_y += step_size
+        # Draw system
+        self.brush.setColor(QColor(self.color_system))
+        rect = QRect(0, y_system, self.grid_size, len_system)
+        self.qp.fillRect(rect, self.brush)
 
-        # Display The Grid
-        # Row
-        # self.qp.setPen(self.pen)
-        # for r in range(int(self.height()/self.grid_size)):
-        #     self.qp.drawLine(0, self.grid_size * r, self.width(), self.grid_size * r)
+        # Draw Nice
+        self.brush.setColor(QColor(self.color_nice))
+        rect = QRect(0, y_nice, self.grid_size, len_nice)
+        self.qp.fillRect(rect, self.brush)
+
+        # Draw irq
+        self.brush.setColor(QColor(self.color_irq))
+        rect = QRect(0, y_irq, self.grid_size, len_irq)
+        self.qp.fillRect(rect, self.brush)
 
 
 class CPUGraphBar(QWidget, CPUTimesPercent):
