@@ -2,6 +2,7 @@ import os
 import datetime
 import socket
 import sys
+import re
 
 import psutil
 
@@ -54,6 +55,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         self.open_files_model = QStandardItemModel()
 
         self.setWindowTitle(f"{get_process_application_name(self.process)} ({self.process.pid})")
+        self.default_filename = f"{self.windowTitle()}.txt"
         self.buttonQuit.clicked.connect(self.quit)
         self.buttonRefresh.clicked.connect(self.run)
         self.comboBox.currentIndexChanged.connect(self.combobox_changed)
@@ -68,11 +70,25 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         self.run()
         self.comboBox.setCurrentIndex(1)
 
+    @staticmethod
+    def clean_filename(s):
+
+        # Remove all strange characters (everything except numbers, letters or ".-_()" )
+        s = re.sub(r"[^\w\s\.\-\_\(\)]", '_', s)
+
+        # Replace all runs of whitespace with a single dash
+        s = re.sub(r"\s+", '_', s)
+
+        return s
+
     def save(self):
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(
-            self, "Save File", "", "All Files(*);;Text Files(*.txt)", options=options
+            self, "Save File",
+            self.clean_filename(self.default_filename),
+            "All Files(*);;Text Files(*.txt)",
+            options=options
         )
         if fileName:
             with open(fileName, "w") as f:
@@ -291,7 +307,8 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                 self.sample_markdown += "RLIMIT | SOFT | HARD\n"
                 self.sample_markdown += "--- | --- | ---\n"
                 template = "%-12s %15s %15s"
-                self.add_to_sample_text("res-limits", template % ("RLIMIT", "SOFT", "HARD"))
+                self.add_to_sample_text("res-limits", "")
+                self.add_to_sample_text("", template % ("RLIMIT", "SOFT", "HARD"))
                 for res_name, soft, hard in resources:
                     if soft == psutil.RLIM_INFINITY:
                         soft = "infinity"
@@ -301,6 +318,8 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                     self.sample_markdown += f"{RLIMITS_MAP.get(res_name, res_name)} | {soft} | {hard}\n"
                 self.sample_markdown += "\n"
         else:
+            self.sample_markdown += "## rlimit\n"
+            self.sample_markdown += "``None``\n"
             self.add_to_sample("rlimit", None)
 
         # CHILDREN
@@ -310,21 +329,28 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             self.sample_markdown += "PID | NAME\n"
             self.sample_markdown += "--- | ---\n"
 
-            self.add_to_sample("children", template % ("PID", "NAME"))
+            self.add_to_sample_text("children", "")
+            self.add_to_sample_text("", template % ("PID", "NAME"))
 
             for child in pinfo["children"]:
                 try:
-                    self.add_to_sample("", template % (child.pid, child.name()))
+                    self.add_to_sample_text("", template % (child.pid, child.name()))
+                    self.sample_markdown += f"{child.pid} | {child.name()}\n"
                 except psutil.AccessDenied:
-                    self.add_to_sample("", template % (child.pid, ""))
+                    self.add_to_sample_text("", template % (child.pid, ""))
+                    self.sample_markdown += f"{child.pid} |  \n"
                 except psutil.NoSuchProcess:
                     pass
-            self.sample_markdown += "```\n\n"
+            self.sample_markdown += "\n"
         else:
-            self.add_to_sample("children", "``None``")
+            self.sample_markdown += "## Children\n"
+            self.sample_markdown += "``None``\n"
+            self.add_to_sample_text("children", None)
 
         # Open Files
         if pinfo["open_files"]:
+            self.sample_markdown += "## Open files\n"
+
             self.add_to_sample_text("open-files", "PATH")
             model = []
             headers = []
@@ -359,16 +385,28 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                 if row:
                     model.append(row)
 
-                self.add_to_sample_text("open-files", " ".join(headers))
-                for file in model:
-                    self.add_to_sample_text("", " ".join(file))
+            self.sample_markdown += "PID | NAME\n"
+            self.sample_markdown += "--- | ---\n"
+            self.sample_markdown += " | ".join(headers)
+            self.sample_markdown += " | ".join(["---" for i in headers])
+            self.add_to_sample_text("open-files", " ".join(headers))
+            for file in model:
+                self.add_to_sample_text("", " ".join(file))
+                self.sample_markdown += " | ".join(file)
+            self.sample_markdown += "\n"
 
         else:
-            self.add_to_sample("open-files", "``None``")
+            self.sample_markdown += "## Open Files\n"
+            self.sample_markdown += "``None``\n"
+            self.add_to_sample_text("open-files", None)
 
         if pinfo["connections"]:
+            self.sample_markdown += "## Connections\n"
+            self.sample_markdown += "PROTO | LOCAL ADDR | REMOTE ADDR | STATUS\n"
+            self.sample_markdown += "--- | --- | --- | ---\n"
             template = "%-5s %-25s %-25s %s"
-            self.add_to_sample_text("connections", template % ("PROTO", "LOCAL ADDR", "REMOTE ADDR", "STATUS"))
+            self.add_to_sample_text("connections", "")
+            self.add_to_sample_text("", template % ("PROTO", "LOCAL ADDR", "REMOTE ADDR", "STATUS"))
             for conn in pinfo["connections"]:
                 if conn.type == socket.SOCK_STREAM:
                     type = "TCP"
@@ -384,8 +422,17 @@ class SampleProcess(QWidget, Ui_SampleProcess):
                 self.add_to_sample_text(
                     "", template % (type, "%s:%s" % (lip, lport), "%s:%s" % (rip, rport), conn.status)
                 )
+                if rip == "*":
+                    rip = "\\*"
+                if rport == "*":
+                    rport = "\\*"
+                self.sample_markdown += f"{type} | {lip}:{lport} | {rip}:{rport} | {conn.status}\n"
+            self.sample_markdown += "\n"
+
         else:
-            self.add_to_sample_text("connections", "``None``")
+            self.sample_markdown += "## Connections\n"
+            self.sample_markdown += "``None``\n"
+            self.add_to_sample_text("connections", None)
 
         if pinfo["threads"] and len(pinfo["threads"]) > 1:
             self.sample_markdown += "## Threads\n"
@@ -400,7 +447,9 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             self.sample_markdown += "\n"
             self.add_to_sample_text("", "total=%s" % len(pinfo["threads"]))
         else:
-            self.add_to_sample("threads", "``None``")
+            self.sample_markdown += "## Threads\n"
+            self.sample_markdown += "``None``\n"
+            self.add_to_sample_text("threads", None)
 
         # Environment
         if hasattr(proc, "environ") and pinfo["environ"]:
@@ -409,14 +458,17 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             self.sample_markdown += "--- | ---\n"
 
             template = "%-25s %s"
-            self.add_to_sample_text("environ", template % ("NAME", "VALUE"))
+            self.add_to_sample_text("environ", "")
+            self.add_to_sample_text("", template % ("NAME", "VALUE"))
 
             for name, value in pinfo["environ"].items():
                 self.add_to_sample_text("", template % (name, value))
                 self.sample_markdown += f"{name} | {value}\n"
             self.sample_markdown += "\n"
         else:
-            self.add_to_sample("environ", None)
+            self.sample_markdown += "## Environment\n"
+            self.sample_markdown += "``None``\n"
+            self.add_to_sample_text("environ", None)
 
         # if pinfo.get('memory_maps', None):
         #     environment_model = QStandardItemModel()
