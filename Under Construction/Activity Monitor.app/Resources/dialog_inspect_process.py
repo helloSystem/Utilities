@@ -188,8 +188,11 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 self.pageins.hide()
                 self.pageins_value.hide()
 
-        # CPU
+        # CPU %
         self.cpu_percent_value.setText(f"{proc.cpu_percent(interval=1)}")
+
+        # Memory %
+        self.memory_percent_value.setText(f"{round(pinfo['memory_percent'], 2)}")
 
         # Status
         self.status_value.setText(f"{pinfo['status']}")
@@ -269,7 +272,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 row = []
                 if hasattr(file, "path"):
                     item = QStandardItem(f"{file.path}")
-                    item.setData(file.path)
+                    item.setData(f"{file.path}", Qt.UserRole)
                     item.setIcon(QFileIconProvider().icon(QFileInfo(file.path)))
                     row.append(item)
                     if "Path" not in headers:
@@ -277,21 +280,21 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
                 if hasattr(file, "fd"):
                     item = QStandardItem(f"{file.fd}")
-                    item.setData(file.fd)
+                    item.setData(file.fd, Qt.UserRole)
                     row.append(item)
                     if "Fd" not in headers:
                         headers.append("Fd")
 
                 if hasattr(file, "position"):
                     item = QStandardItem(f"{file.position}")
-                    item.setData(file.position)
+                    item.setData(f"{file.position}", Qt.UserRole)
                     row.append(item)
                     if "Position" not in headers:
                         headers.append("Position")
 
                 if hasattr(file, "mode"):
                     item = QStandardItem(f"{file.mode}")
-                    item.setData(file.mode)
+                    item.setData(file.mode, Qt.UserRole)
                     if f"{file.mode}" == "r" or f"{file.mode}" == "rt":
                         item.setToolTip("<html><head/><body><p>Open for reading text</p></body></html>\n")
                     elif f"{file.mode}" == "r+" or f"{file.mode}" == "r+b":
@@ -322,17 +325,19 @@ class InspectProcess(QWidget, Ui_InspectProcess):
 
                 if hasattr(file, "flags"):
                     item = QStandardItem(f"{file.flags}")
+                    item.setData(f"{file.flags}", Qt.UserRole)
                     row.append(item)
                     if "Flags" not in headers:
                         headers.append("Flags")
 
                 if row:
                     self.open_files_model.appendRow(row)
-                self.add_to_sample_text("", file.path)
 
                 self.open_files_model.setHorizontalHeaderLabels(headers)
-
+                self.open_files_model.setSortRole(Qt.UserRole)
+                self.OpenFileTreeView.setSortingEnabled(False)
                 self.OpenFileTreeView.setModel(self.open_files_model)
+                self.OpenFileTreeView.setSortingEnabled(True)
 
                 for header_pos in range(len(self.OpenFileTreeView.header())):
                     self.OpenFileTreeView.resizeColumnToContents(header_pos)
@@ -382,55 +387,56 @@ class InspectProcess(QWidget, Ui_InspectProcess):
             for m in proc.memory_maps(grouped=False):
                 row = []
                 if hasattr(m, "addr"):
-                    item = QStandardItem()
-                    item.setText(f"{m.addr.split('-')[0].zfill(16)}")
+                    map_address = f"{m.addr.split('-')[0].zfill(16)}"
+                    item = QStandardItem(map_address)
+                    item.setData(map_address, Qt.UserRole)
                     item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
                     row.append(item)
                     if "Address" not in headers:
                         headers.append("Address")
 
                 if hasattr(m, "rss"):
-                    item = QStandardItem()
-                    item.setText(bytes2human(m.rss))
+                    item = QStandardItem(bytes2human(m.rss))
+                    item.setData(m.rss, Qt.UserRole)
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
                     if "RSS" not in headers:
                         headers.append("RSS")
 
                 if hasattr(m, "private"):
-                    item = QStandardItem()
-                    item.setText(bytes2human(m.private))
+                    item = QStandardItem(bytes2human(m.private))
+                    item.setData(m.private, Qt.UserRole)
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
                     if "Private" not in headers:
                         headers.append("Private")
 
                 if hasattr(m, "perms"):
-                    item = QStandardItem()
-                    item.setText(f"{m.perms}")
+                    item = QStandardItem(f"{m.perms}")
+                    item.setData(f"{m.perms}", Qt.UserRole)
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
                     if "Mode" not in headers:
                         headers.append("Mode")
 
                 if hasattr(m, "path"):
-                    item = QStandardItem()
-                    item.setText(f"{m.path}")
+                    item = QStandardItem(f"{m.path}")
+                    item.setData(f"{m.path}", Qt.UserRole)
                     item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
                     item.setIcon(QFileIconProvider().icon(QFileInfo(m.path)))
-                    # if os.path.exists(m.path):
-                    #     item.setIcon(QFileIconProvider().icon(QFileInfo(m.path)))
-                    # else:
-                    #     item.setIcon(QIcon.fromTheme("system-run"))
                     row.append(item)
                     if "Mapping" not in headers:
                         headers.append("Mapping")
 
                 if row:
                     environment_model.appendRow(row)
-            environment_model.setHorizontalHeaderLabels(headers)
 
+            environment_model.setHorizontalHeaderLabels(headers)
+            environment_model.setSortRole(Qt.UserRole)
+
+            self.MapsTreeView.setSortingEnabled(False)
             self.MapsTreeView.setModel(environment_model)
+            self.MapsTreeView.setSortingEnabled(True)
 
             for header_pos in range(len(self.MapsTreeView.header())):
                 self.MapsTreeView.resizeColumnToContents(header_pos)

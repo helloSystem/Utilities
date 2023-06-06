@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import sys
-
+import random
 from PyQt5.QtCore import Qt, QRect, QSize, pyqtSignal
-from PyQt5.QtGui import QPainter, QBrush, QColor, QPen
+from PyQt5.QtGui import QPainter, QBrush, QColor
 from PyQt5.QtWidgets import (
     QWidget,
     QGridLayout,
@@ -53,10 +53,10 @@ class CPUBar(QWidget, CPUTimesPercent):
 
     def draw_graph(self):
         height_by_100 = self.height() / 100
-        len_user = height_by_100 * self.user
-        len_system = height_by_100 * self.system
-        len_irq = height_by_100 * self.irq
-        len_nice = height_by_100 * self.nice
+        len_user = int(height_by_100 * self.user)
+        len_system = int(height_by_100 * self.system)
+        len_irq = int(height_by_100 * self.irq)
+        len_nice = int(height_by_100 * self.nice)
         y_user = self.height() - (len_user + len_system + len_irq + len_nice)
         y_system = self.height() - (len_system + len_irq + len_nice)
         y_irq = self.height() - (len_irq + len_nice)
@@ -68,24 +68,28 @@ class CPUBar(QWidget, CPUTimesPercent):
         self.qp.fillRect(rect, self.brush)
 
         # Draw user
-        self.brush.setColor(QColor(self.color_user))
-        rect = QRect(0, y_user, self.grid_size, len_user)
-        self.qp.fillRect(rect, self.brush)
+        if len_user > 0:
+            self.brush.setColor(QColor(self.color_user))
+            rect = QRect(0, y_user, self.grid_size, len_user)
+            self.qp.fillRect(rect, self.brush)
 
         # Draw system
-        self.brush.setColor(QColor(self.color_system))
-        rect = QRect(0, y_system, self.grid_size, len_system)
-        self.qp.fillRect(rect, self.brush)
+        if len_system > 0:
+            self.brush.setColor(QColor(self.color_system))
+            rect = QRect(0, y_system, self.grid_size, len_system)
+            self.qp.fillRect(rect, self.brush)
 
         # Draw Nice
-        self.brush.setColor(QColor(self.color_nice))
-        rect = QRect(0, y_nice, self.grid_size, len_nice)
-        self.qp.fillRect(rect, self.brush)
+        if len_nice > 0:
+            self.brush.setColor(QColor(self.color_nice))
+            rect = QRect(0, y_nice, self.grid_size, len_nice)
+            self.qp.fillRect(rect, self.brush)
 
         # Draw irq
-        self.brush.setColor(QColor(self.color_irq))
-        rect = QRect(0, y_irq, self.grid_size, len_irq)
-        self.qp.fillRect(rect, self.brush)
+        if len_irq > 0:
+            self.brush.setColor(QColor(self.color_irq))
+            rect = QRect(0, y_irq, self.grid_size, len_irq)
+            self.qp.fillRect(rect, self.brush)
 
 
 class CPUGraphBar(QWidget, CPUTimesPercent):
@@ -258,23 +262,28 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
         self.repaint()
 
     def clear_history(self):
-        for i in range(len(self.bars), 0, -1):
-            self.bars[i].user = 0.0
-            self.bars[i].system = 0.0
-            self.bars[i].idle = 0.0
-            self.bars[i].irq = 0.0
-            self.bars[i].nice = 0.0
+        for bar_id in range(len(self.bars), 0, -1):
+            self.bars[bar_id].user = None
+            self.bars[bar_id].system = None
+            self.bars[bar_id].idle = None
+            self.bars[bar_id].irq = None
+            self.bars[bar_id].nice = None
         self.repaint()
 
 
 if __name__ == "__main__":
     app = QApplication([])
     graph = CPUGraphBar()
-    graph.system = 50
-    graph.user = 25
     graph.color_system = Qt.red
     graph.color_user = Qt.green
-    graph.color_idle = Qt.darkGray
-    graph.slice()
+    graph.color_nice = Qt.blue
+    graph.color_irq = Qt.darkYellow
+    graph.color_idle = Qt.black
+    for _ in range(0, 17):
+        graph.system = random.uniform(0.0, 25.0)
+        graph.user = random.uniform(0.0, 25.0)
+        graph.nice = random.uniform(0.0, 25.0)
+        graph.irq = random.uniform(0.0, 25.0)
+        graph.slice()
     graph.show()
     sys.exit(app.exec())
