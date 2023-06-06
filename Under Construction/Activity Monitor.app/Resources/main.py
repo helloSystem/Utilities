@@ -611,6 +611,11 @@ class Window(
                 filtered_row = None
         return filtered_row
 
+    def closeEvent(self, evnt):
+        self.cpu_history_dialog.have_to_close = True
+        self.cpu_history_dialog.close()
+        super(Window, self).closeEvent(evnt)
+
     def _refresh_icons_cache(self, application_icons):
         for application_name, icon in application_icons.items():
             if application_name not in self.__icons:

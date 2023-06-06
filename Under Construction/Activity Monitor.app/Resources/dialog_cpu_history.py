@@ -15,5 +15,12 @@ class CPUHistory(QWidget, Ui_CPUHistory):
         self.setupUi(self)
         self.process = process
 
-    def close(self):
-        self.hide()
+        # when you want to destroy the dialog set this to True
+        self.have_to_close = False
+
+    def closeEvent(self, evnt):
+        if self.have_to_close:
+            super(CPUHistory, self).closeEvent(evnt)
+        else:
+            evnt.ignore()
+            self.hide()
