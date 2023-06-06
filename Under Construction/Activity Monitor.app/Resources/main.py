@@ -3,7 +3,7 @@
 import sys
 import psutil
 import time
-
+from collections import deque
 
 # Qt import
 from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool
@@ -455,9 +455,41 @@ class Window(
 
     def refresh_treeview_model(self):
         self.tree_view_model = QStandardItemModel()
-        for p in psutil.process_iter():
-            QApplication.processEvents()
-            with p.oneshot():
+
+        if self.filterComboBox.currentIndex() == 1:
+            # self.tree_view_model.setRowCount(0)
+
+            data = []
+            for p in psutil.process_iter():
+                data.append(
+                    {
+                        'unique_id': p.pid,
+                        'parent_id': p.ppid(),
+                        'process': p
+
+                    }, )
+
+            seen = {}  # List of  QStandardItem
+            values = deque(data)
+            while values:
+                value = values.popleft()
+                if value['parent_id'] == 0:
+                    parent = self.tree_view_model.invisibleRootItem()
+                else:
+                    pid = value['parent_id']
+                    if value['parent_id'] not in seen:
+                        values.append(value)
+                        continue
+                    try:
+                        parent = seen[pid]
+                    except KeyError as e:
+                        print(e)
+                        pass
+
+                unique_id = value['unique_id']
+
+                p = value['process']
+
                 application_name = get_process_application_name(p)
 
                 row = []
@@ -482,7 +514,7 @@ class Window(
                 if self.ActionViewColumnPercentCPU.isChecked():
                     data = p.cpu_percent()
                     item = QStandardItem(f"{data}")
-                    item.setData(data, Qt.UserRole)
+                    item.setData(float(data), Qt.UserRole)
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
 
@@ -504,13 +536,83 @@ class Window(
                     item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
                     row.append(item)
 
-                filtered_row = self.apply_search_line_filter(application_name, row)
-                filtered_row = self.apply_combobox_filter(filtered_row, p)
+                parent.appendRow(row)
 
-                # If after filters it still have something then ad it to the model
-                if filtered_row:
-                    self.tree_view_model.appendRow(filtered_row)
+                seen[unique_id] = parent.child(parent.rowCount() - 1)
+        else:
+            for p in psutil.process_iter():
+                QApplication.processEvents()
+                with p.oneshot():
+                    application_name = get_process_application_name(p)
 
+
+                    row = []
+                    # PID can't be disabled because it is use for selection tracking
+                    item = QStandardItem(f"{p.pid}")
+                    item.setData(p.pid, Qt.UserRole)
+                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                    row.append(item)
+
+                    if self.ActionViewColumnProcessName.isChecked():
+                        item = QStandardItem(application_name)
+                        if application_name in self.__icons:
+                            item.setIcon(self.__icons[application_name])
+                        item.setData(application_name, Qt.UserRole)
+                        row.append(item)
+
+                    if self.ActionViewColumnUser.isChecked():
+                        item = QStandardItem(p.username())
+                        item.setData(p.username(), Qt.UserRole)
+                        row.append(item)
+
+                    if self.ActionViewColumnPercentCPU.isChecked():
+                        data = p.cpu_percent()
+                        item = QStandardItem(f"{data}")
+                        item.setData(data, Qt.UserRole)
+                        item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                        row.append(item)
+
+                    if self.ActionViewColumnNumThreads.isChecked():
+                        item = QStandardItem(f"{p.num_threads()}")
+                        item.setData(p.num_threads(), Qt.UserRole)
+                        item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                        row.append(item)
+
+                    if self.ActionViewColumnRealMemory.isChecked():
+                        item = QStandardItem(bytes2human(p.memory_info().rss))
+                        item.setData(p.memory_info().rss, Qt.UserRole)
+                        item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                        row.append(item)
+
+                    if self.ActionViewColumnVirtualMemory.isChecked():
+                        item = QStandardItem(bytes2human(p.memory_info().vms))
+                        item.setData(p.memory_info().vms, Qt.UserRole)
+                        item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+                        row.append(item)
+
+                    filtered_row = self.apply_search_line_filter(application_name, row)
+                    filtered_row = self.apply_combobox_filter(filtered_row, p)
+
+                    # If after filters it still have something then ad it to the model
+                    if filtered_row:
+                        self.tree_view_model.appendRow(filtered_row)
+
+        self.set_treeview_headers()
+
+        # Impose the Model to TreeView Processes
+        self.tree_view_model.setSortRole(Qt.UserRole)
+        self.process_tree.setSortingEnabled(False)
+        self.process_tree.setModel(self.tree_view_model)
+        self.process_tree.setSortingEnabled(True)
+        if self.filterComboBox.currentIndex() == 1:
+            self.process_tree.expandAll()
+
+
+        # Restore the selection
+        if self.selected_pid and self.selected_pid >= 0:
+            self.selectItem(str(self.selected_pid))
+
+    def set_treeview_headers(self):
         # Headers
         # PID is imposed because it is use for selection tracking
         pos = 0
@@ -534,16 +636,6 @@ class Window(
         if self.ActionViewColumnVirtualMemory.isChecked():
             self.tree_view_model.setHeaderData(pos, Qt.Horizontal, self.ActionViewColumnVirtualMemory.text())
             pos += 1
-
-        # Impose the Model to TreeView Processes
-        self.tree_view_model.setSortRole(Qt.UserRole)
-        self.process_tree.setSortingEnabled(False)
-        self.process_tree.setModel(self.tree_view_model)
-        self.process_tree.setSortingEnabled(True)
-
-        # Restore the selection
-        if self.selected_pid and self.selected_pid >= 0:
-            self.selectItem(str(self.selected_pid))
 
     def apply_search_line_filter(self, application_name, row):
         # Filter Line
