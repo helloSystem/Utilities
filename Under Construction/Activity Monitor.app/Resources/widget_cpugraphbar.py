@@ -63,9 +63,9 @@ class CPUBar(QWidget, CPUTimesPercent):
         y_nice = self.height() - len_nice
 
         # Background
-        self.brush.setColor(QColor(self.color_idle))
-        rect = QRect(0, 0, self.grid_size, self.height())
-        self.qp.fillRect(rect, self.brush)
+        # self.brush.setColor(QColor(self.color_idle))
+        # rect = QRect(0, 0, self.grid_size, self.height())
+        # self.qp.fillRect(rect, self.brush)
 
         # Draw user
         if len_user > 0:
@@ -126,9 +126,6 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
         self.setupUI()
         self.setupConnect()
 
-    def sizeHint(self):
-        return QSize(100, 100)
-
     def resizeEvent(self, event):
         super(CPUGraphBar, self).resizeEvent(event)
         self.remove_unneeded_bar()
@@ -141,8 +138,15 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
         self.brush = QBrush()
         self.brush.setStyle(Qt.SolidPattern)
 
+        self.setSizePolicy(
+            QSizePolicy.MinimumExpanding,
+            QSizePolicy.MinimumExpanding,
+        )
+        self.setContentsMargins(1, 1, 1, 1)
+
         self.layout = QGridLayout()
         self.layout.setHorizontalSpacing(self.grid_spacing)
+        self.layout.setVerticalSpacing(0)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
 
@@ -152,7 +156,7 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
     def paintEvent(self, e):
         if self.isVisible():
             self.qp.begin(self)
-            rect = QRect(self.grid_size, 0, self.width() - self.grid_size, self.height())
+            rect = QRect(0, 0, self.width(), self.height())
             self.qp.fillRect(rect, self.brush)
             self.qp.end()
 
@@ -189,6 +193,7 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
     def add_a_bar(self):
         try:
             self.bars[len(self.bars) + 1] = CPUBar()
+            self.bars[len(self.bars) + 1].grid_size = self.grid_size
             self.bars[len(self.bars) + 1].setMaximumWidth(self.grid_size)
         except KeyError:
             pass
@@ -215,7 +220,6 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
             self.bars[i].irq = self.bars[i - 1].irq
             self.bars[i].color_user = self.bars[i - 1].color_user
             self.bars[i].color_system = self.bars[i - 1].color_system
-            self.bars[1].color_idle = self.bars[i - 1].color_idle
             self.bars[1].color_nice = self.bars[i - 1].color_nice
             self.bars[1].color_irq = self.bars[i - 1].color_irq
         self.refresh_layout_display()
