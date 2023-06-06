@@ -101,6 +101,10 @@ class Window(
         # TreeView
         self.tree_view_model = None
 
+        # Multi windows inspection and sample capability
+        self.inspect_process_dialogs = {}
+        self.sample_process_dialogs = {}
+
         self.setupUi(self)
         self.setupCustomUi()
 
@@ -614,6 +618,13 @@ class Window(
     def closeEvent(self, evnt):
         self.cpu_history_dialog.have_to_close = True
         self.cpu_history_dialog.close()
+
+        for pid, inspection_dialog in self.inspect_process_dialogs.items():
+            inspection_dialog.close()
+
+        for pid, sample_dialog in self.sample_process_dialogs.items():
+            sample_dialog.close()
+
         super(Window, self).closeEvent(evnt)
 
     def _refresh_icons_cache(self, application_icons):
@@ -623,15 +634,25 @@ class Window(
 
     def _showInspectProcessDialog(self):
         if self.ActionMenuViewInspectProcess.isEnabled():
-            self.inspect_process_dialog = InspectProcess(process=psutil.Process(self.selected_pid))
-            self.inspect_process_dialog.buttonSample.clicked.connect(self._showSampleProcessDialog)
-            self.inspect_process_dialog.run()
-            self.inspect_process_dialog.show()
+            if self.selected_pid not in self.inspect_process_dialogs:
+                inspect_process_dialog = InspectProcess(process=psutil.Process(self.selected_pid))
+                inspect_process_dialog.buttonSample.clicked.connect(self._showSampleProcessDialog)
+                inspect_process_dialog.run()
+                inspect_process_dialog.show()
+                self.inspect_process_dialogs[self.selected_pid] = inspect_process_dialog
+            else:
+                self.inspect_process_dialogs[self.selected_pid].run()
+                self.inspect_process_dialogs[self.selected_pid].show()
 
     def _showSampleProcessDialog(self):
         if self.ActionToolBarSampleProcess.isEnabled():
-            self.sample_process_dialog = SampleProcess(process=psutil.Process(self.selected_pid))
-            self.sample_process_dialog.show()
+            if self.selected_pid not in self.sample_process_dialogs:
+                sample_process_dialog = SampleProcess(process=psutil.Process(self.selected_pid))
+                sample_process_dialog.show()
+                self.sample_process_dialogs[self.selected_pid] = sample_process_dialog
+            else:
+                self.sample_process_dialogs[self.selected_pid].run()
+                self.sample_process_dialogs[self.selected_pid].show()
 
     def _showSendSignalDialog(self):
         if self.ActionMenuViewSendSignaltoProcesses.isEnabled():
