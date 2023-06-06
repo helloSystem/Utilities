@@ -9,7 +9,11 @@ def get_process_environ(p):
 
     try:
         return p.environ()
-    except (psutil.AccessDenied, psutil.ZombieProcess):
+    except (
+        psutil.AccessDenied,
+        psutil.ZombieProcess,
+        psutil.NoSuchProcess,
+    ):
         return None
 
 

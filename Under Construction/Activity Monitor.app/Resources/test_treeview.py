@@ -6,39 +6,56 @@ from PyQt5.QtCore import *
 import psutil
 
 from utility import bytes2human
+from collections import namedtuple
 
 class view(QWidget):
-    def __init__(self, data):
+    def __init__(self):
         super(view, self).__init__()
-        self.process_tree = QTreeView(self)
+        self.tree_view_model = None
+        self.process_tree = None
 
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.process_tree)
-
-        # self.process_tree.header().setDefaultSectionSize(180)
-
-        self.importData(data)
-        self.process_tree.expandAll()
+        self.setupUi()
 
         tree_list = self.transverse_tree()
         print('tree_list saved from QTreeview:')
         for row in tree_list:
             print(row)
 
-    # Function to save populate treeview with a dictionary
-    def importData(self, data, root=None):
-        self.tree_view_model = QStandardItemModel()
-        self.tree_view_model.setHorizontalHeaderLabels(['PID', 'Process Name', 'User', "% CPU", "# Threads", "Real Memory", "Virtual Memory"])
+    def setupUi(self):
+        self.process_tree = QTreeView(self)
+        self.process_tree.setUniformRowHeights(True)
+        self.process_tree.setAlternatingRowColors(True)
 
+        # self.process_tree.header().setDefaultSectionSize(180)
+
+        layout = QVBoxLayout(self)
+        layout.addWidget(self.process_tree)
+
+        self.importData()
+
+
+
+    # Function to save populate treeview with a dictionary
+    def importData(self):
+        self.tree_view_model = QStandardItemModel()
         self.tree_view_model.setRowCount(0)
-        if root is None:
-            root = self.tree_view_model.invisibleRootItem()
+
+        data = []
+        for p in psutil.process_iter():
+            data.append(
+                {
+                    'unique_id': p.pid,
+                    'parent_id': p.ppid(),
+                    'process': p
+
+                }, )
+
         seen = {}   # List of  QStandardItem
         values = deque(data)
         while values:
             value = values.popleft()
             if value['parent_id'] == 0:
-                parent = root
+                parent = self.tree_view_model.invisibleRootItem()
             else:
                 pid = value['parent_id']
                 if value['parent_id'] not in seen:
@@ -94,10 +111,14 @@ class view(QWidget):
 
             seen[unique_id] = parent.child(parent.rowCount() - 1)
 
+        self.set_treeview_headers()
+
+        # Impose the Model to TreeView Processes
         self.tree_view_model.setSortRole(Qt.UserRole)
         self.process_tree.setSortingEnabled(False)
         self.process_tree.setModel(self.tree_view_model)
         self.process_tree.setSortingEnabled(True)
+        self.process_tree.expandAll()
 
     # Function to transverse treeview and derive tree_list
     def transverse_tree(self):
@@ -157,48 +178,46 @@ class view(QWidget):
                             else:
                                 vms = vms
                             if j == 0:
-                                print("Yo")
-                                dic = {}
-                                dic['level'] = level
-                                dic['id'] = id
-                                dic['pid'] = pid
-                                dic['name'] = name
-                                dic['username'] = username
-                                dic['cpu_percent'] = cpu_percent
-                                dic['num_threads'] = num_threads
-                                dic['rms'] = rms
-                                dic['vms'] = vms
-                                tree_list.append(dic)
+                                Process = namedtuple(
+                                    "Process",
+                                    "level id pid name username cpu_percent num_threads rms vms"
+                                )
+                                process = Process(
+                                    level,
+                                    id,
+                                    pid,
+                                    name,
+                                    username,
+                                    cpu_percent,
+                                    num_threads,
+                                    rms,
+                                    vms
+                                )
+                                # dic = {}
+                                # dic['level'] = level
+                                # dic['id'] = id
+                                # dic['pid'] = pid
+                                # dic['name'] = name
+                                # dic['username'] = username
+                                # dic['cpu_percent'] = cpu_percent
+                                # dic['num_threads'] = num_threads
+                                # dic['rms'] = rms
+                                # dic['vms'] = vms
+                                # tree_list.append(dic)
+                                tree_list.append(process)
                             self.GetItem(childitem, level, tree_list)
                 return tree_list
 
+    def set_treeview_headers(self):
+        self.tree_view_model.setHorizontalHeaderLabels(
+            ['PID', 'Process Name', 'User', "% CPU", "# Threads", "Real Memory", "Virtual Memory"]
+        )
+
+
 if __name__ == '__main__':
 
-    data = [
-        {'unique_id': 1, 'parent_id': 0, 'name': '', 'height': ' ', 'weight': ' '},
-        {'unique_id': 2, 'parent_id': 1, 'name': 'Class 1', 'height': ' ', 'weight': ' '},
-        {'unique_id': 3, 'parent_id': 2, 'name': 'Lucy', 'height': '162', 'weight': '50'},
-        {'unique_id': 4, 'parent_id': 2, 'name': 'Joe', 'height': '175', 'weight': '65'},
-        {'unique_id': 5, 'parent_id': 1, 'name': 'Class 2', 'height': ' ', 'weight': ' '},
-        {'unique_id': 6, 'parent_id': 5, 'name': 'Lily', 'height': '170', 'weight': '55'},
-        {'unique_id': 7, 'parent_id': 5, 'name': 'Tom', 'height': '180', 'weight': '75'},
-        {'unique_id': 8, 'parent_id': 1, 'name': 'Class 3', 'height': ' ', 'weight': ' '},
-        {'unique_id': 9, 'parent_id': 8, 'name': 'Jack', 'height': '178', 'weight': '80'},
-        {'unique_id': 10, 'parent_id': 8, 'name': 'Tim', 'height': '172', 'weight': '60'}
-    ]
-    data = []
-    for p in psutil.process_iter():
-        data.append(
-            {
-                'unique_id': p.pid,
-                'parent_id': p.ppid(),
-                'process': p
-
-            },)
-
-if __name__ == "__main__":
     app = QApplication(sys.argv)
-    view = view(data)
+    view = view()
     view.setGeometry(300, 100, 600, 300)
     view.setWindowTitle('QTreeview Example')
     view.show()
