@@ -650,8 +650,9 @@ class Ui_MainWindow(object):
         self.central_widget_tabs.addTab(self.tab_disk_usage, "")
         self.tab_network = QtWidgets.QWidget()
         self.tab_network.setObjectName("tab_network")
-        self.horizontalLayout_9 = QtWidgets.QHBoxLayout(self.tab_network)
-        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.tab_network)
+        self.verticalLayout_6.setContentsMargins(0, 25, 0, 0)
+        self.verticalLayout_6.setObjectName("verticalLayout_6")
         self.horizontalLayout_8 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_8.setContentsMargins(20, -1, 20, 20)
         self.horizontalLayout_8.setSpacing(6)
@@ -767,7 +768,7 @@ class Ui_MainWindow(object):
         spacerItem36 = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem36)
         self.gridLayout_11 = QtWidgets.QGridLayout()
-        self.gridLayout_11.setContentsMargins(0, 10, -1, -1)
+        self.gridLayout_11.setContentsMargins(0, 0, -1, -1)
         self.gridLayout_11.setSpacing(0)
         self.gridLayout_11.setObjectName("gridLayout_11")
         self.graph_2 = QtWidgets.QWidget(self.tab_network)
@@ -821,7 +822,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_8.addLayout(self.gridLayout_11)
         spacerItem41 = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_8.addItem(spacerItem41)
-        self.horizontalLayout_9.addLayout(self.horizontalLayout_8)
+        self.verticalLayout_6.addLayout(self.horizontalLayout_8)
         self.central_widget_tabs.addTab(self.tab_network, "")
         self.verticalLayout_4.addWidget(self.splitter)
         MainWindow.setCentralWidget(self.central_widget)
@@ -1063,7 +1064,7 @@ class Ui_MainWindow(object):
         self.toolBar.addAction(self.ActionToolBarSampleProcess)
 
         self.retranslateUi(MainWindow)
-        self.central_widget_tabs.setCurrentIndex(2)
+        self.central_widget_tabs.setCurrentIndex(0)
         self.actionQuit.triggered.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

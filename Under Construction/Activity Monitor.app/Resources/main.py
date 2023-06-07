@@ -3,6 +3,7 @@
 import sys
 import psutil
 import time
+import os
 from collections import deque
 
 # Qt import
@@ -458,27 +459,41 @@ class Window(
         data = []
         for p in psutil.process_iter():
             with p.oneshot():
+                try:
+                    environ = p.environ()
+                except (
+                        psutil.AccessDenied,
+                        psutil.ZombieProcess,
+                        psutil.NoSuchProcess,
+                ):
+                    environ = None
+                if environ and "LAUNCHED_BUNDLE" in environ:
+                    application_name = os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
+                else:
+                    application_name = p.name()
                 data.append({
                         'treeview_id': p.pid,
                         'treeview_parent_id': p.ppid(),
                         "pid": p.pid,
-                        "application_name": get_process_application_name(p),
+                        "application_name": application_name,
                         'username': p.username(),
                         'cpu_percent': p.cpu_percent(),
                         'num_threads': p.num_threads(),
                         'rss': p.memory_info().rss,
                         'vms': p.memory_info().vms,
-                        'environ': get_process_environ(p),
+                        'environ': environ,
                         'status': p.status(),
                         "uids": p.uids(),
                         "create_time": p.create_time(),
                 })
+
         seen = {}  # List of  QStandardItem
         values = deque(data)
         if self.filterComboBox.currentIndex() == 1:
             is_hierarchical_view = True
         else:
             is_hierarchical_view = False
+
         while values:
             QApplication.processEvents()
             value = values.popleft()
@@ -513,8 +528,6 @@ class Window(
                 if parent:
                     seen[value['treeview_id']] = parent.child(parent.rowCount() - 1)
             else:
-                # p = value['process']
-
                 row = self.treeview_get_row(
                     pid=value['pid'],
                     application_name=value['application_name'],
@@ -538,7 +551,6 @@ class Window(
                     create_time=value['create_time'],
                     status=value['status'],
                 )
-
                 # If after filters it still have something then ad it to the model
                 if filtered_row:
                     self.tree_view_model.appendRow(filtered_row)
