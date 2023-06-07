@@ -41,34 +41,35 @@ class TabCpu(CPUTimesPercent):
         super(TabCpu, self).__init__()
         CPUTimesPercent.__init__(self)
 
+        self.cpu_user_changed.connect(self.refresh_user)
+        self.cpu_system_changed.connect(self.refresh_system)
+        self.cpu_idle_changed.connect(self.refresh_idle)
+        self.cpu_nice_changed.connect(self.refresh_nice)
+        self.cpu_idle_changed.connect(self.refresh_irq)
+
     def refresh_user(self):
-        if self.label_user_value.isVisible() and self.label_user_value.text() != f"{self.user}":
-            self.label_user_value.setText(f"{self.user}")
+        self.label_user_value.setText(f"{self.user}")
         self.cpu_widget_graph.user = self.user
         self.cpu_history_dialog.cpu_history_graph.user = self.user
 
     def refresh_system(self):
-        if self.label_system_value.isVisible() and self.label_system_value.text() != f"{self.system}":
-            self.label_system_value.setText(f"{self.system}")
+        self.label_system_value.setText(f"{self.system}")
         self.cpu_widget_graph.system = self.system
         self.cpu_history_dialog.cpu_history_graph.system = self.system
 
     def refresh_idle(self):
-        if self.label_idle_value.isVisible() and self.label_idle_value.text() != f"{self.idle}":
-            self.label_idle_value.setText(f"{self.idle}")
+        self.label_idle_value.setText(f"{self.idle}")
         # idle color is just the background color, then it is bind to refresh
         self.cpu_widget_graph.slice()
         self.cpu_history_dialog.cpu_history_graph.slice()
 
     def refresh_nice(self):
-        if self.label_nice_value.isVisible() and self.label_nice_value.text() != f"{self.nice}":
-            self.label_nice_value.setText(f"{self.nice}")
+        self.label_nice_value.setText(f"{self.nice}")
         self.cpu_widget_graph.nice = self.nice
         self.cpu_history_dialog.cpu_history_graph.nice = self.nice
 
     def refresh_irq(self):
-        if self.label_irq_value.isVisible() and self.label_irq_value.text() != f"{self.irq}":
-            self.label_irq_value.setText(f"{self.irq}")
+        self.label_irq_value.setText(f"{self.irq}")
         self.cpu_widget_graph.irq = self.irq
         self.cpu_history_dialog.cpu_history_graph.irq = self.irq
 

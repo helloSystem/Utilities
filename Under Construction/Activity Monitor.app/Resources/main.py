@@ -332,13 +332,6 @@ class Window(
         # CPU History
         self.ActionMenuWindowCPUHistory.triggered.connect(self._showCPUHistoryDialog)
 
-        # Tab CPU
-        self.cpu_idle_changed.connect(self.refresh_idle)
-        self.cpu_user_changed.connect(self.refresh_user)
-        self.cpu_system_changed.connect(self.refresh_system)
-        self.cpu_nice_changed.connect(self.refresh_nice)
-        self.cpu_irq_changed.connect(self.refresh_irq)
-
         self.color_picker_system_value.colorChanged.connect(self.refresh_color_system)
         self.color_picker_user_value.colorChanged.connect(self.refresh_color_user)
         self.color_picker_idle_value.colorChanged.connect(self.refresh_color_idle)
