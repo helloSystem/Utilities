@@ -457,16 +457,22 @@ class Window(
         self.tree_view_model = QStandardItemModel()
         data = []
         for p in psutil.process_iter():
-            QApplication.processEvents()
             with p.oneshot():
-                data.append(
-                    {
+                data.append({
                         'treeview_id': p.pid,
                         'treeview_parent_id': p.ppid(),
+                        "pid": p.pid,
                         "application_name": get_process_application_name(p),
-                        'process': p
-
-                    }, )
+                        'username': p.username(),
+                        'cpu_percent': p.cpu_percent(),
+                        'num_threads': p.num_threads(),
+                        'rss': p.memory_info().rss,
+                        'vms': p.memory_info().vms,
+                        'environ': get_process_environ(p),
+                        'status': p.status(),
+                        "uids": p.uids(),
+                        "create_time": p.create_time(),
+                })
         seen = {}  # List of  QStandardItem
         values = deque(data)
         if self.filterComboBox.currentIndex() == 1:
@@ -487,7 +493,15 @@ class Window(
                         continue
                     parent = seen[value['treeview_parent_id']]
 
-                row = self.treeview_get_row(value['process'])
+                row = self.treeview_get_row(
+                    pid=value['pid'],
+                    application_name=value['application_name'],
+                    username=value['username'],
+                    cpu_percent=value['cpu_percent'],
+                    num_threads=value['num_threads'],
+                    rss=value['rss'],
+                    vms=value['vms'],
+                )
                 filtered_row = self.apply_search_line_filter(
                     value['application_name'],
                     row
@@ -499,14 +513,31 @@ class Window(
                 if parent:
                     seen[value['treeview_id']] = parent.child(parent.rowCount() - 1)
             else:
-                p = value['process']
+                # p = value['process']
 
-                row = self.treeview_get_row(p)
+                row = self.treeview_get_row(
+                    pid=value['pid'],
+                    application_name=value['application_name'],
+                    username=value['username'],
+                    cpu_percent=value['cpu_percent'],
+                    num_threads=value['num_threads'],
+                    rss=value['rss'],
+                    vms=value['vms'],
+                )
                 filtered_row = self.apply_search_line_filter(
                     value['application_name'],
                     row
                 )
-                filtered_row = self.apply_combobox_filter(filtered_row, p)
+                filtered_row = self.apply_combobox_filter(
+                    filtered_row=filtered_row,
+                    pid=value['pid'],
+                    application_name=value['application_name'],
+                    username=value['username'],
+                    uids=value['uids'],
+                    environ=value['environ'],
+                    create_time=value['create_time'],
+                    status=value['status'],
+                )
 
                 # If after filters it still have something then ad it to the model
                 if filtered_row:
@@ -527,50 +558,44 @@ class Window(
         if self.selected_pid and self.selected_pid >= 0:
             self.selectItem(str(self.selected_pid))
 
-    def treeview_get_row(self, p):
-        try:
-            with p.oneshot():
-                application_name = get_process_application_name(p)
-                row = []
-                # PID can't be disabled because it is use for selection tracking
-                item = QStandardItem(f"{p.pid}")
-                item.setData(p.pid, Qt.UserRole)
-                item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-                row.append(item)
-                if self.ActionViewColumnProcessName.isChecked():
-                    item = QStandardItem(application_name)
-                    if application_name in self.__icons:
-                        item.setIcon(self.__icons[application_name])
-                    item.setData(application_name, Qt.UserRole)
-                    row.append(item)
-                if self.ActionViewColumnUser.isChecked():
-                    item = QStandardItem(p.username())
-                    item.setData(p.username(), Qt.UserRole)
-                    row.append(item)
-                if self.ActionViewColumnPercentCPU.isChecked():
-                    data = p.cpu_percent()
-                    item = QStandardItem(f"{data}")
-                    item.setData(float(data), Qt.UserRole)
-                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-                    row.append(item)
-                if self.ActionViewColumnNumThreads.isChecked():
-                    item = QStandardItem(f"{p.num_threads()}")
-                    item.setData(p.num_threads(), Qt.UserRole)
-                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-                    row.append(item)
-                if self.ActionViewColumnRealMemory.isChecked():
-                    item = QStandardItem(bytes2human(p.memory_info().rss))
-                    item.setData(p.memory_info().rss, Qt.UserRole)
-                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-                    row.append(item)
-                if self.ActionViewColumnVirtualMemory.isChecked():
-                    item = QStandardItem(bytes2human(p.memory_info().vms))
-                    item.setData(p.memory_info().vms, Qt.UserRole)
-                    item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
-                    row.append(item)
-                return row
-        except psutil.NoSuchProcess:
-            return None
+    def treeview_get_row(self, pid, application_name, username, cpu_percent, num_threads, rss, vms):
+        row = []
+        # PID can't be disabled because it is use for selection tracking
+        item = QStandardItem(f"{pid}")
+        item.setData(pid, Qt.UserRole)
+        item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+        row.append(item)
+        if self.ActionViewColumnProcessName.isChecked():
+            item = QStandardItem(application_name)
+            if application_name in self.__icons:
+                item.setIcon(self.__icons[application_name])
+            item.setData(application_name, Qt.UserRole)
+            row.append(item)
+        if self.ActionViewColumnUser.isChecked():
+            item = QStandardItem(username)
+            item.setData(username, Qt.UserRole)
+            row.append(item)
+        if self.ActionViewColumnPercentCPU.isChecked():
+            item = QStandardItem(f"{cpu_percent}")
+            item.setData(float(cpu_percent), Qt.UserRole)
+            item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            row.append(item)
+        if self.ActionViewColumnNumThreads.isChecked():
+            item = QStandardItem(f"{num_threads}")
+            item.setData(num_threads, Qt.UserRole)
+            item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            row.append(item)
+        if self.ActionViewColumnRealMemory.isChecked():
+            item = QStandardItem(bytes2human(rss))
+            item.setData(rss, Qt.UserRole)
+            item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            row.append(item)
+        if self.ActionViewColumnVirtualMemory.isChecked():
+            item = QStandardItem(bytes2human(vms))
+            item.setData(vms, Qt.UserRole)
+            item.setTextAlignment(Qt.AlignRight | Qt.AlignVCenter)
+            row.append(item)
+        return row
 
     def set_treeview_headers(self):
         # Headers
@@ -607,64 +632,62 @@ class Window(
             filtered_row = row
         return filtered_row
 
-    def apply_combobox_filter(self, filtered_row, p):
-        with p.oneshot():
-            environ = get_process_environ(p)
-            application_name = get_process_application_name(p)
-            # Filter by ComboBox index
-            #             0: 'All Processes',
-            #             1: 'All Processes, Hierarchically',
-            #             2: 'My Processes',
-            #             3: 'System Processes',
-            #             4: 'Other User Processes',
-            #             5: 'Active Processes',
-            #             6: 'Inactive Processes',
-            #             7: 'Windowed Processes',
-            #             8: 'Selected Processes',
-            #             9: 'Application in last 12 hours',
-            # 1 - do not touch anything
-            # 2 - is a pre-processing
-            if self.filterComboBox.currentIndex() == 2:
-                if p.username() == self.my_username:
-                    filtered_row = self.filter_by_line(filtered_row, application_name)
-                else:
-                    filtered_row = None
-            elif self.filterComboBox.currentIndex() == 3:
-                if p.uids().real < 1000:  # Not totally exact but the result is the same
-                    filtered_row = self.filter_by_line(filtered_row, application_name)
-                else:
-                    filtered_row = None
-            elif self.filterComboBox.currentIndex() == 4:
-                if p.username() != self.my_username:
-                    filtered_row = self.filter_by_line(filtered_row, application_name)
-                else:
-                    filtered_row = None
-            elif self.filterComboBox.currentIndex() == 5:
-                if p.status() == psutil.STATUS_RUNNING:
-                    filtered_row = self.filter_by_line(filtered_row, application_name)
-                else:
-                    filtered_row = None
-            elif self.filterComboBox.currentIndex() == 6:
-                if p.status() == psutil.STATUS_WAITING or p.status() == psutil.STATUS_SLEEPING:
-                    filtered_row = self.filter_by_line(filtered_row, application_name)
-                else:
-                    filtered_row = None
-            elif self.filterComboBox.currentIndex() == 7:
-                if environ and "LAUNCHED_BUNDLE" in environ:
-                    filtered_row = self.filter_by_line(filtered_row, application_name)
-                else:
-                    filtered_row = None
-            elif self.filterComboBox.currentIndex() == 8:
-                if p.pid == self.selected_pid:
-                    filtered_row = self.filter_by_line(filtered_row, application_name)
-                else:
-                    filtered_row = None
-            elif self.filterComboBox.currentIndex() == 9:
-                if (time.time() - p.create_time()) % 60 <= 43200:
-                    filtered_row = self.filter_by_line(filtered_row, application_name)
-                else:
-                    filtered_row = None
-            return filtered_row
+    def apply_combobox_filter(self, filtered_row, pid, application_name, username, uids, environ, create_time, status):
+
+        # Filter by ComboBox index
+        #             0: 'All Processes',
+        #             1: 'All Processes, Hierarchically',
+        #             2: 'My Processes',
+        #             3: 'System Processes',
+        #             4: 'Other User Processes',
+        #             5: 'Active Processes',
+        #             6: 'Inactive Processes',
+        #             7: 'Windowed Processes',
+        #             8: 'Selected Processes',
+        #             9: 'Application in last 12 hours',
+        # 1 - do not touch anything
+        # 2 - is a pre-processing
+        if self.filterComboBox.currentIndex() == 2:
+            if username == self.my_username:
+                filtered_row = self.filter_by_line(filtered_row, application_name)
+            else:
+                filtered_row = None
+        elif self.filterComboBox.currentIndex() == 3:
+            if uids.real < 1000:  # Not totally exact but the result is the same
+                filtered_row = self.filter_by_line(filtered_row, application_name)
+            else:
+                filtered_row = None
+        elif self.filterComboBox.currentIndex() == 4:
+            if username != self.my_username:
+                filtered_row = self.filter_by_line(filtered_row, application_name)
+            else:
+                filtered_row = None
+        elif self.filterComboBox.currentIndex() == 5:
+            if status == psutil.STATUS_RUNNING:
+                filtered_row = self.filter_by_line(filtered_row, application_name)
+            else:
+                filtered_row = None
+        elif self.filterComboBox.currentIndex() == 6:
+            if status == psutil.STATUS_WAITING or status == psutil.STATUS_SLEEPING:
+                filtered_row = self.filter_by_line(filtered_row, application_name)
+            else:
+                filtered_row = None
+        elif self.filterComboBox.currentIndex() == 7:
+            if environ and "LAUNCHED_BUNDLE" in environ:
+                filtered_row = self.filter_by_line(filtered_row, application_name)
+            else:
+                filtered_row = None
+        elif self.filterComboBox.currentIndex() == 8:
+            if pid == self.selected_pid:
+                filtered_row = self.filter_by_line(filtered_row, application_name)
+            else:
+                filtered_row = None
+        elif self.filterComboBox.currentIndex() == 9:
+            if (time.time() - create_time) % 60 <= 43200:
+                filtered_row = self.filter_by_line(filtered_row, application_name)
+            else:
+                filtered_row = None
+        return filtered_row
 
     def closeEvent(self, evnt):
         self.cpu_history_dialog.have_to_close = True
