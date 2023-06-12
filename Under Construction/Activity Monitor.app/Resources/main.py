@@ -395,20 +395,18 @@ class Window(
         worker.updated_system_memory_slab.connect(self.set_virtual_memory_slab)
         worker.updated_system_memory_wired.connect(self.set_virtual_memory_wired)
 
-        # System Memory Chart Pie
-        # worker.updated_system_memory_free_raw.connect(self.refresh_free_raw)
-        # worker.updated_system_memory_wired_raw.connect(self.refresh_wired_raw)
-        # worker.updated_system_memory_active_raw.connect(self.refresh_active_raw)
-        # worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
-
         # Disk Usage
         worker.updated_mounted_disk_partitions.connect(self.setMoutedDiskPartitions)
 
         # Disk Activity
-        worker.updated_disk_activity_reads_in.connect(self.refresh_reads_in)
-        worker.updated_disk_activity_writes_out.connect(self.refresh_writes_out)
-        worker.updated_disk_activity_data_read.connect(self.refresh_data_read)
-        worker.updated_disk_activity_data_written.connect(self.refresh_data_written)
+        worker.updated_disk_activity_read_count.connect(self.refresh_disk_io_counters_read_count)
+        worker.updated_disk_activity_write_count.connect(self.refresh_disk_io_counters_write_count)
+        worker.updated_disk_activity_read_bytes.connect(self.refresh_disk_io_counters_read_bytes)
+        worker.updated_disk_activity_write_bytes.connect(self.refresh_disk_io_counters_write_bytes)
+        worker.updated_disk_activity_read_time.connect(self.refresh_disk_io_counters_read_time)
+        worker.updated_disk_activity_write_time.connect(self.refresh_disk_io_counters_write_time)
+        worker.updated_disk_activity_read_merged_count.connect(self.refresh_disk_io_counters_busy_time)
+        worker.updated_disk_activity_write_merged_count.connect(self.refresh_disk_io_counters_read_merged_count)
 
         # Network
         worker.updated_network_packets_in.connect(self.refresh_packets_in)
@@ -557,8 +555,8 @@ class Window(
         self.process_tree.setSortingEnabled(False)
         self.process_tree.setModel(self.tree_view_model)
         self.process_tree.setSortingEnabled(True)
-        if self.filterComboBox.currentIndex() == 1:
-            self.process_tree.expandAll()
+        # if self.filterComboBox.currentIndex() == 1:
+        #     self.process_tree.expandAll()
 
         # Restore the selection
         if self.selected_pid and self.selected_pid >= 0:
