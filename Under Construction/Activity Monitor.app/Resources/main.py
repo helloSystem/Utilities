@@ -202,16 +202,16 @@ class Window(
             "slab": hasattr(virtual_memory, "slab"),
             "wired": hasattr(virtual_memory, "wired"),
         }
-        self.system_memory_total_value.setText("%s" % bytes2human(virtual_memory.total))
+        # self.system_memory_total_value.setText("%s" % bytes2human(virtual_memory.total))
 
         if self.memory_os_capability["wired"] is False:
-            self.label_wired.hide()
-            self.label_wired_value.hide()
+            self.system_memory_wired.hide()
+            self.system_memory_wired_value.hide()
             self.color_picker_wired_value.hide()
 
         if self.memory_os_capability["slab"] is False:
-            self.label_slab.hide()
-            self.label_slab_value.hide()
+            self.system_memory_slab.hide()
+            self.system_memory_slab_value.hide()
 
         self.tree_view_model = QStandardItemModel()
         self.process_tree.setModel(self.tree_view_model)
@@ -383,22 +383,23 @@ class Window(
         worker.updated_cpu_process_number.connect(self.refresh_process_number)
 
         # System Memory
-        worker.updated_system_memory_available.connect(self.refresh_available)
-        worker.updated_system_memory_used.connect(self.refresh_used)
-        worker.updated_system_memory_free.connect(self.refresh_free)
-        worker.updated_system_memory_active.connect(self.refresh_active)
-        worker.updated_system_memory_inactive.connect(self.refresh_inactive)
-        worker.updated_system_memory_buffers.connect(self.refresh_buffers)
-        worker.updated_system_memory_cached.connect(self.refresh_cached)
-        worker.updated_system_memory_shared.connect(self.refresh_shared)
-        worker.updated_system_memory_slab.connect(self.refresh_slab)
-        worker.updated_system_memory_wired.connect(self.refresh_wired)
+        worker.updated_system_memory_total.connect(self.set_virtual_memory_total)
+        worker.updated_system_memory_available.connect(self.set_virtual_memory_available)
+        worker.updated_system_memory_used.connect(self.set_virtual_memory_used)
+        worker.updated_system_memory_free.connect(self.set_virtual_memory_free)
+        worker.updated_system_memory_active.connect(self.set_virtual_memory_active)
+        worker.updated_system_memory_inactive.connect(self.set_virtual_memory_inactive)
+        worker.updated_system_memory_buffers.connect(self.set_virtual_memory_buffers)
+        worker.updated_system_memory_cached.connect(self.set_virtual_memory_cached)
+        worker.updated_system_memory_shared.connect(self.set_virtual_memory_shared)
+        worker.updated_system_memory_slab.connect(self.set_virtual_memory_slab)
+        worker.updated_system_memory_wired.connect(self.set_virtual_memory_wired)
 
         # System Memory Chart Pie
-        worker.updated_system_memory_free_raw.connect(self.refresh_free_raw)
-        worker.updated_system_memory_wired_raw.connect(self.refresh_wired_raw)
-        worker.updated_system_memory_active_raw.connect(self.refresh_active_raw)
-        worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
+        # worker.updated_system_memory_free_raw.connect(self.refresh_free_raw)
+        # worker.updated_system_memory_wired_raw.connect(self.refresh_wired_raw)
+        # worker.updated_system_memory_active_raw.connect(self.refresh_active_raw)
+        # worker.updated_system_memory_inactive_raw.connect(self.refresh_inactive_raw)
 
         # Disk Usage
         worker.updated_mounted_disk_partitions.connect(self.setMoutedDiskPartitions)

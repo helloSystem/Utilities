@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>713</width>
-    <height>657</height>
+    <width>642</width>
+    <height>525</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -122,7 +122,7 @@
        </string>
        </property>
        <property name="currentIndex">
-        <number>0</number>
+        <number>1</number>
        </property>
        <widget class="QWidget" name="tab_cpu">
         <attribute name="title">
@@ -641,7 +641,7 @@
               <number>20</number>
              </property>
              <item row="1" column="0">
-              <widget class="QLabel" name="label_wired">
+              <widget class="QLabel" name="system_memory_wired">
                <property name="text">
                 <string>Wired:</string>
                </property>
@@ -651,7 +651,7 @@
               </widget>
              </item>
              <item row="2" column="0">
-              <widget class="QLabel" name="label_active">
+              <widget class="QLabel" name="system_memory_active">
                <property name="text">
                 <string>Active:</string>
                </property>
@@ -661,7 +661,7 @@
               </widget>
              </item>
              <item row="3" column="0">
-              <widget class="QLabel" name="label_inactive">
+              <widget class="QLabel" name="system_memory_inactive">
                <property name="text">
                 <string>Inactive:</string>
                </property>
@@ -671,7 +671,7 @@
               </widget>
              </item>
              <item row="0" column="0">
-              <widget class="QLabel" name="label_free">
+              <widget class="QLabel" name="system_memory_free">
                <property name="text">
                 <string>Free:</string>
                </property>
@@ -681,7 +681,7 @@
               </widget>
              </item>
              <item row="0" column="1">
-              <widget class="QLabel" name="label_free_value">
+              <widget class="QLabel" name="system_memory_free_value">
                <property name="styleSheet">
                 <string notr="true">QToolTip { color: #ffffff; border: 0px; }</string>
                </property>
@@ -704,7 +704,7 @@
               </widget>
              </item>
              <item row="2" column="1">
-              <widget class="QLabel" name="label_active_value">
+              <widget class="QLabel" name="system_memory_active_value">
                <property name="text">
                 <string/>
                </property>
@@ -714,7 +714,7 @@
               </widget>
              </item>
              <item row="4" column="0">
-              <widget class="QLabel" name="label_used">
+              <widget class="QLabel" name="system_memory_used">
                <property name="text">
                 <string>Used:</string>
                </property>
@@ -767,7 +767,7 @@
               </widget>
              </item>
              <item row="3" column="1">
-              <widget class="QLabel" name="label_inactive_value">
+              <widget class="QLabel" name="system_memory_inactive_value">
                <property name="text">
                 <string/>
                </property>
@@ -777,7 +777,7 @@
               </widget>
              </item>
              <item row="1" column="1">
-              <widget class="QLabel" name="label_wired_value">
+              <widget class="QLabel" name="system_memory_wired_value">
                <property name="text">
                 <string/>
                </property>
@@ -787,7 +787,7 @@
               </widget>
              </item>
              <item row="4" column="1">
-              <widget class="QLabel" name="label_used_value">
+              <widget class="QLabel" name="system_memory_used_value">
                <property name="text">
                 <string/>
                </property>
@@ -820,7 +820,7 @@
               <number>20</number>
              </property>
              <item row="1" column="3">
-              <widget class="QLabel" name="label_buffers_value">
+              <widget class="QLabel" name="system_memory_buffers_value">
                <property name="text">
                 <string/>
                </property>
@@ -830,7 +830,7 @@
               </widget>
              </item>
              <item row="4" column="3">
-              <widget class="QLabel" name="label_slab_value">
+              <widget class="QLabel" name="system_memory_slab_value">
                <property name="text">
                 <string/>
                </property>
@@ -840,7 +840,7 @@
               </widget>
              </item>
              <item row="3" column="3">
-              <widget class="QLabel" name="label_shared_value">
+              <widget class="QLabel" name="system_memory_shared_value">
                <property name="text">
                 <string/>
                </property>
@@ -850,7 +850,7 @@
               </widget>
              </item>
              <item row="4" column="2">
-              <widget class="QLabel" name="label_slab">
+              <widget class="QLabel" name="system_memory_slab">
                <property name="text">
                 <string>Slab:</string>
                </property>
@@ -860,7 +860,7 @@
               </widget>
              </item>
              <item row="2" column="2">
-              <widget class="QLabel" name="label_cached">
+              <widget class="QLabel" name="system_memory_cached">
                <property name="text">
                 <string>Cached:</string>
                </property>
@@ -870,7 +870,7 @@
               </widget>
              </item>
              <item row="2" column="3">
-              <widget class="QLabel" name="label_cached_value">
+              <widget class="QLabel" name="system_memory_cached_value">
                <property name="text">
                 <string/>
                </property>
@@ -880,7 +880,7 @@
               </widget>
              </item>
              <item row="0" column="3">
-              <widget class="QLabel" name="label_available_value">
+              <widget class="QLabel" name="system_memory_available_value">
                <property name="text">
                 <string/>
                </property>
@@ -890,7 +890,7 @@
               </widget>
              </item>
              <item row="0" column="2" alignment="Qt::AlignRight|Qt::AlignVCenter">
-              <widget class="QLabel" name="label_available">
+              <widget class="QLabel" name="system_memory_available">
                <property name="text">
                 <string>Available:</string>
                </property>
@@ -900,7 +900,7 @@
               </widget>
              </item>
              <item row="3" column="2">
-              <widget class="QLabel" name="label_shared">
+              <widget class="QLabel" name="system_memory_shared">
                <property name="text">
                 <string>Shared:</string>
                </property>
@@ -910,7 +910,7 @@
               </widget>
              </item>
              <item row="1" column="2" alignment="Qt::AlignRight|Qt::AlignVCenter">
-              <widget class="QLabel" name="label_buffers">
+              <widget class="QLabel" name="system_memory_buffers">
                <property name="text">
                 <string>Buffers:</string>
                </property>
@@ -2342,7 +2342,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>713</width>
+     <width>642</width>
      <height>24</height>
     </rect>
    </property>
@@ -2916,15 +2916,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ColorButton</class>
-   <extends>QWidget</extends>
-   <header>widget_color_pickup</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>CPUGraphBar</class>
    <extends>QWidget</extends>
    <header>widget_cpugraphbar</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ColorButton</class>
+   <extends>QWidget</extends>
+   <header>widget_color_pickup</header>
    <container>1</container>
   </customwidget>
   <customwidget>
