@@ -38,14 +38,10 @@ class PSUtilsWorker(QObject):
     updated_system_memory_wired = pyqtSignal(object)
 
     # Disk Activity
-    updated_disk_activity_read_count = pyqtSignal(object)
-    updated_disk_activity_write_count = pyqtSignal(object)
-    updated_disk_activity_read_bytes = pyqtSignal(object)
-    updated_disk_activity_write_bytes = pyqtSignal(object)
-    updated_disk_activity_read_time = pyqtSignal(object)
-    updated_disk_activity_write_time = pyqtSignal(object)
-    updated_disk_activity_read_merged_count = pyqtSignal(object)
-    updated_disk_activity_write_merged_count = pyqtSignal(object)
+    updated_disk_activity_reads_in = pyqtSignal(object)
+    updated_disk_activity_writes_out = pyqtSignal(object)
+    updated_disk_activity_data_read = pyqtSignal(object)
+    updated_disk_activity_data_written = pyqtSignal(object)
 
     # Disk Usage
     updated_mounted_disk_partitions = pyqtSignal(dict)
@@ -133,25 +129,12 @@ class PSUtilsWorker(QObject):
             self.updated_system_memory_wired.emit(virtual_memory.wired)
 
         # Disk activity
-        disk_io_counters = psutil.disk_io_counters()
-        if hasattr(disk_io_counters, "read_count"):
-            self.updated_disk_activity_read_count.emit(disk_io_counters.read_count)
-        if hasattr(disk_io_counters, "write_count"):
-            self.updated_disk_activity_write_count.emit(disk_io_counters.write_count)
-        if hasattr(disk_io_counters, "read_bytes"):
-            self.updated_disk_activity_read_bytes.emit(disk_io_counters.read_bytes)
-        if hasattr(disk_io_counters, "write_bytes"):
-            self.updated_disk_activity_write_bytes.emit(disk_io_counters.write_bytes)
-        if hasattr(disk_io_counters, "read_time"):
-            self.updated_disk_activity_read_time.emit(disk_io_counters.read_time)
-        if hasattr(disk_io_counters, "write_time"):
-            self.updated_disk_activity_write_time.emit(disk_io_counters.write_time)
-        if hasattr(disk_io_counters, "busy_time"):
-            self.updated_disk_activity_write_time.emit(disk_io_counters.busy_time)
-        if hasattr(disk_io_counters, "read_merged_count"):
-            self.updated_disk_activity_read_merged_count.emit(disk_io_counters.read_merged_count)
-        if hasattr(disk_io_counters, "write_merged_count"):
-            self.updated_disk_activity_write_merged_count.emit(disk_io_counters.write_merged_count)
+        activity = psutil.disk_io_counters()
+
+        self.updated_disk_activity_reads_in.emit(activity.read_count)
+        self.updated_disk_activity_writes_out.emit(activity.write_count)
+        self.updated_disk_activity_data_read.emit(activity.read_bytes)
+        self.updated_disk_activity_data_written.emit(activity.write_bytes)
 
         # Network
         net_io_counters = psutil.net_io_counters()

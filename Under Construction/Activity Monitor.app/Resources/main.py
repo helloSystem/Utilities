@@ -399,14 +399,10 @@ class Window(
         worker.updated_mounted_disk_partitions.connect(self.setMoutedDiskPartitions)
 
         # Disk Activity
-        worker.updated_disk_activity_read_count.connect(self.refresh_disk_io_counters_read_count)
-        worker.updated_disk_activity_write_count.connect(self.refresh_disk_io_counters_write_count)
-        worker.updated_disk_activity_read_bytes.connect(self.refresh_disk_io_counters_read_bytes)
-        worker.updated_disk_activity_write_bytes.connect(self.refresh_disk_io_counters_write_bytes)
-        worker.updated_disk_activity_read_time.connect(self.refresh_disk_io_counters_read_time)
-        worker.updated_disk_activity_write_time.connect(self.refresh_disk_io_counters_write_time)
-        worker.updated_disk_activity_read_merged_count.connect(self.refresh_disk_io_counters_busy_time)
-        worker.updated_disk_activity_write_merged_count.connect(self.refresh_disk_io_counters_read_merged_count)
+        worker.updated_disk_activity_reads_in.connect(self.refresh_reads_in)
+        worker.updated_disk_activity_writes_out.connect(self.refresh_writes_out)
+        worker.updated_disk_activity_data_read.connect(self.refresh_data_read)
+        worker.updated_disk_activity_data_written.connect(self.refresh_data_written)
 
         # Network
         worker.updated_network_packets_in.connect(self.refresh_packets_in)
@@ -464,19 +460,19 @@ class Window(
                 else:
                     application_name = p.name()
                 data.append({
-                        'treeview_id': p.pid,
-                        'treeview_parent_id': p.ppid(),
-                        "pid": p.pid,
-                        "application_name": application_name,
-                        'username': p.username(),
-                        'cpu_percent': p.cpu_percent(),
-                        'num_threads': p.num_threads(),
-                        'rss': p.memory_info().rss,
-                        'vms': p.memory_info().vms,
-                        'environ': environ,
-                        'status': p.status(),
-                        "uids": p.uids(),
-                        "create_time": p.create_time(),
+                    'treeview_id': p.pid,
+                    'treeview_parent_id': p.ppid(),
+                    "pid": p.pid,
+                    "application_name": application_name,
+                    'username': p.username(),
+                    'cpu_percent': p.cpu_percent(),
+                    'num_threads': p.num_threads(),
+                    'rss': p.memory_info().rss,
+                    'vms': p.memory_info().vms,
+                    'environ': environ,
+                    'status': p.status(),
+                    "uids": p.uids(),
+                    "create_time": p.create_time(),
                 })
 
         seen = {}  # List of  QStandardItem
