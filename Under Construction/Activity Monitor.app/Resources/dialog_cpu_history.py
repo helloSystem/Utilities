@@ -13,7 +13,7 @@ class CPUHistory(QWidget, Ui_CPUHistory):
         self.have_to_close = False
 
     def closeEvent(self, evnt):
-        # Yes that widget is call as a window, them MUST be close with the main app
+        # That widget is call as a window, and should be close with the main app
         # Else ---> The widget is hide then continue to store CPU data
         if self.have_to_close:
             super(CPUHistory, self).closeEvent(evnt)
