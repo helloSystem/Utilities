@@ -28,7 +28,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0">
+  <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,0,0,0,0,0">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -131,6 +131,19 @@
     </widget>
    </item>
    <item>
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item alignment="Qt::AlignVCenter">
     <widget class="QLabel" name="about_text">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
@@ -139,11 +152,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;This project is open souce,
-         contributions are welcomed.&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Visit &lt;a href=&quot;https://github.com/helloSystem/Utilities/&quot;&gt;&lt;span
-         style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/helloSystem/Utilities/&lt;/span&gt;&lt;/a&gt;
-         for more information or to report bug and/or suggest a new feature.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;
-        </string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;This project is open souce, contributions are welcomed.&lt;br/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Visit &lt;a href=&quot;https://github.com/helloSystem/Utilities/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/helloSystem/Utilities/&lt;/span&gt;&lt;/a&gt; for more information or to report bug and/or suggest a new feature. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>
@@ -155,6 +164,19 @@
       <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>
      </property>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>0</height>
+      </size>
+     </property>
+    </spacer>
    </item>
    <item alignment="Qt::AlignBottom">
     <widget class="QLabel" name="about_footer">

@@ -67,6 +67,8 @@ class Ui_AboutDialog(object):
         self.about_version.setWordWrap(True)
         self.about_version.setObjectName("about_version")
         self.verticalLayout_2.addWidget(self.about_version)
+        spacerItem = QtWidgets.QSpacerItem(20, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_2.addItem(spacerItem)
         self.about_text = QtWidgets.QLabel(AboutDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
         sizePolicy.setHorizontalStretch(0)
@@ -77,7 +79,9 @@ class Ui_AboutDialog(object):
         self.about_text.setWordWrap(True)
         self.about_text.setTextInteractionFlags(QtCore.Qt.LinksAccessibleByKeyboard|QtCore.Qt.LinksAccessibleByMouse)
         self.about_text.setObjectName("about_text")
-        self.verticalLayout_2.addWidget(self.about_text)
+        self.verticalLayout_2.addWidget(self.about_text, 0, QtCore.Qt.AlignVCenter)
+        spacerItem1 = QtWidgets.QSpacerItem(20, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
+        self.verticalLayout_2.addItem(spacerItem1)
         self.about_footer = QtWidgets.QLabel(AboutDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
@@ -102,10 +106,6 @@ class Ui_AboutDialog(object):
 "         font-size:16pt;\">Activity Monitor</span></p></body></html>\n"
 "        "))
         self.about_version.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; color:#3d3846; vertical-align:super;\">Version 0.2rc1 </span></p></body></html>"))
-        self.about_text.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\">This project is open souce,\n"
-"         contributions are welcomed.</p><p align=\"center\">Visit <a href=\"https://github.com/helloSystem/Utilities/\"><span\n"
-"         style=\" text-decoration: underline; color:#0000ff;\">https://github.com/helloSystem/Utilities/</span></a>\n"
-"         for more information or to report bug and/or suggest a new feature.</p></body></html>\n"
-"        "))
+        self.about_text.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\">This project is open souce, contributions are welcomed.<br/></p><p align=\"center\">Visit <a href=\"https://github.com/helloSystem/Utilities/\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/helloSystem/Utilities/</span></a> for more information or to report bug and/or suggest a new feature. </p></body></html>"))
         self.about_footer.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; vertical-align:sub;\">Make with love by: Jérôme ORNECH alias Hierosme<br/>Copyright 2023-2024 helloSystem Team. All right reserved. </span></p></body></html>"))
 import qressources_rc
