@@ -645,8 +645,8 @@ class Window(
         #             7: 'Windowed Processes',
         #             8: 'Selected Processes',
         #             9: 'Application in last 12 hours',
-        # 1 - do not touch anything
-        # 2 - is a pre-processing
+        # 0 - do not touch anything
+        # 1 - is a pre-processing done during the QtreeView model refresh
         if self.filterComboBox.currentIndex() == 2:
             if username == self.my_username:
                 filtered_row = self.filter_by_line(filtered_row, application_name)
@@ -668,11 +668,12 @@ class Window(
             else:
                 filtered_row = None
         elif self.filterComboBox.currentIndex() == 6:
-            if status == psutil.STATUS_WAITING or status == psutil.STATUS_SLEEPING:
+            if status == psutil.STATUS_WAITING or status == psutil.STATUS_SLEEPING or psutil.STATUS_ZOMBIE:
                 filtered_row = self.filter_by_line(filtered_row, application_name)
             else:
                 filtered_row = None
         elif self.filterComboBox.currentIndex() == 7:
+            # Code should be improved with a True X11 support
             if environ and "LAUNCHED_BUNDLE" in environ:
                 filtered_row = self.filter_by_line(filtered_row, application_name)
             else:
@@ -749,11 +750,6 @@ class Window(
             self.cpu_history_dialog.show()
         self.activateWindow()
         self.setFocus()
-
-        # self.cpu_history_dialog.process_signal_quit.connect(self.SIGQUITSelectedProcess)
-        # self.cpu_history_dialog.process_signal_kill.connect(self.SIGKILLSelectedProcess)
-        #
-        # self.cpu_history_dialog.show()
 
     def _showAboutDialog(self):
         self.AboutDialog = AboutDialog()
