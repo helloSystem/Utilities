@@ -48,7 +48,7 @@ from widget_chartpie import ChartPieItem
 from worker_psutil import PSUtilsWorker
 from worker_icons_cache import IconsCacheWorker
 
-from utility import bytes2human, get_process_application_name, get_process_environ
+from utility import bytes2human
 
 
 class Window(
