@@ -1,12 +1,8 @@
-#!/usr/bin/env python3
-import sys
-import random
-from PyQt5.QtCore import Qt, QRect, QSize, pyqtSignal
+from PyQt5.QtCore import Qt, QRect, pyqtSignal
 from PyQt5.QtGui import QPainter, QBrush, QColor
 from PyQt5.QtWidgets import (
     QWidget,
     QGridLayout,
-    QApplication,
     QSizePolicy,
 )
 
@@ -62,11 +58,6 @@ class CPUBar(QWidget, CPUTimesPercent):
         y_irq = self.height() - (len_irq + len_nice)
         y_nice = self.height() - len_nice
 
-        # Background
-        # self.brush.setColor(QColor(self.color_idle))
-        # rect = QRect(0, 0, self.grid_size, self.height())
-        # self.qp.fillRect(rect, self.brush)
-
         # Draw user
         if len_user > 0:
             self.brush.setColor(QColor(self.color_user))
@@ -96,8 +87,6 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
     color_system_changed = pyqtSignal()
     color_user_changed = pyqtSignal()
     color_idle_changed = pyqtSignal()
-    user_changed = pyqtSignal()
-    system_changed = pyqtSignal()
 
     user: float
     system: float
@@ -130,8 +119,6 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
         super(CPUGraphBar, self).resizeEvent(event)
         self.remove_unneeded_bar()
         self.add_needed_bar()
-        # print("bar_it_can_be_display = %s" % self.get_bars_number_it_can_be_display())
-        # print("Bar list size = %s" % len(self.bars))
 
     def setupUI(self):
         self.qp = QPainter()
@@ -213,7 +200,6 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
 
     def slice(self):
         for i in range(len(self.bars), 1, - 1):
-            # print("Move data from bar%s to bar%s" % (i, i - 1))
             self.bars[i].user = self.bars[i - 1].user
             self.bars[i].system = self.bars[i - 1].system
             self.bars[i].nice = self.bars[i - 1].nice
@@ -273,21 +259,3 @@ class CPUGraphBar(QWidget, CPUTimesPercent):
             self.bars[bar_id].irq = None
             self.bars[bar_id].nice = None
         self.repaint()
-
-
-if __name__ == "__main__":
-    app = QApplication([])
-    graph = CPUGraphBar()
-    graph.color_system = Qt.red
-    graph.color_user = Qt.green
-    graph.color_nice = Qt.blue
-    graph.color_irq = Qt.darkYellow
-    graph.color_idle = Qt.black
-    for _ in range(0, 17):
-        graph.system = random.uniform(0.0, 25.0)
-        graph.user = random.uniform(0.0, 25.0)
-        graph.nice = random.uniform(0.0, 25.0)
-        graph.irq = random.uniform(0.0, 25.0)
-        graph.slice()
-    graph.show()
-    sys.exit(app.exec())
