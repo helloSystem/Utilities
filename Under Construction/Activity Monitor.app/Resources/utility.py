@@ -24,7 +24,10 @@ def get_process_application_name(p):
     if environ and "LAUNCHED_BUNDLE" in environ:
         return os.path.basename(environ["LAUNCHED_BUNDLE"]).rsplit(".", 1)[0]
     else:
-        return p.name()
+        try:
+            return p.name()
+        except psutil.NoSuchProcess:
+            return None
 
 
 def bytes2human(n, short=True):
