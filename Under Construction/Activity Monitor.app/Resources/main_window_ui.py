@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(703, 536)
+        MainWindow.resize(757, 536)
         MainWindow.setFocusPolicy(QtCore.Qt.StrongFocus)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Processes.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
@@ -824,7 +824,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_4.addWidget(self.central_widget_tabs)
         MainWindow.setCentralWidget(self.central_widget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 703, 24))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 757, 24))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -958,13 +958,13 @@ class Ui_MainWindow(object):
         self.ActionToolBarQuitProcess = QtWidgets.QAction(MainWindow)
         self.ActionToolBarQuitProcess.setEnabled(False)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap(":/KillProcess.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon1.addPixmap(QtGui.QPixmap("./KillProcess.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ActionToolBarQuitProcess.setIcon(icon1)
         self.ActionToolBarQuitProcess.setObjectName("ActionToolBarQuitProcess")
         self.ActionToolBarInspectProcess = QtWidgets.QAction(MainWindow)
         self.ActionToolBarInspectProcess.setEnabled(False)
         icon2 = QtGui.QIcon()
-        icon2.addPixmap(QtGui.QPixmap(":/Inspect.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon2.addPixmap(QtGui.QPixmap("./Inspect.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ActionToolBarInspectProcess.setIcon(icon2)
         self.ActionToolBarInspectProcess.setObjectName("ActionToolBarInspectProcess")
         self.ActionMenuViewFilterProcesses = QtWidgets.QAction(MainWindow)
@@ -999,7 +999,7 @@ class Ui_MainWindow(object):
         self.ActionToolBarSampleProcess = QtWidgets.QAction(MainWindow)
         self.ActionToolBarSampleProcess.setEnabled(False)
         icon3 = QtGui.QIcon()
-        icon3.addPixmap(QtGui.QPixmap(":/SampleProcess.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon3.addPixmap(QtGui.QPixmap("./SampleProcess.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.ActionToolBarSampleProcess.setIcon(icon3)
         self.ActionToolBarSampleProcess.setObjectName("ActionToolBarSampleProcess")
         self.ActionMenuViewSample = QtWidgets.QAction(MainWindow)
@@ -1207,4 +1207,3 @@ class Ui_MainWindow(object):
 from widget_chartpie import ChartPie
 from widget_color_pickup import ColorButton
 from widget_cpugraphbar import CPUGraphBar
-import qressources_rc

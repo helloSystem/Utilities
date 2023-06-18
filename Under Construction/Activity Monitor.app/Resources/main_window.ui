@@ -17,7 +17,7 @@
    <string>Activity Monitor</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="qressources.qrc">
+   <iconset>
     <normaloff>:/Processes.png</normaloff>:/Processes.png</iconset>
   </property>
   <widget class="QWidget" name="central_widget">
@@ -2761,8 +2761,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="qressources.qrc">
-     <normaloff>:/KillProcess.png</normaloff>:/KillProcess.png</iconset>
+    <iconset>
+     <normaloff>KillProcess.png</normaloff>KillProcess.png</iconset>
    </property>
    <property name="text">
     <string>Quit Process</string>
@@ -2776,8 +2776,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="qressources.qrc">
-     <normaloff>:/Inspect.png</normaloff>:/Inspect.png</iconset>
+    <iconset>
+     <normaloff>Inspect.png</normaloff>Inspect.png</iconset>
    </property>
    <property name="text">
     <string>Inspect</string>
@@ -2874,8 +2874,8 @@
     <bool>false</bool>
    </property>
    <property name="icon">
-    <iconset resource="qressources.qrc">
-     <normaloff>:/SampleProcess.png</normaloff>:/SampleProcess.png</iconset>
+    <iconset>
+     <normaloff>SampleProcess.png</normaloff>SampleProcess.png</iconset>
    </property>
    <property name="text">
     <string>Sample Process</string>
@@ -2942,9 +2942,7 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources>
-  <include location="qressources.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>actionQuit</sender>

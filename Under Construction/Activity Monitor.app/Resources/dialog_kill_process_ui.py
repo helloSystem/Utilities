@@ -15,8 +15,9 @@ class Ui_KillDialog(object):
     def setupUi(self, KillDialog):
         KillDialog.setObjectName("KillDialog")
         KillDialog.setWindowModality(QtCore.Qt.NonModal)
-        KillDialog.resize(461, 147)
+        KillDialog.resize(462, 147)
         KillDialog.setFocusPolicy(QtCore.Qt.NoFocus)
+        KillDialog.setWindowTitle("")
         KillDialog.setModal(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(KillDialog)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -38,7 +39,7 @@ class Ui_KillDialog(object):
         self.icon.setMinimumSize(QtCore.QSize(64, 64))
         self.icon.setMaximumSize(QtCore.QSize(64, 64))
         self.icon.setText("")
-        self.icon.setPixmap(QtGui.QPixmap(":/Processes.png"))
+        self.icon.setPixmap(QtGui.QPixmap("./Processes.png"))
         self.icon.setScaledContents(True)
         self.icon.setObjectName("icon")
         self.horizontalLayout_2.addWidget(self.icon)
@@ -96,10 +97,8 @@ class Ui_KillDialog(object):
 
     def retranslateUi(self, KillDialog):
         _translate = QtCore.QCoreApplication.translate
-        KillDialog.setWindowTitle(_translate("KillDialog", " "))
         self.Title.setText(_translate("KillDialog", "Are you sure you want to quit this process ?"))
         self.Label.setText(_translate("KillDialog", "Do you really want to quit \'%s\'?"))
         self.button_cancel.setText(_translate("KillDialog", "Cancel"))
         self.button_force_quit.setText(_translate("KillDialog", "Force Quit"))
         self.button_quit.setText(_translate("KillDialog", "Quit"))
-import qressources_rc

@@ -1,9 +1,0 @@
-<RCC>
-  <qresource prefix="/">
-    <file alias="SampleProcess.png">images/SampleProcess.png</file>
-    <file alias="Activity Monitor.png">images/Activity Monitor.png</file>
-    <file alias="Inspect.png">images/Inspect.png</file>
-    <file alias="KillProcess.png">images/KillProcess.png</file>
-    <file alias="Processes.png">images/Processes.png</file>
-  </qresource>
-</RCC>

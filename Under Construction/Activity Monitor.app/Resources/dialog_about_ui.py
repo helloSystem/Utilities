@@ -21,6 +21,7 @@ class Ui_AboutDialog(object):
         sizePolicy.setHeightForWidth(AboutDialog.sizePolicy().hasHeightForWidth())
         AboutDialog.setSizePolicy(sizePolicy)
         AboutDialog.setMinimumSize(QtCore.QSize(0, 0))
+        AboutDialog.setWindowTitle("")
         AboutDialog.setModal(True)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(AboutDialog)
         self.verticalLayout_2.setContentsMargins(13, 13, 13, 13)
@@ -36,7 +37,7 @@ class Ui_AboutDialog(object):
         self.about_logo.setMaximumSize(QtCore.QSize(64, 64))
         self.about_logo.setBaseSize(QtCore.QSize(0, 0))
         self.about_logo.setText("")
-        self.about_logo.setPixmap(QtGui.QPixmap(":/Processes.png"))
+        self.about_logo.setPixmap(QtGui.QPixmap("./Processes.png"))
         self.about_logo.setScaledContents(True)
         self.about_logo.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.about_logo.setObjectName("about_logo")
@@ -101,11 +102,9 @@ class Ui_AboutDialog(object):
 
     def retranslateUi(self, AboutDialog):
         _translate = QtCore.QCoreApplication.translate
-        AboutDialog.setWindowTitle(_translate("AboutDialog", " "))
         self.about_app_name.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\"\n"
 "         font-size:16pt;\">Activity Monitor</span></p></body></html>\n"
 "        "))
         self.about_version.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; color:#3d3846; vertical-align:super;\">Version 0.2rc1 </span></p></body></html>"))
         self.about_text.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\">This project is open souce, contributions are welcomed.<br/></p><p align=\"center\">Visit <a href=\"https://github.com/helloSystem/Utilities/\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/helloSystem/Utilities/</span></a> for more information or to report bug and/or suggest a new feature. </p></body></html>"))
         self.about_footer.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; vertical-align:sub;\">Make with love by: Jérôme ORNECH alias Hierosme<br/>Copyright 2023-2024 helloSystem Team. All right reserved. </span></p></body></html>"))
-import qressources_rc

@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
+    <width>462</width>
     <height>147</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <enum>Qt::NoFocus</enum>
   </property>
   <property name="windowTitle">
-   <string> </string>
+   <string/>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -75,7 +75,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap resource="qressources.qrc">:/Processes.png</pixmap>
+          <pixmap>Processes.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -218,9 +218,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="qressources.qrc"/>
-  <include location="qressources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
