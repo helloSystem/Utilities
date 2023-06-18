@@ -37,7 +37,7 @@ class ProcessMonitor(QWidget):
 
         self.total_cpu_label = QLabel("Total CPU usage:")
         self.total_cpu_value = QLabel("0.00%")
-        self.total_memory_label = QLabel("Total emory usage (resident set):")
+        self.total_memory_label = QLabel("Total memory usage (resident set):")
         self.total_memory_value = QLabel("0.00 MB")
 
         layout = QVBoxLayout()
