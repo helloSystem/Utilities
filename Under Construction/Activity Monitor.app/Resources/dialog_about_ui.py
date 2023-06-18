@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_AboutDialog(object):
     def setupUi(self, AboutDialog):
         AboutDialog.setObjectName("AboutDialog")
-        AboutDialog.resize(338, 361)
+        AboutDialog.resize(338, 393)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -33,11 +33,11 @@ class Ui_AboutDialog(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.about_logo.sizePolicy().hasHeightForWidth())
         self.about_logo.setSizePolicy(sizePolicy)
-        self.about_logo.setMinimumSize(QtCore.QSize(64, 64))
-        self.about_logo.setMaximumSize(QtCore.QSize(64, 64))
+        self.about_logo.setMinimumSize(QtCore.QSize(96, 96))
+        self.about_logo.setMaximumSize(QtCore.QSize(96, 96))
         self.about_logo.setBaseSize(QtCore.QSize(0, 0))
         self.about_logo.setText("")
-        self.about_logo.setPixmap(QtGui.QPixmap("./Processes.png"))
+        self.about_logo.setPixmap(QtGui.QPixmap("./Activity Monitor.png"))
         self.about_logo.setScaledContents(True)
         self.about_logo.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
         self.about_logo.setObjectName("about_logo")
