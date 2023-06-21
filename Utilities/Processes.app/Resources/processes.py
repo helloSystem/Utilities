@@ -778,6 +778,7 @@ class Window(
         msg.setText("<h3>Processes</h3>")
         msg.setInformativeText(
             "A simple activity monitor application written in PyQt5<br><br>"
+            "Make with loke by Jérôme ORNECH<br><br>"
             "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
         )
         msg.exec()
