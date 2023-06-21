@@ -3,6 +3,7 @@
 # Calculator Construction Set
 # for a fun story, see
 # https://www.folklore.org/StoryView.py?story=Calculator_Construction_Set.txt
+# https://doc.qt.io/qtforpython-5/overviews/qtwidgets-widgets-calculator-example.html#calculator-example
 
 # Based on PyCalc
 # https://github.com/realpython/materials/tree/master/pyqt-calculator-tutorial/pycalc
@@ -51,11 +52,16 @@ from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import QPixmap
 
-__version__ = "0.1-mod1"
-__author__ = "Leodanis Pozo Ramos & Contributors"
+__version__ = "0.2"
+__author__ = [
+        "Leodanis Pozo Ramos & Contributors",
+        "Jérôme ORNECH alias Hierosme"
+        ]
 
 ERROR_MSG = "ERROR"
-
+TILE_WIDTH = 36
+TILE_HEIGHT = 34
+TILE_SPACING = 3
 
 # Create a subclass of QMainWindow to setup the calculator's GUI
 class PyCalcUi(QMainWindow):
@@ -66,7 +72,11 @@ class PyCalcUi(QMainWindow):
         super().__init__()
         # Set some main window's properties
         self.setWindowTitle("Calculator")
-        self.setFixedSize(160, 230)
+        # Strange effect with hellosystem theme
+        # self.setFixedSize(
+        #         (TILE_WIDTH * 4) + ( TILE_SPACING * 9),
+        #         (TILE_HEIGHT * 7) + (TILE_SPACING * 9)
+        #         )
         # Set the central widget and the general layout
         self.generalLayout = QVBoxLayout()
         self._centralWidget = QWidget(self)
@@ -92,34 +102,52 @@ class PyCalcUi(QMainWindow):
         """Create the buttons."""
         self.buttons = {}
         buttonsLayout = QGridLayout()
+        buttonsLayout.setSpacing(TILE_SPACING)
         # Button text | position on the QGridLayout
         buttons = {
-            "7": (1, 0),
-            "8": (1, 1),
-            "9": (1, 2),
-            "/": (0, 3),
-            "C": (0, 0),
-            "4": (2, 0),
-            "5": (2, 1),
-            "6": (2, 2),
-            "*": (1, 3),
-            "(": (0, 1),
-            "1": (3, 0),
-            "2": (3, 1),
-            "3": (3, 2),
-            "-": (2, 3),
-            ")": (0, 2),
-            "0": (4, 0),
-            # "00": (3, 1),
-            ".": (4, 2),
+            # First Line
+            "MC": (0, 0),
+            "M+": (0, 1),
+            "M-": (0, 2),
+            "MR": (0, 3),
+            # Second line
+            "C": (1, 0),
+            "±": (1, 1),
+            "÷": (1, 2),
+            "×": (1, 3),
+            # Third line
+            "7": (2, 0),
+            "8": (2, 1),
+            "9": (2, 2),
+            "−": (2, 3),
+            # etc ...
+            "4": (3, 0),
+            "5": (3, 1),
+            "6": (3, 2),
             "+": (3, 3),
+            "1": (4, 0),
+            "2": (4, 1),
+            "3": (4, 2),
             "=": (4, 3),
+            # the last line got only 2 buttons
+            "0": (5, 0),
+            ".": (5, 2),
         }
         # Create the buttons and add them to the grid layout
         for btnText, pos in buttons.items():
             self.buttons[btnText] = QPushButton(btnText)
-            self.buttons[btnText].setFixedSize(34, 36)
-            buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1])
+            # Spanning management
+            self.buttons[btnText].setMinimumWidth(TILE_WIDTH)
+            self.buttons[btnText].setMinimumHeight(TILE_HEIGHT)
+            if btnText == "=":
+                self.buttons[btnText].setMinimumHeight((TILE_HEIGHT * 2) + TILE_SPACING)
+                # helloSystem can t make vertical padding on a button
+                buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1], 2, 1)
+            elif btnText == "0":
+                self.buttons[btnText].setMinimumWidth(TILE_WIDTH * 2)
+                buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 2)
+            else:
+                buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 1)
         # Add buttonsLayout to the general layout
         self.generalLayout.addLayout(buttonsLayout)
 
@@ -169,6 +197,12 @@ class PyCalcUi(QMainWindow):
 # Create a Model to handle the calculator's operation
 def evaluateExpression(expression):
     """Evaluate an expression."""
+    if "÷" in expression:
+        expression = expression.replace("÷", "/")
+    if "×" in expression:
+        expression = expression.replace("×", "*")
+    if "−" in expression:
+        expression = expression.replace("−", "-")
     try:
         result = str(eval(expression, {}, {}))
     except Exception:
@@ -185,13 +219,82 @@ class PyCalcCtrl:
         """Controller initializer."""
         self._evaluate = model
         self._view = view
+        self._memory = None
+        self.memory = None
         # Connect signals and slots
         self._connectSignals()
+
+    @property
+    def memory(self):
+        return self._memory
+
+    @memory.setter
+    def memory(self, value):
+        if value is None:
+            self._memory = None
+            return
+        if self.memory != value:
+            self._memory = value
 
     def _calculateResult(self):
         """Evaluate expressions."""
         result = self._evaluate(expression=self._view.displayText())
         self._view.setDisplayText(result)
+
+    def _memory_clear(self):
+        """Clear momory by set value to None"""
+        self.memory = None
+        self._view.display.setFocus()
+
+    def _memory_substact(self):
+        """Add the result of display expression to the memory"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            if self.memory is None:
+                self.memory = 0
+            if "." in result:
+                if self.memory:
+                    self.memory -= float(result)
+            else:
+                self.memory -= int(result)
+        self._view.display.setFocus()
+
+    def _memory_add(self):
+        """Substract the result of display expression to the memory"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            if self.memory is None:
+                self.memory = 0
+            if "." in result:
+                self.memory += float(result)
+            else:
+                self.memory += int(result)
+        self._view.display.setFocus()
+
+    def _memory_print(self):
+        """If memory value, flush the display with it value"""
+        if self.memory is not None:
+            self._view.clearDisplay()
+            self._view.setDisplayText("%s" % (self.memory))
+        else:
+            self._view.display.setFocus()
+
+    def _neg(self):
+        """Evaluate expressions value and display the negative value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            if "." in result:
+                if float(result) > 0:
+                    result = -abs(float(result))
+                else:
+                    result = abs(float(result))
+            else:
+                if int(result) > 0:
+                    result = -abs(int(result))
+                else:
+                    result = abs(int(result))
+        
+        self._view.setDisplayText(str(result))
 
     def _buildExpression(self, sub_exp):
         """Build expression."""
@@ -204,12 +307,17 @@ class PyCalcCtrl:
     def _connectSignals(self):
         """Connect signals and slots."""
         for btnText, btn in self._view.buttons.items():
-            if btnText not in {"=", "C"}:
+            if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±" }:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.buttons["="].clicked.connect(self._calculateResult)
         self._view.display.returnPressed.connect(self._calculateResult)
         self._view.buttons["C"].clicked.connect(self._view.clearDisplay)
+        self._view.buttons["±"].clicked.connect(self._neg)
+        self._view.buttons["MC"].clicked.connect(self._memory_clear)
+        self._view.buttons["M+"].clicked.connect(self._memory_add)
+        self._view.buttons["M-"].clicked.connect(self._memory_substact)
+        self._view.buttons["MR"].clicked.connect(self._memory_print)
         """self._view.display.escapePressed.connect(self._view.clearDisplay)"""
 
 
