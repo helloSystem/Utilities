@@ -5,15 +5,18 @@ import os
 import psutil
 import socket
 
+from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QProcess, pyqtSlot, QThreadPool, QTimer
-from PyQt5.QtWidgets import QWidget, QApplication
-from network_utility_ui import Ui_NetworkUtility
+from PyQt5.QtWidgets import QApplication, QMainWindow
+from network_utility_ui import Ui_MainWindow
+
+from dialog_about import AboutDialog
 from psutil._common import bytes2human
 
 
-class DialogNetworkUtility(QWidget, Ui_NetworkUtility):
-    def __init__(self):
-        super(DialogNetworkUtility, self).__init__()
+class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.netstat_process = None
         self.lookup_process = None
         self.ping_process = None
@@ -36,6 +39,8 @@ class DialogNetworkUtility(QWidget, Ui_NetworkUtility):
         }
 
         self.setupUi(self)
+        # Icon and Pixmap are loaded without qressouces file
+        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Network Utility.png")))
 
         self.thread_manager = QThreadPool()
         self.timer = QTimer()
@@ -60,6 +65,17 @@ class DialogNetworkUtility(QWidget, Ui_NetworkUtility):
         self.port_scan_use_port_range_checkbox.stateChanged.connect(
             self.port_scan_use_port_range_checkbox_change
         )
+
+        self.actionViewInfo.triggered.connect(self._show_info)
+        self.actionViewNetstat.triggered.connect(self._show_netstat)
+        self.actionViewPing.triggered.connect(self._show_ping)
+        self.actionViewTraceroute.triggered.connect(self._show_traceroute)
+        self.actionViewLookup.triggered.connect(self._show_lookup)
+        self.actionViewWhois.triggered.connect(self._show_whois)
+        self.actionViewFinger.triggered.connect(self._show_finger)
+        self.actionViewPortScan.triggered.connect(self._show_port_scan)
+
+        self.actionShowAbout.triggered.connect(self._showAboutDialog)
 
     def info_nic_list_combobox_refresh(self):
         index = self.info_nic_list_combobox.currentIndex()
@@ -118,20 +134,20 @@ class DialogNetworkUtility(QWidget, Ui_NetworkUtility):
                         addr.family, addr.family
                     )
                     self.nic_info[nic]["addrs"] += (
-                        "&nbsp;&nbsp;&nbsp;&nbsp;address: %s<br>" % addr.address
+                            "&nbsp;&nbsp;&nbsp;&nbsp;address: %s<br>" % addr.address
                     )
 
                     if addr.broadcast:
                         self.nic_info[nic]["addrs"] += (
-                            "&nbsp;&nbsp;&nbsp;&nbsp;broadcast: %s<br>" % addr.broadcast
+                                "&nbsp;&nbsp;&nbsp;&nbsp;broadcast: %s<br>" % addr.broadcast
                         )
                     if addr.netmask:
                         self.nic_info[nic]["addrs"] += (
-                            "&nbsp;&nbsp;&nbsp;&nbsp;netmask: %s<br>" % addr.netmask
+                                "&nbsp;&nbsp;&nbsp;&nbsp;netmask: %s<br>" % addr.netmask
                         )
                     if addr.ptp:
                         self.nic_info[nic]["addrs"] += (
-                            "&nbsp;&nbsp;&nbsp;&nbsp;p2p: %s<br>" % addr.ptp
+                                "&nbsp;&nbsp;&nbsp;&nbsp;p2p: %s<br>" % addr.ptp
                         )
 
         self.info_nic_list_combobox_refresh()
@@ -309,8 +325,8 @@ class DialogNetworkUtility(QWidget, Ui_NetworkUtility):
                 if info:
                     arg.append(info)
                 if (
-                    self.lookup_server_lineedit.isEnabled()
-                    and self.lookup_server_lineedit.text()
+                        self.lookup_server_lineedit.isEnabled()
+                        and self.lookup_server_lineedit.text()
                 ):
                     arg.append(f"@{self.lookup_server_lineedit.text()}")
 
@@ -536,8 +552,8 @@ class DialogNetworkUtility(QWidget, Ui_NetworkUtility):
                 )  # Clean up once complete.
 
                 if (
-                    self.finger_username_lineedit.text()
-                    and self.finger_domain_lineedit.text()
+                        self.finger_username_lineedit.text()
+                        and self.finger_domain_lineedit.text()
                 ):
                     self.finger_process.start(
                         "finger",
@@ -655,6 +671,32 @@ class DialogNetworkUtility(QWidget, Ui_NetworkUtility):
             p = os.path.join(p, pgm)
             if os.path.exists(p) and os.access(p, os.X_OK):
                 return p
+
+    def _show_info(self):
+        self.tabWidget.setCurrentIndex(0)
+
+    def _show_netstat(self):
+        self.tabWidget.setCurrentIndex(1)
+
+    def _show_lookup(self):
+        self.tabWidget.setCurrentIndex(2)
+
+    def _show_ping(self):
+        self.tabWidget.setCurrentIndex(3)
+
+    def _show_traceroute(self):
+        self.tabWidget.setCurrentIndex(4)
+    def _show_whois(self):
+        self.tabWidget.setCurrentIndex(5)
+
+    def _show_finger(self):
+        self.tabWidget.setCurrentIndex(6)
+
+    def _show_port_scan(self):
+        self.tabWidget.setCurrentIndex(7)
+    def _showAboutDialog(self):
+        self.AboutDialog = AboutDialog()
+        self.AboutDialog.show()
 
 
 if __name__ == "__main__":
