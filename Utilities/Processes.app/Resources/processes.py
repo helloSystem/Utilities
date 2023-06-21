@@ -8,7 +8,7 @@ from collections import deque
 
 # Qt import
 from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool
-from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem, QIcon
+from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem, QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import (
     QLineEdit,
     QComboBox,
     QShortcut,
+    QMessageBox,
 )
 
 # The Main Window
@@ -38,7 +39,6 @@ from tab_network import TabNetwork
 # Dialog's
 from dialog_send_signal import SendSignalDialog
 from dialog_kill_process import KillProcessDialog
-from dialog_about import AboutDialog
 from dialog_inspect_process import InspectProcess
 from dialog_sample_process import SampleProcess
 from dialog_cpu_history import CPUHistory
@@ -758,8 +758,29 @@ class Window(
         self.setFocus()
 
     def _showAboutDialog(self):
-        self.AboutDialog = AboutDialog()
-        self.AboutDialog.show()
+        msg = QMessageBox()
+        msg.setWindowTitle("About")
+        msg.size
+        msg.setIconPixmap(
+            QPixmap(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "Processes.png"
+                )
+            ).scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        )
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.join(os.path.dirname(__file__), candidate)):
+                with open(os.path.join(os.path.dirname(__file__), candidate), 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Processes</h3>")
+        msg.setInformativeText(
+            "A simple activity monitor application written in PyQt5<br><br>"
+            "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
+        )
+        msg.exec()
 
     def _escape_pressed(self):
         if self.process_tree.hasFocus():
