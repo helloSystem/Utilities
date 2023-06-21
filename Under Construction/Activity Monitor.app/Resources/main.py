@@ -8,7 +8,7 @@ from collections import deque
 
 # Qt import
 from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool
-from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem
+from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem, QIcon
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -62,6 +62,11 @@ class Window(
         TabDiskUsage.__init__(self)
         TabNetwork.__init__(self)
         TreeViewProcess.__init__(self)
+
+        # Icon
+        self.icon_kill_process = None
+        self.icon_inspect_process = None
+        self.icon_sample_process = None
 
         # Worker
         self.threads = []
@@ -126,6 +131,12 @@ class Window(
     def setupCustomUi(self):
         self.setupCustomUiGroups()
         self.setupCustomUiToolBar()
+
+        # Icon and Pixmap are loaded without qressouces file
+        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Activity Monitor.png")))
+        self.ActionToolBarQuitProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "KillProcess.png")))
+        self.ActionToolBarInspectProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "Inspect.png")))
+        self.ActionToolBarSampleProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "SampleProcess.png")))
 
         # CPU History
         self.cpu_history_dialog = CPUHistory()
