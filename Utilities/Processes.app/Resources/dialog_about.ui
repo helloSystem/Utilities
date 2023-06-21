@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>345</width>
-    <height>370</height>
+    <height>363</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -74,7 +74,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>Processes.png</pixmap>
+      <pixmap>../../../Under Construction/Processes.app/Resources/Processes.png</pixmap>
      </property>
      <property name="scaledContents">
       <bool>true</bool>
@@ -112,6 +112,9 @@
      <property name="orientation">
       <enum>Qt::Vertical</enum>
      </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::MinimumExpanding</enum>
+     </property>
      <property name="sizeHint" stdset="0">
       <size>
        <width>20</width>
@@ -129,7 +132,7 @@
       </sizepolicy>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;This project is open souce, contributions are welcomed.&lt;br/&gt;&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Visit &lt;a href=&quot;https://github.com/helloSystem/Utilities/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/helloSystem/Utilities/&lt;/span&gt;&lt;/a&gt; for more information or to report bug and/or suggest a new feature. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;This project is open souce, contributions are welcomed.&lt;/p&gt;&lt;p align=&quot;center&quot;&gt;Visit &lt;a href=&quot;https://github.com/helloSystem/Utilities/&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/helloSystem/Utilities/&lt;/span&gt;&lt;/a&gt; for more information or to report bug and/or suggest a new feature. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>
@@ -146,6 +149,9 @@
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::MinimumExpanding</enum>
      </property>
      <property name="sizeHint" stdset="0">
       <size>
