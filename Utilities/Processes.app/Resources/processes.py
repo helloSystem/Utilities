@@ -776,7 +776,7 @@ class Window(
                 msg.setDetailedText(data)
         msg.setText("<h3>Processes</h3>")
         msg.setInformativeText(
-            "This project is open source, contributions are welcomed.<br><br>"
+            "A activity monitor application write in pyQt5 on top of psutil.<br><br>"
             "Visit <a href='https://github.com/helloSystem/Utilities/'>"
             "<span style=' text-decoration: underline; color:#0000ff;'>"
             "https://github.com/helloSystem/Utilities/</span></a>"
