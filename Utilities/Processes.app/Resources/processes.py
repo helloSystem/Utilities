@@ -760,7 +760,6 @@ class Window(
     def _showAboutDialog(self):
         msg = QMessageBox()
         msg.setWindowTitle("About")
-        msg.size
         msg.setIconPixmap(
             QPixmap(
                 os.path.join(
