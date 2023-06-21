@@ -90,6 +90,6 @@ class Ui_AboutDialog(object):
     def retranslateUi(self, AboutDialog):
         _translate = QtCore.QCoreApplication.translate
         AboutDialog.setWindowTitle(_translate("AboutDialog", " "))
-        self.about_app_name.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\">Processes</p></body></html>"))
+        self.about_app_name.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:16pt;\">Processes</span></p></body></html>"))
         self.about_text.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\">This project is open souce, contributions are welcomed.<br/></p><p align=\"center\">Visit <a href=\"https://github.com/helloSystem/Utilities/\"><span style=\" text-decoration: underline; color:#0000ff;\">https://github.com/helloSystem/Utilities/</span></a> for more information or to report bug and/or suggest a new feature. </p></body></html>"))
         self.about_footer.setText(_translate("AboutDialog", "<html><head/><body><p align=\"center\"><span style=\" font-size:14pt; vertical-align:sub;\">Make with love by: Jérôme ORNECH alias Hierosme<br/>Copyright 2023-2024 helloSystem Team. All rights reserved. </span></p></body></html>"))
