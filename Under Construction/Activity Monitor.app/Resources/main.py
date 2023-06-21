@@ -63,11 +63,6 @@ class Window(
         TabNetwork.__init__(self)
         TreeViewProcess.__init__(self)
 
-        # Icon
-        self.icon_kill_process = None
-        self.icon_inspect_process = None
-        self.icon_sample_process = None
-
         # Worker
         self.threads = []
         self.threadpool = QThreadPool()
