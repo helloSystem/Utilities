@@ -757,7 +757,8 @@ class Window(
         self.activateWindow()
         self.setFocus()
 
-    def _showAboutDialog(self):
+    @staticmethod
+    def _showAboutDialog():
         msg = QMessageBox()
         msg.setWindowTitle("About")
         msg.setIconPixmap(

@@ -5,12 +5,12 @@ import os
 import psutil
 import socket
 
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QProcess, pyqtSlot, QThreadPool, QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import Qt, QProcess, pyqtSlot, QThreadPool, QTimer
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from network_utility_ui import Ui_MainWindow
 
-from dialog_about import AboutDialog
+
 from psutil._common import bytes2human
 
 
@@ -696,10 +696,36 @@ class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
     def _show_port_scan(self):
         self.tabWidget.setCurrentIndex(7)
 
-    def _showAboutDialog(self):
-        self.AboutDialog = AboutDialog()
-        self.AboutDialog.show()
-
+    @staticmethod
+    def _showAboutDialog():
+        msg = QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(
+            QPixmap(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "Network Utility.png"
+                )
+            ).scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        )
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.join(os.path.dirname(__file__), candidate)):
+                with open(os.path.join(os.path.dirname(__file__), candidate), 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Metwork Utility</h3>")
+        msg.setInformativeText(
+            "A network utility application write in pyQt5 on top of system utilities.<br><br>"
+            "Visit <a href='https://github.com/helloSystem/Utilities/'>"
+            "<span style=' text-decoration: underline; color:#0000ff;'>"
+            "https://github.com/helloSystem/Utilities/</span></a>"
+            "for more information or to report bug and/or suggest a new feature."
+            "<p align='center'><span style=' font-size:14pt; vertical-align:sub;'>"
+            "Make with love by Jérôme ORNECH alias Hierosme<br/>"
+            "Copyright 2023-2024 helloSystem Team. All rights reserved.</span></p>"
+        )
+        msg.exec()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
