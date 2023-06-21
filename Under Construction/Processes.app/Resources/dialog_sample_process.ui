@@ -150,9 +150,9 @@ p, li { white-space: pre-wrap; }
         <number>0</number>
        </property>
        <item>
-        <widget class="QPushButton" name="buttonQuit">
+        <widget class="QPushButton" name="buttonClose">
          <property name="text">
-          <string>Quit</string>
+          <string>Close</string>
          </property>
          <property name="default">
           <bool>true</bool>

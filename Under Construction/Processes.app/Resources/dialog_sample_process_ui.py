@@ -50,7 +50,7 @@ class Ui_SampleProcess(object):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.textBrowser = QtWidgets.QTextBrowser(SampleProcess)
         font = QtGui.QFont()
-        font.setFamily("Roboto Mono Light for Powerline")
+        font.setFamily("Roboto Mono for Powerline")
         self.textBrowser.setFont(font)
         self.textBrowser.setObjectName("textBrowser")
         self.horizontalLayout_3.addWidget(self.textBrowser)
@@ -61,16 +61,17 @@ class Ui_SampleProcess(object):
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setContentsMargins(-1, 0, -1, -1)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.buttonQuit = QtWidgets.QPushButton(SampleProcess)
-        self.buttonQuit.setDefault(True)
-        self.buttonQuit.setObjectName("buttonQuit")
-        self.horizontalLayout.addWidget(self.buttonQuit)
+        self.buttonClose = QtWidgets.QPushButton(SampleProcess)
+        self.buttonClose.setDefault(True)
+        self.buttonClose.setObjectName("buttonClose")
+        self.horizontalLayout.addWidget(self.buttonClose)
         spacerItem1 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem1)
         self.verticalLayout.addLayout(self.horizontalLayout)
         self.verticalLayout_2.addLayout(self.verticalLayout)
 
         self.retranslateUi(SampleProcess)
+        self.comboBox.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(SampleProcess)
 
     def retranslateUi(self, SampleProcess):
@@ -85,6 +86,6 @@ class Ui_SampleProcess(object):
         self.textBrowser.setHtml(_translate("SampleProcess", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Roboto Mono Light for Powerline\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-family:\'Roboto Mono for Powerline\'; font-size:12pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:\'Roboto\';\"><br /></p></body></html>"))
-        self.buttonQuit.setText(_translate("SampleProcess", "Quit"))
+        self.buttonClose.setText(_translate("SampleProcess", "Close"))

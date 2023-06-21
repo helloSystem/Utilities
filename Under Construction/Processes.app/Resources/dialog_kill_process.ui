@@ -75,7 +75,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>Activity Monitor.png</pixmap>
+          <pixmap>Processes.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>

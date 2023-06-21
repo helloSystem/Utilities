@@ -50,7 +50,7 @@ class InspectProcess(QWidget, Ui_InspectProcess):
         self.process = process
         self.open_files_model = QStandardItemModel()
 
-        self.buttonQuit.clicked.connect(self.quit)
+        self.buttonClose.clicked.connect(self.quit)
 
         self.setWindowTitle(f"{get_process_application_name(self.process)} ({self.process.pid})")
 

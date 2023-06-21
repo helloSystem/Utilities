@@ -39,7 +39,7 @@ class Ui_KillDialog(object):
         self.icon.setMinimumSize(QtCore.QSize(64, 64))
         self.icon.setMaximumSize(QtCore.QSize(64, 64))
         self.icon.setText("")
-        self.icon.setPixmap(QtGui.QPixmap("./Activity Monitor.png"))
+        self.icon.setPixmap(QtGui.QPixmap("./Processes.png"))
         self.icon.setScaledContents(True)
         self.icon.setObjectName("icon")
         self.horizontalLayout_2.addWidget(self.icon, 0, QtCore.Qt.AlignLeft)

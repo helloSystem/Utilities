@@ -686,6 +686,7 @@ class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
 
     def _show_traceroute(self):
         self.tabWidget.setCurrentIndex(4)
+
     def _show_whois(self):
         self.tabWidget.setCurrentIndex(5)
 
@@ -694,6 +695,7 @@ class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
 
     def _show_port_scan(self):
         self.tabWidget.setCurrentIndex(7)
+
     def _showAboutDialog(self):
         self.AboutDialog = AboutDialog()
         self.AboutDialog.show()

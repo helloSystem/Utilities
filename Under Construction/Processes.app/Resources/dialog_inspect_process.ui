@@ -1369,9 +1369,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="buttonQuit">
+      <widget class="QPushButton" name="buttonClose">
        <property name="text">
-        <string>Quit</string>
+        <string>Close</string>
        </property>
        <property name="default">
         <bool>true</bool>

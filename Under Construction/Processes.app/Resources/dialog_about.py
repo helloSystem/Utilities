@@ -11,4 +11,4 @@ class AboutDialog(QDialog):
         self.ui = Ui_AboutDialog()
         self.ui.setupUi(self)
         self.setFixedSize(self.size())
-        self.ui.about_logo.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Activity Monitor.png")))
+        self.ui.about_logo.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Processes.png")))

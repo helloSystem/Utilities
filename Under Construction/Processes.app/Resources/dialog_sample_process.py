@@ -56,7 +56,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
 
         self.setWindowTitle(f"{get_process_application_name(self.process)} ({self.process.pid})")
         self.default_filename = f"{self.windowTitle()}.txt"
-        self.buttonQuit.clicked.connect(self.quit)
+        self.buttonClose.clicked.connect(self.quit)
         self.buttonRefresh.clicked.connect(self.run)
         self.comboBox.currentIndexChanged.connect(self.combobox_changed)
         self.sample_run_processing.connect(lambda: self.buttonRefresh.setEnabled(False))
@@ -69,6 +69,8 @@ class SampleProcess(QWidget, Ui_SampleProcess):
         self.status_text_template = self.StatusText.text()
         self.run()
         self.comboBox.setCurrentIndex(1)
+        self.combobox_changed()
+
 
     @staticmethod
     def clean_filename(s):
