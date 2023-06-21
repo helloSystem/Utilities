@@ -861,6 +861,7 @@ class Window(
         self.cpu_history_dialog.cpu_history_graph.clear_history()
 
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = Window()
