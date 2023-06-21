@@ -776,9 +776,14 @@ class Window(
                 msg.setDetailedText(data)
         msg.setText("<h3>Processes</h3>")
         msg.setInformativeText(
-            "A simple activity monitor application written in PyQt5<br><br>"
-            "Make with loke by Jérôme ORNECH<br><br>"
-            "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
+            "This project is open source, contributions are welcomed.<br><br>"
+            "Visit <a href='https://github.com/helloSystem/Utilities/'>"
+            "<span style=' text-decoration: underline; color:#0000ff;'>"
+            "https://github.com/helloSystem/Utilities/</span></a>"
+            "for more information or to report bug and/or suggest a new feature."
+            "<p align='center'><span style=' font-size:14pt; vertical-align:sub;'>"
+            "Make with love by Jérôme ORNECH alias Hierosme<br/>"
+            "Copyright 2023-2024 helloSystem Team. All rights reserved.</span></p>"
         )
         msg.exec()
 
