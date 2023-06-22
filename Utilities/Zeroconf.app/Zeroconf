@@ -133,7 +133,7 @@ class sshLogin(QtWidgets.QDialog):
         self.accept() # Close dialog
         # Launch ssh in QTerminal
         proc = QtCore.QProcess()
-        rgs = ["QTerminal", "-e", "ssh", self.host, "-l", self.textName.text()]
+        args = ["QTerminal", "-e", "ssh", self.host, "-l", self.textName.text()]
         try:
             proc.startDetached("launch", args)
             sys.exit(0)
@@ -148,7 +148,7 @@ class sshLogin(QtWidgets.QDialog):
         proc = QtCore.QProcess()
         hostname = urlparse(self.host).hostname
         path = "/media/%s" % hostname.replace(".local", "")
-        args = ["sshfs", "-o", "idmap=user,allow_other,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3", "-p",  str(urlparse(self.host).port), self.textName.text() + "@" + urlparse(self.host).hostname + ":/", path]
+        args = ["sshfs", "-o", "direct_io,idmap=user,allow_other,reconnect,ServerAliveInterval=15,ServerAliveCountMax=3", "-p",  str(urlparse(self.host).port), self.textName.text() + "@" + urlparse(self.host).hostname + ":/", path]
         print (" ".join(args))
         if not os.path.exists(path):
             try:
@@ -157,11 +157,12 @@ class sshLogin(QtWidgets.QDialog):
                 print(error)
                 exit(1)
         try:
-            proc.startDetached("launch", args)
+            
             sys.exit(0)
         except:
             print("Cannot launch %s" % args[0])
             sys.exit(0)
+        proc.startDetached("open", path)
 
 class ZeroconfBrowser(object):
 
