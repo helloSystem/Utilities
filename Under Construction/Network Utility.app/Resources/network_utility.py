@@ -78,20 +78,30 @@ class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
         self.actionShowAbout.triggered.connect(self._showAboutDialog)
 
     def info_nic_list_combobox_refresh(self):
+        # Create a backup of teh actual selection and in case that the first run set it to 1
         index = self.info_nic_list_combobox.currentIndex()
         if index == -1:
             index = 1
-        items = []
 
-        for nic_name, data in self.nic_info.items():
-            items.append(nic_name)
+        # Create a lists in charge to store avery nic name from updated self.nic_info source
+        figure_nic_list = [
+            nic_name
+            for nic_name, data in self.nic_info.items()
+        ]
 
-        if items != [
+        # Create a list of the actual nic name list from self.info_nic_list_combobox source
+        actual_nic_list = [
             self.info_nic_list_combobox.itemText(i)
             for i in range(self.info_nic_list_combobox.count())
-        ]:
+        ]
+
+        # Make an update of the combobox only when require
+        if figure_nic_list != actual_nic_list:
+            # poor Qt and it .clear() method, the widget haven't Model capability
             self.info_nic_list_combobox.clear()
-            self.info_nic_list_combobox.addItems(items)
+            # update the combobox list in one short for take less time as possible
+            self.info_nic_list_combobox.addItems(figure_nic_list)
+            # the selection position is restore , actually it hasn't any nic name tracking
             self.info_nic_list_combobox.setCurrentIndex(index)
 
     @pyqtSlot()
