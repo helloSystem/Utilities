@@ -1,0 +1,260 @@
+#!/usr/bin/env python3
+
+# FIXME: The spinner is not shown; we need to fix this by using threading? Is there a better way?
+# TODO: Implement manual time zone setting in the time zone tab
+# TODO: Implement manual date and time setting in the date and time tab
+
+import subprocess
+import sys
+import os
+import time
+from PyQt5.QtCore import Qt, QDateTime, QTimer
+from PyQt5.QtWidgets import (QApplication, QDateTimeEdit, QGridLayout,
+                             QGroupBox, QLabel, QMainWindow, QMessageBox,
+                             QPushButton, QTabWidget, QVBoxLayout, QWidget)
+from PyQt5.QtGui import QMovie, QKeyEvent, QPixmap
+from PyQt5.QtCore import QEvent
+
+
+class DateTimeWindow(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        # Create tab widget
+        self.tabs = QTabWidget()
+
+        # Create date/time tab
+        self.create_date_time_tab()
+
+        # Create time zone tab
+        self.create_time_zone_tab()
+
+        # Add tabs to main widget
+        self.tabs.addTab(self.date_time_tab, "Date and Time")
+        self.tabs.addTab(self.time_zone_tab, "Time Zone")
+
+        # Set central widget to tabs
+        self.setCentralWidget(self.tabs)
+
+        # Set window properties
+        self.setWindowTitle("Date and Time")
+        self.setMinimumSize(400, 250)
+
+        # File menu
+        self.file_menu = self.menuBar().addMenu("File")
+        quit_action = self.file_menu.addAction("Quit", self.close)
+        quit_action.setShortcut("Ctrl+Q")
+
+        # Edit menu
+        self.edit_menu = self.menuBar().addMenu("Edit")
+
+        # Undo, cut, copy, paste, and delete actions. Undo is disabled.
+        # They have the default shortcuts. When invoked, the corresponding
+        # shortcut is sent to the currently focused widget.
+        undo_action = self.edit_menu.addAction("Undo")
+        undo_action.setShortcut("Ctrl+Z")
+        undo_action.setEnabled(False)
+        self.edit_menu.addSeparator()
+        cut_action = self.edit_menu.addAction("Cut")
+        cut_action.setShortcut("Ctrl+X")
+        cut_action.triggered.connect(lambda: self.send_shortcut(
+            Qt.Key_X, Qt.ControlModifier))
+        copy_action = self.edit_menu.addAction("Copy")
+        copy_action.setShortcut("Ctrl+C")
+        copy_action.triggered.connect(lambda: self.send_shortcut(
+            Qt.Key_C, Qt.ControlModifier))
+        paste_action = self.edit_menu.addAction("Paste")
+        paste_action.setShortcut("Ctrl+V")
+        paste_action.triggered.connect(lambda: self.send_shortcut(
+            Qt.Key_V, Qt.ControlModifier))
+        delete_action = self.edit_menu.addAction("Delete")
+        delete_action.setShortcut("Del")
+        delete_action.triggered.connect(lambda: self.send_shortcut(
+            Qt.Key_Delete, Qt.NoModifier))
+        self.edit_menu.addSeparator()
+
+        self.edit_menu.addAction("Set Date and Time automatically",
+                                 self.set_date_time_auto)
+        self.edit_menu.addAction("Set time zone automatically",
+                                 self.set_time_zone_auto)
+
+        # Help menu
+        self.help_menu = self.menuBar().addMenu("Help")
+        about_action = self.help_menu.addAction("About", self.show_about)
+        about_action.setShortcut("Ctrl+?")
+
+        # Create spinner
+        self.spinner = QLabel(self)
+        # Generated using http://ajaxload.info/
+        self.spinner.setMovie(
+            QMovie(os.path.dirname(__file__) + "/Resources/spinner.gif"))
+        self.spinner.movie().start()
+        self.spinner.hide()
+        self.spinner.setAlignment(Qt.AlignCenter)
+        # self.spinner.setFixedSize(16, 16)
+        self.spinner.move(0, self.height() - self.spinner.height())
+        # Connect to the resizeEvent of the window to update the position of the spinner
+        self.resizeEvent = lambda event: self.spinner.move(
+            -20, self.height() - self.spinner.height() - 10)
+
+    def send_shortcut(self, key_code, modifier):
+        # Send shortcut to currently focused widget like Ctrl+C, Ctrl+V, etc.
+        widget = self.focusWidget()
+        key_event = QKeyEvent(QEvent.KeyPress, key_code, modifier)
+        QApplication.postEvent(widget, key_event)
+
+    def update_date_time(self):
+        self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
+
+    def create_date_time_tab(self):
+        # Create widgets
+        self.dt_set_date_time_manual = QDateTimeEdit(self)
+        self.dt_set_date_time_manual.setDisplayFormat("MMM d yyyy  hh:mm:ss")
+        self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_date_time)
+        self.timer.start(1000)
+        # When the QDateTimeEdit is manually changed, stop the timer; but do not stop the timer if it was changed by the timer
+        self.dt_set_date_time_manual.dateTimeChanged.connect(
+            lambda: self.timer.stop() if self.dt_set_date_time_manual.dateTime().toString('yyyy-MM-dd hh:mm:ss') != self.get_current_datetime().toString('yyyy-MM-dd hh:mm:ss') else None)
+
+        self.btn_set_date_time_manual = QPushButton("Set Date and Time", self)
+
+        self.grp_set_date_time = QGroupBox("Set Date and Time", self)
+        self.vbox_set_date_time = QVBoxLayout()
+        self.vbox_set_date_time.addWidget(self.dt_set_date_time_manual)
+        self.vbox_set_date_time.addWidget(self.btn_set_date_time_manual)
+        self.grp_set_date_time.setLayout(self.vbox_set_date_time)
+
+        self.btn_set_date_time_auto = QPushButton(
+            "Set Date and Time automatically", self)
+
+        self.grp_set_date_time_auto = QGroupBox("Date and Time options", self)
+        self.vbox_set_date_time_auto = QVBoxLayout()
+        self.vbox_set_date_time_auto.addWidget(self.btn_set_date_time_auto)
+        self.grp_set_date_time_auto.setLayout(self.vbox_set_date_time_auto)
+
+        # Connect signals to slots
+        self.btn_set_date_time_manual.clicked.connect(
+            self.set_date_time_manual)
+        self.btn_set_date_time_auto.clicked.connect(self.set_date_time_auto)
+
+        # Create grid layout for date/time tab
+        self.grid_layout_date_time = QGridLayout()
+
+        self.grid_layout_date_time.addWidget(
+            self.grp_set_date_time, 2, 0, 1, 2)
+        self.grid_layout_date_time.addWidget(
+            self.grp_set_date_time_auto, 3, 0, 1, 2)
+        self.grid_layout_date_time.setRowStretch(4, 1)
+
+        # Create date/time tab and set layout
+        self.date_time_tab = QWidget(self)
+        self.date_time_tab.setLayout(self.grid_layout_date_time)
+
+    def create_time_zone_tab(self):
+        # Create widgets
+        self.btn_set_time_zone_auto = QPushButton(
+            "Set time zone automatically", self)
+
+        self.grp_set_time_zone = QGroupBox("Set time zone", self)
+        self.vbox_set_time_zone = QVBoxLayout()
+        self.vbox_set_time_zone.addWidget(self.btn_set_time_zone_auto)
+        self.grp_set_time_zone.setLayout(self.vbox_set_time_zone)
+
+        # Connect signals to slots
+        self.btn_set_time_zone_auto.clicked.connect(self.set_time_zone_auto)
+
+        # Create grid layout for time zone tab
+        self.grid_layout_time_zone = QGridLayout()
+        self.grid_layout_time_zone.addWidget(self.grp_set_time_zone, 1, 0)
+        self.grid_layout_time_zone.setRowStretch(2, 1)
+
+        # Create time zone tab and set layout
+        self.time_zone_tab = QWidget(self)
+        self.time_zone_tab.setLayout(self.grid_layout_time_zone)
+
+    def get_current_datetime(self):
+        try:
+            # Get the current date and time
+            result = subprocess.run(["date", "+%Y-%m-%d %H:%M:%S"],
+                                    capture_output=True, text=True, check=True)
+            return QDateTime.fromString(result.stdout.strip(), "yyyy-MM-dd hh:mm:ss")
+        except subprocess.CalledProcessError as e:
+            self.show_error_dialog("Error getting current Date and Time",
+                                   f"An error occurred while getting the current Date and Time: {e.stderr}")
+            return QDateTime.currentDateTime()
+
+    def set_date_time_manual(self):
+        self.spinner.show()
+        # 202304151224.10 = Sa. 15 Apr. 2023 12:24:10 CEST
+        new_date_time = self.dt_set_date_time_manual.dateTime().toString(
+            "yyyyMMddhhmm.ss")
+        print(new_date_time)
+        try:
+            # Set the new date and time
+            subprocess.run(["sudo", "date", new_date_time], check=True)
+            self.dt_set_date_time_manual.setDateTime(
+                self.get_current_datetime())
+        except subprocess.CalledProcessError as e:
+            self.show_error_dialog("Error setting Date and Time",
+                                   f"An error occurred while setting the Date and Time: {e.stderr}")
+        self.spinner.hide()
+
+    def set_date_time_auto(self):
+        self.spinner.show()
+        # Wait one second before setting the date and time automatically
+        time.sleep(1)
+        try:
+            # Set the date and time automatically using NTP
+            subprocess.run(["sudo", "ntpdate", "-v", "-b",
+                           "-u", "pool.ntp.org"], check=True)
+            self.dt_set_date_time_manual.setDateTime(
+                self.get_current_datetime())
+        except subprocess.CalledProcessError as e:
+            self.show_error_dialog("Error setting Date and Time automatically",
+                                   f"An error occurred while setting the Date and Time automatically: {e.stderr}")
+        # Restart the timer if it is not running
+        if not self.timer.isActive():
+            self.timer.start()
+        self.spinner.hide()
+
+    def set_time_zone_auto(self):
+        try:
+            # Set the time zone automatically using NTP
+            subprocess.run(["sudo", "ntpdate", "-v", "-b",
+                           "-u", "pool.ntp.org"], check=True)
+        except subprocess.CalledProcessError as e:
+            self.show_error_dialog("Error setting time zone automatically",
+                                   f"An error occurred while setting the time zone automatically: {e.stderr}")
+
+    def show_error_dialog(self, title, message):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Critical)
+        msg_box.setWindowTitle(title)
+        msg_box.setText(message)
+        msg_box.exec_()
+
+    def show_about(self):
+        print("showDialog")
+        msg = QMessageBox()
+        msg.setWindowTitle("About")
+        msg.setIconPixmap(QPixmap(os.path.dirname(
+            __file__) + "/Resources/Date and Time.png"))
+        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
+        for candidate in candidates:
+            if os.path.exists(os.path.dirname(__file__) + "/Resources/" + candidate):
+                with open(os.path.dirname(__file__) + "/Resources/" + candidate, 'r') as file:
+                    data = file.read()
+                msg.setDetailedText(data)
+        msg.setText("<h3>Date and Time</h3>")
+        msg.setInformativeText(
+            "A simple preferences application to set date and time using <a href='https://www.freebsd.org/cgi/man.cgi?ntpdate'>ntpdate</a> and <a href='https://www.freebsd.org/cgi/man.cgi?date'>date</a><br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.exec()
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = DateTimeWindow()
+    window.show()
+    sys.exit(app.exec_())
