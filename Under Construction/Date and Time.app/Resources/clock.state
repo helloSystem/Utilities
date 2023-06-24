@@ -1,0 +1,61 @@
+general	back	scale	200
+general	back	colour	rgba(255, 255, 255, 0)
+general	back	faceColour	rgba(255, 255, 255, 1)
+general	back	edgeColour	rgba(0, 0, 0, 1)
+general	back	edgeWidth	2
+general	markers	displayTicks	on
+general	markers	tickColour	rgba(35, 69, 117, 1)
+general	markers	tickLength	0.06
+general	markers	tickThickness	7
+general	markers	displaySubticks	on
+general	markers	subtickColour	rgba(35, 69, 117, 1)
+general	markers	subtickLength	0.04
+general	markers	subtickThickness	7
+num	inner	display	on
+num	inner	type	latin
+num	inner	order	numeric
+num	inner	pos	0.68
+num	inner	rotation	none
+num	inner	font	roboto
+num	inner	fontWeight	bold
+num	inner	fontStyle	
+num	inner	fontSize	21
+num	inner	colour	rgba(52, 105, 158, 1)
+num	minute	display	
+num	minute	interval	5
+num	minute	pos	0.5
+num	minute	rotation	none
+num	minute	font	Tahoma
+num	minute	fontWeight	bold
+num	minute	fontStyle	
+num	minute	fontSize	8
+num	minute	colour	rgba(0, 0, 0, 1)
+hand	hour	display	
+hand	hour	value	10
+hand	hour	lineShape	rectangle
+hand	hour	arrow	0
+hand	hour	colour	rgba(53, 76, 112, 1)
+hand	hour	length	0.5
+hand	hour	backLength	17
+hand	hour	lineWidth	0.105
+hand	minute	display	
+hand	minute	value	9
+hand	minute	lineShape	rectangle
+hand	minute	arrow	0
+hand	minute	colour	rgba(53, 76, 112, 1)
+hand	minute	length	0.85
+hand	minute	backLength	18
+hand	minute	lineWidth	0.05
+hand	second	display	
+hand	second	value	0
+hand	second	lineShape	rectangle
+hand	second	arrow	3
+hand	second	colour	rgba(255, 162, 0, 1)
+hand	second	length	0.95
+hand	second	backLength	17
+hand	second	lineWidth	0.04
+middle	circle	display	
+middle	circle	radius	10
+middle	circle	borderWidth	3.3
+middle	circle	backgroundColour	rgba(53, 76, 112, 1)
+middle	circle	borderColour	rgba(53, 76, 112, 1)
