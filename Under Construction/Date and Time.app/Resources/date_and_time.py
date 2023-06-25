@@ -270,8 +270,28 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
     def __date_and_time_automatically_changed(self):
         if self.date_and_time_auto_checkbox.isChecked():
             self.ntp_servers_comboBox.setEnabled(True)
+
+            self.dt_time_label.setEnabled(False)
+            self.dt_set_date_time_manual.setEnabled(False)
+            self.dt_use_24h_clock.setEnabled(False)
+            self.analog_clock_widget.setEnabled(False)
+
+            self.dt_date_label.setEnabled(False)
+            self.dt_set_date_manual.setEnabled(False)
+            self.dt_set_custom_format.setEnabled(False)
+            self.calendarWidget.setEnabled(False)
         else:
             self.ntp_servers_comboBox.setEnabled(False)
+
+            self.dt_time_label.setEnabled(True)
+            self.dt_set_date_time_manual.setEnabled(True)
+            self.dt_use_24h_clock.setEnabled(True)
+            self.analog_clock_widget.setEnabled(True)
+
+            self.dt_date_label.setEnabled(True)
+            self.dt_set_date_manual.setEnabled(True)
+            self.dt_set_custom_format.setEnabled(True)
+            self.calendarWidget.setEnabled(True)
 
 
 if __name__ == "__main__":

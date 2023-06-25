@@ -67,10 +67,29 @@ class AnalogClock(QWidget):
         painter = QPainter(self)
 
         # load the clock background image
-        bg = QImage(os.path.join(
-            os.path.dirname(__file__),
-            "clock_face.png"
-        )).scaled(rec, rec, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        if self.isEnabled():
+            # color for minute and hour hand
+            self.bColor = QColor(53, 76, 112, 255)
+
+            # color for second hand
+            self.sColor = QColor(255, 162, 0, 255)
+
+            # Face clock background
+            bg = QImage(os.path.join(
+                os.path.dirname(__file__),
+                "clock_face.png"
+            )).scaled(rec, rec, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        else:
+            # color for minute and hour hand
+            self.bColor = QColor(120, 120, 120, 255)
+
+            # color for second hand
+            self.sColor = QColor(120, 120, 120, 255)
+
+            bg = QImage(os.path.join(
+                os.path.dirname(__file__),
+                "clock_face_disable.png"
+            )).scaled(rec, rec, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         painter.drawImage(int(self.width() / 2 - bg.width() / 2),
                           int(self.height() / 2 - bg.height() / 2),
                           bg
