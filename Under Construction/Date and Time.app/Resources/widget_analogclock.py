@@ -138,7 +138,7 @@ class AnalogClock(QWidget):
 
         painter.setPen(QPen(Qt.darkGray, 2, Qt.SolidLine))
         # painter.setFont(QFont('FreeMono', 20))
-        painter.setFont(QFont('Numbus Sans', 20))
+        painter.setFont(QFont('Nimbus Sans', 20))
         if QTime().hour() <= 0 <= 12:
             painter.drawText(-20, 50, "AM")
         else:

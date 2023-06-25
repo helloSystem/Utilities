@@ -16,7 +16,7 @@ num	inner	type	latin
 num	inner	order	numeric
 num	inner	pos	0.68
 num	inner	rotation	none
-num	inner	font	roboto
+num	inner	font	Nimbus Sans
 num	inner	fontWeight	bold
 num	inner	fontStyle	
 num	inner	fontSize	21
