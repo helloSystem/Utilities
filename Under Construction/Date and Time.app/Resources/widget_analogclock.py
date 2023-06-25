@@ -84,7 +84,7 @@ class AnalogClock(QWidget):
             self.bColor = QColor(120, 120, 120, 255)
 
             # color for second hand
-            self.sColor = QColor(120, 120, 120, 255)
+            self.sColor = QColor(160, 160, 160, 255)
 
             bg = QImage(os.path.join(
                 os.path.dirname(__file__),
@@ -121,7 +121,6 @@ class AnalogClock(QWidget):
         # scale the painter
         painter.scale(rec / 200, rec / 200)
 
-        # painter.drawImage(int(rec / 200) - int(rec / 2), int(rec / 200) - int(rec / 2), bg)
         # set current pen as no pen
         painter.setPen(QtCore.Qt.NoPen)
 
@@ -138,11 +137,12 @@ class AnalogClock(QWidget):
                             10, 10)
 
         painter.setPen(QPen(Qt.darkGray, 2, Qt.SolidLine))
-        painter.setFont(QFont('FreeMono', 20))
+        # painter.setFont(QFont('FreeMono', 20))
+        painter.setFont(QFont('Numbus Sans', 20))
         if QTime().hour() <= 0 <= 12:
-            painter.drawText(-15, 50, "AM")
+            painter.drawText(-20, 50, "AM")
         else:
-            painter.drawText(-15, 50, "PM")
+            painter.drawText(-20, 50, "PM")
         painter.end()
 
     def updateTime(self):

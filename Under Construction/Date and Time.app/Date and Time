@@ -1,3 +1,5 @@
 #!/bin/sh
 HERE="$(dirname "$(readlink -f "${0}")")"
-exec "${HERE}/Resources/date_and_time.py" "$@"
+SUDO_EDITOR_TMP=$HERE | sed 's/\ /\\ /g'
+export VISUAL="${SUDO_EDITOR_TMP}/Resources/date_and_time.py"
+exec "sudoedit" "/etc/timezone" "/etc/ntpd.conf"
