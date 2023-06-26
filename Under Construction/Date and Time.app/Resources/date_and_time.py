@@ -8,7 +8,7 @@ import subprocess
 import sys
 import os
 import time
-from PyQt5.QtCore import Qt, QDateTime, QTimer
+from PyQt5.QtCore import Qt, QDateTime, QTimer, QDate
 from PyQt5.QtWidgets import (QApplication, QDateTimeEdit, QGridLayout,
                              QGroupBox, QLabel, QMainWindow, QMessageBox,
                              QPushButton, QTabWidget, QVBoxLayout, QWidget)
@@ -17,6 +17,8 @@ from PyQt5.QtCore import QEvent
 
 from date_and_time_ui import Ui_MainWindow
 from property_date_time_auto import DateTimeAutomatically
+
+
 class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
     def __init__(self):
         super().__init__()
@@ -25,7 +27,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.analog_clock_widget.show()
         self.timer = QTimer()
         self.timer.start(1000)
-
 
         self.initial_state()
         self.signalsConnect()
@@ -42,9 +43,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
     def initial_state(self):
         self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
         self.setDateTimeAutomatically(False)
+        self.tz_time_zone_label.setText(self.get_current_time_zone())
 
     def refresh(self):
         self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
+        self.dt_set_date_manual.setDate(self.get_current_date())
         #
         # # Undo, cut, copy, paste, and delete actions. Undo is disabled.
         # # They have the default shortcuts. When invoked, the corresponding
@@ -103,6 +106,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
 
     def update_date_time(self):
         self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
+        self.dt_set_date_manual.setDateTime(self.get_current_date())
 
     def create_date_time_tab(self):
         # Create widgets
@@ -184,6 +188,9 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         #                            f"An error occurred while getting the current Date and Time: {e.stderr}")
         return QDateTime.currentDateTime()
 
+    def get_current_date(self):
+        return QDate.currentDate()
+
     def set_date_time_manual(self):
         self.spinner.show()
         # 202304151224.10 = Sa. 15 Apr. 2023 12:24:10 CEST
@@ -226,6 +233,16 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         except subprocess.CalledProcessError as e:
             self.show_error_dialog("Error setting time zone automatically",
                                    f"An error occurred while setting the time zone automatically: {e.stderr}")
+
+    def get_current_time_zone(self):
+        with open('/etc/timezone') as file:
+            data = file.readlines()
+
+        for line in data:
+            if line.startswith("#"):
+                pass
+            else:
+                return line.strip("\n")
 
     def show_error_dialog(self, title, message):
         msg_box = QMessageBox()
@@ -292,6 +309,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             self.dt_set_date_manual.setEnabled(True)
             self.dt_set_custom_format.setEnabled(True)
             self.calendarWidget.setEnabled(True)
+
 
 
 if __name__ == "__main__":
