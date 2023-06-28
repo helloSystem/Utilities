@@ -14,22 +14,14 @@ import os
 class TimeZoneWorldMap(QWidget):
     timeChanged = pyqtSignal(QTime)
     timeZoneChanged = pyqtSignal(int)
+    TimeZoneSelectionChanged = pyqtSignal()
 
     # constructor
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
 
         # setting window title
-        self.setWindowTitle('TImeZone Worl Map')
-
-        # setting window geometry
-        self.setGeometry(200, 200, 300, 300)
-
-        # color for minute and hour hand
-        self.bColor = QColor(53, 76, 112, 255)
-
-        # color for second hand
-        self.sColor = QColor(255, 162, 0, 255)
+        self.setWindowTitle('TimeZone Worl Map')
 
         self.setMouseTracking(True)
         self.bg = None
@@ -62,6 +54,25 @@ class TimeZoneWorldMap(QWidget):
             "+11": False,
             "+12": False,
         }
+
+        self.__timezone_selection = None
+        self.TimeZoneSelection = None
+
+    @pyqtProperty(int)
+    def TimeZoneSelection(self):
+        return self.__timezone_selection
+
+    @TimeZoneSelection.setter
+    def TimeZoneSelection(self, value):
+        if value is None:
+            value = 0
+        if self.__timezone_selection != value:
+            self.__timezone_selection = value
+            self.TimeZoneSelectionChanged.emit()
+
+    def setTimeZoneSelection(self, value):
+        self.TimeZoneSelection = value
+
     # method for paint event
     def paintEvent(self, event):
 
@@ -113,13 +124,13 @@ class TimeZoneWorldMap(QWidget):
         utc_start = greenwich_location - int(gridSize / 2)
         utc_stop = greenwich_location + int(gridSize / 2)
 
-        painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
-        x = utc_start
-        painter.drawLine(x, start_height, x, self.height() - start_height)
-
-        painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
-        x = utc_stop
-        painter.drawLine(x, start_height, x, self.height() - start_height)
+        # painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
+        # x = utc_start
+        # painter.drawLine(x, start_height, x, self.height() - start_height)
+        #
+        # painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
+        # x = utc_stop
+        # painter.drawLine(x, start_height, x, self.height() - start_height)
 
         painter.setPen(QPen(Qt.darkGray, 1, Qt.SolidLine))
         painter.drawText(int(utc_start + (gridSize / 2) - (gridSize / 3)), utc_text_height, f"UTC")
@@ -131,10 +142,10 @@ class TimeZoneWorldMap(QWidget):
                 offset = int(gridSize / 6)
             else:
                 offset = int(gridSize / 4)
-            painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
-            painter.drawLine(x, start_height, x, self.height() - start_height)
+            # painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
+            # painter.drawLine(x, start_height, x, self.height() - start_height)
 
-            painter.setPen(QPen(Qt.darkGray, 1, Qt.SolidLine))
+            painter.setPen(QPen(Qt.white, 1, Qt.SolidLine))
             painter.drawText(int(x - (gridSize / 2) - offset), utc_text_height, f"+{utc_plus}")
 
             self.zone_location[f"+{utc_plus}"] = {}
@@ -148,9 +159,9 @@ class TimeZoneWorldMap(QWidget):
                 offset = int(gridSize / 6)
             else:
                 offset = int(gridSize / 4)
-            painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
-            painter.drawLine(x, start_height, x, self.height() - start_height)
-            painter.setPen(QPen(Qt.darkGray, 1, Qt.SolidLine))
+            # painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
+            # painter.drawLine(x, start_height, x, self.height() - start_height)
+            painter.setPen(QPen(Qt.white, 1, Qt.SolidLine))
             painter.drawText(int(x + (gridSize / 2) - offset), utc_text_height, f"-{utc_minus}")
 
             self.zone_location[f"-{utc_minus}"] = {}
@@ -159,35 +170,36 @@ class TimeZoneWorldMap(QWidget):
 
         for key, value in self.state_over.items():
             if value is True:
-
                 painter.setPen(QPen(QColor(255, 255, 255, 255), 1, Qt.SolidLine))
                 painter.setBrush(QColor(255, 255, 255, 150))
                 painter.drawRect(self.zone_location[key]['left'] + 1,
                                  start_height + 1,
                                  int(gridSize - 2),
                                  self.bg.height() - 1)
+            try:
+                if self.TimeZoneSelection == f"{key}":
+                    painter.setPen(QPen(QColor(0, 39, 60, 255), 1, Qt.SolidLine))
+                    painter.setBrush(QColor(0, 39, 60, 127))
+                    painter.drawRect(self.zone_location[key]['left'] + 1,
+                                     start_height + 1,
+                                     int(gridSize - 2),
+                                     self.bg.height() - 1)
+            except KeyError:
+                pass
 
 
         # ending the painter
         painter.end()
 
-    # def eventFilter(self, obj, event):
-    #     if QWidget is obj:
-    #         if event.type() == QtCore.QEvent.MouseButtonPress:
-    #             print(self, "press")
-    #         elif event.type() == QtCore.QEvent.MouseButtonRelease:
-    #             print(self, "release")
-    #     return super(TimeZoneWorldMap, self).eventFilter(obj, event)
     def mousePressEvent(self, event):
-        # self.setOverrideCursor(QtGui.QCursor(QtCore.Qt.OpenHandCursor))
-        # self._initial_pos = event.pos()
-        print("PRess")
+        for key, value in self.zone_location.items():
+            if self.zone_location[key]['left'] <= event.pos().x() < self.zone_location[key]['right']:
+                self.setTimeZoneSelection(f"{key}")
+                self.update()
         super().mousePressEvent(event)
+
     #
     def mouseMoveEvent(self, event):
-        # x, y = event.pos()[0]
-        # print(self.zone_location)
-        # print(event.pos())
         for key, value in self.zone_location.items():
             if self.zone_location[key]['left'] <= event.pos().x() < self.zone_location[key]['right']:
                 self.state_over[key] = True
@@ -196,21 +208,17 @@ class TimeZoneWorldMap(QWidget):
                 self.state_over[key] = False
                 self.update()
 
-        # try:
-        #     if self.zone_location[0]['left'] <= event.pos().x() <= self.zone_location[0]['right']:
-        #         print(f"UTC is over")
-        # except KeyError:
-        #     pass
-        # delta = event.pos() - int(self.width() / 2 - self.bg.width() / 2)
-        # self._path.translate(delta)
-        # self._rect.translate(delta)
-        # self.update()
-        # self._initial_pos = event.pos()
         super().mouseMoveEvent(event)
-    #
-    # def mouseReleaseEvent(self, event):
-    #     QtWidgets.QApplication.restoreOverrideCursor()
-    #     super().mouseReleaseEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        for key, value in self.zone_location.items():
+            if self.zone_location[key]['left'] <= event.pos().x() < self.zone_location[key]['right']:
+                self.setTimeZoneSelection(f"{key}")
+                self.update()
+
+        super().mouseReleaseEvent(event)
+
+
 # Driver code
 if __name__ == '__main__':
     app = QApplication(sys.argv)

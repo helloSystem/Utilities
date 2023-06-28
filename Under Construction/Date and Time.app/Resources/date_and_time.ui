@@ -379,7 +379,7 @@
         <property name="bottomMargin">
          <number>23</number>
         </property>
-        <item>
+        <item alignment="Qt::AlignHCenter">
          <widget class="QLabel" name="label_5">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -393,7 +393,14 @@
            </font>
           </property>
           <property name="text">
-           <string>Click you part of the world, then choose a city from the pop-up menu</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;To select a time zone, click the map near your location and choose a city from the Closetes City Menu.&lt;br/&gt;You can also the time zone change automatically, if possible, based on your current location.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item alignment="Qt::AlignHCenter">
+         <widget class="QCheckBox" name="set_time_zone_automatically_checkbox">
+          <property name="text">
+           <string>Set time zone automatically using current location</string>
           </property>
          </widget>
         </item>
@@ -455,7 +462,7 @@
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLabel" name="tz_time_zone_label">
+           <widget class="QLabel" name="tz_time_zone_value">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
               <horstretch>0</horstretch>
