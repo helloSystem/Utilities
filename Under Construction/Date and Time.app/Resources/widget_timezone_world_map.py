@@ -1,20 +1,12 @@
-# Thanks a lot rakshitarora who provide the template code
-# https://www.geeksforgeeks.org/pyqt5-qdateedit-getting-input-date/
+from PyQt5.QtWidgets import QWidget
+from PyQt5.QtCore import pyqtSignal, pyqtProperty, Qt
+from PyQt5.QtGui import QPainter, QImage, QColor, QPen
 
-# importing libraries
-from PyQt5.QtWidgets import *
-from PyQt5 import QtCore
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
 import sys
 import os
-from iso6709 import Location
 
-from decimal import Decimal
 
-# creating a clock class
 class TimeZoneWorldMap(QWidget):
-    timeChanged = pyqtSignal(QTime)
     timeZoneChanged = pyqtSignal(int)
     TimeZoneSelectionChanged = pyqtSignal()
     TimeZoneClosestCityChanged = pyqtSignal(list)
@@ -73,46 +65,49 @@ class TimeZoneWorldMap(QWidget):
         self.lat_ratio = None
         self.lng_ratio = None
 
-
         self.import_zone1970_db()
 
-
     def import_zone1970_db(self):
+        # Start by reset the internal db
         self.zone1970_db = {}
 
+        # This location is the default on of the project, can be more system with TZInfo python module
         with open("/usr/share/zoneinfo/zone1970.tab") as zone1970_file_descriptor:
             imported_data = zone1970_file_descriptor.readlines()
 
         # codes	coordinates	TZ	comments
         for line in imported_data:
+            # Ignore line it start by a #
             if line.startswith("#"):
                 continue
+
+            # For each line, we create a list os elements split by TAB
             data = line.strip("\n").split("\t")
-            loc = Location(data[1])
+
+            # it have deux formats, we just care about degree, and not use minutes coordonates
+            # ±DDMM±DDDMM or ±DDMMSS±DDDMMSS,
             if len(data[1]) == len("±DDMM±DDDMM"):
                 lat = int(f"{data[1][0]}{data[1][1]}{data[1][2]}")
                 lng = int(f"{data[1][5]}{data[1][6]}{data[1][7]}")
-
-            elif len(data[1]) == len("±DDMMSS±DDDMMSS"):
+            else:
                 lat = int(f"{data[1][0]}{data[1][1]}{data[1][2]}")
                 lng = int(f"{data[1][7]}{data[1][8]}{data[1][9]}{data[1][10]}")
 
-            print(f"lat:{lat} lng:{lng}")
-            # ±DDMM±DDDMM or ±DDMMSS±DDDMMSS,
+            # Here for debug
+            # print(f"lat:{lat} lng:{lng}")
+
+            # Update the internal DB where the keyname is the TimeZone as use by TZ var
             self.zone1970_db[f"{data[2]}"] = {
                 "code": data[0].split(","),
                 "latitude": lat,
                 "longitude": lng,
             }
+
+            # some time it have a commentary, the use of try is for speed up
             try:
                 self.zone1970_db[f"{data[2]}"]["comments"] = data[3]
             except IndexError:
                 pass
-
-        # for item in self.zone1970_db.items():
-        #     print(item)
-
-
 
     @pyqtProperty(int)
     def TimeZoneSelection(self):
@@ -131,17 +126,18 @@ class TimeZoneWorldMap(QWidget):
 
     # method for paint event
     def paintEvent(self, event):
+        # start by reset all our value
+        self.zone_location = {}
+        self.longitude_location = {}
+        self.latitude_location = {}
 
         # getting minimum of width and height
-        # so that clock remain square
         rec = max(self.width(), self.height())
 
         # creating a painter object
         painter = QPainter(self)
 
-        # load the clock background image
-
-        # Face clock background
+        # Load image dinamically
         if rec >= 1280:
             map_file = "2560px-World_map_with_nations.png"
         elif rec >= 640:
@@ -150,34 +146,25 @@ class TimeZoneWorldMap(QWidget):
             map_file = "640px-World_map_with_nations.png"
         else:
             map_file = "320px-World_map_with_nations.png"
+        # The image is scale to fit allowed size
         self.bg = QImage(os.path.join(
             os.path.dirname(__file__),
             map_file
         )).scaled(self.width(), self.height(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-
+        # The location image is important that is the center subtract by the halt image size
         painter.drawImage(int(self.width() / 2 - self.bg.width() / 2),
                           int(self.height() / 2 - self.bg.height() / 2),
                           self.bg
                           )
 
+        # That is the ideal TimeZone size
         timezone_grid_size = self.bg.width() / 24
-        coodinates_grid_lat_size =  self.bg.width() / 180
 
-        self.zone_location = {}
-        self.longitude_location = {}
-        self.latitude_location = {}
-
+        # We can predict they cardinal position
         self.north_location = int(self.height() / 2 - self.bg.height() / 2)
-        self.south_location = self.north_location  + self.bg.width()
+        self.south_location = self.north_location + self.bg.width()
         self.west_location = int(self.width() / 2 - self.bg.width() / 2)
         self.east_location = self.west_location + self.bg.width()
-
-        font_size = int(self.bg.height() / 50)
-        utc_text_height = self.south_location - font_size
-        painter.setFont(QFont('Nimbus Sans', font_size))
-
-        # Trace Greenwich village location
-        # That is the width / 2 of the world map
 
         self.prime_meridian = self.west_location + int(self.bg.width() / 2)
         self.equator_location = self.north_location + int(self.bg.height() / 2)
@@ -192,51 +179,32 @@ class TimeZoneWorldMap(QWidget):
         utc_start = self.prime_meridian - int(timezone_grid_size / 2)
         utc_stop = self.prime_meridian + int(timezone_grid_size / 2)
 
-        painter.setPen(QPen(Qt.darkGray, 1, Qt.SolidLine))
-        painter.drawText(int(utc_start + (timezone_grid_size / 2) - (timezone_grid_size / 3)), utc_text_height, f"UTC")
-
         # Time Zone Area
         for utc_plus in range(1, 13):
-            # Trace UTC + X
+            # keep a memory of Time zone location
             x = int(utc_stop + (timezone_grid_size * utc_plus))
-            if utc_plus < 10:
-                offset = int(timezone_grid_size / 6)
-            else:
-                offset = int(timezone_grid_size / 4)
-            # painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
-            # painter.drawLine(x, start_height, x, self.height() - start_height)
-
-            painter.setPen(QPen(Qt.white, 1, Qt.SolidLine))
-            painter.drawText(int(x - (timezone_grid_size / 2) - offset), utc_text_height, f"+{utc_plus}")
 
             self.zone_location[f"+{utc_plus}"] = {}
             self.zone_location[f"+{utc_plus}"]['left'] = x - timezone_grid_size
             self.zone_location[f"+{utc_plus}"]['right'] = x
 
         for utc_minus in range(1, 12):
-            # Trace UTC - X
+            # Key a memory of Tome zone location
             x = int(utc_start - (timezone_grid_size * utc_minus))
-            if utc_minus < 10:
-                offset = int(timezone_grid_size / 6)
-            else:
-                offset = int(timezone_grid_size / 4)
-            # painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
-            # painter.drawLine(x, start_height, x, self.height() - start_height)
-            painter.setPen(QPen(Qt.white, 1, Qt.SolidLine))
-            painter.drawText(int(x + (timezone_grid_size / 2) - offset), utc_text_height, f"-{utc_minus}")
 
             self.zone_location[f"-{utc_minus}"] = {}
             self.zone_location[f"-{utc_minus}"]['left'] = x
             self.zone_location[f"-{utc_minus}"]['right'] = x + timezone_grid_size
 
+        # Trace the selection the MouseOver
         for key, value in self.state_over.items():
-            if value is True:
-                painter.setPen(QPen(QColor(255, 255, 255, 255), 1, Qt.SolidLine))
-                painter.setBrush(QColor(255, 255, 255, 150))
-                painter.drawRect(self.zone_location[key]['left'] + 1,
-                                 self.north_location + 1,
-                                 int(timezone_grid_size - 2),
-                                 self.bg.height() - 1)
+            # if value is True:
+            #     painter.setPen(QPen(QColor(255, 255, 255, 255), 1, Qt.SolidLine))
+            #     painter.setBrush(QColor(255, 255, 255, 150))
+            #     painter.drawRect(self.zone_location[key]['left'] + 1,
+            #                      self.north_location + 1,
+            #                      int(timezone_grid_size - 2),
+            #                      self.bg.height() - 1)
             try:
                 if self.TimeZoneSelection == f"{key}":
                     painter.setPen(QPen(QColor(0, 39, 60, 255), 1, Qt.SolidLine))
@@ -246,6 +214,8 @@ class TimeZoneWorldMap(QWidget):
                                      int(timezone_grid_size - 2),
                                      self.bg.height() - 1)
             except KeyError:
+                # YES it is correct,
+                # you should show me how you do with IF statement... are you sure of the performance ?
                 pass
 
         # ending the painter
@@ -277,26 +247,24 @@ class TimeZoneWorldMap(QWidget):
             lng = (event.pos().x() - self.prime_meridian) * self.lng_ratio
             lat = (event.pos().y() - self.equator_location) * self.lat_ratio
             lat = lat * -1
-            print(f"lat:{lat} lng:{lng}")
+            # print(f"lat:{lat} lng:{lng}")
 
             tol = 5
             found = False
             closest = []
             while found == False:
                 for key, item in self.zone1970_db.items():
-                    if int(lng) - tol <= item["longitude"] <= int(lng) + tol and\
-                       int(lat) - tol <= item["latitude"] <= int(lat) + tol:
+                    if int(lng) - tol <= item["longitude"] <= int(lng) + tol and \
+                            int(lat) - tol <= item["latitude"] <= int(lat) + tol:
                         if key not in closest:
                             closest.append(key)
-                if len(closest) > 3:
+                if len(closest) > 10:
                     found = True
                 else:
                     tol += 1
 
-
             if closest and len(closest) >= 1:
                 self.TimeZoneClosestCityChanged.emit(closest)
-
 
             for key, value in self.zone_location.items():
                 if self.zone_location[key]['left'] <= event.pos().x() < self.zone_location[key]['right']:
