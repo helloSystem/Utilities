@@ -39,7 +39,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.dt_set_date_time_manual.dateTimeChanged.connect(
             lambda: self.timer.stop() if self.dt_set_date_time_manual.dateTime().toString(
                 'H:mm:ss AP') != self.get_current_datetime().toString('H:mm:ss AP') else None)
-        self.timezone_world_map_widget.TimeZoneSelectionChanged.connect(self.__timezone_selection_changed)
+        self.TimeZoneComboBox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
+        self.timezone_world_map_widget.TimeZoneClosestCityChanged.connect(self.__timezone_closest_city_changed)
 
     def initial_state(self):
         self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
@@ -305,19 +306,19 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             self.dt_set_date_manual.setEnabled(True)
             self.calendarWidget.setEnabled(True)
 
+    def __timezone_closest_city_changed(self, value):
+        self.TimeZoneComboBox.clear()
+        self.TimeZoneComboBox.addItems(sorted(value))
 
-    def __timezone_selection_changed(self):
-        self.tz_time_zone_value.setText(self.timezone_world_map_widget.TimeZoneSelection)
-        utc_plus1 = [
-            "Berlin", "Frankfurt", "Munich", "Rome", "Milan", "Paris", "Madrid", "Barcelona", "Warsaw", "Prague", "Zagreb", "Budapest",
-            "Brussels", "Amsterdam", "Vienna", "Luxembourg City", "Copenhagen", "Stockholm", "Oslo", "Bern", "Zurich", "Tirana", "Sarajevo",
-            "Pristina", "Valletta", "Monte Carlo", "Podgorica", "Skopje", "San Marino", "Dogana", "Belgrade", "Bratislava", "Ljubljana",
-            "Vatican City", "Monaco", "Monaco - Ville", "Westside"
-        ]
-        if self.timezone_world_map_widget.TimeZoneSelection == "+1":
-            self.TimeZoneComboBox.addItems(utc_plus1)
-        else:
-            self.TimeZoneComboBox.clear()
+    def __timezone_combobox_index_changed(self):
+        if self.TimeZoneComboBox.currentText():
+            code = ", ".join(self.timezone_world_map_widget.zone1970_db[self.TimeZoneComboBox.currentText()]["code"])
+
+            if "comments" in self.timezone_world_map_widget.zone1970_db[self.TimeZoneComboBox.currentText()]:
+                comments = self.timezone_world_map_widget.zone1970_db[self.TimeZoneComboBox.currentText()]["comments"]
+                self.tz_time_zone_value.setText(f"{code} - {comments}")
+            else:
+                self.tz_time_zone_value.setText(f"{code}")
 
 
 if __name__ == "__main__":
