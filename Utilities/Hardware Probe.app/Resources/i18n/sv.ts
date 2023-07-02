@@ -27,7 +27,9 @@
         <source>&lt;p&gt;This utility collects hardware details of your computer and can anonymously upload them to a public database.&lt;/p&gt;
         &lt;p&gt;This can help users and operating system developers to collaboratively debug hardware related issues, check for operating system compatibility and find drivers.&lt;/p&gt;
         &lt;p&gt;You will get a permanent probe URL to view and share collected information.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;&lt;p&gt;Det här verktyget samlar in hårdvaruinformation om din dator och kan anonymt ladda upp dem till en offentlig databas.&lt;/p&gt;&lt;/p&gt;
+        &lt;p&gt;Detta kan hjälpa användare och operativsystemutvecklare att tillsammans felsöka maskinvarurelaterade problem, kontrollera operativsystemets kompatibilitet och hitta drivrutiner.&lt;/p&gt;
+        &lt;p&gt;Du får en permanent prob-URL för att visa och dela insamlad information.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>Show Hardware Probe</source>
