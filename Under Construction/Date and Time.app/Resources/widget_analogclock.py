@@ -1,5 +1,6 @@
 # Thanks a lot rakshitarora who provide the template code
 # https://www.geeksforgeeks.org/pyqt5-qdateedit-getting-input-date/
+# Clock face generate via https://www.oliverboorman.biz/projects/tools/clocks.php
 
 # importing libraries
 from PyQt5.QtWidgets import *
