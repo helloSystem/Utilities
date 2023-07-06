@@ -41,6 +41,12 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.dt_set_date_time_manual.dateTimeChanged.connect(
             lambda: self.timer.stop() if self.dt_set_date_time_manual.dateTime().toString(
                 'H:mm:ss AP') != self.get_current_datetime().toString('H:mm:ss AP') else None)
+
+        # Date and Time
+        self.dat_calendar_widget.selectionChanged.connect(self.__dat_calendar_widget_changed)
+        self.dat_date_widget.dateTimeChanged.connect(self.__dat_date_widget_changed)
+
+        # Time Zone
         self.tz_closest_city_combobox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
         self.timezone_world_map_widget.TimeZoneClosestCityChanged.connect(self.__timezone_closest_city_changed)
         self.set_time_zone_automatically_checkbox.toggled.connect(self.__checkbox_set_time_zone_automatically_changed)
@@ -58,12 +64,14 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
     def initial_state(self):
 
         self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
+        self.dat_date_widget.setDate(self.get_current_date())
+
         # self.setDateTimeAutomatically(False)
         # self.tz_time_zone_label.setText(self.get_current_time_zone())
 
     def refresh(self):
         self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
-        self.dt_set_date_manual.setDate(self.get_current_date())
+
 
         # # Help menu
         # self.help_menu = self.menuBar().addMenu("Help")
@@ -382,7 +390,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             if self.action_set_time_zone_automatically.isChecked():
                 self.action_set_time_zone_automatically.setChecked(False)
 
-
     def __action_set_time_zone_automatically_changed(self):
         if self.action_set_time_zone_automatically.isChecked():
 
@@ -396,6 +403,12 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             # Prevent loop with the action menu
             if self.set_time_zone_automatically_checkbox.isChecked():
                 self.set_time_zone_automatically_checkbox.setChecked(False)
+
+    def __dat_calendar_widget_changed(self):
+        self.dat_date_widget.setDate(self.dat_calendar_widget.selectedDate())
+
+    def __dat_date_widget_changed(self):
+        self.dat_calendar_widget.setSelectedDate(self.dat_date_widget.date())
 
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()

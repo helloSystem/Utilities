@@ -134,7 +134,7 @@
            </widget>
           </item>
           <item row="4" column="0" alignment="Qt::AlignHCenter">
-           <widget class="QCalendarWidget" name="calendarWidget">
+           <widget class="QCalendarWidget" name="dat_calendar_widget">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -255,7 +255,7 @@
            </widget>
           </item>
           <item row="2" column="0" alignment="Qt::AlignHCenter">
-           <widget class="QDateEdit" name="dt_set_date_manual">
+           <widget class="QDateEdit" name="dat_date_widget">
             <property name="font">
              <font>
               <family>Nimbus Sans</family>
