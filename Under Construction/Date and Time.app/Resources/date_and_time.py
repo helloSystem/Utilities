@@ -43,7 +43,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
                 'H:mm:ss AP') != self.get_current_datetime().toString('H:mm:ss AP') else None)
         self.tz_closest_city_combobox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
         self.timezone_world_map_widget.TimeZoneClosestCityChanged.connect(self.__timezone_closest_city_changed)
-        self.set_time_zone_automatically_checkbox.toggled.connect(self.set_time_zone_auto)
+        self.set_time_zone_automatically_checkbox.toggled.connect(self.__checkbox_set_time_zone_automatically_changed)
 
         # Undo, cut, copy, paste, and delete actions. Undo is disabled.
         # They have the default shortcuts. When invoked, the corresponding
@@ -52,21 +52,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.action_copy.triggered.connect(lambda: self.send_shortcut(Qt.Key_C, Qt.ControlModifier))
         self.action_paste.triggered.connect(lambda: self.send_shortcut(Qt.Key_V, Qt.ControlModifier))
         self.action_delete.triggered.connect(lambda: self.send_shortcut(Qt.Key_Delete, Qt.NoModifier))
-        self.action_set_date_and_time_automatically.triggered.connect(self.__action_set_date_and_time_automatically_changed)
+        self.action_set_date_and_time_automatically.changed.connect(self.__action_set_date_and_time_automatically_changed)
+        self.action_set_time_zone_automatically.changed.connect(self.__action_set_time_zone_automatically_changed)
 
     def initial_state(self):
 
-
-
-
-        # self.edit_menu.addSeparator()
-        #
-        # self.edit_menu.addAction("Set Date and Time automatically",
-        #                          self.set_date_time_auto)
-        # self.edit_menu.addAction("Set time zone automatically",
-        #                          self.set_time_zone_auto)
-        #
-        self.error_dialog = QErrorMessage()
         self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
         # self.setDateTimeAutomatically(False)
         # self.tz_time_zone_label.setText(self.get_current_time_zone())
@@ -242,12 +232,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
                 self.set_time_zone_automatically_checkbox.setChecked(False)
 
         if self.set_time_zone_automatically_checkbox.isChecked():
-            self.tz_closest_city_label.setEnabled(False)
-            self.tz_closest_city_combobox.setEnabled(False)
-            self.timezone_world_map_widget.setEnabled(False)
-            self.tz_time_zone_label.setEnabled(False)
-            self.tz_time_zone_value.setEnabled(False)
-
             req = QNetworkRequest(QUrl("http://ip-api.com/line?fields=timezone"))
 
             self.nam = QNetworkAccessManager()
@@ -255,14 +239,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             self.nam.get(req)
 
             # TODO: Set language, keyboard,, etc. automatically based on geolocation if user allows
-        else:
-            self.tz_closest_city_label.setEnabled(True)
-            self.tz_closest_city_combobox.setEnabled(True)
-            self.timezone_world_map_widget.setEnabled(True)
-            self.tz_time_zone_label.setEnabled(True)
-            self.tz_time_zone_value.setEnabled(True)
-
-
 
     def get_current_time_zone(self):
         with open('/etc/timezone') as file:
@@ -355,6 +331,71 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             # Prevent loop with the action menu
             if self.date_and_time_auto_checkbox.isChecked():
                 self.date_and_time_auto_checkbox.setChecked(False)
+
+    def __checkbox_set_time_zone_automatically_changed(self):
+        if self.date_and_time_auto_checkbox.isChecked():
+            self.ntp_servers_comboBox.setEnabled(True)
+
+            self.dt_set_date_time_manual.setEnabled(False)
+            self.dt_use_24h_clock.setEnabled(False)
+            self.analog_clock_widget.setEnabled(False)
+
+            self.dt_set_date_manual.setEnabled(False)
+            self.calendarWidget.setEnabled(False)
+
+            # Prevent loop with the action menu
+            if not self.action_set_date_and_time_automatically.isChecked():
+                self.action_set_date_and_time_automatically.setChecked(True)
+
+        else:
+            self.ntp_servers_comboBox.setEnabled(False)
+
+            self.dt_set_date_time_manual.setEnabled(True)
+            self.dt_use_24h_clock.setEnabled(True)
+            self.analog_clock_widget.setEnabled(True)
+
+            self.dt_set_date_manual.setEnabled(True)
+            self.calendarWidget.setEnabled(True)
+
+            # Prevent loop with the action menu
+            if self.action_set_date_and_time_automatically.isChecked():
+                self.action_set_date_and_time_automatically.setChecked(False)
+        if self.set_time_zone_automatically_checkbox.isChecked():
+            self.tz_closest_city_label.setEnabled(False)
+            self.tz_closest_city_combobox.setEnabled(False)
+            self.timezone_world_map_widget.setEnabled(False)
+            self.tz_time_zone_label.setEnabled(False)
+            self.tz_time_zone_value.setEnabled(False)
+
+            # Prevent loop with the action menu
+            if not self.action_set_time_zone_automatically.isChecked():
+                self.action_set_time_zone_automatically.setChecked(True)
+
+        else:
+            self.tz_closest_city_label.setEnabled(True)
+            self.tz_closest_city_combobox.setEnabled(True)
+            self.timezone_world_map_widget.setEnabled(True)
+            self.tz_time_zone_label.setEnabled(True)
+            self.tz_time_zone_value.setEnabled(True)
+
+            # Prevent loop with the action menu
+            if self.action_set_time_zone_automatically.isChecked():
+                self.action_set_time_zone_automatically.setChecked(False)
+
+
+    def __action_set_time_zone_automatically_changed(self):
+        if self.action_set_time_zone_automatically.isChecked():
+
+            # Prevent loop with the action menu
+            if not self.set_time_zone_automatically_checkbox.isChecked():
+                self.set_time_zone_automatically_checkbox.setChecked(True)
+
+            self.set_time_zone_auto()
+        else:
+
+            # Prevent loop with the action menu
+            if self.set_time_zone_automatically_checkbox.isChecked():
+                self.set_time_zone_automatically_checkbox.setChecked(False)
 
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()
