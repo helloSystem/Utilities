@@ -233,9 +233,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             er = reply.error()
 
             if er == QNetworkReply.NoError:
-                self.tz_time_zone_value.setText(
-                    bytes(reply.readAll()).decode("utf-8").strip("\n")
-                )
+                self.tz_closest_city_combobox.clear()
+                self.tz_closest_city_combobox.addItem(bytes(reply.readAll()).decode("utf-8").strip("\n"))
             else:
                 self.show_error_dialog(
                     message=f"Error occurred: {er}<br>{'<br>'.join(reply.errorString().split(' - '))}"
@@ -245,8 +244,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         if self.set_time_zone_automatically_checkbox.isChecked():
             self.tz_closest_city_label.setEnabled(False)
             self.tz_closest_city_combobox.setEnabled(False)
+            self.timezone_world_map_widget.setEnabled(False)
+            self.tz_time_zone_label.setEnabled(False)
+            self.tz_time_zone_value.setEnabled(False)
 
-            req = QNetworkRequest(QUrl("http://ip-api.co/line?fields=timezone"))
+            req = QNetworkRequest(QUrl("http://ip-api.com/line?fields=timezone"))
 
             self.nam = QNetworkAccessManager()
             self.nam.finished.connect(handleResponse)
@@ -256,6 +258,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         else:
             self.tz_closest_city_label.setEnabled(True)
             self.tz_closest_city_combobox.setEnabled(True)
+            self.timezone_world_map_widget.setEnabled(True)
+            self.tz_time_zone_label.setEnabled(True)
+            self.tz_time_zone_value.setEnabled(True)
+
+
 
     def get_current_time_zone(self):
         with open('/etc/timezone') as file:

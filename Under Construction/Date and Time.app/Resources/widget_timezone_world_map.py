@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget
+from PyQt5.QtWidgets import QWidget, QApplication
 from PyQt5.QtCore import pyqtSignal, pyqtProperty, Qt
 from PyQt5.QtGui import QPainter, QImage, QColor, QPen
 
@@ -139,13 +139,19 @@ class TimeZoneWorldMap(QWidget):
 
         # Load image dinamically
         if rec >= 1280:
-            map_file = "2560px-World_map_with_nations.png"
+            map_file = "2560px-World_map_with_nations"
         elif rec >= 640:
-            map_file = "1280px-World_map_with_nations.png"
+            map_file = "1280px-World_map_with_nations"
         elif rec:
-            map_file = "640px-World_map_with_nations.png"
+            map_file = "640px-World_map_with_nations"
         else:
-            map_file = "320px-World_map_with_nations.png"
+            map_file = "320px-World_map_with_nations"
+
+        if self.isEnabled():
+            map_file += ".png"
+        else:
+            map_file += "_disable.png"
+
         # The image is scale to fit allowed size
         self.bg = QImage(os.path.join(
             os.path.dirname(__file__),
@@ -252,7 +258,7 @@ class TimeZoneWorldMap(QWidget):
             tol = 5
             found = False
             closest = []
-            while found == False:
+            while not found:
                 for key, item in self.zone1970_db.items():
                     if int(lng) - tol <= item["longitude"] <= int(lng) + tol and \
                             int(lat) - tol <= item["latitude"] <= int(lat) + tol:
