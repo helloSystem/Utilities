@@ -58,7 +58,7 @@
        </string>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="iconSize">
        <size>
@@ -405,7 +405,7 @@
          </widget>
         </item>
         <item>
-         <widget class="TimeZoneWorldMap" name="timezone_world_map_widget" native="true">
+         <widget class="TimeZoneWorldMap" name="tz_time_zone_world_map_widget" native="true">
           <property name="sizePolicy">
            <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
             <horstretch>0</horstretch>

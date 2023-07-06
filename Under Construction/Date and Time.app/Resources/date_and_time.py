@@ -47,7 +47,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.DateTimeAutomaticallyChanged.connect(self.__checkbox_set_date_and_time_automatically_changed)
         self.date_and_time_auto_checkbox.toggled.connect(self.__checkbox_set_date_and_time_automatically_changed)
 
-
         # Date and Time
         self.dat_calendar_widget.selectionChanged.connect(self.__dat_calendar_widget_changed)
         self.dat_dateedit_widget.dateTimeChanged.connect(self.__dat_dateedit_widget_changed)
@@ -55,7 +54,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
 
         # Time Zone
         self.tz_closest_city_combobox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
-        self.timezone_world_map_widget.TimeZoneClosestCityChanged.connect(self.__timezone_closest_city_changed)
+        self.tz_time_zone_world_map_widget.TimeZoneClosestCityChanged.connect(self.__timezone_closest_city_changed)
         self.set_time_zone_automatically_checkbox.toggled.connect(self.__checkbox_set_time_zone_automatically_changed)
 
         # Undo, cut, copy, paste, and delete actions. Undo is disabled.
@@ -65,7 +64,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.action_copy.triggered.connect(lambda: self.send_shortcut(Qt.Key_C, Qt.ControlModifier))
         self.action_paste.triggered.connect(lambda: self.send_shortcut(Qt.Key_V, Qt.ControlModifier))
         self.action_delete.triggered.connect(lambda: self.send_shortcut(Qt.Key_Delete, Qt.NoModifier))
-        self.action_set_date_and_time_automatically.changed.connect(self.__action_set_date_and_time_automatically_changed)
+        self.action_set_date_and_time_automatically.changed.connect(
+            self.__action_set_date_and_time_automatically_changed)
         self.action_set_time_zone_automatically.changed.connect(self.__action_set_time_zone_automatically_changed)
 
     def initial_state(self):
@@ -80,7 +80,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.dat_timeedit_widget.setDateTime(self.dat_timeedit_widget.dateTime().addSecs(1))
         # self.dat_date_widget.setDate(self.dat_date_widget.date().addSecs(1))
         self.dat_clock_widget.time = self.dat_timeedit_widget.time()
-
 
         # # Help menu
         # self.help_menu = self.menuBar().addMenu("Help")
@@ -182,7 +181,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.time_zone_tab = QWidget(self)
         self.time_zone_tab.setLayout(self.grid_layout_time_zone)
 
-    def get_current_datetime(self):
+    @staticmethod
+    def get_current_datetime():
         # try:
         #     # Get the current date and time
         #     result = subprocess.run(["date", "+%Y-%m-%d %H:%M:%S"],
@@ -193,7 +193,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         #                            f"An error occurred while getting the current Date and Time: {e.stderr}")
         return QDateTime.currentDateTime()
 
-    def get_current_date(self):
+    @staticmethod
+    def get_current_date():
         return QDate.currentDate()
 
     def set_date_time_manual(self):
@@ -314,11 +315,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         if self.date_and_time_auto_checkbox.isChecked():
             self.ntp_servers_comboBox.setEnabled(True)
 
-            self.dt_set_date_time_manual.setEnabled(False)
+            self.dat_timeedit_widget.setEnabled(False)
             self.dt_use_24h_clock.setEnabled(False)
-            self.analog_clock_widget.setEnabled(False)
+            self.dat_clock_widget.setEnabled(False)
 
-            self.dat_date_widget.setEnabled(False)
+            self.dat_dateedit_widget.setEnabled(False)
             self.dat_calendar_widget.setEnabled(False)
 
             # Prevent loop with the action menu
@@ -328,11 +329,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         else:
             self.ntp_servers_comboBox.setEnabled(False)
 
-            self.dt_set_date_time_manual.setEnabled(True)
+            self.dat_timeedit_widget.setEnabled(True)
             self.dt_use_24h_clock.setEnabled(True)
-            self.analog_clock_widget.setEnabled(True)
+            self.dat_clock_widget.setEnabled(True)
 
-            self.dat_date_widget.setEnabled(True)
+            self.dat_dateedit_widget.setEnabled(True)
             self.dat_calendar_widget.setEnabled(True)
 
             # Prevent loop with the action menu
@@ -352,37 +353,10 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
                 self.date_and_time_auto_checkbox.setChecked(False)
 
     def __checkbox_set_time_zone_automatically_changed(self):
-        if self.date_and_time_auto_checkbox.isChecked():
-            self.ntp_servers_comboBox.setEnabled(True)
-
-            self.dt_set_date_time_manual.setEnabled(False)
-            self.dt_use_24h_clock.setEnabled(False)
-            self.analog_clock_widget.setEnabled(False)
-
-            self.dt_set_date_manual.setEnabled(False)
-            self.calendarWidget.setEnabled(False)
-
-            # Prevent loop with the action menu
-            if not self.action_set_date_and_time_automatically.isChecked():
-                self.action_set_date_and_time_automatically.setChecked(True)
-
-        else:
-            self.ntp_servers_comboBox.setEnabled(False)
-
-            self.dt_set_date_time_manual.setEnabled(True)
-            self.dt_use_24h_clock.setEnabled(True)
-            self.analog_clock_widget.setEnabled(True)
-
-            self.dt_set_date_manual.setEnabled(True)
-            self.calendarWidget.setEnabled(True)
-
-            # Prevent loop with the action menu
-            if self.action_set_date_and_time_automatically.isChecked():
-                self.action_set_date_and_time_automatically.setChecked(False)
         if self.set_time_zone_automatically_checkbox.isChecked():
             self.tz_closest_city_label.setEnabled(False)
             self.tz_closest_city_combobox.setEnabled(False)
-            self.timezone_world_map_widget.setEnabled(False)
+            self.tz_time_zone_world_map_widget.setEnabled(False)
             self.tz_time_zone_label.setEnabled(False)
             self.tz_time_zone_value.setEnabled(False)
 
@@ -393,7 +367,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         else:
             self.tz_closest_city_label.setEnabled(True)
             self.tz_closest_city_combobox.setEnabled(True)
-            self.timezone_world_map_widget.setEnabled(True)
+            self.tz_time_zone_world_map_widget.setEnabled(True)
             self.tz_time_zone_label.setEnabled(True)
             self.tz_time_zone_value.setEnabled(True)
 
@@ -430,15 +404,16 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
 
     def __timezone_combobox_index_changed(self):
         if self.tz_closest_city_combobox.currentText():
-            code = ", ".join(self.timezone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()]["code"])
+            code = ", ".join(
+                self.tz_time_zone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()]["code"])
 
-            if "comments" in self.timezone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()]:
-                comments = self.timezone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()]["comments"]
+            if "comments" in self.tz_time_zone_world_map_widget.zone1970_db[
+                self.tz_closest_city_combobox.currentText()]:
+                comments = self.tz_time_zone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()][
+                    "comments"]
                 self.tz_time_zone_value.setText(f"{code} - {comments}")
             else:
                 self.tz_time_zone_value.setText(f"{code}")
-
-
 
 
 if __name__ == "__main__":
