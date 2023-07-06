@@ -1,5 +1,5 @@
 from PyQt5.QtCore import (
-    pyqtProperty, pyqtSignal
+    pyqtProperty, pyqtSignal, QTime
 )
 
 
@@ -10,19 +10,19 @@ class Time(object):
         super().__init__()
 
         self.__time = None
-        self.Time = None
+        self.time = None
 
-    @pyqtProperty(int)
-    def Time(self):
+    @pyqtProperty(QTime)
+    def time(self):
         return self.__time
 
-    @Time.setter
-    def Time(self, value):
+    @time.setter
+    def time(self, value):
         if value is None:
-            value = 0.0
+            value = QTime.currentTime()
         if self.__time != value:
             self.__time = value
             self.TimeChanged.emit()
 
     def setTime(self, value):
-        self.Time = value
+        self.time = value

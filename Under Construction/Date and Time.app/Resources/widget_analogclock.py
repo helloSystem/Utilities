@@ -10,15 +10,17 @@ from PyQt5.QtCore import *
 import sys
 import os
 
+from property_time import Time
 
 # creating a clock class
-class AnalogClock(QWidget):
+class AnalogClock(QWidget, Time):
     timeChanged = pyqtSignal(QTime)
     timeZoneChanged = pyqtSignal(int)
 
     # constructor
     def __init__(self, parent=None):
         QWidget.__init__(self, parent)
+        Time.__init__(self)
 
         self.timeZoneOffset = 0
 
@@ -54,6 +56,8 @@ class AnalogClock(QWidget):
         # color for second hand
         self.sColor = QColor(255, 162, 0, 255)
 
+        self.setTime(QTime.currentTime())
+
     # method for paint event
     def paintEvent(self, event):
 
@@ -62,7 +66,7 @@ class AnalogClock(QWidget):
         rec = min(self.width(), self.height())
 
         # getting current time
-        tik = QTime.currentTime()
+        # self.time = self.time.addSecs(1)
 
         # creating a painter object
         painter = QPainter(self)
@@ -126,9 +130,9 @@ class AnalogClock(QWidget):
         painter.setPen(QtCore.Qt.NoPen)
 
         # draw each hand
-        drawPointer(self.bColor, (30 * (tik.hour() + tik.minute() / 60)), self.hPointer)
-        drawPointer(self.bColor, (6 * (tik.minute() + tik.second() / 60)), self.mPointer)
-        drawPointer(self.sColor, (6 * tik.second()), self.sPointer)
+        drawPointer(self.bColor, (30 * (self.time.hour() + self.time.minute() / 60)), self.hPointer)
+        drawPointer(self.bColor, (6 * (self.time.minute() + self.time.second() / 60)), self.mPointer)
+        drawPointer(self.sColor, (6 * self.time.second()), self.sPointer)
 
         # ending the painter
         painter.setPen(QPen(self.bColor, 2, Qt.SolidLine))

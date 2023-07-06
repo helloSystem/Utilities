@@ -26,9 +26,17 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         DateTimeAutomatically.__init__(self)
         self.error_dialog = None
         self.setupUi(self)
-        self.analog_clock_widget.show()
+        self.dat_clock_widget.show()
         self.timer = QTimer()
         self.timer.start(1000)
+
+        self.system_date = None
+        self.system_time = None
+        self.system_timezone = None
+
+        self.date = None
+        self.time = None
+        self.timezone = None
 
         self.initial_state()
         self.signalsConnect()
@@ -38,13 +46,12 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.actionHelpAbout.triggered.connect(self.show_about)
         self.DateTimeAutomaticallyChanged.connect(self.__checkbox_set_date_and_time_automatically_changed)
         self.date_and_time_auto_checkbox.toggled.connect(self.__checkbox_set_date_and_time_automatically_changed)
-        self.dt_set_date_time_manual.dateTimeChanged.connect(
-            lambda: self.timer.stop() if self.dt_set_date_time_manual.dateTime().toString(
-                'H:mm:ss AP') != self.get_current_datetime().toString('H:mm:ss AP') else None)
+
 
         # Date and Time
         self.dat_calendar_widget.selectionChanged.connect(self.__dat_calendar_widget_changed)
-        self.dat_date_widget.dateTimeChanged.connect(self.__dat_date_widget_changed)
+        self.dat_dateedit_widget.dateTimeChanged.connect(self.__dat_dateedit_widget_changed)
+        self.dat_timeedit_widget.dateTimeChanged.connect(self.__dat_timeedit_widget_changed)
 
         # Time Zone
         self.tz_closest_city_combobox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
@@ -63,14 +70,16 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
 
     def initial_state(self):
 
-        self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
-        self.dat_date_widget.setDate(self.get_current_date())
+        self.dat_timeedit_widget.setDateTime(self.get_current_datetime())
+        self.dat_dateedit_widget.setDate(self.get_current_date())
 
         # self.setDateTimeAutomatically(False)
         # self.tz_time_zone_label.setText(self.get_current_time_zone())
 
     def refresh(self):
-        self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
+        self.dat_timeedit_widget.setDateTime(self.dat_timeedit_widget.dateTime().addSecs(1))
+        # self.dat_date_widget.setDate(self.dat_date_widget.date().addSecs(1))
+        self.dat_clock_widget.time = self.dat_timeedit_widget.time()
 
 
         # # Help menu
@@ -91,6 +100,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         # # Connect to the resizeEvent of the window to update the position of the spinner
         # self.resizeEvent = lambda event: self.spinner.move(
         #     -20, self.height() - self.spinner.height() - 10)
+        if not self.timer.isActive():
+            self.timer.start()
 
     def send_shortcut(self, key_code, modifier):
         # Send shortcut to currently focused widget like Ctrl+C, Ctrl+V, etc.
@@ -307,8 +318,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             self.dt_use_24h_clock.setEnabled(False)
             self.analog_clock_widget.setEnabled(False)
 
-            self.dt_set_date_manual.setEnabled(False)
-            self.calendarWidget.setEnabled(False)
+            self.dat_date_widget.setEnabled(False)
+            self.dat_calendar_widget.setEnabled(False)
 
             # Prevent loop with the action menu
             if not self.action_set_date_and_time_automatically.isChecked():
@@ -321,8 +332,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             self.dt_use_24h_clock.setEnabled(True)
             self.analog_clock_widget.setEnabled(True)
 
-            self.dt_set_date_manual.setEnabled(True)
-            self.calendarWidget.setEnabled(True)
+            self.dat_date_widget.setEnabled(True)
+            self.dat_calendar_widget.setEnabled(True)
 
             # Prevent loop with the action menu
             if self.action_set_date_and_time_automatically.isChecked():
@@ -405,10 +416,13 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
                 self.set_time_zone_automatically_checkbox.setChecked(False)
 
     def __dat_calendar_widget_changed(self):
-        self.dat_date_widget.setDate(self.dat_calendar_widget.selectedDate())
+        self.dat_dateedit_widget.setDate(self.dat_calendar_widget.selectedDate())
 
-    def __dat_date_widget_changed(self):
-        self.dat_calendar_widget.setSelectedDate(self.dat_date_widget.date())
+    def __dat_dateedit_widget_changed(self):
+        self.dat_calendar_widget.setSelectedDate(self.dat_dateedit_widget.date())
+
+    def __dat_timeedit_widget_changed(self):
+        self.dat_clock_widget.setTime(self.dat_timeedit_widget.time())
 
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()
