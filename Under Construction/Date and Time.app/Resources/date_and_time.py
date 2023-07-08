@@ -396,7 +396,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.dat_calendar_widget.setSelectedDate(self.dat_dateedit_widget.date())
 
     def __dat_timeedit_widget_changed(self):
-        self.dat_clock_widget.setTime(self.dat_timeedit_widget.time())
+        pass
+        # self.dat_clock_widget.setTime(self.dat_timeedit_widget.time())
 
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()
