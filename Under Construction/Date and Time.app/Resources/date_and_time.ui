@@ -230,31 +230,13 @@
             </property>
            </widget>
           </item>
-          <item row="5" column="3" alignment="Qt::AlignHCenter|Qt::AlignTop">
+          <item row="5" column="3">
            <widget class="AnalogClock" name="dat_clock_widget" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="minimumSize">
-             <size>
-              <width>160</width>
-              <height>160</height>
-             </size>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>600</width>
-              <height>600</height>
-             </size>
-            </property>
-            <property name="baseSize">
-             <size>
-              <width>200</width>
-              <height>200</height>
-             </size>
             </property>
            </widget>
           </item>
