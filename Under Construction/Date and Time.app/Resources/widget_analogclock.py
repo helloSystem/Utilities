@@ -14,6 +14,7 @@ from PyQt5.QtGui import (
 )
 import sys
 import os
+import math
 
 from property_time import Time
 
@@ -43,6 +44,7 @@ class AnalogClock(QWidget, Time):
         # creating second hand
         self.sPointer = QPolygon(QRect(-1, 20, 2, -107))
 
+
         # colors
         # color for minute and hour hand
         self.bColor = None
@@ -52,7 +54,9 @@ class AnalogClock(QWidget, Time):
         # color for number clock face
         self.ClockFaceNumbColor = None
         self.ClockFaceHourColor = None
+        self.ClockFaceHourFont = QFont("Nimbus Sans", 13, QFont.Bold)
         self.ClockFaceMinuteColor = None
+        self.ClockFaceAmPm = None
 
         self.pen_square = None
         self.pen_round = None
@@ -82,6 +86,7 @@ class AnalogClock(QWidget, Time):
             self.ClockFaceNumbColor = QColor(0, 124, 202, 255)
             self.ClockFaceHourColor = QColor(29, 103, 188, 255)
             self.ClockFaceMinuteColor = QColor(74, 120, 157, 255)
+            self.ClockFaceAmPm = Qt.darkGray
 
             # Face clock background
             bg = QImage(os.path.join(
@@ -90,13 +95,16 @@ class AnalogClock(QWidget, Time):
             )).scaled(rec, rec, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         else:
             # self.ClockFaceNumbColor
-            self.ClockFaceNumbColor = QColor(120, 120, 120, 255)
-            self.ClockFaceHourColor = QColor(120, 120, 120, 255)
-            self.ClockFaceMinuteColor = QColor(120, 120, 120, 255)
+            gray = QColor(146, 146, 146, 255)
+            self.ClockFaceNumbColor = gray
+            self.ClockFaceHourColor = gray
+            self.ClockFaceMinuteColor = gray
+            self.ClockFaceAmPm = gray
+
             # color for minute and hour hand
-            self.bColor = QColor(120, 120, 120, 255)
+            self.bColor = gray
             # color for second hand
-            self.sColor = QColor(160, 160, 160, 255)
+            self.sColor = gray
 
             bg = QImage(os.path.join(
                 os.path.dirname(__file__),
@@ -112,6 +120,7 @@ class AnalogClock(QWidget, Time):
         # set pen out of a loop
         self.pen_square = QPen(self.ClockFaceHourColor, 2, Qt.SolidLine, Qt.SquareCap, Qt.MiterJoin)
         self.pen_round = QPen(self.ClockFaceMinuteColor, 3.2, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+        self.pen_am_pm = QPen(self.ClockFaceAmPm, 2, Qt.SolidLine)
 
 
 
@@ -158,33 +167,27 @@ class AnalogClock(QWidget, Time):
             # rotating the painter
             painter.rotate(6)
 
-        # Circle
-        # painter.setPen(Qt.NoPen)
-        # painter.setPen(QPen(self.bColor, 2))
-        # painter.drawEllipse(-97,
-        #                     -97,
-        #                     194, 194)
-
-
         # AM / PM
         painter.setPen(Qt.NoPen)
-        painter.setPen(QPen(Qt.darkGray, 2, Qt.SolidLine))
-        painter.setFont(QFont('Nimbus Sans', 20))
+        painter.setPen(self.pen_am_pm)
+        painter.setFont(QFont('Nimbus Sans', 19))
         if self.time.hour() <= 0 <= 12:
-            painter.drawText(-20, 50, "AM")
+            painter.drawText(-15, 45, "AM")
         else:
-            painter.drawText(-20, 50, "PM")
+            painter.drawText(-15, 45, "PM")
 
+        # Clock Face Number in hard for take less CPU
         painter.setPen(Qt.NoPen)
         painter.setPen(QPen(self.ClockFaceNumbColor, 2, Qt.SolidLine))
-        painter.setFont(QFont("Nimbus Sans", 13, QFont.Bold))
+        painter.setFont(self.ClockFaceHourFont)
+
         painter.drawText(-9, -62, "12")
         painter.drawText(29, -52, "1")
         painter.drawText(55, -29, "2")
         painter.drawText(65, 7, "3")
         painter.drawText(54, 40, "4")
         painter.drawText(30, 63, "5")
-        painter.drawText(-5, 73, "6")
+        painter.drawText(-4, 72, "6")
         painter.drawText(-38, 64, "7")
         painter.drawText(-64, 40, "8")
         painter.drawText(-73, 6, "9")
