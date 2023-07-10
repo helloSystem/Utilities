@@ -8,7 +8,7 @@ import subprocess
 import sys
 import os
 import time
-from PyQt5.QtCore import Qt, QDateTime, QTimer, QDate, QUrl
+from PyQt5.QtCore import Qt, QDateTime, QTimer, QDate, QUrl, QFile, QFileInfo, QTextCodec
 from PyQt5.QtWidgets import (QApplication, QDateTimeEdit, QGridLayout,
                              QGroupBox, QLabel, QMainWindow, QMessageBox,
                              QPushButton, QTabWidget, QVBoxLayout, QWidget, QErrorMessage)
@@ -24,11 +24,9 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
     def __init__(self):
         super().__init__()
         DateTimeAutomatically.__init__(self)
+
         self.error_dialog = None
-        self.setupUi(self)
-        self.dat_clock_widget.show()
-        self.timer = QTimer()
-        self.timer.start(1000)
+        self.timer = None
 
         self.system_date = None
         self.system_time = None
@@ -38,11 +36,29 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.time = None
         self.timezone = None
 
+        self.timezone_file_path = None
+        self.timezone_file = None
+
+        self.setupUi(self)
         self.initial_state()
         self.signalsConnect()
 
+
+    def initial_state(self):
+        self.timezone_file_path = "/etc/timezone"
+        self.timezone_file = QFile(self.timezone_file_path)
+        self.timer = QTimer()
+        self.timer.start(1000)
+        self.dat_timeedit_widget.setDateTime(self.get_current_datetime())
+        self.dat_dateedit_widget.setDate(self.get_current_date())
+
+        # self.setDateTimeAutomatically(False)
+        # self.tz_time_zone_label.setText(self.get_current_time_zone())
+        self.__timezone_closest_city_changed([self.get_timezone_file_content()])
+
     def signalsConnect(self):
         self.timer.timeout.connect(self.refresh)
+
         self.actionHelpAbout.triggered.connect(self.show_about)
         self.DateTimeAutomaticallyChanged.connect(self.__checkbox_set_date_and_time_automatically_changed)
         self.date_and_time_auto_checkbox.toggled.connect(self.__checkbox_set_date_and_time_automatically_changed)
@@ -67,14 +83,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
         self.action_set_date_and_time_automatically.changed.connect(
             self.__action_set_date_and_time_automatically_changed)
         self.action_set_time_zone_automatically.changed.connect(self.__action_set_time_zone_automatically_changed)
-
-    def initial_state(self):
-
-        self.dat_timeedit_widget.setDateTime(self.get_current_datetime())
-        self.dat_dateedit_widget.setDate(self.get_current_date())
-
-        # self.setDateTimeAutomatically(False)
-        # self.tz_time_zone_label.setText(self.get_current_time_zone())
 
     def refresh(self):
         self.dat_timeedit_widget.setDateTime(self.dat_timeedit_widget.dateTime().addSecs(1))
@@ -260,15 +268,34 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
 
             # TODO: Set language, keyboard,, etc. automatically based on geolocation if user allows
 
-    def get_current_time_zone(self):
-        with open('/etc/timezone') as file:
-            data = file.readlines()
+    def get_timezone_file_content(self):
 
-        for line in data:
-            if line.startswith("#"):
-                pass
-            else:
-                return line.strip("\n")
+        if not QFile.exists(self.timezone_file_path):
+            self.show_error_dialog("File %s could not be found." % self.timezone_file_path)
+
+        try:
+            file_handle = QFile(self.timezone_file_path)
+            file_handle.open(QFile.ReadOnly)
+            data = file_handle.readAll()
+            codec = QTextCodec.codecForUtfText(data)
+            # for line in QTextCodec.codecForUtfText(data):
+            #     if line.startswith("#"):
+            #         pass
+            #     else:
+            #         return line.strip("\n")
+            return codec.toUnicode(data).strip("\n")
+        except (Exception, BaseException):
+            self.show_error_dialog("Problem reading file %s" % self.timezone_file_path)
+
+
+        # with open(self.timezone_file_path) as file:
+        #     data = file.readlines()
+        #
+        # for line in data:
+        #     if line.startswith("#"):
+        #         pass
+        #     else:
+        #         return line.strip("\n")
 
     @staticmethod
     def show_error_dialog(message):
@@ -402,6 +429,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()
         self.tz_closest_city_combobox.addItems(sorted(value))
+        self.__timezone_combobox_index_changed()
 
     def __timezone_combobox_index_changed(self):
         if self.tz_closest_city_combobox.currentText():
