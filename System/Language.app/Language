@@ -185,6 +185,55 @@ from which the language could be automatically detected.")
         selected_language = getattr(self.list_widget.selectedItems()[0], "language")
         print(selected_language)
 
+        # Manually write a /usr/local/var/localize/include file with the following format:
+        # LANG="de_DE.UTF-8"
+        # MM_CHARSET="de_DE.UTF-8"
+        # TZ="Europe/Berlin"
+
+        # Table that maps supported_languages languages to the corresponding time zone.
+        # https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+        timezones = {
+            "en_US.UTF-8": "America/New_York",
+            "fr_FR.UTF-8": "Europe/Paris",
+            "de_DE.UTF-8": "Europe/Berlin",
+            "es_ES.UTF-8": "Europe/Madrid",
+            "it_IT.UTF-8": "Europe/Rome",
+            "nl_NL.UTF-8": "Europe/Amsterdam",
+            "sv_SE.UTF-8": "Europe/Stockholm",
+            "no_NO.UTF-8": "Europe/Oslo",
+            "da_DK.UTF-8": "Europe/Copenhagen",
+            "fi_FI.UTF-8": "Europe/Helsinki",
+            "ru_RU.UTF-8": "Europe/Moscow",
+            "pl_PL.UTF-8": "Europe/Warsaw",
+            "pt_BR.UTF-8": "America/Sao_Paulo",
+            "pt_PT.UTF-8": "Europe/Lisbon",
+            "zh_CN.UTF-8": "Asia/Shanghai",
+            "zh_TW.UTF-8": "Asia/Taipei",
+            "jp_JP.UTF-8": "Asia/Tokyo",
+            "ko_KR.UTF-8": "Asia/Seoul"
+        }
+
+        # Create the string to be written
+        string_to_be_written = "LANG=\"%s\"\n" % selected_language
+        string_to_be_written = string_to_be_written + "MM_CHARSET=\"%s\"\n" % selected_language
+        if selected_language in timezones:
+            string_to_be_written = string_to_be_written + "TZ=\"%s\"\n" % timezones[selected_language]
+        else:
+            eprint("No time zone found for %s" % selected_language)
+            eprint("Please add it to the list in the source code.")
+            exit(1)
+
+        # Write to /usr/local/var/localize/include
+        eprint("Writing to /usr/local/var/localize/include")
+        command = "echo -n '%s' | sudo -A -E tee /usr/local/var/localize/include" % string_to_be_written
+        print(command)
+        result = os.system(command)
+        if result != 0:
+            eprint("Writing to /usr/local/var/localize/include failed.")
+            exit(1)
+        else:
+            eprint("Writing to /usr/local/var/localize/include succeeded.")
+
         # Get the corresponding prev_lang_kbd
         selected_index = self.list_widget.currentRow()
         prev_lang_kbd = self.nvram_prev_lang_kbd[selected_index]
