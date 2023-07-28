@@ -223,6 +223,18 @@ from which the language could be automatically detected.")
             eprint("Please add it to the list in the source code.")
             exit(1)
 
+        # Create the directory if it does not exist yet
+        if not os.path.exists("/usr/local/var/localize"):
+            eprint("Creating /usr/local/var/localize")
+            command = "sudo -A -E mkdir -p /usr/local/var/localize"
+            print(command)
+            result = os.system(command)
+            if result != 0:
+                eprint("Creating /usr/local/var/localize failed.")
+                exit(1)
+            else:
+                eprint("Creating /usr/local/var/localize succeeded.")
+
         # Write to /usr/local/var/localize/include
         eprint("Writing to /usr/local/var/localize/include")
         command = "echo -n '%s' | sudo -A -E tee /usr/local/var/localize/include" % string_to_be_written
