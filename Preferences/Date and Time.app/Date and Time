@@ -9,7 +9,7 @@ import sys
 import os
 import time
 from PyQt5.QtCore import Qt, QDateTime, QTimer
-from PyQt5.QtWidgets import (QApplication, QDateTimeEdit, QGridLayout,
+from PyQt5.QtWidgets import ( QApplication, QDateTimeEdit, QGridLayout,
                              QGroupBox, QLabel, QMainWindow, QMessageBox,
                              QPushButton, QTabWidget, QVBoxLayout, QWidget)
 from PyQt5.QtGui import QMovie, QKeyEvent, QPixmap
