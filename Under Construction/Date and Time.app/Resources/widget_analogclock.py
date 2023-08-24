@@ -14,7 +14,6 @@ from PyQt5.QtGui import (
 )
 import sys
 import os
-import math
 
 from property_time import Time
 
@@ -30,6 +29,12 @@ class AnalogClock(QWidget, Time):
         Time.__init__(self)
 
         self.qp = None
+
+        # background image
+        self.background_image_path = None
+        self.background_image_disable_path = None
+        self.background_image = None
+        self.background_image_disable = None
 
         # Hands Pointers
         self.hour_pointer = None
@@ -51,7 +56,7 @@ class AnalogClock(QWidget, Time):
         self.clock_face_hour_color = None
         self.clock_face_hour_disable_color = None
 
-        self.ClockFaceHourFont = None
+        self.font_face_clock_hours = None
 
         self.clock_face_minute_color = None
         self.clock_face_minute_disable_color = None
@@ -64,6 +69,7 @@ class AnalogClock(QWidget, Time):
 
         self.pen_am_pm = None
         self.pen_am_pm_disable = None
+        self.font_face_clock_am_pm = None
 
         self.pen_square_disable = None
         self.pen_round_disable = None
@@ -71,10 +77,23 @@ class AnalogClock(QWidget, Time):
         self.pen_clock_face_number = None
         self.pen_clock_face_number_disable = None
 
+        self.pen_dot_illusion = None
+        self.pen_dot_illusion_disable = None
+
+        self.brush_dot_illusion = None
+        self.brush_dot_illusion_disable = None
+
         self.setupUi()
-        self.initialState()
+        self.setup()
 
     def setupUi(self):
+        # setting window title
+        self.setWindowTitle('Clock')
+
+        # setting window geometry
+        self.setGeometry(200, 200, 300, 300)
+
+    def setup(self):
         # creating hour hand
         self.hour_pointer = QPolygon(QRect(-2, 10, 4, -58))
 
@@ -84,14 +103,21 @@ class AnalogClock(QWidget, Time):
         # creating second hand
         self.second_pointer = QPolygon(QRect(-1, 20, 2, -107))
 
-        self.ClockFaceHourFont = QFont("Nimbus Sans", 13, QFont.Bold)
+        self.font_face_clock_hours = QFont("Nimbus Sans", 13, QFont.Bold)
 
-    def initialState(self):
-        # setting window title
-        self.setWindowTitle('Clock')
+        self.font_face_clock_am_pm = QFont('Nimbus Sans', 19)
 
-        # setting window geometry
-        self.setGeometry(200, 200, 300, 300)
+        self.background_image_path = os.path.join(
+                os.path.dirname(__file__),
+                "clock_face2.png"
+            )
+        self.background_image_disable_path = os.path.join(
+                os.path.dirname(__file__),
+                "clock_face2_disable.png"
+            )
+
+        self.background_image = QImage(self.background_image_path)
+        self.background_image_disable = QImage(self.background_image_disable_path)
 
         # set time one file for the first time (indirect system ask)
         self.setTime(QTime.currentTime())
@@ -134,6 +160,12 @@ class AnalogClock(QWidget, Time):
         self.pen_clock_face_number = QPen(self.clock_face_number_color, 2, Qt.SolidLine)
         self.pen_clock_face_number_disable = QPen(self.clock_face_number_disable_color, 2, Qt.SolidLine)
 
+        self.pen_dot_illusion = QPen(self.minute_pointer_color, 2, Qt.SolidLine)
+        self.pen_dot_illusion_disable = QPen(self.minute_pointer_disable_color, 2, Qt.SolidLine)
+
+        self.brush_dot_illusion = QBrush(self.minute_pointer_color, Qt.SolidPattern)
+        self.brush_dot_illusion_disable = QBrush(self.minute_pointer_disable_color, Qt.SolidPattern)
+
     # method for paint event
     def paintEvent(self, event):
 
@@ -142,7 +174,7 @@ class AnalogClock(QWidget, Time):
         # tune up painter
         self.qp.setRenderHint(QPainter.Antialiasing)
 
-        # drawing background
+        # # drawing background
         self.__draw_background_image()
 
         # translating the painter
@@ -172,54 +204,40 @@ class AnalogClock(QWidget, Time):
         # set current pen as no pen
         self.qp.setPen(Qt.NoPen)
         if self.isEnabled():
-            self.__draw_pointer(
-                self.hour_pointer_color,
-                (6 * self.time.second()),
-                self.second_pointer
-            )
-            self.__draw_pointer(
-                self.minute_pointer_color,
-                (30 * (self.time.hour() + self.time.minute() / 60)),
-                self.hour_pointer
-            )
-            self.__draw_pointer(
-                self.second_pointer_color,
-                (6 * (self.time.minute() + self.time.second() / 60)),
-                self.minute_pointer
-            )
+            hour_pointer_color = self.hour_pointer_color
+            minute_pointer_color = self.minute_pointer_color
+            second_pointer_color = self.second_pointer_color
         else:
-            self.__draw_pointer(
-                self.hour_pointer_disable_color,
-                (6 * self.time.second()),
-                self.second_pointer
-            )
-            self.__draw_pointer(
-                self.minute_pointer_disable_color,
-                (30 * (self.time.hour() + self.time.minute() / 60)),
-                self.hour_pointer
-            )
-            self.__draw_pointer(
-                self.second_pointer_disable_color,
-                (6 * (self.time.minute() + self.time.second() / 60)),
-                self.minute_pointer
-            )
+            hour_pointer_color = Qt.darkGray
+            minute_pointer_color = Qt.darkGray
+            second_pointer_color = Qt.gray
+        self.__draw_pointer(
+            second_pointer_color,
+            (6 * self.time.second()),
+            self.second_pointer
+        )
+        self.__draw_pointer(
+            hour_pointer_color,
+            (30 * (self.time.hour() + self.time.minute() / 60)),
+            self.hour_pointer
+        )
+        self.__draw_pointer(
+            minute_pointer_color,
+            (6 * (self.time.minute() + self.time.second() / 60)),
+            self.minute_pointer
+        )
 
     def __draw_background_image(self):
         rec = min(self.width(), self.height())
+
         if self.isEnabled():
-            bg = QImage(os.path.join(
-                os.path.dirname(__file__),
-                "clock_face2.png"
-            )).scaled(rec, rec, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            bg = self.background_image.scaled(rec, rec, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         else:
-            bg = QImage(os.path.join(
-                os.path.dirname(__file__),
-                "clock_face2_disable.png"
-            )).scaled(rec, rec, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            bg = self.background_image_disable.scaled(rec, rec, Qt.KeepAspectRatio, Qt.SmoothTransformation)
 
         # drawing background
-        self.qp.drawImage(int(self.width() / 2 - bg.width() / 2),
-                          int(self.height() / 2 - bg.height() / 2),
+        self.qp.drawImage(int((self.width() - bg.width()) / 2),
+                          int((self.height() - bg.height()) / 2),
                           bg
                           )
 
@@ -265,7 +283,7 @@ class AnalogClock(QWidget, Time):
         # AM / PM
         self.qp.setPen(Qt.NoPen)
         self.qp.setPen(self.pen_am_pm)
-        self.qp.setFont(QFont('Nimbus Sans', 19))
+        self.qp.setFont(self.font_face_clock_am_pm)
 
         if self.time.hour() <= 0 <= 12:
             self.qp.drawText(-15, 45, "AM")
@@ -274,12 +292,13 @@ class AnalogClock(QWidget, Time):
 
     def __draw_small_center_illusion(self):
         # the small circle for center illusion
+        self.qp.setPen(Qt.NoPen)
         if self.isEnabled():
-            self.qp.setPen(QPen(self.minute_pointer_color, 2, Qt.SolidLine))
-            self.qp.setBrush(QBrush(self.minute_pointer_color, Qt.SolidPattern))
+            self.qp.setPen(self.pen_dot_illusion)
+            self.qp.setBrush(self.brush_dot_illusion)
         else:
-            self.qp.setPen(QPen(self.minute_pointer_disable_color, 2, Qt.SolidLine))
-            self.qp.setBrush(QBrush(self.minute_pointer_disable_color, Qt.SolidPattern))
+            self.qp.setPen(self.pen_dot_illusion_disable)
+            self.qp.setBrush(self.brush_dot_illusion_disable)
         self.qp.drawEllipse(-3, -3, 6, 6)
 
     def __draw_face_clock_numbers(self):
@@ -289,7 +308,7 @@ class AnalogClock(QWidget, Time):
         else:
             self.qp.setPen(self.pen_clock_face_number_disable)
 
-        self.qp.setFont(self.ClockFaceHourFont)
+        self.qp.setFont(self.font_face_clock_hours)
 
         # Clock Face Number location is set in hard for take less CPU (Yes i know, me too ...)
         self.qp.drawText(-9, -62, "12")
