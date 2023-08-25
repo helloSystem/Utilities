@@ -75,7 +75,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>Processes.png</pixmap>
+          <pixmap>../../../Under Construction/Processes.app/Resources/Processes.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -102,6 +102,14 @@
          </property>
          <item>
           <widget class="QLabel" name="Title">
+           <property name="font">
+            <font>
+             <family>Nimbus Sans</family>
+             <weight>75</weight>
+             <italic>false</italic>
+             <bold>true</bold>
+            </font>
+           </property>
            <property name="styleSheet">
             <string notr="true">QLabel {
                                                   font: bold
@@ -115,6 +123,11 @@
          </item>
          <item>
           <widget class="QLabel" name="Label">
+           <property name="font">
+            <font>
+             <family>Nimbus Sans</family>
+            </font>
+           </property>
            <property name="text">
             <string>Do you really want to quit '%s'?</string>
            </property>
@@ -163,6 +176,11 @@
        </property>
        <item>
         <widget class="QPushButton" name="button_cancel">
+         <property name="font">
+          <font>
+           <family>Nimbus Sans</family>
+          </font>
+         </property>
          <property name="text">
           <string>Cancel</string>
          </property>
@@ -183,6 +201,11 @@
        </item>
        <item>
         <widget class="QPushButton" name="button_force_quit">
+         <property name="font">
+          <font>
+           <family>Nimbus Sans</family>
+          </font>
+         </property>
          <property name="text">
           <string>Force Quit</string>
          </property>
@@ -190,6 +213,11 @@
        </item>
        <item>
         <widget class="QPushButton" name="button_quit">
+         <property name="font">
+          <font>
+           <family>Nimbus Sans</family>
+          </font>
+         </property>
          <property name="text">
           <string>Quit</string>
          </property>

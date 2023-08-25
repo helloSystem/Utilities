@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>696</width>
-    <height>454</height>
+    <width>659</width>
+    <height>502</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -33,6 +33,11 @@
     </property>
     <item>
      <widget class="QTabWidget" name="tabWidget">
+      <property name="font">
+       <font>
+        <family>Nimbus Sans</family>
+       </font>
+      </property>
       <property name="styleSheet">
        <string notr="true">QTabWidget::tab-bar {
         alignment: center;
@@ -71,18 +76,34 @@
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
+          <property name="font">
+           <font>
+            <family>Nimbus Sans</family>
+           </font>
+          </property>
           <property name="text">
            <string>Please select a network interface for information</string>
           </property>
          </widget>
         </item>
         <item alignment="Qt::AlignLeft">
-         <widget class="QComboBox" name="info_nic_list_combobox"/>
+         <widget class="QComboBox" name="info_nic_list_combobox">
+          <property name="font">
+           <font>
+            <family>Nimbus Sans</family>
+           </font>
+          </property>
+         </widget>
         </item>
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
            <widget class="QGroupBox" name="groupBox">
+            <property name="font">
+             <font>
+              <family>Nimbus Sans</family>
+             </font>
+            </property>
             <property name="title">
              <string>Interface Information</string>
             </property>
@@ -104,6 +125,11 @@
              </property>
              <item row="5" column="0" alignment="Qt::AlignTop">
               <widget class="QLabel" name="info_stats_mtu">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>MTU</string>
                </property>
@@ -114,6 +140,11 @@
              </item>
              <item row="0" column="0">
               <widget class="QLabel" name="info_hardware_address">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Hardware Address</string>
                </property>
@@ -124,6 +155,11 @@
              </item>
              <item row="4" column="0" alignment="Qt::AlignTop">
               <widget class="QLabel" name="info_stats_duplex">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Duplex</string>
                </property>
@@ -134,6 +170,11 @@
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="label_9">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Link Speed</string>
                </property>
@@ -150,6 +191,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -160,6 +206,11 @@
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="info_addrs">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>IP Address(es)</string>
                </property>
@@ -170,6 +221,11 @@
              </item>
              <item row="3" column="0">
               <widget class="QLabel" name="info_stats_status">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Link Status</string>
                </property>
@@ -180,6 +236,11 @@
              </item>
              <item row="0" column="1">
               <widget class="QLabel" name="info_hardware_address_value">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -209,6 +270,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -231,6 +297,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -246,6 +317,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string/>
@@ -263,6 +339,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -276,6 +357,11 @@
           </item>
           <item>
            <widget class="QGroupBox" name="groupBox_2">
+            <property name="font">
+             <font>
+              <family>Nimbus Sans</family>
+             </font>
+            </property>
             <property name="title">
              <string>Transfer statistics</string>
             </property>
@@ -303,6 +389,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -313,6 +404,11 @@
              </item>
              <item row="0" column="0">
               <widget class="QLabel" name="info_sent_bytes">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Send Bytes</string>
                </property>
@@ -323,6 +419,11 @@
              </item>
              <item row="3" column="0">
               <widget class="QLabel" name="info_sent_drops">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Send Drops</string>
                </property>
@@ -338,6 +439,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string/>
@@ -355,6 +461,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -371,6 +482,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -381,6 +497,11 @@
              </item>
              <item row="7" column="0">
               <widget class="QLabel" name="info_recv_drops">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Recv Drops</string>
                </property>
@@ -396,6 +517,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string/>
@@ -413,6 +539,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -423,6 +554,11 @@
              </item>
              <item row="5" column="0">
               <widget class="QLabel" name="info_recv_pkts">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Recv Packets</string>
                </property>
@@ -433,6 +569,11 @@
              </item>
              <item row="4" column="0">
               <widget class="QLabel" name="info_recv_bytes">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Recv Bytes</string>
                </property>
@@ -449,6 +590,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string/>
                </property>
@@ -459,6 +605,11 @@
              </item>
              <item row="1" column="0">
               <widget class="QLabel" name="info_sent_pkts">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Send Packets</string>
                </property>
@@ -469,6 +620,11 @@
              </item>
              <item row="6" column="0">
               <widget class="QLabel" name="info_recv_errs">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Recv Errors</string>
                </property>
@@ -479,6 +635,11 @@
              </item>
              <item row="2" column="0">
               <widget class="QLabel" name="info_sent_errs">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Send Errors</string>
                </property>
@@ -494,6 +655,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string/>
@@ -548,7 +714,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>150</height>
+            <height>155</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -573,10 +739,15 @@
            <item>
             <widget class="QRadioButton" name="netstat_radiobutton_route">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
              </property>
              <property name="text">
               <string>Display routing table information</string>
@@ -589,10 +760,15 @@
            <item>
             <widget class="QRadioButton" name="netstat_radiobutton_statistics">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
              </property>
              <property name="text">
               <string>Display comprehensive network statistics for each protocol</string>
@@ -602,10 +778,15 @@
            <item>
             <widget class="QRadioButton" name="netstat_radiobuttion_listening">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
              </property>
              <property name="text">
               <string>Display the stat of all current socket connections</string>
@@ -615,10 +796,15 @@
            <item>
             <widget class="QRadioButton" name="netstat_radiobutton_groups">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
              </property>
              <property name="text">
               <string>Display multicast information</string>
@@ -626,30 +812,51 @@
             </widget>
            </item>
            <item>
-            <spacer name="verticalSpacer">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <property name="leftMargin">
+              <number>0</number>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>20</width>
-               <height>40</height>
-              </size>
+             <property name="topMargin">
+              <number>0</number>
              </property>
-            </spacer>
-           </item>
-           <item alignment="Qt::AlignRight">
-            <widget class="QPushButton" name="netstat_button">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
+             <property name="rightMargin">
+              <number>0</number>
              </property>
-             <property name="text">
-              <string>Netstat</string>
+             <property name="bottomMargin">
+              <number>0</number>
              </property>
-            </widget>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QPushButton" name="netstat_button">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
+               <property name="text">
+                <string>Netstat</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
           </layout>
          </widget>
@@ -658,7 +865,7 @@
          <widget class="QTextBrowser" name="netstat_text_browser">
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Nimbus Mono PS</family>
            </font>
           </property>
           <property name="lineWrapMode">
@@ -696,7 +903,7 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>150</height>
+            <height>155</height>
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_10">
@@ -720,6 +927,11 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Please enter an internet address to lookup</string>
              </property>
@@ -728,7 +940,13 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
-              <widget class="QLineEdit" name="lookup_address_lineedit"/>
+              <widget class="QLineEdit" name="lookup_address_lineedit">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="label_5">
@@ -737,6 +955,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; vertical-align:sub;&quot;&gt;(ex. 192.168.42.1 or www.example.com)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -749,6 +972,11 @@
             <layout class="QHBoxLayout" name="horizontalLayout_5">
              <item>
               <widget class="QCheckBox" name="lookup_use_server_checkbox">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Use a specific lookup server</string>
                </property>
@@ -759,12 +987,22 @@
                <property name="enabled">
                 <bool>false</bool>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
               </widget>
              </item>
             </layout>
            </item>
            <item>
             <widget class="QLabel" name="label_6">
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Select the information to lookup:</string>
              </property>
@@ -817,6 +1055,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <item>
                 <property name="text">
@@ -903,13 +1146,18 @@
                </property>
               </spacer>
              </item>
-             <item>
+             <item alignment="Qt::AlignRight|Qt::AlignVCenter">
               <widget class="QPushButton" name="lookup_button">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string>Lookup</string>
@@ -925,7 +1173,7 @@
          <widget class="QTextBrowser" name="lookup_text_browser">
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Nimbus Mono PS</family>
            </font>
           </property>
           <property name="lineWrapMode">
@@ -963,7 +1211,7 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>150</height>
+            <height>155</height>
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -987,6 +1235,11 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Please enter the network address to ping</string>
              </property>
@@ -1005,6 +1258,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
               </widget>
              </item>
              <item>
@@ -1014,6 +1272,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; vertical-align:sub;&quot;&gt;(ex. 192.168.42.1 or www.exemple.com)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1030,6 +1293,11 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Send a nunber ilimited of pings</string>
              </property>
@@ -1044,6 +1312,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string>Send only</string>
@@ -1063,6 +1336,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="frame">
                 <bool>true</bool>
@@ -1089,6 +1367,11 @@
                  <verstretch>0</verstretch>
                 </sizepolicy>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>pings</string>
                </property>
@@ -1109,13 +1392,18 @@
              </property>
             </spacer>
            </item>
-           <item alignment="Qt::AlignRight">
+           <item alignment="Qt::AlignRight|Qt::AlignVCenter">
             <widget class="QPushButton" name="ping_button">
              <property name="sizePolicy">
-              <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
              </property>
              <property name="text">
               <string>Ping</string>
@@ -1129,7 +1417,7 @@
          <widget class="QTextBrowser" name="ping_text_browser">
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Nimbus Mono PS</family>
            </font>
           </property>
           <property name="lineWrapMode">
@@ -1167,7 +1455,7 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>150</height>
+            <height>155</height>
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_11">
@@ -1191,6 +1479,11 @@
                <verstretch>0</verstretch>
               </sizepolicy>
              </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Please enter the network address to trace an internet route to</string>
              </property>
@@ -1199,7 +1492,13 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
-              <widget class="QLineEdit" name="traceroute_address_lineedit"/>
+              <widget class="QLineEdit" name="traceroute_address_lineedit">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="label_8">
@@ -1208,6 +1507,11 @@
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; vertical-align:sub;&quot;&gt;(ex. 192.168.42.1 or www.example.com)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1232,13 +1536,18 @@
              </property>
             </spacer>
            </item>
-           <item alignment="Qt::AlignRight">
+           <item alignment="Qt::AlignRight|Qt::AlignVCenter">
             <widget class="QPushButton" name="traceroute_button">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>
                <verstretch>0</verstretch>
               </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
              </property>
              <property name="text">
               <string>Trace</string>
@@ -1252,7 +1561,7 @@
          <widget class="QTextBrowser" name="traceroute_text_browser">
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Nimbus Mono PS</family>
            </font>
           </property>
           <property name="lineWrapMode">
@@ -1290,7 +1599,7 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>150</height>
+            <height>155</height>
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_6">
@@ -1308,6 +1617,11 @@
            </property>
            <item>
             <widget class="QLabel" name="whois_please_label_1">
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Please enter a domain address to look up is &quot;whois&quot; information</string>
              </property>
@@ -1316,10 +1630,21 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_8">
              <item>
-              <widget class="QLineEdit" name="whois_address_lineedit"/>
+              <widget class="QLineEdit" name="whois_address_lineedit">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="whois_example_label_1">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; vertical-align:sub;&quot;&gt;(ex. 192.168.42.1 or www.example.com)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
@@ -1329,6 +1654,11 @@
            </item>
            <item>
             <widget class="QLabel" name="whois_please_label_2">
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Please enter or select a whois server to search</string>
              </property>
@@ -1336,6 +1666,11 @@
            </item>
            <item>
             <widget class="QComboBox" name="whois_combox">
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <item>
               <property name="text">
                <string>default</string>
@@ -1361,8 +1696,19 @@
              </property>
             </spacer>
            </item>
-           <item alignment="Qt::AlignRight">
+           <item alignment="Qt::AlignRight|Qt::AlignVCenter">
             <widget class="QPushButton" name="whois_button">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Whois</string>
              </property>
@@ -1375,7 +1721,7 @@
          <widget class="QTextBrowser" name="whois_text_browser">
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Nimbus Mono PS</family>
            </font>
           </property>
           <property name="lineWrapMode">
@@ -1413,7 +1759,7 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>150</height>
+            <height>155</height>
            </size>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_12">
@@ -1431,6 +1777,11 @@
            </property>
            <item>
             <widget class="QLabel" name="finger_please_label">
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Please enter a user name and domain address to finger that user</string>
              </property>
@@ -1439,20 +1790,42 @@
            <item>
             <layout class="QHBoxLayout" name="horizontalLayout_7">
              <item>
-              <widget class="QLineEdit" name="finger_username_lineedit"/>
+              <widget class="QLineEdit" name="finger_username_lineedit">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="finger_at_label">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>@</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QLineEdit" name="finger_domain_lineedit"/>
+              <widget class="QLineEdit" name="finger_domain_lineedit">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="finger_example_label_1">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; vertical-align:sub;&quot;&gt;(ex. user@example.com)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
@@ -1473,8 +1846,19 @@
              </property>
             </spacer>
            </item>
-           <item alignment="Qt::AlignRight">
+           <item alignment="Qt::AlignRight|Qt::AlignVCenter">
             <widget class="QPushButton" name="finger_button">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Finger</string>
              </property>
@@ -1487,7 +1871,7 @@
          <widget class="QTextBrowser" name="finger_text_browser">
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Nimbus Mono PS</family>
            </font>
           </property>
           <property name="lineWrapMode">
@@ -1519,7 +1903,7 @@
           <property name="minimumSize">
            <size>
             <width>0</width>
-            <height>150</height>
+            <height>155</height>
            </size>
           </property>
           <property name="maximumSize">
@@ -1543,6 +1927,11 @@
            </property>
            <item>
             <widget class="QLabel" name="label_15">
+             <property name="font">
+              <font>
+               <family>Nimbus Sans</family>
+              </font>
+             </property>
              <property name="text">
               <string>Please enter an internet or IP address to scan for open ports</string>
              </property>
@@ -1563,10 +1952,21 @@
               <number>0</number>
              </property>
              <item>
-              <widget class="QLineEdit" name="port_scan_address_lineedit"/>
+              <widget class="QLineEdit" name="port_scan_address_lineedit">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="label_16">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; vertical-align:sub;&quot;&gt;(ex. www.example.com or 192,168.42.1)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
@@ -1606,6 +2006,11 @@
              </property>
              <item>
               <widget class="QCheckBox" name="port_scan_use_port_range_checkbox">
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Only test ports between</string>
                </property>
@@ -1615,6 +2020,11 @@
               <widget class="QSpinBox" name="port_scan_port_from">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="buttonSymbols">
                 <enum>QAbstractSpinBox::NoButtons</enum>
@@ -1632,6 +2042,11 @@
                <property name="enabled">
                 <bool>false</bool>
                </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>and</string>
                </property>
@@ -1641,6 +2056,11 @@
               <widget class="QSpinBox" name="port_scan_port_to">
                <property name="enabled">
                 <bool>false</bool>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
                </property>
                <property name="buttonSymbols">
                 <enum>QAbstractSpinBox::NoButtons</enum>
@@ -1669,8 +2089,19 @@
                </property>
               </spacer>
              </item>
-             <item>
+             <item alignment="Qt::AlignVCenter">
               <widget class="QPushButton" name="port_scan_button">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="font">
+                <font>
+                 <family>Nimbus Sans</family>
+                </font>
+               </property>
                <property name="text">
                 <string>Scan</string>
                </property>
@@ -1685,7 +2116,7 @@
          <widget class="QTextBrowser" name="port_scan_text_browser">
           <property name="font">
            <font>
-            <family>Monospace</family>
+            <family>Nimbus Mono PS</family>
            </font>
           </property>
           <property name="lineWrapMode">
@@ -1704,7 +2135,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>696</width>
+     <width>659</width>
      <height>24</height>
     </rect>
    </property>
