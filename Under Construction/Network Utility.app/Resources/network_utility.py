@@ -95,7 +95,7 @@ class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
             for i in range(self.info_nic_list_combobox.count())
         ]
 
-        # Make an update of the combobox only when require
+        # Make an update of the combobox only when required
         if figure_nic_list != actual_nic_list:
             # poor Qt and it .clear() method, the widget haven't Model capability
             self.info_nic_list_combobox.clear()
@@ -724,9 +724,9 @@ class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
                 with open(os.path.join(os.path.dirname(__file__), candidate), 'r') as file:
                     data = file.read()
                 msg.setDetailedText(data)
-        msg.setText("<h3>Metwork Utility</h3>")
+        msg.setText("<h3>Network Utility</h3>")
         msg.setInformativeText(
-            "A network utility application write in pyQt5 on top of system utilities.<br><br>"
+            "A network utility application written in PyQt5 on top of system utilities.<br><br>"
             "Visit <a href='https://github.com/helloSystem/Utilities/'>"
             "<span style=' text-decoration: underline; color:#0000ff;'>"
             "https://github.com/helloSystem/Utilities/</span></a>"
