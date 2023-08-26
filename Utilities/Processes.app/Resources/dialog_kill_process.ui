@@ -117,7 +117,7 @@
                                               </string>
            </property>
            <property name="text">
-            <string>Are you sure you want to quit this process ?</string>
+            <string>Are you sure you want to quit this process?</string>
            </property>
           </widget>
          </item>
