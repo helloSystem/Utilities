@@ -50,6 +50,9 @@ from worker_icons_cache import IconsCacheWorker
 
 from utility import bytes2human
 
+# Copyright (c) 2023, Jérôme Ornech alias Hierosme
+__version__ = "0.2"
+__author__ = ["Jérôme Ornech alias Hierosme"]
 
 class Window(
     QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivity, TabDiskUsage, TabNetwork, TreeViewProcess
@@ -767,7 +770,7 @@ class Window(
                     os.path.dirname(__file__),
                     "Processes.png"
                 )
-            ).scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            ).scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
         candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
         for candidate in candidates:
@@ -777,14 +780,9 @@ class Window(
                 msg.setDetailedText(data)
         msg.setText("<h3>Processes</h3>")
         msg.setInformativeText(
-            "A activity monitor application write in pyQt5 on top of psutil.<br><br>"
-            "Visit <a href='https://github.com/helloSystem/Utilities/'>"
-            "<span style=' text-decoration: underline; color:#0000ff;'>"
-            "https://github.com/helloSystem/Utilities/</span></a>"
-            "for more information or to report bug and/or suggest a new feature."
-            "<p align='center'><span style=' font-size:14pt; vertical-align:sub;'>"
-            "Make with love by Jérôme ORNECH alias Hierosme<br/>"
-            "Copyright 2023-2024 helloSystem Team. All rights reserved.</span></p>"
+            "A activity monitor application write in pyQt5 on top of "
+            "<a href='https://github.com/giampaolo/psutil'>psutil</a>.<br><br>"
+            "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
         )
         msg.exec()
 
