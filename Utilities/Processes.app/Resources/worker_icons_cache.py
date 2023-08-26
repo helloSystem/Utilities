@@ -24,6 +24,7 @@ class IconsCacheWorker(QObject):
     def refresh(self):
         for p in psutil.process_iter():
 
+
             application_name = get_process_application_name(p)
 
             if application_name:

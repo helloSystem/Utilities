@@ -7,7 +7,7 @@ import os
 from collections import deque
 
 # Qt import
-from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool
+from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool, QCoreApplication
 from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem, QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
@@ -714,7 +714,10 @@ class Window(
     def _refresh_icons_cache(self, application_icons):
         for application_name, icon in application_icons.items():
             if application_name not in self.__icons:
-                self.__icons[application_name] = icon
+                if icon.isNull():
+                    self.__icons[application_name] = QIcon(os.path.join(os.path.dirname(__file__), "Empty.png"))
+                else:
+                    self.__icons[application_name] = icon
 
     def _showInspectProcessDialog(self):
         if self.ActionMenuViewInspectProcess.isEnabled():
