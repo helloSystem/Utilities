@@ -12,6 +12,7 @@
 #
 # Copyright (c) 2019, Leodanis Pozo Ramos
 # Portions Copyright (c) 2020, Simon Peter <probono@puredarwin.org>
+# Portions Copyright (c) 2023, Jérôme Ornech alias Hierosme
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
