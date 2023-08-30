@@ -109,6 +109,8 @@ class Window(
         self.inspect_process_dialogs = {}
         self.sample_process_dialogs = {}
 
+        self.icon_empty = None
+
         self.setupUi(self)
         self.setupCustomUi()
 
@@ -131,6 +133,7 @@ class Window(
         self.setupCustomUiToolBar()
 
         # Icon and Pixmap are loaded without qressouces file
+        self.icon_empty = QIcon(os.path.join(os.path.dirname(__file__), "Empty.png"))
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Processes.png")))
         self.ActionToolBarQuitProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "KillProcess.png")))
         self.ActionToolBarInspectProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "Inspect.png")))
@@ -715,7 +718,7 @@ class Window(
         for application_name, icon in application_icons.items():
             if application_name not in self.__icons:
                 if icon.isNull():
-                    self.__icons[application_name] = QIcon(os.path.join(os.path.dirname(__file__), "Empty.png"))
+                    self.__icons[application_name] = self.icon_empty
                 else:
                     self.__icons[application_name] = icon
 
