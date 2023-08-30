@@ -716,7 +716,7 @@ class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
                     os.path.dirname(__file__),
                     "Network Utility.png"
                 )
-            ).scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            ).scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
         candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
         for candidate in candidates:
@@ -727,15 +727,11 @@ class DialogNetworkUtility(QMainWindow, Ui_MainWindow):
         msg.setText("<h3>Network Utility</h3>")
         msg.setInformativeText(
             "A network utility application written in PyQt5 on top of system utilities.<br><br>"
-            "Visit <a href='https://github.com/helloSystem/Utilities/'>"
-            "<span style=' text-decoration: underline; color:#0000ff;'>"
-            "https://github.com/helloSystem/Utilities/</span></a>"
-            "for more information or to report bug and/or suggest a new feature."
-            "<p align='center'><span style=' font-size:14pt; vertical-align:sub;'>"
-            "Make with love by Jérôme ORNECH alias Hierosme<br/>"
-            "Copyright 2023-2024 helloSystem Team. All rights reserved.</span></p>"
+            "<a href='https://github.com/helloSystem/Utilities/'>"
+            "https://github.com/helloSystem/Utilities/</a>"
         )
         msg.exec()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
