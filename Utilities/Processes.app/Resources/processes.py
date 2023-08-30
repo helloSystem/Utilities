@@ -7,7 +7,7 @@ import os
 from collections import deque
 
 # Qt import
-from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool, QCoreApplication
+from PyQt5.QtCore import Qt, QTimer, QThread, QThreadPool
 from PyQt5.QtGui import QKeySequence, QStandardItemModel, QStandardItem, QIcon, QPixmap
 from PyQt5.QtWidgets import (
     QApplication,
@@ -50,9 +50,9 @@ from worker_icons_cache import IconsCacheWorker
 
 from utility import bytes2human
 
-# Copyright (c) 2023, Jérôme Ornech alias Hierosme
 __version__ = "0.2"
 __author__ = ["Jérôme Ornech alias Hierosme"]
+
 
 class Window(
     QMainWindow, Ui_MainWindow, TabCpu, TabSystemMemory, TabDiskActivity, TabDiskUsage, TabNetwork, TreeViewProcess
