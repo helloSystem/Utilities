@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>282</width>
+    <height>185</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
+    <property name="spacing">
+     <number>0</number>
+    </property>
+    <property name="leftMargin">
+     <number>0</number>
+    </property>
+    <property name="topMargin">
+     <number>0</number>
+    </property>
+    <property name="rightMargin">
+     <number>0</number>
+    </property>
+    <property name="bottomMargin">
+     <number>0</number>
+    </property>
+    <item>
+     <widget class="QWidget" name="widget_19" native="true">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>3</number>
+       </property>
+       <property name="topMargin">
+        <number>3</number>
+       </property>
+       <property name="rightMargin">
+        <number>3</number>
+       </property>
+       <property name="bottomMargin">
+        <number>3</number>
+       </property>
+       <item>
+        <widget class="QFrame" name="frame">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: rgb(74, 74, 74);
+color: rgb(228, 228, 228);</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::WinPanel</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Sunken</enum>
+         </property>
+         <property name="lineWidth">
+          <number>2</number>
+         </property>
+         <property name="midLineWidth">
+          <number>2</number>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLineEdit" name="display">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="minimumSize">
+             <size>
+              <width>0</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>48</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <family>Nimbus Mono PS</family>
+              <pointsize>20</pointsize>
+             </font>
+            </property>
+            <property name="autoFillBackground">
+             <bool>false</bool>
+            </property>
+            <property name="frame">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="basic">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <layout class="QGridLayout" name="basic_buttons_layout">
+          <property name="leftMargin">
+           <number>3</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>3</number>
+          </property>
+          <property name="bottomMargin">
+           <number>3</number>
+          </property>
+          <property name="spacing">
+           <number>0</number>
+          </property>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="page_2"/>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>282</width>
+     <height>28</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionClose_Calculator_Window"/>
+    <addaction name="actionSave_Tape_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionPage_Setup"/>
+    <addaction name="actionPrint_Tape"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionView_Basic"/>
+    <addaction name="actionView_Scientific"/>
+    <addaction name="actionView_Programation"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_Tape"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_RPN"/>
+    <addaction name="separator"/>
+    <addaction name="actionView_Precision"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="ActionMenuHelpAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuConvert">
+    <property name="title">
+     <string>Convert</string>
+    </property>
+    <addaction name="actionConvert_Recent_Convertions"/>
+    <addaction name="separator"/>
+    <addaction name="actionConvert_Area"/>
+    <addaction name="actionConvert_Currency"/>
+    <addaction name="actionConvert_Energy_or_Work"/>
+    <addaction name="actionConvert_Temperature"/>
+    <addaction name="actionConvert_Length"/>
+    <addaction name="actionConvert_Weigths_and_Masses"/>
+    <addaction name="actionConvert_Speed"/>
+    <addaction name="actionConvert_Pressure"/>
+    <addaction name="actionConvert_Power"/>
+    <addaction name="actionConvert_Volume"/>
+    <addaction name="separator"/>
+    <addaction name="actionConvert_Update_currencies_rate"/>
+    <addaction name="actionConvert_Last_Update"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuView"/>
+   <addaction name="menuConvert"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <action name="actionClose_Calculator_Window">
+   <property name="text">
+    <string>Close calculator Window</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+W</string>
+   </property>
+  </action>
+  <action name="actionSave_Tape_As">
+   <property name="text">
+    <string>Save Tape As...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+S</string>
+   </property>
+  </action>
+  <action name="actionPage_Setup">
+   <property name="text">
+    <string>Page Setup...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Shift+P</string>
+   </property>
+  </action>
+  <action name="actionPrint_Tape">
+   <property name="text">
+    <string>Print Tape...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
+   </property>
+  </action>
+  <action name="actionView_Basic">
+   <property name="text">
+    <string>Basic</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+1</string>
+   </property>
+  </action>
+  <action name="actionView_Scientific">
+   <property name="text">
+    <string>Scientific</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+2</string>
+   </property>
+  </action>
+  <action name="actionView_Programation">
+   <property name="text">
+    <string>Programmer</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+3</string>
+   </property>
+  </action>
+  <action name="actionView_Tape">
+   <property name="text">
+    <string>Show Paper Tape</string>
+   </property>
+  </action>
+  <action name="actionView_RPN">
+   <property name="text">
+    <string>RPN</string>
+   </property>
+  </action>
+  <action name="actionView_Precision">
+   <property name="text">
+    <string>Precision</string>
+   </property>
+  </action>
+  <action name="actionConvert_Recent_Convertions">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Recent Conversions</string>
+   </property>
+  </action>
+  <action name="actionConvert_Area">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Area...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Currency">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Currency...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Energy_or_Work">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Energy or Work...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Temperature">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Temperature...</string>
+   </property>
+   <property name="toolTip">
+    <string>Temperature</string>
+   </property>
+  </action>
+  <action name="actionConvert_Length">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Length...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Weigths_and_Masses">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Weigths and Masses...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Speed">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Speed...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Pressure">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Pressure...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Power">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Power...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Volume">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Volume...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Update_currencies_rate">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Update Currency Exchanges Rates...</string>
+   </property>
+  </action>
+  <action name="actionConvert_Last_Update">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Last Update:</string>
+   </property>
+  </action>
+  <action name="ActionMenuHelpAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

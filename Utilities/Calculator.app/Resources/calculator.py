@@ -51,26 +51,32 @@ from PyQt5.QtWidgets import QWidget
 from PyQt5.QtWidgets import QAction
 from PyQt5.QtWidgets import QMessageBox
 from PyQt5.QtWidgets import qApp
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QColor, QIcon
+
+# The Main Window
+from main_window_ui import Ui_MainWindow
+
+from widget_calculator_button import CalculatorButton
 
 __version__ = "0.2"
 __author__ = [
-        "Leodanis Pozo Ramos & Contributors",
-        "Jérôme ORNECH alias Hierosme"
-        ]
+    "Leodanis Pozo Ramos & Contributors",
+    "Jérôme ORNECH alias Hierosme"
+]
 
 ERROR_MSG = "ERROR"
 TILE_WIDTH = 36
 TILE_HEIGHT = 34
 TILE_SPACING = 3
 
+
 # Create a subclass of QMainWindow to setup the calculator's GUI
-class PyCalcUi(QMainWindow):
+class Window(QMainWindow, Ui_MainWindow):
     """PyCalc's View (GUI)."""
 
-    def __init__(self):
-        """View initializer."""
-        super().__init__()
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
         # Set some main window's properties
         self.setWindowTitle("Calculator")
         # Strange effect with hellosystem theme
@@ -79,31 +85,33 @@ class PyCalcUi(QMainWindow):
         #         (TILE_HEIGHT * 7) + (TILE_SPACING * 9)
         #         )
         # Set the central widget and the general layout
-        self.generalLayout = QVBoxLayout()
-        self._centralWidget = QWidget(self)
-        self.setCentralWidget(self._centralWidget)
-        self._centralWidget.setLayout(self.generalLayout)
+        # self.generalLayout = QVBoxLayout()
+        # self._centralWidget = QWidget(self)
+        # self.setCentralWidget(self._centralWidget)
+        # self._centralWidget.setLayout(self.generalLayout)
         # Create the display and the buttons
-        self._createDisplay()
-        self._createButtons()
-        self._showMenu()
 
-    def _createDisplay(self):
-        """Create the display."""
-        # Create the display widget
-        self.display = QLineEdit()
-        # Set some display's properties
-        # self.display.setFixedHeight(35)
+        self._createButtons()
+
+        self.setupInitialState()
+        self.connectSignalsSlots()
+        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Calculator.png")))
+        # self._showMenu()
+
+    def setupInitialState(self):
         self.display.setAlignment(Qt.AlignRight)
-        self.display.setReadOnly(False)
-        # Add the display to the general layout
-        self.generalLayout.addWidget(self.display)
+        # self.display.setReadOnly(False)
+
+    def connectSignalsSlots(self):
+
+        # Menu and ToolBar
+        self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
 
     def _createButtons(self):
         """Create the buttons."""
         self.buttons = {}
-        buttonsLayout = QGridLayout()
-        buttonsLayout.setSpacing(TILE_SPACING)
+        # self.basic_buttons_layout = QGridLayout()
+        self.basic_buttons_layout.setSpacing(TILE_SPACING)
         # Button text | position on the QGridLayout
         buttons = {
             # First Line
@@ -136,21 +144,35 @@ class PyCalcUi(QMainWindow):
         }
         # Create the buttons and add them to the grid layout
         for btnText, pos in buttons.items():
-            self.buttons[btnText] = QPushButton(btnText)
+            self.buttons[btnText] = CalculatorButton()
+            self.buttons[btnText].setText(btnText)
             # Spanning management
             self.buttons[btnText].setMinimumWidth(TILE_WIDTH)
             self.buttons[btnText].setMinimumHeight(TILE_HEIGHT)
+            # Apply Color
+            if btnText in ["=", "−", "±", "÷", "×", "+", "MC", "M+", "M-", "MR"]:
+                self.buttons[btnText].setColor(QColor(85, 85, 85))
+                self.buttons[btnText].setColorFont(QColor(208, 208, 208))
+            elif btnText == "C":
+                self.buttons[btnText].setColor(QColor(255, 140, 55))
+                self.buttons[btnText].setColorFont(QColor(255, 255, 255))
+            else:
+                self.buttons[btnText].setColor(QColor(224, 224, 224))
+                self.buttons[btnText].setColorFont(QColor(16, 16, 16))
+
             if btnText == "=":
+
+
                 self.buttons[btnText].setMinimumHeight((TILE_HEIGHT * 2) + TILE_SPACING)
                 # helloSystem can t make vertical padding on a button
-                buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1], 2, 1)
+                self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 2, 1)
             elif btnText == "0":
                 self.buttons[btnText].setMinimumWidth(TILE_WIDTH * 2)
-                buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 2)
+                self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 2)
             else:
-                buttonsLayout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 1)
-        # Add buttonsLayout to the general layout
-        self.generalLayout.addLayout(buttonsLayout)
+                self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 1)
+        # # Add buttonsLayout to the general layout
+        # self.generalLayout.addLayout(self.basic_buttons_layout)
 
     def setDisplayText(self, text):
         """Set display's text."""
@@ -179,21 +201,29 @@ class PyCalcUi(QMainWindow):
         aboutAct.triggered.connect(self._showAbout)
         helpMenu = menubar.addMenu('&Help')
         helpMenu.addAction(aboutAct)
-        
-    def _showAbout(self):
-        print("showDialog")
+
+    def _showAboutDialog(self):
         msg = QMessageBox()
         msg.setWindowTitle("About")
-        msg.setIconPixmap(QPixmap(os.path.dirname(__file__) + "/Calculator.png"))
-        candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
-        for candidate in candidates:
-            if os.path.exists(os.path.dirname(__file__) + "/" + candidate):
-                with open(os.path.dirname(__file__) + "/" + candidate, 'r') as file:
+        msg.setIconPixmap(
+            QPixmap(
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "Calculator.png"
+                )
+            ).scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        )
+        for candidate in ["COPYRIGHT", "COPYING", "LICENSE"]:
+            if os.path.exists(os.path.join(os.path.dirname(__file__), candidate)):
+                with open(os.path.join(os.path.dirname(__file__), candidate), 'r') as file:
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Calculator</h3>")
-        msg.setInformativeText("A simple calculator application written in PyQt5<br><br><a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+        msg.setInformativeText(
+            "A simple calculator application written in PyQt5<br><br>"
+            "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
+
 
 # Create a Model to handle the calculator's operation
 def evaluateExpression(expression):
@@ -294,7 +324,7 @@ class PyCalcCtrl:
                     result = -abs(int(result))
                 else:
                     result = abs(int(result))
-        
+
         self._view.setDisplayText(str(result))
 
     def _buildExpression(self, sub_exp):
@@ -308,7 +338,7 @@ class PyCalcCtrl:
     def _connectSignals(self):
         """Connect signals and slots."""
         for btnText, btn in self._view.buttons.items():
-            if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±" }:
+            if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±"}:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.buttons["="].clicked.connect(self._calculateResult)
@@ -323,19 +353,28 @@ class PyCalcCtrl:
 
 
 # Client code
-def main():
-    """Main function."""
-    # Create an instance of `QApplication`
-    pycalc = QApplication(sys.argv)
-    # Show the calculator's GUI
-    view = PyCalcUi()
-    view.show()
-    # Create instances of the model and the controller
-    model = evaluateExpression
-    PyCalcCtrl(model=model, view=view)
-    # Execute calculator's main loop
-    sys.exit(pycalc.exec_())
-
-
+# def main():
+#     """Main function."""
+#     # Create an instance of `QApplication`
+#     pycalc = QApplication(sys.argv)
+#     # Show the calculator's GUI
+#     view = PyCalcUi()
+#     view.show()
+#     # Create instances of the model and the controller
+#     model = evaluateExpression
+#     PyCalcCtrl(model=model, view=view)
+#     # Execute calculator's main loop
+#     sys.exit(pycalc.exec_())
+#
+#
+# if __name__ == "__main__":
+#     main()
 if __name__ == "__main__":
-    main()
+    app = QApplication(sys.argv)
+    win = Window()
+    win.show()
+    model = evaluateExpression
+    PyCalcCtrl(model=model, view=win)
+    # Execute calculator's main loop
+
+    sys.exit(app.exec())
