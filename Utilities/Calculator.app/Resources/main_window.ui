@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>282</width>
+    <width>286</width>
     <height>185</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Calculator</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1">
@@ -63,8 +63,8 @@
           </sizepolicy>
          </property>
          <property name="styleSheet">
-          <string notr="true">background-color: rgb(74, 74, 74);
-color: rgb(228, 228, 228);</string>
+          <string notr="true">background-color: &quot;#cbe5c3&quot;;
+color: &quot;#3f3f3f&quot;;</string>
          </property>
          <property name="frameShape">
           <enum>QFrame::WinPanel</enum>
@@ -186,7 +186,7 @@ color: rgb(228, 228, 228);</string>
            <number>3</number>
           </property>
           <property name="spacing">
-           <number>0</number>
+           <number>3</number>
           </property>
          </layout>
         </item>
@@ -202,7 +202,7 @@ color: rgb(228, 228, 228);</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>282</width>
+     <width>286</width>
      <height>28</height>
     </rect>
    </property>
@@ -224,7 +224,7 @@ color: rgb(228, 228, 228);</string>
     <addaction name="actionView_Scientific"/>
     <addaction name="actionView_Programation"/>
     <addaction name="separator"/>
-    <addaction name="actionView_Tape"/>
+    <addaction name="actionView_Show_Paper_Tape"/>
     <addaction name="separator"/>
     <addaction name="actionView_RPN"/>
     <addaction name="separator"/>
@@ -317,7 +317,7 @@ color: rgb(228, 228, 228);</string>
     <string>Ctrl+3</string>
    </property>
   </action>
-  <action name="actionView_Tape">
+  <action name="actionView_Show_Paper_Tape">
    <property name="text">
     <string>Show Paper Tape</string>
    </property>
@@ -446,5 +446,22 @@ color: rgb(228, 228, 228);</string>
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionClose_Calculator_Window</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>140</x>
+     <y>92</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>140</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

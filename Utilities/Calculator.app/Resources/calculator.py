@@ -57,6 +57,7 @@ from PyQt5.QtGui import QPixmap, QColor, QIcon
 from main_window_ui import Ui_MainWindow
 
 from widget_calculator_button import CalculatorButton
+from dialog_paper_tape import PaperTape
 
 __version__ = "0.2"
 __author__ = [
@@ -67,7 +68,7 @@ __author__ = [
 ERROR_MSG = "ERROR"
 TILE_WIDTH = 36
 TILE_HEIGHT = 34
-TILE_SPACING = 3
+TILE_SPACING = 0
 
 
 # Create a subclass of QMainWindow to setup the calculator's GUI
@@ -76,27 +77,16 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        self.paper_tape_dialog = None
+
         self.setupUi(self)
-        # Set some main window's properties
-        self.setWindowTitle("Calculator")
-        # Strange effect with hellosystem theme
-        # self.setFixedSize(
-        #         (TILE_WIDTH * 4) + ( TILE_SPACING * 9),
-        #         (TILE_HEIGHT * 7) + (TILE_SPACING * 9)
-        #         )
-        # Set the central widget and the general layout
-        # self.generalLayout = QVBoxLayout()
-        # self._centralWidget = QWidget(self)
-        # self.setCentralWidget(self._centralWidget)
-        # self._centralWidget.setLayout(self.generalLayout)
-        # Create the display and the buttons
+        self.setupCustomUi()
 
         self._createButtons()
 
         self.setupInitialState()
         self.connectSignalsSlots()
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Calculator.png")))
-        # self._showMenu()
 
     def setupInitialState(self):
         self.display.setAlignment(Qt.AlignRight)
@@ -106,12 +96,18 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Menu and ToolBar
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
+        self.actionView_Show_Paper_Tape.triggered.connect(self._showPaperTape)
+
+    def setupCustomUi(self):
+        # Paper Tape
+        self.paper_tape_dialog = PaperTape()
+        self.paper_tape_dialog.hide()
 
     def _createButtons(self):
         """Create the buttons."""
         self.buttons = {}
         # self.basic_buttons_layout = QGridLayout()
-        self.basic_buttons_layout.setSpacing(TILE_SPACING)
+        # self.basic_buttons_layout.setSpacing(TILE_SPACING)
         # Button text | position on the QGridLayout
         buttons = {
             # First Line
@@ -147,27 +143,29 @@ class Window(QMainWindow, Ui_MainWindow):
             self.buttons[btnText] = CalculatorButton()
             self.buttons[btnText].setText(btnText)
             # Spanning management
-            self.buttons[btnText].setMinimumWidth(TILE_WIDTH)
+            # self.buttons[btnText].setMinimumWidth(TILE_WIDTH)
             self.buttons[btnText].setMinimumHeight(TILE_HEIGHT)
+
             # Apply Color
-            if btnText in ["=", "−", "±", "÷", "×", "+", "MC", "M+", "M-", "MR"]:
-                self.buttons[btnText].setColor(QColor(85, 85, 85))
-                self.buttons[btnText].setColorFont(QColor(208, 208, 208))
+            if btnText in ["−", "±", "÷", "×", "+", "MC", "M+", "M-", "MR"]:
+                self.buttons[btnText].setColor(QColor("#7a7a7b"))
+                self.buttons[btnText].setColorFont(QColor("#f7f6f6"))
+            elif btnText == "=":
+                self.buttons[btnText].setColor(QColor("#f09648"))
+                self.buttons[btnText].setColorFont(QColor("#ffffff"))
             elif btnText == "C":
-                self.buttons[btnText].setColor(QColor(255, 140, 55))
-                self.buttons[btnText].setColorFont(QColor(255, 255, 255))
+                self.buttons[btnText].setColor(QColor("#f0003b"))
+                self.buttons[btnText].setColorFont(QColor("#ffffff"))
             else:
-                self.buttons[btnText].setColor(QColor(224, 224, 224))
-                self.buttons[btnText].setColorFont(QColor(16, 16, 16))
+                self.buttons[btnText].setColor(QColor("#eeeeed"))
+                self.buttons[btnText].setColorFont(QColor("#3f3f3f"))
 
             if btnText == "=":
-
-
-                self.buttons[btnText].setMinimumHeight((TILE_HEIGHT * 2) + TILE_SPACING)
+                self.buttons[btnText].setMinimumHeight((TILE_HEIGHT * 2) + 3)
                 # helloSystem can t make vertical padding on a button
                 self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 2, 1)
             elif btnText == "0":
-                self.buttons[btnText].setMinimumWidth(TILE_WIDTH * 2)
+                # self.buttons[btnText].setMinimumWidth(TILE_WIDTH * 2)
                 self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 2)
             else:
                 self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 1)
@@ -187,20 +185,11 @@ class Window(QMainWindow, Ui_MainWindow):
         """Clear the display."""
         self.setDisplayText("")
 
-    def _showMenu(self):
-        exitAct = QAction('&Exit', self)
-        exitAct.setShortcut('Ctrl+Q')
-        exitAct.setStatusTip('Exit application')
-        exitAct.triggered.connect(qApp.quit)
-        menubar = self.menuBar()
-        fileMenu = menubar.addMenu('&File')
-        fileMenu.addAction(exitAct)
+    def closeEvent(self, evnt):
+        self.paper_tape_dialog.have_to_close = True
+        self.paper_tape_dialog.close()
 
-        aboutAct = QAction('&About', self)
-        aboutAct.setStatusTip('About this application')
-        aboutAct.triggered.connect(self._showAbout)
-        helpMenu = menubar.addMenu('&Help')
-        helpMenu.addAction(aboutAct)
+        super(Window, self).closeEvent(evnt)
 
     def _showAboutDialog(self):
         msg = QMessageBox()
@@ -223,6 +212,14 @@ class Window(QMainWindow, Ui_MainWindow):
             "A simple calculator application written in PyQt5<br><br>"
             "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
         msg.exec()
+
+    def _showPaperTape(self):
+        if self.paper_tape_dialog.isVisible():
+            self.paper_tape_dialog.hide()
+        else:
+            self.paper_tape_dialog.show()
+        self.activateWindow()
+        self.setFocus()
 
 
 # Create a Model to handle the calculator's operation
@@ -269,7 +266,15 @@ class PyCalcCtrl:
 
     def _calculateResult(self):
         """Evaluate expressions."""
+
         result = self._evaluate(expression=self._view.displayText())
+        if result:
+            self._view.paper_tape_dialog.plainTextEdit.setPlainText(
+                "%s\n\n%s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(),
+                              self._view.displayText()))
+            self._view.paper_tape_dialog.plainTextEdit.setPlainText(
+                "%s\n= %s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(),
+                              result))
         self._view.setDisplayText(result)
 
     def _memory_clear(self):

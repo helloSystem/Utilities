@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(282, 185)
+        MainWindow.resize(286, 185)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -38,8 +38,8 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
         self.frame.setSizePolicy(sizePolicy)
-        self.frame.setStyleSheet("background-color: rgb(74, 74, 74);\n"
-"color: rgb(228, 228, 228);")
+        self.frame.setStyleSheet("background-color: \"#cbe5c3\";\n"
+"color: \"#3f3f3f\";")
         self.frame.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.frame.setLineWidth(2)
@@ -88,7 +88,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setObjectName("verticalLayout")
         self.basic_buttons_layout = QtWidgets.QGridLayout()
         self.basic_buttons_layout.setContentsMargins(3, 0, 3, 3)
-        self.basic_buttons_layout.setSpacing(0)
+        self.basic_buttons_layout.setSpacing(3)
         self.basic_buttons_layout.setObjectName("basic_buttons_layout")
         self.verticalLayout.addLayout(self.basic_buttons_layout)
         self.stackedWidget.addWidget(self.basic)
@@ -99,7 +99,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.setStretch(1, 1)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 282, 28))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 286, 28))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -124,8 +124,8 @@ class Ui_MainWindow(object):
         self.actionView_Scientific.setObjectName("actionView_Scientific")
         self.actionView_Programation = QtWidgets.QAction(MainWindow)
         self.actionView_Programation.setObjectName("actionView_Programation")
-        self.actionView_Tape = QtWidgets.QAction(MainWindow)
-        self.actionView_Tape.setObjectName("actionView_Tape")
+        self.actionView_Show_Paper_Tape = QtWidgets.QAction(MainWindow)
+        self.actionView_Show_Paper_Tape.setObjectName("actionView_Show_Paper_Tape")
         self.actionView_RPN = QtWidgets.QAction(MainWindow)
         self.actionView_RPN.setObjectName("actionView_RPN")
         self.actionView_Precision = QtWidgets.QAction(MainWindow)
@@ -180,7 +180,7 @@ class Ui_MainWindow(object):
         self.menuView.addAction(self.actionView_Scientific)
         self.menuView.addAction(self.actionView_Programation)
         self.menuView.addSeparator()
-        self.menuView.addAction(self.actionView_Tape)
+        self.menuView.addAction(self.actionView_Show_Paper_Tape)
         self.menuView.addSeparator()
         self.menuView.addAction(self.actionView_RPN)
         self.menuView.addSeparator()
@@ -208,11 +208,12 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         self.stackedWidget.setCurrentIndex(0)
+        self.actionClose_Calculator_Window.triggered.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "Calculator"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
@@ -231,7 +232,7 @@ class Ui_MainWindow(object):
         self.actionView_Scientific.setShortcut(_translate("MainWindow", "Ctrl+2"))
         self.actionView_Programation.setText(_translate("MainWindow", "Programmer"))
         self.actionView_Programation.setShortcut(_translate("MainWindow", "Ctrl+3"))
-        self.actionView_Tape.setText(_translate("MainWindow", "Show Paper Tape"))
+        self.actionView_Show_Paper_Tape.setText(_translate("MainWindow", "Show Paper Tape"))
         self.actionView_RPN.setText(_translate("MainWindow", "RPN"))
         self.actionView_Precision.setText(_translate("MainWindow", "Precision"))
         self.actionConvert_Recent_Convertions.setText(_translate("MainWindow", "Recent Conversions"))
