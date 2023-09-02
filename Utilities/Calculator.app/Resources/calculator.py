@@ -278,11 +278,11 @@ class PyCalcCtrl:
         self._view.setDisplayText(result)
 
     def _memory_clear(self):
-        """Clear momory by set value to None"""
+        """Clear memory by set value to None"""
         self.memory = None
         self._view.display.setFocus()
 
-    def _memory_substact(self):
+    def _memory_subtract(self):
         """Add the result of display expression to the memory"""
         result = self._evaluate(expression=self._view.displayText())
         if result and "ERROR" not in result:
@@ -296,7 +296,7 @@ class PyCalcCtrl:
         self._view.display.setFocus()
 
     def _memory_add(self):
-        """Substract the result of display expression to the memory"""
+        """Subtract the result of display expression to the memory"""
         result = self._evaluate(expression=self._view.displayText())
         if result and "ERROR" not in result:
             if self.memory is None:
@@ -311,7 +311,7 @@ class PyCalcCtrl:
         """If memory value, flush the display with it value"""
         if self.memory is not None:
             self._view.clearDisplay()
-            self._view.setDisplayText("%s" % (self.memory))
+            self._view.setDisplayText("%s" % self.memory)
         else:
             self._view.display.setFocus()
 
@@ -352,7 +352,7 @@ class PyCalcCtrl:
         self._view.buttons["±"].clicked.connect(self._neg)
         self._view.buttons["MC"].clicked.connect(self._memory_clear)
         self._view.buttons["M+"].clicked.connect(self._memory_add)
-        self._view.buttons["M-"].clicked.connect(self._memory_substact)
+        self._view.buttons["M-"].clicked.connect(self._memory_subtract)
         self._view.buttons["MR"].clicked.connect(self._memory_print)
         """self._view.display.escapePressed.connect(self._view.clearDisplay)"""
 
