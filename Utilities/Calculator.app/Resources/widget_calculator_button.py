@@ -1,8 +1,19 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QPaintEvent, QPainter, QPen, QColor, QBrush, QFontMetrics, QFont
-from PyQt5.QtWidgets import QColorDialog, QVBoxLayout, QAbstractButton
+import os
+from PyQt5.QtCore import Qt, pyqtSignal, QRectF
+from PyQt5.QtGui import (
+    QPaintEvent,
+    QPainter,
+    QPen,
+    QColor,
+    QFontMetrics,
+    QFont,
+    QImage,
+    QPainterPath,
+    QLinearGradient
+)
+from PyQt5.QtWidgets import QAbstractButton
 
 
 class CalculatorButton(QAbstractButton):
@@ -21,26 +32,28 @@ class CalculatorButton(QAbstractButton):
         self._text = text
         self._color = None
         self._color_font = None
+        self.bordersize = 2
+        self.outlineColor = QColor("#1e1e1f")
+        self.state_pressed = False
 
         self._height = None
+
+        self.button_1 = QImage(os.path.join(os.path.dirname(__file__), "button_1.png"))
         # self.pressed.connect(self.onColorPicker)
 
         self.setupUI()
+
+
 
     def setupUI(self):
         self.font = QFont("Nimbus Sans", 13)
         self.font_metric = QFontMetrics(self.font)
 
-        # self.setFixedHeight(self._height)
-        # self.setFixedWidth(self._height)
-
-        # layout = QVBoxLayout()
-        # self.setLayout(layout)
-
     def paintEvent(self, e: QPaintEvent) -> None:
         qp = QPainter()
+
         qp.begin(self)
-        self.draw_square(qp)
+        self.draw_square(qp, event=e)
         self.draw_text(qp)
         qp.end()
 
@@ -54,15 +67,39 @@ class CalculatorButton(QAbstractButton):
                     (self.height() / 2) + self.font_metric.height() / 4,
                     self.text())
 
-    def draw_square(self, qp):
+    def draw_square(self, painter, event):
+        painter.setRenderHint(QPainter.Antialiasing)
+        # Create the path
+        path = QPainterPath()
 
-        pen_size = 1
-        pen_size_half = pen_size / 2
+        if not self.state_pressed:
+            gradient = QLinearGradient(0, 0, 0, self.height() * 3)
+            gradient.setColorAt(0.0, Qt.white)
+            gradient.setColorAt(0.06, self.color())
+            gradient.setColorAt(0.94, Qt.black)
+        else:
+            gradient = QLinearGradient(0, 0, 0, self.height() * 3)
+            gradient.setColorAt(0.0, Qt.gray)
+            gradient.setColorAt(0.06, self.color())
+            gradient.setColorAt(0.94, Qt.lightGray)
 
-        qp.setPen(QPen(Qt.black, pen_size, Qt.SolidLine, Qt.RoundCap))
-        if self.color():
-            qp.setBrush(QBrush(self.color(), Qt.SolidPattern))
-        qp.drawRect(pen_size_half, pen_size_half, self.width() - pen_size, self.height() - pen_size)
+        # Set painter colors to given values.
+        pen = QPen(self.outlineColor, self.bordersize)
+        painter.setPen(pen)
+        painter.setBrush(gradient)
+
+        rect = QRectF(event.rect())
+        # Slighly shrink dimensions to account for bordersize.
+        rect.adjust(self.bordersize / 2, self.bordersize / 2, -self.bordersize / 2, -self.bordersize / 2)
+
+        # Add the rect to path.
+        path.addRoundedRect(rect, 10, 10)
+        painter.setClipPath(path)
+
+        # Fill shape, draw the border and center the text.
+        painter.fillPath(path, painter.brush())
+        painter.strokePath(path, painter.pen())
+        painter.drawText(rect, Qt.AlignCenter, self.text())
 
     def setText(self, text):
         if text != self._text:
@@ -88,22 +125,14 @@ class CalculatorButton(QAbstractButton):
     def color_font(self):
         return self._color_font
 
-    def onColorPicker(self):
-        """
-        Show color-picker dialog to select color.
-
-        Qt will use the native dialog by default.
-
-        """
-        dlg = QColorDialog(self)
-        if self._color:
-            dlg.setCurrentColor(QColor(self._color))
-
-        if dlg.exec_():
-            self.setColor(dlg.currentColor().name())
-
     def mousePressEvent(self, e):
-        # if e.button() == Qt.RightButton:
-        #     self.setColor(self._default)
-
+        self.state_pressed = True
+        self.update()
         return super(CalculatorButton, self).mousePressEvent(e)
+
+    def mouseReleaseEvent(self, e):
+        self.state_pressed = False
+        self.update()
+        return super(CalculatorButton, self).mouseReleaseEvent(e)
+
+
