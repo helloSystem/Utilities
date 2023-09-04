@@ -9,7 +9,6 @@ from PyQt5.QtGui import (
     QColor,
     QFontMetrics,
     QFont,
-    QImage,
     QPainterPath,
     QLinearGradient
 )
@@ -32,59 +31,58 @@ class CalculatorButton(QAbstractButton):
         self._text = text
         self._color = None
         self._color_font = None
+        self._color_border = None
         self.bordersize = 2
-        self.outlineColor = QColor("#1e1e1f")
         self.state_pressed = False
+        self.painter = None
 
         self._height = None
-
-        self.button_1 = QImage(os.path.join(os.path.dirname(__file__), "button_1.png"))
-        # self.pressed.connect(self.onColorPicker)
 
         self.setupUI()
 
     def setupUI(self):
         self.font = QFont("Nimbus Sans", 13)
         self.font_metric = QFontMetrics(self.font)
+        self.setColorBorder(QColor("#1e1e1f"))
+        self.painter = QPainter()
 
     def paintEvent(self, e: QPaintEvent) -> None:
-        qp = QPainter()
 
-        qp.begin(self)
-        self.draw_square(qp, event=e)
-        self.draw_text(qp)
-        qp.end()
+        self.painter.begin(self)
+        self.draw_square(event=e)
+        self.draw_text()
+        self.painter.end()
 
-    def draw_text(self, qp):
+    def draw_text(self):
         if self.color_font():
-            qp.setPen(QPen(self.color_font(), 1, Qt.SolidLine))
+            self.painter.setPen(QPen(self.color_font(), 1, Qt.SolidLine))
         else:
-            qp.setPen(QPen(Qt.black, 1, Qt.SolidLine))
-        qp.setFont(self.font)
-        qp.drawText((self.width() / 2) - (self.font_metric.width(self.text()) / 2),
+            self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
+        self.painter.setFont(self.font)
+        self.painter.drawText((self.width() / 2) - (self.font_metric.width(self.text()) / 2),
                     (self.height() / 2) + self.font_metric.height() / 4,
                     self.text())
 
-    def draw_square(self, painter, event):
-        painter.setRenderHint(QPainter.Antialiasing)
+    def draw_square(self, event):
+        self.painter.setRenderHint(QPainter.Antialiasing)
         # Create the path
         path = QPainterPath()
 
         if not self.state_pressed:
-            gradient = QLinearGradient(0, 0, 0, self.height() * 4)
+            gradient = QLinearGradient(0, 0, 0, self.height() * 5)
             gradient.setColorAt(0.0, Qt.white)
             gradient.setColorAt(0.06, self.color())
             gradient.setColorAt(0.7, Qt.black)
         else:
-            gradient = QLinearGradient(0, 0, 0, self.height() * 4)
-            gradient.setColorAt(0.0, Qt.gray)
+            gradient = QLinearGradient(0, 0, 0, self.height() * 5)
+            gradient.setColorAt(0.0, Qt.darkGray)
             gradient.setColorAt(0.06, self.color())
-            gradient.setColorAt(0.7, Qt.black)
+            gradient.setColorAt(0.95, Qt.white)
 
         # Set painter colors to given values.
-        pen = QPen(self.outlineColor, self.bordersize)
-        painter.setPen(pen)
-        painter.setBrush(gradient)
+        pen = QPen(self.color_border(), self.bordersize)
+        self.painter.setPen(pen)
+        self.painter.setBrush(gradient)
 
         rect = QRectF(event.rect())
         # Slighly shrink dimensions to account for bordersize.
@@ -92,12 +90,14 @@ class CalculatorButton(QAbstractButton):
 
         # Add the rect to path.
         path.addRoundedRect(rect, 14, 14)
-        painter.setClipPath(path)
+        self.painter.setClipPath(path)
 
         # Fill shape, draw the border and center the text.
-        painter.fillPath(path, painter.brush())
-        painter.strokePath(path, painter.pen())
-        painter.drawText(rect, Qt.AlignCenter, self.text())
+        self.painter.fillPath(path, self.painter.brush())
+        self.painter.strokePath(path, self.painter.pen())
+
+        # TExt is use a drop shadow
+        self.painter.drawText(rect, Qt.AlignCenter, self.text())
 
     def setText(self, text):
         if text != self._text:
@@ -122,6 +122,13 @@ class CalculatorButton(QAbstractButton):
 
     def color_font(self):
         return self._color_font
+
+    def setColorBorder(self, color_border):
+        if color_border != self._color_border:
+            self._color_border = color_border
+
+    def color_border(self):
+        return self._color_border
 
     def mousePressEvent(self, e):
         self.state_pressed = True
