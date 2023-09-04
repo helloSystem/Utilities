@@ -78,14 +78,16 @@ class CalculatorButton(QAbstractButton):
         self.painter.end()
 
     def draw_text(self):
-        if self.font_color():
-            self.painter.setPen(QPen(self.font_color(), 1, Qt.SolidLine))
-        else:
-            self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
-        self.painter.setFont(self.font)
-        self.painter.drawText((self.width() / 2) - (self.font_metric.width(self.text()) / 2),
-                              (self.height() / 2) + self.font_metric.height() / 4,
-                              self.text())
+        if self.text() not in ["cos", "cosh", "tan", "tanh", "sin", "sinh", "log", "Rad", "EE", "RN",
+                               "2nd", "ln", "1/x"]:
+            if self.font_color():
+                self.painter.setPen(QPen(self.font_color(), 1, Qt.SolidLine))
+            else:
+                self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
+            self.painter.setFont(self.font)
+            self.painter.drawText((self.width() / 2) - (self.font_metric.width(self.text()) / 2),
+                                  (self.height() / 2) + self.font_metric.height() / 4,
+                                  self.text())
 
     def draw_square(self, event):
         self.painter.setRenderHint(QPainter.Antialiasing)
