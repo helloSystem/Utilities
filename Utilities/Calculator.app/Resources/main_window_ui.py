@@ -38,12 +38,13 @@ class Ui_MainWindow(object):
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.frame.sizePolicy().hasHeightForWidth())
         self.frame.setSizePolicy(sizePolicy)
-        self.frame.setStyleSheet("background-color: \"#cbe5c3\";\n"
+        self.frame.setAutoFillBackground(False)
+        self.frame.setStyleSheet("background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(42, 53, 28, 255), stop:0.0299625 rgba(175, 190, 171, 255), stop:0.962547 rgba(156, 187, 151, 255), stop:1 rgba(220, 239, 210, 255));\n"
 "color: \"#3f3f3f\";")
         self.frame.setFrameShape(QtWidgets.QFrame.WinPanel)
         self.frame.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.frame.setLineWidth(2)
-        self.frame.setMidLineWidth(2)
+        self.frame.setLineWidth(6)
+        self.frame.setMidLineWidth(4)
         self.frame.setObjectName("frame")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.frame)
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
@@ -95,6 +96,8 @@ class Ui_MainWindow(object):
         self.scientific = QtWidgets.QWidget()
         self.scientific.setObjectName("scientific")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.scientific)
+        self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_5.setSpacing(0)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
         self.scientific_buttons_layout = QtWidgets.QGridLayout()
         self.scientific_buttons_layout.setContentsMargins(3, -1, 3, 3)
@@ -130,6 +133,7 @@ class Ui_MainWindow(object):
         self.actionView_Scientific = QtWidgets.QAction(MainWindow)
         self.actionView_Scientific.setObjectName("actionView_Scientific")
         self.actionView_Programation = QtWidgets.QAction(MainWindow)
+        self.actionView_Programation.setEnabled(False)
         self.actionView_Programation.setObjectName("actionView_Programation")
         self.actionView_Show_Paper_Tape = QtWidgets.QAction(MainWindow)
         self.actionView_Show_Paper_Tape.setObjectName("actionView_Show_Paper_Tape")
@@ -214,7 +218,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuHelp.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.stacked_widget.setCurrentIndex(0)
+        self.stacked_widget.setCurrentIndex(1)
         self.actionClose_Calculator_Window.triggered.connect(MainWindow.close) # type: ignore
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

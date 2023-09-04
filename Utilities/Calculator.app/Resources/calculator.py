@@ -36,11 +36,12 @@
 """PyCalc is a simple calculator built using Python and PyQt5."""
 
 import os, sys
+from math import cos, log, tan, sin, cosh, tanh, sinh
 
 from functools import partial
 
 # Import QApplication and the required widgets from PyQt5.QtWidgets
-from PyQt5.QtCore import Qt,QSize
+from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox
@@ -307,7 +308,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.stacked_widget.setCurrentIndex(1)
 
 
-
 # Create a Model to handle the calculator's operation
 def evaluateExpression(expression):
     """Evaluate an expression."""
@@ -422,6 +422,104 @@ class PyCalcCtrl:
 
         self._view.setDisplayText(str(result))
 
+    def _cos(self):
+        """Evaluate expressions value and display the cos of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = cos(float(result))
+                else:
+                    result = cos(int(result))
+            except OverflowError:
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+    def _cosh(self):
+        """Evaluate expressions value and display the cosh of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = cosh(float(result))
+                else:
+                    result = cosh(int(result))
+            except OverflowError:
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+    def _sin(self):
+        """Evaluate expressions value and display the sin of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = sin(float(result))
+                else:
+                    result = sin(int(result))
+            except OverflowError:
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+    def _sinh(self):
+        """Evaluate expressions value and display the sinh of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = sinh(float(result))
+                else:
+                    result = sinh(int(result))
+            except OverflowError:
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+    def _tan(self):
+        """Evaluate expressions value and display the tan of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = tan(float(result))
+                else:
+                    result = tan(int(result))
+            except OverflowError:
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+    def _tanh(self):
+        """Evaluate expressions value and display the tanh of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = tanh(float(result))
+                else:
+                    result = tanh(int(result))
+            except OverflowError:
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+    def _log(self):
+        """Evaluate expressions value and display the log of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = log(float(result))
+                else:
+                    result = log(int(result))
+            except (OverflowError, ValueError):
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
     def _buildExpression(self, sub_exp):
         """Build expression."""
         if self._view.displayText() == ERROR_MSG:
@@ -434,6 +532,7 @@ class PyCalcCtrl:
         """Connect signals and slots."""
         # Display signals
         self._view.display.returnPressed.connect(self._calculateResult)
+        """self._view.display.escapePressed.connect(self._view.clearDisplay)"""
 
         # Connect Basic Layout Button
         for btnText, btn in self._view.basic_buttons.items():
@@ -450,7 +549,8 @@ class PyCalcCtrl:
 
         # Connect Scientific Layout Button
         for btnText, btn in self._view.scientific_buttons.items():
-            if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±"}:
+            if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
+                               "log"}:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.scientific_buttons["="].clicked.connect(self._calculateResult)
@@ -462,32 +562,21 @@ class PyCalcCtrl:
         self._view.scientific_buttons["M-"].clicked.connect(self._memory_subtract)
         self._view.scientific_buttons["MR"].clicked.connect(self._memory_print)
 
-        """self._view.display.escapePressed.connect(self._view.clearDisplay)"""
+        self._view.scientific_buttons["cos"].clicked.connect(self._cos)
+        self._view.scientific_buttons["cosh"].clicked.connect(self._cosh)
+
+        self._view.scientific_buttons["sin"].clicked.connect(self._sin)
+        self._view.scientific_buttons["sinh"].clicked.connect(self._sinh)
+
+        self._view.scientific_buttons["tan"].clicked.connect(self._tan)
+        self._view.scientific_buttons["tanh"].clicked.connect(self._tanh)
+
+        self._view.scientific_buttons["log"].clicked.connect(self._log)
 
 
-# Client code
-# def main():
-#     """Main function."""
-#     # Create an instance of `QApplication`
-#     pycalc = QApplication(sys.argv)
-#     # Show the calculator's GUI
-#     view = PyCalcUi()
-#     view.show()
-#     # Create instances of the model and the controller
-#     model = evaluateExpression
-#     PyCalcCtrl(model=model, view=view)
-#     # Execute calculator's main loop
-#     sys.exit(pycalc.exec_())
-#
-#
-# if __name__ == "__main__":
-#     main()
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = Window()
-
     model = evaluateExpression
     PyCalcCtrl(model=model, view=win)
-    # Execute calculator's main loop
-
     sys.exit(app.exec())

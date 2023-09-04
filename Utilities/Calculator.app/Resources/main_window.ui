@@ -62,8 +62,11 @@
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
          <property name="styleSheet">
-          <string notr="true">background-color: &quot;#cbe5c3&quot;;
+          <string notr="true">background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0 rgba(42, 53, 28, 255), stop:0.0299625 rgba(175, 190, 171, 255), stop:0.962547 rgba(156, 187, 151, 255), stop:1 rgba(220, 239, 210, 255));
 color: &quot;#3f3f3f&quot;;</string>
          </property>
          <property name="frameShape">
@@ -73,10 +76,10 @@ color: &quot;#3f3f3f&quot;;</string>
           <enum>QFrame::Sunken</enum>
          </property>
          <property name="lineWidth">
-          <number>2</number>
+          <number>6</number>
          </property>
          <property name="midLineWidth">
-          <number>2</number>
+          <number>4</number>
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <property name="spacing">
@@ -146,7 +149,7 @@ color: &quot;#3f3f3f&quot;;</string>
        <number>1</number>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="basic">
        <property name="sizePolicy">
@@ -194,6 +197,21 @@ color: &quot;#3f3f3f&quot;;</string>
       </widget>
       <widget class="QWidget" name="scientific">
        <layout class="QVBoxLayout" name="verticalLayout_5">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
          <layout class="QGridLayout" name="scientific_buttons_layout">
           <property name="leftMargin">
@@ -329,6 +347,9 @@ color: &quot;#3f3f3f&quot;;</string>
    </property>
   </action>
   <action name="actionView_Programation">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Programmer</string>
    </property>
