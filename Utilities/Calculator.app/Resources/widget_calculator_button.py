@@ -43,8 +43,6 @@ class CalculatorButton(QAbstractButton):
 
         self.setupUI()
 
-
-
     def setupUI(self):
         self.font = QFont("Nimbus Sans", 13)
         self.font_metric = QFontMetrics(self.font)
@@ -73,15 +71,15 @@ class CalculatorButton(QAbstractButton):
         path = QPainterPath()
 
         if not self.state_pressed:
-            gradient = QLinearGradient(0, 0, 0, self.height() * 3)
+            gradient = QLinearGradient(0, 0, 0, self.height() * 4)
             gradient.setColorAt(0.0, Qt.white)
             gradient.setColorAt(0.06, self.color())
-            gradient.setColorAt(0.94, Qt.black)
+            gradient.setColorAt(0.7, Qt.black)
         else:
-            gradient = QLinearGradient(0, 0, 0, self.height() * 3)
+            gradient = QLinearGradient(0, 0, 0, self.height() * 4)
             gradient.setColorAt(0.0, Qt.gray)
             gradient.setColorAt(0.06, self.color())
-            gradient.setColorAt(0.94, Qt.lightGray)
+            gradient.setColorAt(0.7, Qt.black)
 
         # Set painter colors to given values.
         pen = QPen(self.outlineColor, self.bordersize)
@@ -93,7 +91,7 @@ class CalculatorButton(QAbstractButton):
         rect.adjust(self.bordersize / 2, self.bordersize / 2, -self.bordersize / 2, -self.bordersize / 2)
 
         # Add the rect to path.
-        path.addRoundedRect(rect, 10, 10)
+        path.addRoundedRect(rect, 14, 14)
         painter.setClipPath(path)
 
         # Fill shape, draw the border and center the text.
