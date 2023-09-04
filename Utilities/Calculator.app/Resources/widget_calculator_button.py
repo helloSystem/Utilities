@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from PyQt5.QtCore import Qt, pyqtSignal, QRectF
+from PyQt5.QtCore import Qt, pyqtSignal, QRectF, QSize
 from PyQt5.QtGui import (
     QPaintEvent,
     QPainter,
@@ -10,9 +10,10 @@ from PyQt5.QtGui import (
     QFontMetrics,
     QFont,
     QPainterPath,
-    QLinearGradient
+    QLinearGradient,
+
 )
-from PyQt5.QtWidgets import QAbstractButton
+from PyQt5.QtWidgets import QAbstractButton, QSizePolicy
 
 
 class CalculatorButton(QAbstractButton):
@@ -24,27 +25,50 @@ class CalculatorButton(QAbstractButton):
     """
 
     colorChanged = pyqtSignal(object)
+    clicked = pyqtSignal(bool)
 
-    def __init__(self, *args, text=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(CalculatorButton, self).__init__(*args, **kwargs)
 
-        self._text = text
+        self._text = kwargs.get("text") or None
         self._color = None
-        self._color_font = None
-        self._color_border = None
-        self.bordersize = 2
-        self.state_pressed = False
+        self._font_color = None
+        self._font_size = None
+        self._border_color = None
+        self._border_size = None
+        self._border_pen = None
+
+        self.__mouse_checked = False
+        self.__mouse_over = False
+
+        self.font = None
+        self.font_metric = None
         self.painter = None
 
-        self._height = None
 
         self.setupUI()
 
     def setupUI(self):
-        self.font = QFont("Nimbus Sans", 13)
+        self.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
+        self.font = QFont("Nimbus Sans", 11)
         self.font_metric = QFontMetrics(self.font)
-        self.setColorBorder(QColor("#1e1e1f"))
+        self.setBorderColor(QColor("#1e1e1f"))
+        self.setBorderSize(2)
+        self.setBorderPen(QPen(self.border_color(), self.border_size()))
+        self.setMouseTracking(True)
         self.painter = QPainter()
+
+    def minimumSizeHint(self):
+        return QSize(
+            self.font_metric.width(self.text()) + (self.border_size() * 2),
+            self.font_metric.height() + (self.border_size() * 2)
+        )
+
+    # def sizeHint(self):
+    #     return QSize(
+    #         self.font_metric.width(self.text()) + (self.border_size() * 2),
+    #         self.font_metric.height() + (self.border_size() * 2)
+    #     )
 
     def paintEvent(self, e: QPaintEvent) -> None:
 
@@ -54,49 +78,57 @@ class CalculatorButton(QAbstractButton):
         self.painter.end()
 
     def draw_text(self):
-        if self.color_font():
-            self.painter.setPen(QPen(self.color_font(), 1, Qt.SolidLine))
+        if self.font_color():
+            self.painter.setPen(QPen(self.font_color(), 1, Qt.SolidLine))
         else:
             self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
         self.painter.setFont(self.font)
         self.painter.drawText((self.width() / 2) - (self.font_metric.width(self.text()) / 2),
-                    (self.height() / 2) + self.font_metric.height() / 4,
-                    self.text())
+                              (self.height() / 2) + self.font_metric.height() / 4,
+                              self.text())
 
     def draw_square(self, event):
         self.painter.setRenderHint(QPainter.Antialiasing)
         # Create the path
         path = QPainterPath()
 
-        if not self.state_pressed:
-            gradient = QLinearGradient(0, 0, 0, self.height() * 5)
-            gradient.setColorAt(0.0, Qt.white)
-            gradient.setColorAt(0.06, self.color())
-            gradient.setColorAt(0.7, Qt.black)
+        if not self.__mouse_checked:
+            if self.__mouse_over:
+                gradient = QLinearGradient(0, 0, 0, self.height() * 5)
+                gradient.setColorAt(0.0, Qt.white)
+                gradient.setColorAt(0.1, self.color())
+                gradient.setColorAt(1.0, Qt.black)
+            else:
+                gradient = QLinearGradient(0, 0, 0, self.height() * 5)
+                gradient.setColorAt(0.0, Qt.white)
+                gradient.setColorAt(0.08, self.color())
+                gradient.setColorAt(0.7, Qt.black)
         else:
             gradient = QLinearGradient(0, 0, 0, self.height() * 5)
-            gradient.setColorAt(0.0, Qt.darkGray)
+            gradient.setColorAt(0.0, Qt.lightGray)
             gradient.setColorAt(0.06, self.color())
-            gradient.setColorAt(0.95, Qt.white)
+            gradient.setColorAt(0.95, Qt.lightGray)
 
         # Set painter colors to given values.
-        pen = QPen(self.color_border(), self.bordersize)
-        self.painter.setPen(pen)
+
+        self.painter.setPen(self.border_pen())
         self.painter.setBrush(gradient)
 
         rect = QRectF(event.rect())
-        # Slighly shrink dimensions to account for bordersize.
-        rect.adjust(self.bordersize / 2, self.bordersize / 2, -self.bordersize / 2, -self.bordersize / 2)
+        # Slighly shrink dimensions to account for self.border_size().
+        rect.adjust(self.border_size() / 2, self.border_size() / 2, -self.border_size() / 2, -self.border_size() / 2)
 
         # Add the rect to path.
-        path.addRoundedRect(rect, 14, 14)
+        path.addRoundedRect(rect, 12, 12)
         self.painter.setClipPath(path)
 
         # Fill shape, draw the border and center the text.
         self.painter.fillPath(path, self.painter.brush())
         self.painter.strokePath(path, self.painter.pen())
 
-        # TExt is use a drop shadow
+        # Text is use a drop shadow
+        self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
+        self.painter.setFont(self.font)
         self.painter.drawText(rect, Qt.AlignCenter, self.text())
 
     def setText(self, text):
@@ -115,29 +147,58 @@ class CalculatorButton(QAbstractButton):
     def color(self):
         return self._color
 
-    def setColorFont(self, color_font):
-        if color_font != self._color_font:
-            self._color_font = color_font
+    def setFontColor(self, color):
+        if color is None:
+            color = Qt.black
+        if color != self._font_color:
+            self._font_color = color
             # self.textChanged.emit(self._text)
 
-    def color_font(self):
-        return self._color_font
+    def font_color(self):
+        return self._font_color
 
-    def setColorBorder(self, color_border):
-        if color_border != self._color_border:
-            self._color_border = color_border
+    def setBorderColor(self, color):
+        if color is None:
+            color = Qt.gray
+        if color != self._border_color:
+            self._border_color = color
 
-    def color_border(self):
-        return self._color_border
+    def border_color(self):
+        return self._border_color
 
-    def mousePressEvent(self, e):
-        self.state_pressed = True
+    def setBorderSize(self, size):
+        if size is None:
+            size = 2
+        if type(size) != int:
+            raise TypeError("'size' must be  int type or None")
+        if size != self._border_size:
+            self._border_size = size
+
+    def border_size(self):
+        return self._border_size
+
+    def setBorderPen(self, pen):
+        if pen is None:
+            pen = QPen(self.border_color(), self.border_size())
+        if not isinstance(pen, QPen):
+            raise TypeError("'pen' must be QPen instance or None")
+        if pen != self._border_pen:
+            self._border_pen = pen
+
+    def border_pen(self):
+        return self._border_pen
+
+    def mousePressEvent(self, event):
+        self.__mouse_checked = True
         self.update()
-        return super(CalculatorButton, self).mousePressEvent(e)
 
-    def mouseReleaseEvent(self, e):
-        self.state_pressed = False
+    def mouseReleaseEvent(self, event):
+        self.__mouse_checked = False
+        self.clicked.emit(True)
         self.update()
-        return super(CalculatorButton, self).mouseReleaseEvent(e)
 
+    def mouseMoveEvent(self, event):
+        self.__mouse_over = True
 
+    def leaveEvent(self, event):
+        self.__mouse_over = False

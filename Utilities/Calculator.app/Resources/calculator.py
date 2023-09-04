@@ -40,17 +40,10 @@ import os, sys
 from functools import partial
 
 # Import QApplication and the required widgets from PyQt5.QtWidgets
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt,QSize
 from PyQt5.QtWidgets import QApplication
-from PyQt5.QtWidgets import QGridLayout
-from PyQt5.QtWidgets import QLineEdit
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtWidgets import QVBoxLayout
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtWidgets import QAction
 from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtWidgets import qApp
 from PyQt5.QtGui import QPixmap, QColor, QIcon
 
 # The Main Window
@@ -66,9 +59,6 @@ __author__ = [
 ]
 
 ERROR_MSG = "ERROR"
-TILE_WIDTH = 36
-TILE_HEIGHT = 34
-TILE_SPACING = 0
 
 
 # Create a subclass of QMainWindow to setup the calculator's GUI
@@ -78,18 +68,24 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.paper_tape_dialog = None
-
+        self.scientific_buttons = None
+        self.basic_buttons = None
         self.setupUi(self)
         self.setupCustomUi()
 
-        self._createButtons()
-
         self.setupInitialState()
+        self.create_basic_layout()
+        self.create_scientific_layout()
+
         self.connectSignalsSlots()
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Calculator.png")))
+        self._display_basic()
+        self.show()
 
     def setupInitialState(self):
         self.display.setAlignment(Qt.AlignRight)
+        self.scientific_buttons = {}
+        self.basic_buttons = {}
         # self.display.setReadOnly(False)
 
     def connectSignalsSlots(self):
@@ -97,17 +93,18 @@ class Window(QMainWindow, Ui_MainWindow):
         # Menu and ToolBar
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
         self.actionView_Show_Paper_Tape.triggered.connect(self._showPaperTape)
+        self.actionView_Basic.triggered.connect(self._display_basic)
+        self.actionView_Scientific.triggered.connect(self._display_scientific)
 
     def setupCustomUi(self):
+
         # Paper Tape
         self.paper_tape_dialog = PaperTape()
         self.paper_tape_dialog.hide()
 
-    def _createButtons(self):
-        """Create the buttons."""
-        self.buttons = {}
-        # self.basic_buttons_layout = QGridLayout()
-        # self.basic_buttons_layout.setSpacing(TILE_SPACING)
+    def create_basic_layout(self):
+        """Create the basic layout buttons."""
+
         # Button text | position on the QGridLayout
         buttons = {
             # First Line
@@ -140,37 +137,114 @@ class Window(QMainWindow, Ui_MainWindow):
         }
         # Create the buttons and add them to the grid layout
         for btnText, pos in buttons.items():
-            self.buttons[btnText] = CalculatorButton()
-            self.buttons[btnText].setText(btnText)
-            # Spanning management
-            # self.buttons[btnText].setMinimumWidth(TILE_WIDTH)
-            self.buttons[btnText].setMinimumHeight(TILE_HEIGHT)
-
+            # Create a button
+            self.basic_buttons[btnText] = CalculatorButton(text=btnText)
             # Apply Color
             if btnText in ["−", "±", "÷", "×", "+", "MC", "M+", "M-", "MR"]:
-                self.buttons[btnText].setColor(QColor("#7a7a7b"))
-                self.buttons[btnText].setColorFont(QColor("#f7f6f6"))
+                self.basic_buttons[btnText].setColor(QColor("#7a7a7b"))
+                self.basic_buttons[btnText].setFontColor(QColor("#f7f6f6"))
             elif btnText == "=":
-                self.buttons[btnText].setColor(QColor("#f09648"))
-                self.buttons[btnText].setColorFont(QColor("#ffffff"))
+                self.basic_buttons[btnText].setColor(QColor("#f09648"))
+                self.basic_buttons[btnText].setFontColor(QColor("#ffffff"))
             elif btnText == "C":
-                self.buttons[btnText].setColor(QColor("#f0003b"))
-                self.buttons[btnText].setColorFont(QColor("#ffffff"))
+                self.basic_buttons[btnText].setColor(QColor("#f0003b"))
+                self.basic_buttons[btnText].setFontColor(QColor("#ffffff"))
             else:
-                self.buttons[btnText].setColor(QColor("#eeeeed"))
-                self.buttons[btnText].setColorFont(QColor("#3f3f3f"))
+                self.basic_buttons[btnText].setColor(QColor("#eeeeed"))
+                self.basic_buttons[btnText].setFontColor(QColor("#3f3f3f"))
 
+            # Apply location
             if btnText == "=":
-                self.buttons[btnText].setMinimumHeight((TILE_HEIGHT * 2) + 3)
-                # helloSystem can t make vertical padding on a button
-                self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 2, 1)
+                self.basic_buttons_layout.addWidget(self.basic_buttons[btnText], pos[0], pos[1], 2, 1)
             elif btnText == "0":
-                # self.buttons[btnText].setMinimumWidth(TILE_WIDTH * 2)
-                self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 2)
+                self.basic_buttons_layout.addWidget(self.basic_buttons[btnText], pos[0], pos[1], 1, 2)
             else:
-                self.basic_buttons_layout.addWidget(self.buttons[btnText], pos[0], pos[1], 1, 1)
-        # # Add buttonsLayout to the general layout
-        # self.generalLayout.addLayout(self.basic_buttons_layout)
+                self.basic_buttons_layout.addWidget(self.basic_buttons[btnText], pos[0], pos[1], 1, 1)
+
+    def create_scientific_layout(self):
+        """Create the basic layout buttons."""
+        self.scientific_buttons = {}
+        # Button text | position on the QGridLayout
+        buttons = {
+            # First Line
+            "2nd": (0, 0),
+            "⟮": (0, 1),
+            "⟯": (0, 2),
+            "%": (0, 3),
+            "MC": (0, 5),
+            "M+": (0, 6),
+            "M-": (0, 7),
+            "MR": (0, 8),
+            # Second line
+            "1/x": (1, 0),
+            "x²": (1, 1),
+            "x³": (1, 2),
+            "yˣ": (1, 3),
+            "C": (1, 5),
+            "±": (1, 6),
+            "÷": (1, 7),
+            "×": (1, 8),
+            # Third line
+            "x!": (2, 0),
+            "√": (2, 1),
+            "ˣ√𝑦": (2, 2),
+            "In": (2, 3),
+            "7": (2, 5),
+            "8": (2, 6),
+            "9": (2, 7),
+            "−": (2, 8),
+            # etc ...
+            "sin": (3, 0),
+            "cos": (3, 1),
+            "tan": (3, 2),
+            "log": (3, 3),
+            "4": (3, 5),
+            "5": (3, 6),
+            "6": (3, 7),
+            "+": (3, 8),
+
+            "sinh": (4, 0),
+            "cosh": (4, 1),
+            "tanh": (4, 2),
+            "eˣ": (4, 3),
+            "1": (4, 5),
+            "2": (4, 6),
+            "3": (4, 7),
+            "=": (4, 8),
+
+            # the last line got only 2 buttons
+            "Rad": (5, 0),
+            "⫪": (5, 1),
+            "EE": (5, 2),
+            "RN": (5, 3),
+            "0": (5, 5),
+            ".": (5, 7),
+        }
+        # Create the buttons and add them to the grid layout
+        for btnText, pos in buttons.items():
+            # Create a button
+            self.scientific_buttons[btnText] = CalculatorButton(text=btnText)
+            # Apply Color
+            if btnText in ["−", "±", "÷", "×", "+", "MC", "M+", "M-", "MR"]:
+                self.scientific_buttons[btnText].setColor(QColor("#7a7a7b"))
+                self.scientific_buttons[btnText].setFontColor(QColor("#f7f6f6"))
+            elif btnText == "=":
+                self.scientific_buttons[btnText].setColor(QColor("#f09648"))
+                self.scientific_buttons[btnText].setFontColor(QColor("#ffffff"))
+            elif btnText == "C":
+                self.scientific_buttons[btnText].setColor(QColor("#f0003b"))
+                self.scientific_buttons[btnText].setFontColor(QColor("#ffffff"))
+            else:
+                self.scientific_buttons[btnText].setColor(QColor("#eeeeed"))
+                self.scientific_buttons[btnText].setFontColor(QColor("#3f3f3f"))
+
+            # Apply location
+            if btnText == "=":
+                self.scientific_buttons_layout.addWidget(self.scientific_buttons[btnText], pos[0], pos[1], 2, 1)
+            elif btnText == "0":
+                self.scientific_buttons_layout.addWidget(self.scientific_buttons[btnText], pos[0], pos[1], 1, 2)
+            else:
+                self.scientific_buttons_layout.addWidget(self.scientific_buttons[btnText], pos[0], pos[1], 1, 1)
 
     def setDisplayText(self, text):
         """Set display's text."""
@@ -191,7 +265,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
         super(Window, self).closeEvent(evnt)
 
-    def _showAboutDialog(self):
+    @staticmethod
+    def _showAboutDialog():
         msg = QMessageBox()
         msg.setWindowTitle("About")
         msg.setIconPixmap(
@@ -221,6 +296,17 @@ class Window(QMainWindow, Ui_MainWindow):
         self.activateWindow()
         self.setFocus()
 
+    def _display_basic(self):
+        self.setFixedWidth(200)
+        self.setFixedHeight(250)
+        self.stacked_widget.setCurrentIndex(0)
+
+    def _display_scientific(self):
+        self.setFixedWidth(400)
+        self.setFixedHeight(250)
+        self.stacked_widget.setCurrentIndex(1)
+
+
 
 # Create a Model to handle the calculator's operation
 def evaluateExpression(expression):
@@ -231,6 +317,10 @@ def evaluateExpression(expression):
         expression = expression.replace("×", "*")
     if "−" in expression:
         expression = expression.replace("−", "-")
+    if "⟮" in expression:
+        expression = expression.replace("⟮", "(")
+    if "⟯" in expression:
+        expression = expression.replace("⟯", ")")
     try:
         result = str(eval(expression, {}, {}))
     except Exception:
@@ -342,18 +432,36 @@ class PyCalcCtrl:
 
     def _connectSignals(self):
         """Connect signals and slots."""
-        for btnText, btn in self._view.buttons.items():
+        # Display signals
+        self._view.display.returnPressed.connect(self._calculateResult)
+
+        # Connect Basic Layout Button
+        for btnText, btn in self._view.basic_buttons.items():
             if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±"}:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
-        self._view.buttons["="].clicked.connect(self._calculateResult)
-        self._view.display.returnPressed.connect(self._calculateResult)
-        self._view.buttons["C"].clicked.connect(self._view.clearDisplay)
-        self._view.buttons["±"].clicked.connect(self._neg)
-        self._view.buttons["MC"].clicked.connect(self._memory_clear)
-        self._view.buttons["M+"].clicked.connect(self._memory_add)
-        self._view.buttons["M-"].clicked.connect(self._memory_subtract)
-        self._view.buttons["MR"].clicked.connect(self._memory_print)
+        self._view.basic_buttons["="].clicked.connect(self._calculateResult)
+        self._view.basic_buttons["C"].clicked.connect(self._view.clearDisplay)
+        self._view.basic_buttons["±"].clicked.connect(self._neg)
+        self._view.basic_buttons["MC"].clicked.connect(self._memory_clear)
+        self._view.basic_buttons["M+"].clicked.connect(self._memory_add)
+        self._view.basic_buttons["M-"].clicked.connect(self._memory_subtract)
+        self._view.basic_buttons["MR"].clicked.connect(self._memory_print)
+
+        # Connect Scientific Layout Button
+        for btnText, btn in self._view.scientific_buttons.items():
+            if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±"}:
+                btn.clicked.connect(partial(self._buildExpression, btnText))
+
+        self._view.scientific_buttons["="].clicked.connect(self._calculateResult)
+
+        self._view.scientific_buttons["C"].clicked.connect(self._view.clearDisplay)
+        self._view.scientific_buttons["±"].clicked.connect(self._neg)
+        self._view.scientific_buttons["MC"].clicked.connect(self._memory_clear)
+        self._view.scientific_buttons["M+"].clicked.connect(self._memory_add)
+        self._view.scientific_buttons["M-"].clicked.connect(self._memory_subtract)
+        self._view.scientific_buttons["MR"].clicked.connect(self._memory_print)
+
         """self._view.display.escapePressed.connect(self._view.clearDisplay)"""
 
 
@@ -377,7 +485,7 @@ class PyCalcCtrl:
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     win = Window()
-    win.show()
+
     model = evaluateExpression
     PyCalcCtrl(model=model, view=win)
     # Execute calculator's main loop

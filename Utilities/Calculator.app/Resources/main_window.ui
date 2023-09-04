@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>286</width>
-    <height>185</height>
+    <height>183</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -97,7 +97,7 @@ color: &quot;#3f3f3f&quot;;</string>
           <item>
            <widget class="QLineEdit" name="display">
             <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+             <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -135,7 +135,7 @@ color: &quot;#3f3f3f&quot;;</string>
      </widget>
     </item>
     <item>
-     <widget class="QStackedWidget" name="stackedWidget">
+     <widget class="QStackedWidget" name="stacked_widget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -192,7 +192,26 @@ color: &quot;#3f3f3f&quot;;</string>
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page_2"/>
+      <widget class="QWidget" name="scientific">
+       <layout class="QVBoxLayout" name="verticalLayout_5">
+        <item>
+         <layout class="QGridLayout" name="scientific_buttons_layout">
+          <property name="leftMargin">
+           <number>3</number>
+          </property>
+          <property name="rightMargin">
+           <number>3</number>
+          </property>
+          <property name="bottomMargin">
+           <number>3</number>
+          </property>
+          <property name="spacing">
+           <number>3</number>
+          </property>
+         </layout>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
    </layout>
