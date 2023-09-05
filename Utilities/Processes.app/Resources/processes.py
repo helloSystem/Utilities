@@ -717,10 +717,13 @@ class Window(
     def _refresh_icons_cache(self, application_icons):
         for application_name, icon in application_icons.items():
             if application_name not in self.__icons:
-                if icon.isNull():
-                    self.__icons[application_name] = self.icon_empty
-                else:
-                    self.__icons[application_name] = icon
+                self.__icons[application_name] = icon
+
+                # Cause ultra slow startup
+                # if icon.isNull():
+                #     self.__icons[application_name] = self.icon_empty
+                # else:
+                #     self.__icons[application_name] = icon
 
     def _showInspectProcessDialog(self):
         if self.ActionMenuViewInspectProcess.isEnabled():
