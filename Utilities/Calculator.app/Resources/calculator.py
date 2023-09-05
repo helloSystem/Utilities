@@ -111,7 +111,7 @@ class Window(QMainWindow, Ui_MainWindow):
             # First Line
             "MC": (0, 0),
             "M+": (0, 1),
-            "M-": (0, 2),
+            "M−": (0, 2),
             "MR": (0, 3),
             # Second line
             "C": (1, 0),
@@ -142,7 +142,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.basic_buttons[btnText] = CalculatorButton(text=btnText)
 
             # Apply Color
-            if btnText in ["−", "±", "÷", "×", "+", "MC", "M+", "M-", "MR"]:
+            if btnText in ["−", "±", "÷", "×", "+", "MC", "M+", "M−", "MR"]:
                 self.basic_buttons[btnText].setColor(QColor("#7a7a7b"))
                 self.basic_buttons[btnText].setFontColor(QColor("#f7f6f6"))
             elif btnText == "=":
@@ -169,13 +169,13 @@ class Window(QMainWindow, Ui_MainWindow):
         # Button text | position on the QGridLayout
         buttons = {
             # First Line
-            "2nd": (0, 0),
+            "2ⁿᵈ": (0, 0),
             "⟮": (0, 1),
             "⟯": (0, 2),
             "%": (0, 3),
             "MC": (0, 5),
             "M+": (0, 6),
-            "M-": (0, 7),
+            "M−": (0, 7),
             "MR": (0, 8),
             # Second line
             "1/x": (1, 0),
@@ -541,7 +541,7 @@ class PyCalcCtrl:
 
         # Connect Basic Layout Button
         for btnText, btn in self._view.basic_buttons.items():
-            if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±"}:
+            if btnText not in {"=", "C", "MC", "M+", "M−", "MR", "±"}:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.basic_buttons["="].clicked.connect(self._calculateResult)
@@ -549,12 +549,12 @@ class PyCalcCtrl:
         self._view.basic_buttons["±"].clicked.connect(self._neg)
         self._view.basic_buttons["MC"].clicked.connect(self._memory_clear)
         self._view.basic_buttons["M+"].clicked.connect(self._memory_add)
-        self._view.basic_buttons["M-"].clicked.connect(self._memory_subtract)
+        self._view.basic_buttons["M−"].clicked.connect(self._memory_subtract)
         self._view.basic_buttons["MR"].clicked.connect(self._memory_print)
 
         # Connect Scientific Layout Button
         for btnText, btn in self._view.scientific_buttons.items():
-            if btnText not in ["=", "C", "MC", "M+", "M-", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
+            if btnText not in ["=", "C", "MC", "M+", "M−", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
                                "log"]:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
@@ -564,7 +564,7 @@ class PyCalcCtrl:
         self._view.scientific_buttons["±"].clicked.connect(self._neg)
         self._view.scientific_buttons["MC"].clicked.connect(self._memory_clear)
         self._view.scientific_buttons["M+"].clicked.connect(self._memory_add)
-        self._view.scientific_buttons["M-"].clicked.connect(self._memory_subtract)
+        self._view.scientific_buttons["M−"].clicked.connect(self._memory_subtract)
         self._view.scientific_buttons["MR"].clicked.connect(self._memory_print)
 
         self._view.scientific_buttons["cos"].clicked.connect(self._cos)
