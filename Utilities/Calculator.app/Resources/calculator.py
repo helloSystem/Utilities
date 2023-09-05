@@ -44,7 +44,7 @@ from functools import partial
 from PyQt5.QtCore import Qt, QSize
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QMessageBox, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QPixmap, QColor, QIcon
 
 # The Main Window
@@ -140,6 +140,7 @@ class Window(QMainWindow, Ui_MainWindow):
         for btnText, pos in buttons.items():
             # Create a button
             self.basic_buttons[btnText] = CalculatorButton(text=btnText)
+
             # Apply Color
             if btnText in ["−", "±", "÷", "×", "+", "MC", "M+", "M-", "MR"]:
                 self.basic_buttons[btnText].setColor(QColor("#7a7a7b"))
@@ -225,10 +226,11 @@ class Window(QMainWindow, Ui_MainWindow):
         for btnText, pos in buttons.items():
             # Create a button
             self.scientific_buttons[btnText] = CalculatorButton(text=btnText)
+
             # Apply Color
-            if btnText in ["−", "±", "÷", "×", "+", "MC", "M+", "M-", "MR"]:
-                self.scientific_buttons[btnText].setColor(QColor("#7a7a7b"))
-                self.scientific_buttons[btnText].setFontColor(QColor("#f7f6f6"))
+            if btnText in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "."]:
+                self.scientific_buttons[btnText].setColor(QColor("#eeeeed"))
+                self.scientific_buttons[btnText].setFontColor(QColor("#3f3f3f"))
             elif btnText == "=":
                 self.scientific_buttons[btnText].setColor(QColor("#f09648"))
                 self.scientific_buttons[btnText].setFontColor(QColor("#ffffff"))
@@ -236,8 +238,8 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.scientific_buttons[btnText].setColor(QColor("#f0003b"))
                 self.scientific_buttons[btnText].setFontColor(QColor("#ffffff"))
             else:
-                self.scientific_buttons[btnText].setColor(QColor("#eeeeed"))
-                self.scientific_buttons[btnText].setFontColor(QColor("#3f3f3f"))
+                self.scientific_buttons[btnText].setColor(QColor("#7a7a7b"))
+                self.scientific_buttons[btnText].setFontColor(QColor("#f7f6f6"))
 
             # Apply location
             if btnText == "=":
@@ -246,6 +248,9 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.scientific_buttons_layout.addWidget(self.scientific_buttons[btnText], pos[0], pos[1], 1, 2)
             else:
                 self.scientific_buttons_layout.addWidget(self.scientific_buttons[btnText], pos[0], pos[1], 1, 1)
+
+        spacer = QSpacerItem(6, 6, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.scientific_buttons_layout.addItem(spacer, 0, 4, 6, 1)
 
     def setDisplayText(self, text):
         """Set display's text."""
@@ -549,8 +554,8 @@ class PyCalcCtrl:
 
         # Connect Scientific Layout Button
         for btnText, btn in self._view.scientific_buttons.items():
-            if btnText not in {"=", "C", "MC", "M+", "M-", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
-                               "log"}:
+            if btnText not in ["=", "C", "MC", "M+", "M-", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
+                               "log"]:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.scientific_buttons["="].clicked.connect(self._calculateResult)

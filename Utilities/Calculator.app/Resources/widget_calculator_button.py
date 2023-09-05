@@ -50,7 +50,8 @@ class CalculatorButton(QAbstractButton):
 
     def setupUI(self):
         self.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
-        self.font = QFont("Nimbus Sans", 11)
+        self.font = QFont("Nimbus Sans", 13)
+        # self.font = QFont("Nimbus Sans", 11)
         self.font_metric = QFontMetrics(self.font)
         self.setBorderColor(QColor("#1e1e1f"))
         self.setBorderSize(2)
@@ -78,8 +79,7 @@ class CalculatorButton(QAbstractButton):
         self.painter.end()
 
     def draw_text(self):
-        if self.text() not in ["cos", "cosh", "tan", "tanh", "sin", "sinh", "log", "Rad", "EE", "RN",
-                               "2nd", "ln", "1/x"]:
+        if self.text() not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]:
             if self.font_color():
                 self.painter.setPen(QPen(self.font_color(), 1, Qt.SolidLine))
             else:
@@ -96,20 +96,38 @@ class CalculatorButton(QAbstractButton):
 
         if not self.__mouse_checked:
             if self.__mouse_over:
-                gradient = QLinearGradient(0, 0, 0, self.height() * 5)
-                gradient.setColorAt(0.0, Qt.white)
-                gradient.setColorAt(0.1, self.color())
-                gradient.setColorAt(1.0, Qt.black)
+                gradient = QLinearGradient(0, 0, 0, self.height())
+                gradient.setColorAt(0.0, self.color().darker(110))
+                gradient.setColorAt(0.1, self.color().lighter(180))
+                gradient.setColorAt(0.15, self.color().lighter(140))
+                gradient.setColorAt(0.40, self.color().lighter(130))
+                gradient.setColorAt(0.45, self.color())
+                gradient.setColorAt(0.51, self.color().darker(110))
+                gradient.setColorAt(0.9, self.color().darker(120))
+                gradient.setColorAt(0.95, self.color().darker(180))
+                gradient.setColorAt(1.0, self.color().darker(160))
             else:
-                gradient = QLinearGradient(0, 0, 0, self.height() * 5)
-                gradient.setColorAt(0.0, Qt.white)
-                gradient.setColorAt(0.08, self.color())
-                gradient.setColorAt(0.7, Qt.black)
+                gradient = QLinearGradient(0, 0, 0, self.height())
+                gradient.setColorAt(0.0, self.color().darker(110))
+                gradient.setColorAt(0.1, self.color().lighter(190))
+                gradient.setColorAt(0.15, self.color().lighter(130))
+                gradient.setColorAt(0.40, self.color().lighter(120))
+                gradient.setColorAt(0.45, self.color())
+                gradient.setColorAt(0.51, self.color().darker(120))
+                gradient.setColorAt(0.9, self.color().darker(130))
+                gradient.setColorAt(0.95, self.color().darker(190))
+                gradient.setColorAt(1.0, self.color().darker(160))
         else:
-            gradient = QLinearGradient(0, 0, 0, self.height() * 5)
-            gradient.setColorAt(0.0, Qt.lightGray)
-            gradient.setColorAt(0.06, self.color())
-            gradient.setColorAt(0.95, Qt.lightGray)
+            gradient = QLinearGradient(0, 0, 0, self.height())
+            gradient.setColorAt(0.0, self.color().darker(110))
+            gradient.setColorAt(0.1, self.color().darker(120))
+            gradient.setColorAt(0.15, self.color().darker(110))
+            gradient.setColorAt(0.40, self.color().darker(105))
+            gradient.setColorAt(0.5, self.color())
+            gradient.setColorAt(0.51, self.color().lighter(105))
+            gradient.setColorAt(0.9, self.color().lighter(110))
+            gradient.setColorAt(0.95, self.color().lighter(170))
+            gradient.setColorAt(1.0, self.color().lighter(140))
 
         # Set painter colors to given values.
 
