@@ -244,7 +244,7 @@ class Window(QMainWindow, Ui_MainWindow):
             else:
                 self.scientific_buttons_layout.addWidget(self.scientific_buttons[btnText], pos[0], pos[1], 1, 1)
 
-            if btnText in ["Rad", "EE", "RN", "eˣ", "2ⁿᵈ", "n", "yˣ", "In", "x!", "ˣ√𝑦", "√"]:
+            if btnText in ["Rad", "EE", "RN", "eˣ", "2ⁿᵈ", "n", "yˣ", "In", "x!", "ˣ√𝑦", "√", "%"]:
                 self.scientific_buttons[btnText].setEnabled(False)
 
         spacer = QSpacerItem(6, 6, QSizePolicy.Minimum, QSizePolicy.Expanding)
