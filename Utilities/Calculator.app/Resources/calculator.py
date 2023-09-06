@@ -55,10 +55,7 @@ from widget_calculator_button import CalculatorButton
 from dialog_paper_tape import PaperTape
 
 __version__ = "0.2"
-__author__ = [
-    "Leodanis Pozo Ramos & Contributors",
-    "Jérôme ORNECH alias Hierosme"
-]
+__author__ = ["Leodanis Pozo Ramos & Contributors", "Jérôme ORNECH alias Hierosme"]
 
 ERROR_MSG = "ERROR"
 
@@ -204,7 +201,6 @@ class Window(QMainWindow, Ui_MainWindow):
             "5": (3, 6),
             "6": (3, 7),
             "+": (3, 8),
-
             "sinh": (4, 0),
             "cosh": (4, 1),
             "tanh": (4, 2),
@@ -213,7 +209,6 @@ class Window(QMainWindow, Ui_MainWindow):
             "2": (4, 6),
             "3": (4, 7),
             "=": (4, 8),
-
             # the last line
             "Rad": (5, 0),
             "⫪": (5, 1),
@@ -268,33 +263,31 @@ class Window(QMainWindow, Ui_MainWindow):
         """Clear the display."""
         self.setDisplayText("")
 
-    def closeEvent(self, evnt):
+    def closeEvent(self, event):
         self.paper_tape_dialog.have_to_close = True
         self.paper_tape_dialog.close()
 
-        super(Window, self).closeEvent(evnt)
+        super(Window, self).closeEvent(event)
 
     @staticmethod
     def _showAboutDialog():
         msg = QMessageBox()
         msg.setWindowTitle("About")
         msg.setIconPixmap(
-            QPixmap(
-                path.join(
-                    path.dirname(__file__),
-                    "Calculator.png"
-                )
-            ).scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            QPixmap(path.join(path.dirname(__file__), "Calculator.png")).scaled(
+                64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
         )
         for candidate in ["COPYRIGHT", "COPYING", "LICENSE"]:
             if path.exists(path.join(path.dirname(__file__), candidate)):
-                with open(path.join(path.dirname(__file__), candidate), 'r') as file:
+                with open(path.join(path.dirname(__file__), candidate), "r") as file:
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Calculator</h3>")
         msg.setInformativeText(
             "A simple calculator application written in PyQt5<br><br>"
-            "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>")
+            "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
+        )
         msg.exec()
 
     def _showPaperTape(self):
@@ -334,7 +327,7 @@ def evaluateExpression(expression):
         expression = expression.replace("⟯", ")")
     try:
         result = str(eval(expression, {}, {}))
-    except Exception:
+    except (Exception, BaseException):
         result = ERROR_MSG
 
     return result
@@ -368,18 +361,15 @@ class PyCalcCtrl:
     def _calculateResult(self):
         """Evaluate expressions."""
         if not self._view.asking_question:
-
             result = self._evaluate(expression=self._view.displayText())
             if result:
                 self._view.paper_tape_dialog.plainTextEdit.setPlainText(
-                    "%s\n\n%s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(),
-                                  self._view.displayText()))
+                    "%s\n\n%s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(), self._view.displayText())
+                )
                 self._view.paper_tape_dialog.plainTextEdit.setPlainText(
-                    "%s\n= %s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(),
-                                  result))
+                    "%s\n= %s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(), result)
+                )
             self._view.setDisplayText(result)
-
-
 
     def _memory_clear(self):
         """Clear memory by set value to None"""
@@ -569,7 +559,6 @@ class PyCalcCtrl:
             self._view.asking_question = True
             self._view.setDisplayText("Expose ")
 
-
             self._view.asking_question = False
             try:
                 if "." in result:
@@ -581,16 +570,15 @@ class PyCalcCtrl:
 
         self._view.setDisplayText(str(result))
 
-
     def _inverse(self):
         """Evaluate expressions value and display the 1/x of the value"""
         result = self._evaluate(expression=self._view.displayText())
         if result and "ERROR" not in result:
             try:
                 if "." in result:
-                    result = 1/float(result)
+                    result = 1 / float(result)
                 else:
-                    result = 1/int(result)
+                    result = 1 / int(result)
             except (OverflowError, ValueError):
                 result = ERROR_MSG
 
@@ -608,7 +596,7 @@ class PyCalcCtrl:
         """Connect signals and slots."""
         # Display signals
         self._view.display.returnPressed.connect(self._calculateResult)
-        """self._view.display.escapePressed.connect(self._view.clearDisplay)"""
+        # self._view.display.escapePressed.connect(self._view.clearDisplay)
 
         # Connect Basic Layout Button
         for btnText, btn in self._view.basic_buttons.items():
@@ -625,8 +613,27 @@ class PyCalcCtrl:
 
         # Connect Scientific Layout Button
         for btnText, btn in self._view.scientific_buttons.items():
-            if btnText not in ["=", "C", "MC", "M+", "M−", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
-                               "log", "x²", "x³", "yˣ", "⫪", "1/x"]:
+            if btnText not in [
+                "=",
+                "C",
+                "MC",
+                "M+",
+                "M−",
+                "MR",
+                "±",
+                "cos",
+                "sin",
+                "tan",
+                "cosh",
+                "sinh",
+                "tanh",
+                "log",
+                "x²",
+                "x³",
+                "yˣ",
+                "⫪",
+                "1/x",
+            ]:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.scientific_buttons["="].clicked.connect(self._calculateResult)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import os
 from PyQt5.QtCore import Qt, pyqtSignal, QRectF, QSize
 from PyQt5.QtGui import (
     QPaintEvent,
@@ -11,17 +10,13 @@ from PyQt5.QtGui import (
     QFont,
     QPainterPath,
     QLinearGradient,
-
 )
 from PyQt5.QtWidgets import QAbstractButton, QSizePolicy
 
 
 class CalculatorButton(QAbstractButton):
     """
-    Custom Qt Widget to show a chosen color.
-
-    Left-clicking the button shows the color-chooser, while
-    right-clicking resets the color to None (no-color).
+    Custom Qt Widget to show a colored button color.
     """
 
     colorChanged = pyqtSignal(object)
@@ -55,7 +50,6 @@ class CalculatorButton(QAbstractButton):
     def setupUI(self):
         self.setSizePolicy(QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding))
         self.font = QFont("Nimbus Sans", 13)
-        # self.font = QFont("Nimbus Sans", 11)
         self.font_metric = QFontMetrics(self.font)
         self.setBorderColor()
         self.setBorderSize(2)
@@ -66,11 +60,10 @@ class CalculatorButton(QAbstractButton):
     def minimumSizeHint(self):
         return QSize(
             self.font_metric.width(self.text()) + (self.border_size() * 2),
-            self.font_metric.height() + (self.border_size() * 2)
+            self.font_metric.height() + (self.border_size() * 2),
         )
 
     def paintEvent(self, e: QPaintEvent) -> None:
-
         self.painter.begin(self)
         self.draw_square(event=e)
         self.draw_text()
@@ -87,9 +80,11 @@ class CalculatorButton(QAbstractButton):
                 self.painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
 
             self.painter.setFont(self.font)
-            self.painter.drawText((self.width() / 2) - (self.font_metric.width(self.text()) / 2),
-                                  (self.height() / 2) + self.font_metric.height() / 4,
-                                  self.text())
+            self.painter.drawText(
+                (self.width() / 2) - (self.font_metric.width(self.text()) / 2),
+                (self.height() / 2) + self.font_metric.height() / 4,
+                self.text(),
+            )
 
     def draw_square(self, event):
         self.painter.setRenderHint(QPainter.Antialiasing)
@@ -136,14 +131,13 @@ class CalculatorButton(QAbstractButton):
             gradient.setColorAt(0.1, self.color().darker(120))
             gradient.setColorAt(0.15, self.color().darker(110))
             gradient.setColorAt(0.40, self.color().darker(105))
-            gradient.setColorAt(0.5,self.color())
+            gradient.setColorAt(0.5, self.color())
             gradient.setColorAt(0.51, self.color().lighter(105))
             gradient.setColorAt(0.9, self.color().lighter(110))
             gradient.setColorAt(0.95, self.color().lighter(170))
             gradient.setColorAt(1.0, self.color().lighter(140))
 
         # Set painter colors to given values.
-
         self.painter.setPen(self.border_pen())
         self.painter.setBrush(gradient)
 
@@ -178,7 +172,7 @@ class CalculatorButton(QAbstractButton):
     def setColor(self, color):
         if color != self._color:
             self._color = color
-            # self.textChanged.emit(self._text)
+            # self.colorChanged.emit(self._text)
 
     def color(self):
         if self.isEnabled():
@@ -191,7 +185,7 @@ class CalculatorButton(QAbstractButton):
             color = Qt.black
         if color != self._font_color:
             self._font_color = color
-            # self.textChanged.emit(self._text)
+            # self.fontChanged.emit(self._text)
 
     def font_color(self):
         if self.isEnabled():
@@ -239,6 +233,7 @@ class CalculatorButton(QAbstractButton):
 
     def mouseReleaseEvent(self, event):
         self.__mouse_checked = False
+        # noinspection PyUnresolvedReferences
         self.clicked.emit(True)
         self.update()
 
