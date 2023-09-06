@@ -63,7 +63,7 @@ __author__ = [
 ERROR_MSG = "ERROR"
 
 
-# Create a subclass of QMainWindow to setup the calculator's GUI
+# Create a subclass of QMainWindow to set up the calculator's GUI
 class Window(QMainWindow, Ui_MainWindow):
     """PyCalc's View (GUI)."""
 
@@ -88,10 +88,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.display.setAlignment(Qt.AlignRight)
         self.scientific_buttons = {}
         self.basic_buttons = {}
-        # self.display.setReadOnly(False)
 
     def connectSignalsSlots(self):
-
         # Menu and ToolBar
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
         self.actionView_Show_Paper_Tape.triggered.connect(self._showPaperTape)
@@ -553,15 +551,15 @@ class PyCalcCtrl:
 
         self._view.setDisplayText(str(result))
 
-    def _pi(self):
-        """Evaluate expressions value and display the power3 of the value"""
+    def _inverse(self):
+        """Evaluate expressions value and display the 1/x of the value"""
         result = self._evaluate(expression=self._view.displayText())
         if result and "ERROR" not in result:
             try:
                 if "." in result:
-                    result = pow(float(result), 3)
+                    result = 1/float(result)
                 else:
-                    result = pow(int(result), 3)
+                    result = 1/int(result)
             except (OverflowError, ValueError):
                 result = ERROR_MSG
 
@@ -597,7 +595,7 @@ class PyCalcCtrl:
         # Connect Scientific Layout Button
         for btnText, btn in self._view.scientific_buttons.items():
             if btnText not in ["=", "C", "MC", "M+", "M−", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
-                               "log", "x²", "x³", "⫪"]:
+                               "log", "x²", "x³", "⫪", "1/x"]:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.scientific_buttons["="].clicked.connect(self._calculateResult)
@@ -624,6 +622,8 @@ class PyCalcCtrl:
         self._view.scientific_buttons["x³"].clicked.connect(self._power3)
 
         self._view.scientific_buttons["⫪"].clicked.connect(partial(self._buildExpression, pi))
+
+        self._view.scientific_buttons["1/x"].clicked.connect(self._inverse)
 
 
 if __name__ == "__main__":
