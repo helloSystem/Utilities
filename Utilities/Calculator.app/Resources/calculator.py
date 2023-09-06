@@ -35,13 +35,14 @@
 
 """PyCalc is a simple calculator built using Python and PyQt5."""
 
-import os, sys
-from math import cos, log, tan, sin, cosh, tanh, sinh
+from os import path
+import sys
+from math import cos, log, tan, sin, cosh, tanh, sinh, pow, pi
 
 from functools import partial
 
 # Import QApplication and the required widgets from PyQt5.QtWidgets
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtWidgets import QMainWindow
 from PyQt5.QtWidgets import QMessageBox, QSpacerItem, QSizePolicy
@@ -79,7 +80,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.create_scientific_layout()
 
         self.connectSignalsSlots()
-        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Calculator.png")))
+        self.setWindowIcon(QIcon(path.join(path.dirname(__file__), "Calculator.png")))
         self._display_basic()
         self.show()
 
@@ -98,7 +99,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.actionView_Scientific.triggered.connect(self._display_scientific)
 
     def setupCustomUi(self):
-
         # Paper Tape
         self.paper_tape_dialog = PaperTape()
         self.paper_tape_dialog.hide()
@@ -214,7 +214,7 @@ class Window(QMainWindow, Ui_MainWindow):
             "3": (4, 7),
             "=": (4, 8),
 
-            # the last line got only 2 buttons
+            # the last line
             "Rad": (5, 0),
             "⫪": (5, 1),
             "EE": (5, 2),
@@ -277,15 +277,15 @@ class Window(QMainWindow, Ui_MainWindow):
         msg.setWindowTitle("About")
         msg.setIconPixmap(
             QPixmap(
-                os.path.join(
-                    os.path.dirname(__file__),
+                path.join(
+                    path.dirname(__file__),
                     "Calculator.png"
                 )
             ).scaled(64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
         for candidate in ["COPYRIGHT", "COPYING", "LICENSE"]:
-            if os.path.exists(os.path.join(os.path.dirname(__file__), candidate)):
-                with open(os.path.join(os.path.dirname(__file__), candidate), 'r') as file:
+            if path.exists(path.join(path.dirname(__file__), candidate)):
+                with open(path.join(path.dirname(__file__), candidate), 'r') as file:
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Calculator</h3>")
@@ -525,12 +525,54 @@ class PyCalcCtrl:
 
         self._view.setDisplayText(str(result))
 
+    def _power2(self):
+        """Evaluate expressions value and display the power2 of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = pow(float(result), 2)
+                else:
+                    result = pow(int(result), 2)
+            except (OverflowError, ValueError):
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+    def _power3(self):
+        """Evaluate expressions value and display the power3 of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = pow(float(result), 3)
+                else:
+                    result = pow(int(result), 3)
+            except (OverflowError, ValueError):
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+    def _pi(self):
+        """Evaluate expressions value and display the power3 of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            try:
+                if "." in result:
+                    result = pow(float(result), 3)
+                else:
+                    result = pow(int(result), 3)
+            except (OverflowError, ValueError):
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
     def _buildExpression(self, sub_exp):
         """Build expression."""
         if self._view.displayText() == ERROR_MSG:
             self._view.clearDisplay()
 
-        expression = self._view.displayText() + sub_exp
+        expression = "".join([self._view.displayText(), str(sub_exp)])
         self._view.setDisplayText(expression)
 
     def _connectSignals(self):
@@ -555,7 +597,7 @@ class PyCalcCtrl:
         # Connect Scientific Layout Button
         for btnText, btn in self._view.scientific_buttons.items():
             if btnText not in ["=", "C", "MC", "M+", "M−", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
-                               "log"]:
+                               "log", "x²", "x³", "⫪"]:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.scientific_buttons["="].clicked.connect(self._calculateResult)
@@ -577,6 +619,11 @@ class PyCalcCtrl:
         self._view.scientific_buttons["tanh"].clicked.connect(self._tanh)
 
         self._view.scientific_buttons["log"].clicked.connect(self._log)
+
+        self._view.scientific_buttons["x²"].clicked.connect(self._power2)
+        self._view.scientific_buttons["x³"].clicked.connect(self._power3)
+
+        self._view.scientific_buttons["⫪"].clicked.connect(partial(self._buildExpression, pi))
 
 
 if __name__ == "__main__":
