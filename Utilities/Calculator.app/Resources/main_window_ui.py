@@ -229,7 +229,7 @@ class Ui_MainWindow(object):
         self.menuView.setTitle(_translate("MainWindow", "View"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))
         self.menuConvert.setTitle(_translate("MainWindow", "Convert"))
-        self.actionClose_Calculator_Window.setText(_translate("MainWindow", "Close calculator Window"))
+        self.actionClose_Calculator_Window.setText(_translate("MainWindow", "Close"))
         self.actionClose_Calculator_Window.setShortcut(_translate("MainWindow", "Ctrl+W"))
         self.actionSave_Tape_As.setText(_translate("MainWindow", "Save Tape As..."))
         self.actionSave_Tape_As.setShortcut(_translate("MainWindow", "Ctrl+Shift+S"))
