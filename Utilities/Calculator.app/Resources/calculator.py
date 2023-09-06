@@ -72,6 +72,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.paper_tape_dialog = None
         self.scientific_buttons = None
         self.basic_buttons = None
+        self.asking_question = None
         self.setupUi(self)
         self.setupCustomUi()
 
@@ -85,9 +86,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.show()
 
     def setupInitialState(self):
+        self.asking_question = False
         self.display.setAlignment(Qt.AlignRight)
         self.scientific_buttons = {}
         self.basic_buttons = {}
+        self.paper_tape_dialog.hide()
 
     def connectSignalsSlots(self):
         # Menu and ToolBar
@@ -99,7 +102,6 @@ class Window(QMainWindow, Ui_MainWindow):
     def setupCustomUi(self):
         # Paper Tape
         self.paper_tape_dialog = PaperTape()
-        self.paper_tape_dialog.hide()
 
     def create_basic_layout(self):
         """Create the basic layout buttons."""
@@ -247,6 +249,9 @@ class Window(QMainWindow, Ui_MainWindow):
             else:
                 self.scientific_buttons_layout.addWidget(self.scientific_buttons[btnText], pos[0], pos[1], 1, 1)
 
+            if btnText in ["Rad", "EE", "RN", "eˣ", "2ⁿᵈ", "n", "yˣ", "In", "x!", "ˣ√𝑦", "√"]:
+                self.scientific_buttons[btnText].setEnabled(False)
+
         spacer = QSpacerItem(6, 6, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.scientific_buttons_layout.addItem(spacer, 0, 4, 6, 1)
 
@@ -296,9 +301,12 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.paper_tape_dialog.isVisible():
             self.paper_tape_dialog.hide()
         else:
+            self.paper_tape_dialog.move(self.pos().x() - self.paper_tape_dialog.width(), self.pos().y())
             self.paper_tape_dialog.show()
+
         self.activateWindow()
         self.setFocus()
+        self.raise_()
 
     def _display_basic(self):
         self.setFixedWidth(200)
@@ -359,16 +367,19 @@ class PyCalcCtrl:
 
     def _calculateResult(self):
         """Evaluate expressions."""
+        if not self._view.asking_question:
 
-        result = self._evaluate(expression=self._view.displayText())
-        if result:
-            self._view.paper_tape_dialog.plainTextEdit.setPlainText(
-                "%s\n\n%s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(),
-                              self._view.displayText()))
-            self._view.paper_tape_dialog.plainTextEdit.setPlainText(
-                "%s\n= %s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(),
-                              result))
-        self._view.setDisplayText(result)
+            result = self._evaluate(expression=self._view.displayText())
+            if result:
+                self._view.paper_tape_dialog.plainTextEdit.setPlainText(
+                    "%s\n\n%s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(),
+                                  self._view.displayText()))
+                self._view.paper_tape_dialog.plainTextEdit.setPlainText(
+                    "%s\n= %s" % (self._view.paper_tape_dialog.plainTextEdit.toPlainText(),
+                                  result))
+            self._view.setDisplayText(result)
+
+
 
     def _memory_clear(self):
         """Clear memory by set value to None"""
@@ -551,6 +562,26 @@ class PyCalcCtrl:
 
         self._view.setDisplayText(str(result))
 
+    def _powerx(self):
+        """Evaluate expressions value and display the powerX of the value"""
+        result = self._evaluate(expression=self._view.displayText())
+        if result and "ERROR" not in result:
+            self._view.asking_question = True
+            self._view.setDisplayText("Expose ")
+
+
+            self._view.asking_question = False
+            try:
+                if "." in result:
+                    result = pow(float(result), 3)
+                else:
+                    result = pow(int(result), 3)
+            except (OverflowError, ValueError):
+                result = ERROR_MSG
+
+        self._view.setDisplayText(str(result))
+
+
     def _inverse(self):
         """Evaluate expressions value and display the 1/x of the value"""
         result = self._evaluate(expression=self._view.displayText())
@@ -595,7 +626,7 @@ class PyCalcCtrl:
         # Connect Scientific Layout Button
         for btnText, btn in self._view.scientific_buttons.items():
             if btnText not in ["=", "C", "MC", "M+", "M−", "MR", "±", "cos", "sin", "tan", "cosh", "sinh", "tanh",
-                               "log", "x²", "x³", "⫪", "1/x"]:
+                               "log", "x²", "x³", "yˣ", "⫪", "1/x"]:
                 btn.clicked.connect(partial(self._buildExpression, btnText))
 
         self._view.scientific_buttons["="].clicked.connect(self._calculateResult)
@@ -620,6 +651,7 @@ class PyCalcCtrl:
 
         self._view.scientific_buttons["x²"].clicked.connect(self._power2)
         self._view.scientific_buttons["x³"].clicked.connect(self._power3)
+        # self._view.scientific_buttons["yˣ"].clicked.connect(self._powerx)
 
         self._view.scientific_buttons["⫪"].clicked.connect(partial(self._buildExpression, pi))
 

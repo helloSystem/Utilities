@@ -21,6 +21,7 @@ class Ui_PaperTape(object):
         self.pushButton_clear.setObjectName("pushButton_clear")
         self.gridLayout.addWidget(self.pushButton_clear, 1, 1, 1, 1)
         self.pushButton_recalculate_totals = QtWidgets.QPushButton(PaperTape)
+        self.pushButton_recalculate_totals.setEnabled(False)
         self.pushButton_recalculate_totals.setObjectName("pushButton_recalculate_totals")
         self.gridLayout.addWidget(self.pushButton_recalculate_totals, 1, 0, 1, 1)
         self.plainTextEdit = QtWidgets.QPlainTextEdit(PaperTape)
@@ -33,6 +34,6 @@ class Ui_PaperTape(object):
 
     def retranslateUi(self, PaperTape):
         _translate = QtCore.QCoreApplication.translate
-        PaperTape.setWindowTitle(_translate("PaperTape", "Form"))
+        PaperTape.setWindowTitle(_translate("PaperTape", "Paper Tape"))
         self.pushButton_clear.setText(_translate("PaperTape", "Clear"))
         self.pushButton_recalculate_totals.setText(_translate("PaperTape", "Recalculate Totals"))

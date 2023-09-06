@@ -80,10 +80,14 @@ class CalculatorButton(QAbstractButton):
 
     def draw_text(self):
         if self.text() not in ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]:
-            if self.font_color():
-                self.painter.setPen(QPen(self.font_color(), 1, Qt.SolidLine))
+            if self.isEnabled():
+                if self.font_color():
+                    self.painter.setPen(QPen(self.font_color(), 1, Qt.SolidLine))
+                else:
+                    self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
             else:
-                self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
+                self.painter.setPen(QPen(Qt.lightGray, 1, Qt.SolidLine))
+
             self.painter.setFont(self.font)
             self.painter.drawText((self.width() / 2) - (self.font_metric.width(self.text()) / 2),
                                   (self.height() / 2) + self.font_metric.height() / 4,
@@ -93,37 +97,48 @@ class CalculatorButton(QAbstractButton):
         self.painter.setRenderHint(QPainter.Antialiasing)
         # Create the path
         path = QPainterPath()
-
-        if not self.__mouse_checked:
-            if self.__mouse_over:
-                gradient = QLinearGradient(0, 0, 0, self.height())
-                gradient.setColorAt(0.0, self.color().darker(110))
-                gradient.setColorAt(0.1, self.color().lighter(180))
-                gradient.setColorAt(0.15, self.color().lighter(140))
-                gradient.setColorAt(0.40, self.color().lighter(130))
-                gradient.setColorAt(0.45, self.color())
-                gradient.setColorAt(0.51, self.color().darker(110))
-                gradient.setColorAt(0.9, self.color().darker(120))
-                gradient.setColorAt(0.95, self.color().darker(180))
-                gradient.setColorAt(1.0, self.color().darker(160))
+        if self.isEnabled():
+            if not self.__mouse_checked:
+                if self.__mouse_over:
+                    gradient = QLinearGradient(0, 0, 0, self.height())
+                    gradient.setColorAt(0.0, self.color().darker(110))
+                    gradient.setColorAt(0.1, self.color().lighter(180))
+                    gradient.setColorAt(0.15, self.color().lighter(140))
+                    gradient.setColorAt(0.40, self.color().lighter(130))
+                    gradient.setColorAt(0.45, self.color())
+                    gradient.setColorAt(0.51, self.color().darker(110))
+                    gradient.setColorAt(0.9, self.color().darker(120))
+                    gradient.setColorAt(0.95, self.color().darker(180))
+                    gradient.setColorAt(1.0, self.color().darker(160))
+                else:
+                    gradient = QLinearGradient(0, 0, 0, self.height())
+                    gradient.setColorAt(0.0, self.color().darker(110))
+                    gradient.setColorAt(0.1, self.color().lighter(190))
+                    gradient.setColorAt(0.15, self.color().lighter(130))
+                    gradient.setColorAt(0.40, self.color().lighter(120))
+                    gradient.setColorAt(0.45, self.color())
+                    gradient.setColorAt(0.51, self.color().darker(120))
+                    gradient.setColorAt(0.9, self.color().darker(130))
+                    gradient.setColorAt(0.95, self.color().darker(190))
+                    gradient.setColorAt(1.0, self.color().darker(160))
             else:
                 gradient = QLinearGradient(0, 0, 0, self.height())
                 gradient.setColorAt(0.0, self.color().darker(110))
-                gradient.setColorAt(0.1, self.color().lighter(190))
-                gradient.setColorAt(0.15, self.color().lighter(130))
-                gradient.setColorAt(0.40, self.color().lighter(120))
-                gradient.setColorAt(0.45, self.color())
-                gradient.setColorAt(0.51, self.color().darker(120))
-                gradient.setColorAt(0.9, self.color().darker(130))
-                gradient.setColorAt(0.95, self.color().darker(190))
-                gradient.setColorAt(1.0, self.color().darker(160))
+                gradient.setColorAt(0.1, self.color().darker(120))
+                gradient.setColorAt(0.15, self.color().darker(110))
+                gradient.setColorAt(0.40, self.color().darker(105))
+                gradient.setColorAt(0.5, self.color())
+                gradient.setColorAt(0.51, self.color().lighter(105))
+                gradient.setColorAt(0.9, self.color().lighter(110))
+                gradient.setColorAt(0.95, self.color().lighter(170))
+                gradient.setColorAt(1.0, self.color().lighter(140))
         else:
             gradient = QLinearGradient(0, 0, 0, self.height())
             gradient.setColorAt(0.0, self.color().darker(110))
             gradient.setColorAt(0.1, self.color().darker(120))
             gradient.setColorAt(0.15, self.color().darker(110))
             gradient.setColorAt(0.40, self.color().darker(105))
-            gradient.setColorAt(0.5, self.color())
+            gradient.setColorAt(0.5,self.color())
             gradient.setColorAt(0.51, self.color().lighter(105))
             gradient.setColorAt(0.9, self.color().lighter(110))
             gradient.setColorAt(0.95, self.color().lighter(170))
@@ -147,7 +162,10 @@ class CalculatorButton(QAbstractButton):
         self.painter.strokePath(path, self.painter.pen())
 
         # Text is use a drop shadow
-        self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
+        if self.isEnabled():
+            self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
+        else:
+            self.painter.setPen(QPen(Qt.darkGray, 1, Qt.SolidLine))
         self.painter.setFont(self.font)
         self.painter.drawText(rect, Qt.AlignCenter, self.text())
 
@@ -165,7 +183,10 @@ class CalculatorButton(QAbstractButton):
             # self.textChanged.emit(self._text)
 
     def color(self):
-        return self._color
+        if self.isEnabled():
+            return self._color
+        else:
+            return QColor(Qt.lightGray)
 
     def setFontColor(self, color):
         if color is None:
@@ -184,7 +205,10 @@ class CalculatorButton(QAbstractButton):
             self._border_color = color
 
     def border_color(self):
-        return self._border_color
+        if self.isEnabled():
+            return self._border_color
+        else:
+            return QColor(Qt.lightGray)
 
     def setBorderSize(self, size):
         if size is None:

@@ -300,13 +300,16 @@ color: &quot;#3f3f3f&quot;;</string>
   </widget>
   <action name="actionClose_Calculator_Window">
    <property name="text">
-    <string>Close calculator Window</string>
+    <string>Close</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+W</string>
    </property>
   </action>
   <action name="actionSave_Tape_As">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save Tape As...</string>
    </property>
@@ -315,6 +318,9 @@ color: &quot;#3f3f3f&quot;;</string>
    </property>
   </action>
   <action name="actionPage_Setup">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Page Setup...</string>
    </property>
@@ -323,6 +329,9 @@ color: &quot;#3f3f3f&quot;;</string>
    </property>
   </action>
   <action name="actionPrint_Tape">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Print Tape...</string>
    </property>
@@ -363,11 +372,17 @@ color: &quot;#3f3f3f&quot;;</string>
    </property>
   </action>
   <action name="actionView_RPN">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>RPN</string>
    </property>
   </action>
   <action name="actionView_Precision">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Precision</string>
    </property>
