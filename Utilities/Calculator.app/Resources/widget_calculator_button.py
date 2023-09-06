@@ -45,6 +45,10 @@ class CalculatorButton(QAbstractButton):
         self.font_metric = None
         self.painter = None
 
+        self.color_disable = QColor(Qt.lightGray)
+        self.font_color_disable = QColor(Qt.lightGray)
+        self.font_shadow_color_disable = QColor(Qt.darkGray)
+        self.border_color_disable = QColor(Qt.lightGray)
 
         self.setupUI()
 
@@ -53,7 +57,7 @@ class CalculatorButton(QAbstractButton):
         self.font = QFont("Nimbus Sans", 13)
         # self.font = QFont("Nimbus Sans", 11)
         self.font_metric = QFontMetrics(self.font)
-        self.setBorderColor(QColor("#1e1e1f"))
+        self.setBorderColor()
         self.setBorderSize(2)
         self.setBorderPen(QPen(self.border_color(), self.border_size()))
         self.setMouseTracking(True)
@@ -64,12 +68,6 @@ class CalculatorButton(QAbstractButton):
             self.font_metric.width(self.text()) + (self.border_size() * 2),
             self.font_metric.height() + (self.border_size() * 2)
         )
-
-    # def sizeHint(self):
-    #     return QSize(
-    #         self.font_metric.width(self.text()) + (self.border_size() * 2),
-    #         self.font_metric.height() + (self.border_size() * 2)
-    #     )
 
     def paintEvent(self, e: QPaintEvent) -> None:
 
@@ -165,7 +163,7 @@ class CalculatorButton(QAbstractButton):
         if self.isEnabled():
             self.painter.setPen(QPen(Qt.black, 1, Qt.SolidLine))
         else:
-            self.painter.setPen(QPen(Qt.darkGray, 1, Qt.SolidLine))
+            self.painter.setPen(QPen(self.font_shadow_color_disable, 1, Qt.SolidLine))
         self.painter.setFont(self.font)
         self.painter.drawText(rect, Qt.AlignCenter, self.text())
 
@@ -186,7 +184,7 @@ class CalculatorButton(QAbstractButton):
         if self.isEnabled():
             return self._color
         else:
-            return QColor(Qt.lightGray)
+            return self.color_disable
 
     def setFontColor(self, color):
         if color is None:
@@ -196,11 +194,14 @@ class CalculatorButton(QAbstractButton):
             # self.textChanged.emit(self._text)
 
     def font_color(self):
-        return self._font_color
+        if self.isEnabled():
+            return self._font_color
+        else:
+            return self.font_color_disable
 
-    def setBorderColor(self, color):
+    def setBorderColor(self, color=None):
         if color is None:
-            color = Qt.gray
+            color = QColor("#1e1e1f")
         if color != self._border_color:
             self._border_color = color
 
@@ -208,7 +209,7 @@ class CalculatorButton(QAbstractButton):
         if self.isEnabled():
             return self._border_color
         else:
-            return QColor(Qt.lightGray)
+            return self.border_color_disable
 
     def setBorderSize(self, size):
         if size is None:
