@@ -20,6 +20,9 @@ class IconsCacheWorker(QObject):
     def __init__(self, cache):
         super().__init__()
         self.cache = cache
+        # self.icon_empty = QIcon(os.path.join(os.path.dirname(__file__), "Empty.png"))
+        self.icon_empty = QIcon.fromTheme("system-run")
+        # self.icon_empty = QIcon.fromTheme("application-x-executable")
 
     def refresh(self):
         for p in psutil.process_iter():
@@ -67,6 +70,22 @@ class IconsCacheWorker(QObject):
 
                 # Default case back to X11 theme support for get icon
                 if icon is None:
+                    # The entire icon cache method look to be wrong, then only one method work
+                    # Try 1 - Slow, UI Freeze
+                    # if QIcon.hasThemeIcon(application_name.lower()):
+                    #     icon = QIcon.fromTheme(application_name.lower())
+                    # else:
+                    #     icon = QIcon(self.icon_empty)
+
+                    # Try 2 - Slow, UI Freeze
+                    # icon = QIcon.fromTheme(application_name.lower(), self.icon_empty)
+
+                    # Try 3 - Ultra Slow, big UI Freeze
+                    # icon = QIcon.fromTheme(application_name.lower(), self.icon_empty)
+                    # if icon.isNull():
+                    #     icon = QIcon(self.icon_empty)
+
+                    # Try 4 - Acceptable speed, no UI Freeze
                     icon = QIcon.fromTheme(application_name.lower())
 
                 # Application by application emit a signal it contain data
