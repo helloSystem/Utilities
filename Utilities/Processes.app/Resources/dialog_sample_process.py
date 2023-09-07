@@ -351,51 +351,109 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             self.add_to_sample_text("children", None)
 
         # Open Files
-        if pinfo["open_files"]:
+        if pinfo["open_files"] and len(pinfo["open_files"]) > 1:
             self.sample_markdown += "## Open files\n"
 
-            self.add_to_sample_text("open-files", "PATH")
+            self.add_to_sample_text("open-files", "")
             model = []
             headers = []
+            template = []
 
+            # Create template by estimate size
+            max_path = 0
+            max_fd = 0
+            max_position = 0
+            max_mode = 0
+            max_flags = 0
+            for i, file in enumerate(pinfo["open_files"]):
+                if hasattr(file, "path"):
+                    if len(file.path) > max_path:
+                        max_path = len(file.path)
+
+                if hasattr(file, "fd"):
+                    if len(str(file.fd)) > max_fd:
+                        max_fd = len(str(file.fd))
+
+                if hasattr(file, "position"):
+                    if len(str(file.position)) > max_position:
+                        max_position = len(str(file.position))
+
+                if hasattr(file, "mode"):
+                    if len(file.mode) > max_mode:
+                        max_mode = len(file.mode)
+
+                if hasattr(file, "flags"):
+                    if len(str(file.flags)) > max_flags:
+                        max_flags = len(str(file.flags))
+
+            if max_path > 0:
+                if max_path < len("PATH"):
+                    max_path = len("PATH")
+                template.append(f"%-{max_path}s")
+
+            if max_fd > 0:
+                if max_fd < len("FD"):
+                    max_fd = len("FD")
+                template.append(f"%{max_fd}s")
+
+            if max_position > 0:
+                if max_position < len("POSITION"):
+                    max_position = len("POSITION")
+                template.append(f"%{max_position}s")
+
+            if max_mode > 0:
+                if max_mode < len("MODE"):
+                    max_mode = len("MODE")
+                template.append(f"%{max_mode}s")
+
+            if max_flags > 0:
+                if max_flags < len("FLAGS"):
+                    max_flags = len("FLAGS")
+                template.append(f"%{max_flags}s")
+
+            template = "      ".join(template)
+
+            # Create headers
             for i, file in enumerate(pinfo["open_files"]):
                 row = []
                 if hasattr(file, "path"):
                     row.append(f"{file.path}")
-                    if "Path" not in headers:
-                        headers.append("Path")
+                    if "PATH" not in headers:
+                        headers.append("PATH")
 
                 if hasattr(file, "fd"):
                     row.append(f"{file.fd}")
-                    if "Fd" not in headers:
-                        headers.append("Fd")
+                    if "FD" not in headers:
+                        headers.append("FD")
 
                 if hasattr(file, "position"):
                     row.append(f"{file.position}")
-                    if "Position" not in headers:
-                        headers.append("Position")
+                    if "POSITION" not in headers:
+                        headers.append("POSITION")
 
                 if hasattr(file, "mode"):
                     row.append(f"{file.mode}")
-                    if "Mode" not in headers:
-                        headers.append("Mode")
+                    if "MODE" not in headers:
+                        headers.append("MODE")
 
                 if hasattr(file, "flags"):
                     row.append(f"{file.flags}")
-                    if "Flags" not in headers:
-                        headers.append("Flags")
+                    if "FLAGS" not in headers:
+                        headers.append("FLAGS")
 
                 if row:
                     model.append(row)
 
-            self.sample_markdown += "PID | NAME\n"
-            self.sample_markdown += "--- | ---\n"
             self.sample_markdown += " | ".join(headers)
-            self.sample_markdown += " | ".join(["---" for i in headers])
-            self.add_to_sample_text("open-files", " ".join(headers))
+            self.sample_markdown += "\n"
+            self.sample_markdown += " | ".join(["---" for _ in headers])
+            self.sample_markdown += "\n"
+
+            self.add_to_sample_text("", template % tuple(headers))
             for file in model:
-                self.add_to_sample_text("", " ".join(file))
+                self.add_to_sample_text("", template % tuple(file))
                 self.sample_markdown += " | ".join(file)
+                self.sample_markdown += "\n"
             self.sample_markdown += "\n"
 
         else:
@@ -403,7 +461,7 @@ class SampleProcess(QWidget, Ui_SampleProcess):
             self.sample_markdown += "``None``\n"
             self.add_to_sample_text("open-files", None)
 
-        if pinfo["connections"]:
+        if pinfo["connections"] and len(pinfo["connections"]) > 1:
             self.sample_markdown += "## Connections\n"
             self.sample_markdown += "PROTO | LOCAL ADDR | REMOTE ADDR | STATUS\n"
             self.sample_markdown += "--- | --- | --- | ---\n"
@@ -439,11 +497,12 @@ class SampleProcess(QWidget, Ui_SampleProcess):
 
         if pinfo["threads"] and len(pinfo["threads"]) > 1:
             self.sample_markdown += "## Threads\n"
+            self.add_to_sample_text("threads", "")
             self.sample_markdown += "TID | USER | SYSTEM\n"
             self.sample_markdown += "--- | --- | ---\n"
 
             template = "%-5s %12s %12s"
-            self.add_to_sample_text("threads", template % ("TID", "USER", "SYSTEM"))
+            self.add_to_sample_text("", template % ("TID", "USER", "SYSTEM"))
             for i, thread in enumerate(pinfo["threads"]):
                 self.add_to_sample_text("", template % thread)
                 self.sample_markdown += f"{thread.id} | {thread.user_time} | {thread.system_time}\n"
