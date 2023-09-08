@@ -777,7 +777,7 @@ class Window(
             QPixmap(
                 os.path.join(
                     os.path.dirname(__file__),
-                    "Processes.png"
+                    "Processes.svg"
                 )
             ).scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
