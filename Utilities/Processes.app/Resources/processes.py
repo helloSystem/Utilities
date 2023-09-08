@@ -133,8 +133,8 @@ class Window(
         self.setupCustomUiToolBar()
 
         # Icon and Pixmap are loaded without qressouces file
-        self.icon_empty = QIcon(os.path.join(os.path.dirname(__file__), "Empty.png"))
-        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Processes.png")))
+        # self.icon_empty = QIcon(os.path.join(os.path.dirname(__file__), "Empty.png"))
+        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Processes.svg")))
         self.ActionToolBarQuitProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "KillProcess.png")))
         self.ActionToolBarInspectProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "Inspect.png")))
         self.ActionToolBarSampleProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "SampleProcess.png")))
