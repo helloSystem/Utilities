@@ -18,12 +18,13 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 
 from date_and_time_ui import Ui_MainWindow
 from property_date_time_auto import DateTimeAutomatically
+from property_timezone import TimeZone
 
-
-class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
+class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone):
     def __init__(self):
         super().__init__()
         DateTimeAutomatically.__init__(self)
+        TimeZone.__init__(self)
 
         self.error_dialog = None
         self.timer = None
@@ -45,8 +46,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
 
 
     def initial_state(self):
-        self.timezone_file_path = "/etc/timezone"
-        self.timezone_file = QFile(self.timezone_file_path)
+        # self.timezone_file_path = "/etc/timezone"
+        # self.timezone_file = QFile(self.timezone_file_path)
         self.timer = QTimer()
         self.timer.start(1000)
         self.dat_timeedit_widget.setDateTime(self.get_current_datetime())
@@ -269,23 +270,24 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically):
             # TODO: Set language, keyboard,, etc. automatically based on geolocation if user allows
 
     def get_timezone_file_content(self):
+        return self.TimeZone
 
-        if not QFile.exists(self.timezone_file_path):
-            self.show_error_dialog("File %s could not be found." % self.timezone_file_path)
-
-        try:
-            file_handle = QFile(self.timezone_file_path)
-            file_handle.open(QFile.ReadOnly)
-            data = file_handle.readAll()
-            codec = QTextCodec.codecForUtfText(data)
-            # for line in QTextCodec.codecForUtfText(data):
-            #     if line.startswith("#"):
-            #         pass
-            #     else:
-            #         return line.strip("\n")
-            return codec.toUnicode(data).strip("\n")
-        except (Exception, BaseException):
-            self.show_error_dialog("Problem reading file %s" % self.timezone_file_path)
+        # if not QFile.exists(self.timezone_file_path):
+        #     self.show_error_dialog("File %s could not be found." % self.timezone_file_path)
+        #
+        # try:
+        #     file_handle = QFile(self.timezone_file_path)
+        #     file_handle.open(QFile.ReadOnly)
+        #     data = file_handle.readAll()
+        #     codec = QTextCodec.codecForUtfText(data)
+        #     # for line in QTextCodec.codecForUtfText(data):
+        #     #     if line.startswith("#"):
+        #     #         pass
+        #     #     else:
+        #     #         return line.strip("\n")
+        #     return codec.toUnicode(data).strip("\n")
+        # except (Exception, BaseException):
+        #     self.show_error_dialog("Problem reading file %s" % self.timezone_file_path)
 
 
         # with open(self.timezone_file_path) as file:
