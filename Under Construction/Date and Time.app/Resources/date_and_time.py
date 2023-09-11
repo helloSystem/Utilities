@@ -270,7 +270,10 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             # TODO: Set language, keyboard,, etc. automatically based on geolocation if user allows
 
     def get_timezone_file_content(self):
-        return self.TimeZone
+        try:
+            return self.TimeZone
+        except IOError as error:
+            self.show_error_dialog("Problem reading file %s" % self.timezone_file_path)
 
         # if not QFile.exists(self.timezone_file_path):
         #     self.show_error_dialog("File %s could not be found." % self.timezone_file_path)
