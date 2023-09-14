@@ -18,7 +18,7 @@ class KillProcessDialog(QDialog):
         self.process = process
         self.ui = Ui_KillDialog()
         self.ui.setupUi(self)
-        self.ui.icon.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Processes.svg")))
+        self.ui.icon.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Processes.png")))
         self.ui.Label.setText(self.ui.Label.text() % get_process_application_name(self.process))
 
         self.setFixedSize(self.size())
