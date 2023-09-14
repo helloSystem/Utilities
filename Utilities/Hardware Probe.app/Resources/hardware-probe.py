@@ -35,6 +35,7 @@
 import sys, os, re, socket
 import shutil
 from datetime import datetime
+import results
 
 from PyQt5 import QtWidgets, QtGui, QtCore # pkg install py37-qt5-widgets
 
@@ -195,14 +196,10 @@ class IntroPage(QtWidgets.QWizardPage, object):
         print("showHardwareProbeButtonClicked")
         print("self.local_probe_path: %s" % self.local_probe_path)
         proc = QtCore.QProcess()
-        command = 'open'
-        args = [self.local_probe_path]
-        try:
-            print("Starting %s %s" % (command, args))
-            proc.startDetached(command, args)
-        except:
-            wizard.showErrorPage(tr("Failed to open the hardware probe."))
-            return
+        command = 'launch'
+        args = {os.path.dirname(__file__) + '/results.py'}
+        print("Starting %s %s" % (command, args))
+        proc.startDetached(command, args)
 
     def initializePage(self):
         print("Displaying IntroPage")
