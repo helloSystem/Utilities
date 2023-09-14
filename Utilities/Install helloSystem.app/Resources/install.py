@@ -131,6 +131,10 @@ class InstallWizard(QtWidgets.QWizard, object):
         self.required_mib_on_disk = 0
         self.installer_script = "furybsd-install"
 
+        # Save the original close handlers
+        self.original_closeEvent = self.closeEvent
+        self.original_window_closeEvent = self.window().closeEvent
+
         # For any external binaries, prefer those that are in the same directory as this file.
         # This can be used to ship a newer installer shell script alongside the installer if needed.
         if os.path.exists(os.path.dirname(__file__) + "/" + self.installer_script):
@@ -150,8 +154,8 @@ class InstallWizard(QtWidgets.QWizard, object):
         self.setFixedSize(800, 550)
 
         # Remove window decorations, especially the close button
-        self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
+        # self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
+        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
         # self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Background.png'))
 
@@ -621,8 +625,6 @@ class IntroPage(QtWidgets.QWizardPage, object):
         tm_label.setFont(font)
         tm_label.setText("The FreeBSD Logo and the mark FreeBSD are registered trademarks of The FreeBSD Foundation and are used by Simon Peter with the permission of The FreeBSD Foundation.")
         intro_vLayout.addWidget(tm_label, False)
-
-
 
 #############################################################################
 # License
@@ -1214,6 +1216,11 @@ class InstallationPage(QtWidgets.QWizardPage, object):
         print("wizard.selected_language: %s" % wizard.selected_language)
         print("wizard.selected_country: %s" % wizard.selected_country)
 
+        # Ignore window close events from now on, so that the user cannot close the window
+        # while the installer is running
+        wizard.window().closeEvent = lambda event: event.ignore()
+        wizard.closeEvent = lambda event: event.ignore()
+
         # Launch installer script
         # TODO: Pass arguments as configuration file/script, environment variables or arguments?
 
@@ -1354,6 +1361,10 @@ class SuccessPage(QtWidgets.QWizardPage, object):
 
         self.setTitle(tr('Installation Complete'))
         self.setSubTitle(tr('The installation succeeded.'))
+
+        # Restore the default closeEvent handlers: wizard.original_closeEvent, wizard.original_window_closeEvent
+        wizard.closeEvent = wizard.original_closeEvent
+        wizard.window().closeEvent = wizard.original_window_closeEvent
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
