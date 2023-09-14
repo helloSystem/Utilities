@@ -1,8 +1,8 @@
+import os
+
+from PyQt5.QtCore import QFile, QFileInfo, QTextCodec
 from PyQt5.QtCore import pyqtProperty, pyqtSignal
 
-# from dateutil.zoneinfo import getzoneinfofile_stream, ZoneInfoFile
-import os
-from PyQt5.QtCore import Qt, QDateTime, QTimer, QDate, QUrl, QFile, QFileInfo, QTextCodec, QIODevice, QTextStream
 
 class TimeZone(object):
     TimeZoneChanged = pyqtSignal()
