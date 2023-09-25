@@ -4,11 +4,10 @@ from PyQt5.QtCore import QFile, QFileInfo, QTextCodec
 from PyQt5.QtCore import pyqtProperty, pyqtSignal
 
 
-class TimeZone(object):
+class TimeZoneProperty(object):
     TimeZoneChanged = pyqtSignal()
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
 
         self.__timezone_default_path = "/etc/timezone"
         self.__timezone = None

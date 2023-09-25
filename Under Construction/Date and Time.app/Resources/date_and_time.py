@@ -14,17 +14,21 @@ from PyQt5.QtWidgets import (QApplication, QDateTimeEdit, QGridLayout,
                              QPushButton, QTabWidget, QVBoxLayout, QWidget, QErrorMessage)
 from PyQt5.QtGui import QMovie, QKeyEvent, QPixmap
 from PyQt5.QtCore import QEvent
+from PyQt5.QtCore import QFile, QFileInfo, QTextCodec
+from PyQt5.QtCore import pyqtProperty, pyqtSignal
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 
 from date_and_time_ui import Ui_MainWindow
 from property_date_time_auto import DateTimeAutomatically
-from property_timezone import TimeZone
+from property_timezone import TimeZoneProperty
 
-class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone):
+
+class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZoneProperty):
+
     def __init__(self):
         super().__init__()
         DateTimeAutomatically.__init__(self)
-        TimeZone.__init__(self)
+        TimeZoneProperty.__init__(self)
 
         self.error_dialog = None
         self.timer = None
@@ -35,7 +39,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
 
         self.date = None
         self.time = None
-        self.timezone = None
+
 
         self.timezone_file_path = None
         self.timezone_file = None
@@ -73,6 +77,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.tz_closest_city_combobox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
         self.tz_time_zone_world_map_widget.TimeZoneClosestCityChanged.connect(self.__timezone_closest_city_changed)
         self.set_time_zone_automatically_checkbox.toggled.connect(self.__checkbox_set_time_zone_automatically_changed)
+        self.TimeZoneChanged.connect(self.__time_zone_changed)
 
         # Undo, cut, copy, paste, and delete actions. Undo is disabled.
         # They have the default shortcuts. When invoked, the corresponding
@@ -252,8 +257,10 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             er = reply.error()
 
             if er == QNetworkReply.NoError:
-                self.tz_closest_city_combobox.clear()
-                self.tz_closest_city_combobox.addItem(bytes(reply.readAll()).decode("utf-8").strip("\n"))
+                # tz = bytes(reply.readAll()).decode("utf-8").strip("\n")
+                self.setTimeZone(bytes(reply.readAll()).decode("utf-8").strip("\n"))
+                print(self.TimeZone)
+
             else:
                 self.show_error_dialog(
                     message=f"Error occurred: {er}<br>{'<br>'.join(reply.errorString().split(' - '))}"
@@ -274,33 +281,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             return self.TimeZone
         except IOError as error:
             self.show_error_dialog("Problem reading file %s" % self.timezone_file_path)
-
-        # if not QFile.exists(self.timezone_file_path):
-        #     self.show_error_dialog("File %s could not be found." % self.timezone_file_path)
-        #
-        # try:
-        #     file_handle = QFile(self.timezone_file_path)
-        #     file_handle.open(QFile.ReadOnly)
-        #     data = file_handle.readAll()
-        #     codec = QTextCodec.codecForUtfText(data)
-        #     # for line in QTextCodec.codecForUtfText(data):
-        #     #     if line.startswith("#"):
-        #     #         pass
-        #     #     else:
-        #     #         return line.strip("\n")
-        #     return codec.toUnicode(data).strip("\n")
-        # except (Exception, BaseException):
-        #     self.show_error_dialog("Problem reading file %s" % self.timezone_file_path)
-
-
-        # with open(self.timezone_file_path) as file:
-        #     data = file.readlines()
-        #
-        # for line in data:
-        #     if line.startswith("#"):
-        #         pass
-        #     else:
-        #         return line.strip("\n")
 
     @staticmethod
     def show_error_dialog(message):
@@ -420,6 +400,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             # Prevent loop with the action menu
             if self.set_time_zone_automatically_checkbox.isChecked():
                 self.set_time_zone_automatically_checkbox.setChecked(False)
+
+    def __time_zone_changed(self):
+        self.tz_closest_city_combobox.clear()
+        self.tz_closest_city_combobox.addItem(self.TimeZone)
+        print("TineZone change")
 
     def __dat_calendar_widget_changed(self):
         self.dat_dateedit_widget.setDate(self.dat_calendar_widget.selectedDate())
