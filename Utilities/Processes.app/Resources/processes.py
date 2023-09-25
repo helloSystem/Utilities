@@ -134,7 +134,7 @@ class Window(
 
         # Icon and Pixmap are loaded without qressouces file
         # self.icon_empty = QIcon(os.path.join(os.path.dirname(__file__), "Empty.png"))
-        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Processes.svg")))
+        self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Processes.png")))
         self.ActionToolBarQuitProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "KillProcess.png")))
         self.ActionToolBarInspectProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "Inspect.png")))
         self.ActionToolBarSampleProcess.setIcon(QIcon(os.path.join(os.path.dirname(__file__), "SampleProcess.png")))
@@ -777,7 +777,7 @@ class Window(
             QPixmap(
                 os.path.join(
                     os.path.dirname(__file__),
-                    "Processes.svg"
+                    "Processes.png"
                 )
             ).scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
         )
