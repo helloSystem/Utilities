@@ -68,6 +68,8 @@ class PSUtilsWorker(QObject):
                     # partition or just hang.
                     continue
             usage = psutil.disk_usage(part.mountpoint)
+            # filter
+            print("%s: %s" % (part.device, usage.total))
             data[item_number] = {
                 "device": part.device,
                 "total": bytes2human(usage.total),
