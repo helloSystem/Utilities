@@ -70,21 +70,22 @@ class PSUtilsWorker(QObject):
             usage = psutil.disk_usage(part.mountpoint)
             # filter
             print("%s: %s" % (part.device, usage.total))
-            data[item_number] = {
-                "device": part.device,
-                "total": bytes2human(usage.total),
-                "used": bytes2human(usage.used),
-                "used_in_bytes": f"{'{:,}'.format(usage.used)} bytes",
-                "used_raw": usage.used,
-                "free": bytes2human(usage.free),
-                "free_in_bytes": f"{'{:,}'.format(usage.free)} bytes",
-                "free_raw": usage.free,
-                "percent": int(usage.percent),
-                "fstype": part.fstype,
-                "mountpoint": part.mountpoint,
-            }
-            item_number += 1
-        self.updated_mounted_disk_partitions.emit(data)
+            if usage.total != 1024 and usage.total != 4096:
+                data[item_number] = {
+                    "device": part.device,
+                    "total": bytes2human(usage.total),
+                    "used": bytes2human(usage.used),
+                    "used_in_bytes": f"{'{:,}'.format(usage.used)} bytes",
+                    "used_raw": usage.used,
+                    "free": bytes2human(usage.free),
+                    "free_in_bytes": f"{'{:,}'.format(usage.free)} bytes",
+                    "free_raw": usage.free,
+                    "percent": int(usage.percent),
+                    "fstype": part.fstype,
+                    "mountpoint": part.mountpoint,
+                }
+                item_number += 1
+            self.updated_mounted_disk_partitions.emit(data)
 
         # CPU
         cpu_times_percent = psutil.cpu_times_percent()
