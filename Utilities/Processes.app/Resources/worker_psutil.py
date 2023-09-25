@@ -69,8 +69,8 @@ class PSUtilsWorker(QObject):
                     continue
             usage = psutil.disk_usage(part.mountpoint)
             # filter
-            print("%s: %s" % (part.device, usage.total))
-            if usage.total != 1024 and usage.total != 4096:
+            # print("%s: %s %s" % (part.device, usage.total, part.fstype))
+            if usage.total > 4096:
                 data[item_number] = {
                     "device": part.device,
                     "total": bytes2human(usage.total),
@@ -85,7 +85,7 @@ class PSUtilsWorker(QObject):
                     "mountpoint": part.mountpoint,
                 }
                 item_number += 1
-            self.updated_mounted_disk_partitions.emit(data)
+        self.updated_mounted_disk_partitions.emit(data)
 
         # CPU
         cpu_times_percent = psutil.cpu_times_percent()
