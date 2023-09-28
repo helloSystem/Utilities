@@ -7,8 +7,9 @@ from PyQt5.QtWidgets import (
     QFileDialog,
     QMessageBox,
 )
-from PyQt5.QtGui import QPixmap, QIcon, QResizeEvent
+from PyQt5.QtGui import QPixmap, QIcon, QPainter
 from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 
 import sys
 import os
@@ -20,17 +21,20 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Window, self).__init__()
         self.fileName = None
+        self.original_screen = None
+        self.printerObj = None
 
         self.setupUi(self)
         self.setWindowTitle("Grab - new document[*]")
-        self.original_screen = QApplication.primaryScreen().grabWindow(0)
-        print(QApplication.screens())
+
         self.setupCustomUi()
         self.connectSignalsSlots()
-        self.create_widgets()
+
+        self.take_screenshot()
 
     def setupCustomUi(self):
-
+        # creating an object of the QPrinter class
+        self.printerObj = QPrinter()
         self.resize(370, 270)
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
 
@@ -41,6 +45,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ActionMenuFileClose.triggered.connect(self.close)
         self.ActionMenuFileSave.triggered.connect(self.save)
         self.ActionMenuFileSaveAs.triggered.connect(self.saveAs)
+        self.ActionMenuFilePrint.triggered.connect(self.printImage)
+        self.ActionMenuFilePrintSetup.triggered.connect(self.printPreviewImage)
         # Edit
         self.ActionMenuEditCopy.triggered.connect(self.copyToClipboard)
 
@@ -52,25 +58,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # self.preview_screen..modificationChanged.connect(self.setWindowModified)
 
-
-    def create_widgets(self):
-        self.img_preview.setPixmap(self.original_screen.scaled(350, 350,
-                                                              Qt.KeepAspectRatio, Qt.SmoothTransformation))
-        self.setWindowModified(True)
-
     def closeEvent(self, evnt):
         super(Window, self).closeEvent(evnt)
-
-    def resizeEvent(self, event):
-
-        # scaledSize = self.original_screen.size()
-        # scaledSize.scale(
-        #     self.img_preview.size(),
-        #     Qt.KeepAspectRatio
-        # )
-        # if not self.img_preview.pixmap() \
-        # or scaledSize != self.img_preview.pixmap().size():
-        self.updateScreenshotLabel()
 
     def save(self):
         if not self.isWindowModified():
@@ -112,11 +101,7 @@ class Window(QMainWindow, Ui_MainWindow):
         QApplication.clipboard().setImage(qi)
 
     def updateScreenshotLabel(self):
-        self.img_preview.setPixmap(self.original_screen.scaled(self.img_preview.size(),
-                                                               Qt.KeepAspectRatio,
-                                                               Qt.SmoothTransformation
-                                                               ))
-
+        self.img_preview.setPixmap(self.original_screen)
 
     def new_screenshot(self):
         self.hide()
@@ -124,8 +109,7 @@ class Window(QMainWindow, Ui_MainWindow):
         # self.setWindowModified(True)
 
     def take_screenshot(self):
-        self.original_screen = QApplication.primaryScreen().grabWindow(0)
-        self.updateScreenshotLabel()
+        self.img_preview.setPixmap(QApplication.primaryScreen().grabWindow(0))
 
         self.show()
         if self.fileName:
@@ -133,6 +117,54 @@ class Window(QMainWindow, Ui_MainWindow):
         else:
             self.setWindowTitle("Grab - new document[*]")
         self.setWindowModified(True)
+
+    # defining the method to print the image
+    def printImage(self):
+        # creating an object of the QPrintDialog class
+        print_dialog = QPrintDialog(self.printerObj, self)
+        # if the print action is executed
+        if print_dialog.exec_():
+            # creating an object of the QPainter class by passing the object of the QPrinter class
+            the_painter = QPainter(self.printerObj)
+            # creating a rectangle to place the image
+            rectangle = the_painter.viewport()
+            # defining the size of the image
+            the_size = self.img_preview.pixmap().size()
+            # scaling the image to the Aspect Ratio
+            the_size.scale(rectangle.size(), Qt.KeepAspectRatio)
+            # setting the viewport of the image by calling the setViewport() method
+            the_painter.setViewport(rectangle.x(), rectangle.y(), the_size.width(), the_size.height())
+            # calling the setWindow() method
+            the_painter.setWindow(self.img_preview.pixmap().rect())
+            # calling the drawPixmap() method
+            the_painter.drawPixmap(0, 0, self.img_preview.pixmap())
+
+    def printPreviewImage(self):
+        # Initializes the QPainter and draws the pixmap onto it
+        def drawImage(printer):
+            the_painter = QPainter()
+            the_painter.begin(printer)
+            # creating a rectangle to place the image
+            rectangle = the_painter.viewport()
+            # defining the size of the image
+            the_size = self.img_preview.pixmap().size()
+            # scaling the image to the Aspect Ratio
+            the_size.scale(rectangle.size(), Qt.KeepAspectRatio)
+            # setting the viewport of the image by calling the setViewport() method
+            the_painter.setViewport(rectangle.x(), rectangle.y(), the_size.width(), the_size.height())
+            # calling the setWindow() method
+            the_painter.setWindow(self.img_preview.pixmap().rect())
+            # calling the drawPixmap() method
+            the_painter.drawPixmap(0, 0, self.img_preview.pixmap())
+
+            the_painter.setPen(Qt.red)
+            the_painter.drawPixmap(0, 0, self.img_preview.pixmap())
+            the_painter.end()
+
+        # Shows the preview
+        dlg = QPrintPreviewDialog()
+        dlg.paintRequested.connect(drawImage)
+        dlg.exec_()
 
     @staticmethod
     def _showAboutDialog():
