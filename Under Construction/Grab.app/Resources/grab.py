@@ -68,9 +68,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.saveAs()
         else:
             if self.fileName[-3:] == "png":
-                self.original_screen.save(self.fileName, "png")
+                self.img_preview.pixmap().save(self.fileName, "png")
             elif self.fileName[-3:] == "jpg":
-                self.original_screen.save(self.fileName, "jpg")
+                self.img_preview.pixmap().save(self.fileName, "jpg")
             self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
             self.setWindowModified(False)
 
@@ -87,9 +87,9 @@ class Window(QMainWindow, Ui_MainWindow):
                                                   )
         if fileName:
             if fileName[-3:] == "png":
-                self.original_screen.save(fileName, "png")
+                self.img_preview.pixmap().save(fileName, "png")
             elif fileName[-3:] == "jpg":
-                self.original_screen.save(fileName, "jpg")
+                self.img_preview.pixmap().save(fileName, "jpg")
             self.fileName = fileName
             self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
             self.setWindowModified(False)
