@@ -13,6 +13,7 @@ from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 
 import sys
 import os
+
 # The Main Window
 from main_window_ui import Ui_MainWindow
 
@@ -21,11 +22,10 @@ class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Window, self).__init__()
         self.fileName = None
-        self.original_screen = None
         self.printerObj = None
+        self.timer_count = None
 
         self.setupUi(self)
-        self.setWindowTitle("Grab - new document[*]")
 
         self.setupCustomUi()
         self.connectSignalsSlots()
@@ -34,29 +34,27 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def setupCustomUi(self):
         # creating an object of the QPrinter class
+        self.timer_count = 10000
         self.printerObj = QPrinter()
+        self.setWindowTitle("Grab - new document[*]")
         self.resize(370, 270)
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
 
     def connectSignalsSlots(self):
-        # signals connections
         # Menu
         # File
         self.ActionMenuFileClose.triggered.connect(self.close)
         self.ActionMenuFileSave.triggered.connect(self.save)
-        self.ActionMenuFileSaveAs.triggered.connect(self.saveAs)
-        self.ActionMenuFilePrint.triggered.connect(self.printImage)
-        self.ActionMenuFilePrintSetup.triggered.connect(self.printPreviewImage)
+        self.ActionMenuFileSaveAs.triggered.connect(self.save_as)
+        self.ActionMenuFilePrint.triggered.connect(self.print_image)
+        self.ActionMenuFilePrintSetup.triggered.connect(self.print_preview_image)
         # Edit
-        self.ActionMenuEditCopy.triggered.connect(self.copyToClipboard)
-
-
+        self.ActionMenuEditCopy.triggered.connect(self.copy_to_clipboard)
         # Capture
         self.ActionMenuCaptureScreen.triggered.connect(self.new_screenshot)
+        self.ActionMenuCaptureTimedScreen.triggered.connect(self.new_timed_screenshot)
         # About
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
-
-        # self.preview_screen..modificationChanged.connect(self.setWindowModified)
 
     def closeEvent(self, evnt):
         super(Window, self).closeEvent(evnt)
@@ -65,7 +63,7 @@ class Window(QMainWindow, Ui_MainWindow):
         if not self.isWindowModified():
             return
         if not self.fileName:
-            self.saveAs()
+            self.save_as()
         else:
             if self.fileName[-3:] == "png":
                 self.img_preview.pixmap().save(self.fileName, "png")
@@ -74,17 +72,14 @@ class Window(QMainWindow, Ui_MainWindow):
             self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
             self.setWindowModified(False)
 
-    def saveAs(self):
-        if not self.isWindowModified():
-            return
+    def save_as(self):
+        # if not self.isWindowModified():
+        #     return
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getSaveFileName(self,
-                                                  "Save File",
-                                                  "",
-                                                  filter="PNG(*.png);; JPEG(*.jpg)",
-                                                  options=options
-                                                  )
+        fileName, _ = QFileDialog.getSaveFileName(
+            self, "Save File", "", filter="PNG(*.png);; JPEG(*.jpg)", options=options
+        )
         if fileName:
             if fileName[-3:] == "png":
                 self.img_preview.pixmap().save(fileName, "png")
@@ -94,19 +89,19 @@ class Window(QMainWindow, Ui_MainWindow):
             self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
             self.setWindowModified(False)
 
-    def copyToClipboard(self):
-        if not self.original_screen:
+    def copy_to_clipboard(self):
+        if not self.img_preview.pixmap():
             return
-        qi = self.original_screen.toImage()
+        qi = self.img_preview.pixmap().toImage()
         QApplication.clipboard().setImage(qi)
-
-    def updateScreenshotLabel(self):
-        self.img_preview.setPixmap(self.original_screen)
 
     def new_screenshot(self):
         self.hide()
         QTimer.singleShot(1000, self.take_screenshot)
-        # self.setWindowModified(True)
+
+    def new_timed_screenshot(self):
+        self.hide()
+        QTimer.singleShot(self.timer_count, self.take_screenshot)
 
     def take_screenshot(self):
         self.img_preview.setPixmap(QApplication.primaryScreen().grabWindow(0))
@@ -119,7 +114,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setWindowModified(True)
 
     # defining the method to print the image
-    def printImage(self):
+    def print_image(self):
         # creating an object of the QPrintDialog class
         print_dialog = QPrintDialog(self.printerObj, self)
         # if the print action is executed
@@ -139,7 +134,7 @@ class Window(QMainWindow, Ui_MainWindow):
             # calling the drawPixmap() method
             the_painter.drawPixmap(0, 0, self.img_preview.pixmap())
 
-    def printPreviewImage(self):
+    def print_preview_image(self):
         # Initializes the QPainter and draws the pixmap onto it
         def drawImage(printer):
             the_painter = QPainter()
@@ -157,8 +152,6 @@ class Window(QMainWindow, Ui_MainWindow):
             # calling the drawPixmap() method
             the_painter.drawPixmap(0, 0, self.img_preview.pixmap())
 
-            the_painter.setPen(Qt.red)
-            the_painter.drawPixmap(0, 0, self.img_preview.pixmap())
             the_painter.end()
 
         # Shows the preview
@@ -171,26 +164,22 @@ class Window(QMainWindow, Ui_MainWindow):
         msg = QMessageBox()
         msg.setWindowTitle("About")
         msg.setIconPixmap(
-            QPixmap(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "Grab.png"
-                )
-            ).scaled(48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")).scaled(
+                48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
         )
         candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
         for candidate in candidates:
             if os.path.exists(os.path.join(os.path.dirname(__file__), candidate)):
-                with open(os.path.join(os.path.dirname(__file__), candidate), 'r') as file:
+                with open(os.path.join(os.path.dirname(__file__), candidate), "r") as file:
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Grab</h3>")
         msg.setInformativeText(
-            "Grab is an application that can capture screen shots write in pyQt5.<br><br>"
+            "Grab is an application write in pyQt5 that can capture screen shots.<br><br>"
             "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
         )
         msg.exec()
-
 
 
 if __name__ == "__main__":

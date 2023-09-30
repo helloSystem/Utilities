@@ -65,7 +65,7 @@ class Ui_MainWindow(object):
         self.ActionMenuCaptureScreen = QtWidgets.QAction(MainWindow)
         self.ActionMenuCaptureScreen.setObjectName("ActionMenuCaptureScreen")
         self.ActionMenuCaptureTimedScreen = QtWidgets.QAction(MainWindow)
-        self.ActionMenuCaptureTimedScreen.setEnabled(False)
+        self.ActionMenuCaptureTimedScreen.setEnabled(True)
         self.ActionMenuCaptureTimedScreen.setObjectName("ActionMenuCaptureTimedScreen")
         self.menuFile.addAction(self.ActionMenuFileClose)
         self.menuFile.addAction(self.ActionMenuFileSave)
