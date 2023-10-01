@@ -21,6 +21,7 @@ class TreeViewProcess(object):
     filterComboBox: QComboBox
     ActionViewKillDialog: QAction
     ActionMenuViewSendSignaltoProcesses: QAction
+    ActionMenuViewSample: QAction
     ActionToolBarQuitProcess: QAction
     ActionMenuViewKillDialog: QAction
     ActionToolBarInspectProcess: QAction
@@ -54,6 +55,7 @@ class TreeViewProcess(object):
         self.filterComboBox.model().item(8).setEnabled(False)
         self.ActionMenuViewInspectProcess.setEnabled(False)
         self.ActionMenuViewSelectedProcesses.setEnabled(False)
+        self.ActionMenuViewSample.setEnabled(False)
         self.ActionMenuViewKillDialog.setEnabled(False)
         self.ActionMenuViewSendSignaltoProcesses.setEnabled(False)
 
@@ -85,6 +87,7 @@ class TreeViewProcess(object):
                 self.ActionToolBarSampleProcess.setEnabled(True)
                 self.filterComboBox.model().item(8).setEnabled(True)
                 self.ActionMenuViewSendSignaltoProcesses.setEnabled(True)
+                self.ActionMenuViewSample.setEnabled(True)
                 self.ActionMenuViewSelectedProcesses.setEnabled(True)
                 self.ActionMenuViewInspectProcess.setEnabled(True)
                 self.ActionMenuViewKillDialog.setEnabled(True)
