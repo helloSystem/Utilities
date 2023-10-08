@@ -685,7 +685,7 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.setSubTitle(tr('The installation could not be performed.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(
-            __file__) + '/cross.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
+            __file__) + '/failed.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
