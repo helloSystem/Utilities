@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
         self.urlbar.returnPressed.connect(self.navigate_to_url)
         navtb.addWidget(self.urlbar)
 
-        stop_btn = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'stop-hex.png')), "Stop", self)
+        stop_btn = QAction(QIcon(os.path.join(os.path.dirname(__file__), "Resources", 'images', 'stop-sign.png')), "Stop", self)
         stop_btn.setStatusTip("Stop loading current page")
         stop_btn.triggered.connect(lambda: self.tabs.currentWidget().stop())
         navtb.addAction(stop_btn)
