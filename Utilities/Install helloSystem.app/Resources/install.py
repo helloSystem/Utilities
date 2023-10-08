@@ -592,7 +592,12 @@ class IntroPage(QtWidgets.QWizardPage, object):
         
         intro_label = QtWidgets.QLabel()
         intro_label.setWordWrap(True)
-        intro_label.setText(tr("<p>helloSystem is based on FreeBSD, an operating system for a variety of platforms which focuses on features, speed, and stability. It is derived from BSD, the version of UNIX® developed at the University of California, Berkeley. FreeBSD is developed and maintained by a large community.</p>"))
+        description = tr("helloSystem is based on FreeBSD, an operating system for a variety of platforms " +
+                       "which focuses on features, speed, and stability. It is derived from BSD, the version of UNIX® " +
+                       "developed at the University of California, Berkeley. FreeBSD is developed and maintained by a " +
+                       "large community.")
+        warning = tr("⚠ WARNING: Using the helloSystem installer will erase ALL data on the selected disk. Save all documents and make a backup of your data before proceeding.")
+        intro_label.setText("<p>" + description + "</p>" + "<p><font color=red>" + warning + "</font></p>")
         intro_vLayout.addWidget(intro_label, False)  # True = add stretch vertically
 
         # Add stretch vertically
