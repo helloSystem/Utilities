@@ -630,7 +630,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         self.setSubTitle(tr('The Live image has been written to the device.'))
 
         logo_pixmap = QtGui.QPixmap(os.path.dirname(
-            __file__) + '/usbsuccess.svg').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
+            __file__) + '/usbsuccess.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
