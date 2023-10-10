@@ -157,7 +157,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         # self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         # self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
-        # self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Background.png'))
+        self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Background.png'))
 
         self.setOption(QtWidgets.QWizard.ExtendedWatermarkPixmap, True)
         # self.setPixmap(QtWidgets.QWizard.LogoPixmap, 'Logo.png')
