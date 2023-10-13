@@ -101,7 +101,7 @@ class Wizard(QtWidgets.QWizard, object):
         self.local_probe_path = None
 
         self.setWindowTitle(tr("Hardware Probe"))
-        self.setFixedSize(600, 400)
+        self.setFixedSize(620, 440)
 
         self.setSubTitleFormat(QtCore.Qt.RichText) # Allow HTML; Qt 5.14+ also have an option for Markdown
 
