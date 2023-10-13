@@ -179,7 +179,7 @@ class BackupWizard(QWizard):
         self.addPage(ProgressPage())
         self.addPage(SummaryPage())
 
-        self.setFixedSize(600, 400)
+        self.setFixedSize(620, 440)
 
 
 class WelcomePage(QWizardPage):
