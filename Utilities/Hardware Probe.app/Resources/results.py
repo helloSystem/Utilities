@@ -52,7 +52,7 @@ class FileViewerApp(QMainWindow):
         self.setWindowTitle(vendor + " " + model)
 
         # Set up the main window
-        self.setGeometry(100, 100, 600, 440)
+        self.setGeometry(100, 100, 600, 400)
 
         # Create a splitter to divide the window into two columns
         splitter = QSplitter(Qt.Horizontal)
