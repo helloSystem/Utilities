@@ -123,7 +123,7 @@ class InstallWizard(QtWidgets.QWizard, object):
             os.path.dirname(__file__) + '/bgusb.png'))
 
         self.setWindowTitle("Create Live Media")
-        self.setFixedSize(600, 400)
+        self.setFixedSize(620, 440)
 
         # Translate the widgets in the UI objects in the Wizard
         self.setWindowTitle(tr(self.windowTitle()))
