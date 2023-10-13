@@ -111,7 +111,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/background.png'))
 
         self.setWindowTitle(tr("Download Applications"))
-        self.setFixedSize(600, 440)
+        self.setFixedSize(600, 400)
 
         # Translate the widgets in the UI objects in the Wizard
         self.setWindowTitle(tr(self.windowTitle()))
