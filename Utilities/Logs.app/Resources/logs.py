@@ -35,8 +35,8 @@ class MyConsole(QMainWindow):
 
         self._showMenu()
 
-        self.setMinimumWidth(600)
-        self.setMinimumHeight(400)
+        self.setMinimumWidth(620)
+        self.setMinimumHeight(440)
 
         self.textEdit = QTextEdit()
 
