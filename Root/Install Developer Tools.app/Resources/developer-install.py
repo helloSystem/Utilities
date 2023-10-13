@@ -116,7 +116,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         #     [QtWidgets.QWizard.CustomButton1, QtWidgets.QWizard.Stretch, QtWidgets.QWizard.NextButton])
 
         self.setWindowTitle(tr("Install Developer Tools"))
-        self.setFixedSize(620, 440)
+        self.setFixedSize(600, 440)
 
         # Remove window decorations, especially the close button
         self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
