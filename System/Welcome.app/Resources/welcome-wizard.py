@@ -54,7 +54,7 @@ class Wizard(QtWidgets.QWizard, object):
         self.setOption(QtWidgets.QWizard.ExtendedWatermarkPixmap, True) # Extend WatermarkPixmap all the way down to the window's edge; https://doc.qt.io/qt-5/qwizard.html#wizard-look-and-feel
 
         self.setWindowTitle("Welcome")
-        self.setFixedSize(600, 440)
+        self.setFixedSize(600, 400)
 
         self.setOption(QtWidgets.QWizard.NoCancelButton, True)
 
