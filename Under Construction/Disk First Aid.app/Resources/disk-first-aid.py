@@ -92,7 +92,7 @@ class FirstAidWizard(QtWidgets.QWizard, object):
         self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/background.png'))
 
         self.setWindowTitle("Disk First Aid")
-        self.setFixedSize(600, 400)
+        self.setFixedSize(620, 440)
 
     def showErrorPage(self, message):
         print("Show error page")
