@@ -1,12 +1,6 @@
-from PyQt5.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QPushButton,
-    QLabel,
-    QGridLayout,
-    QFileDialog,
-    QMessageBox,
-)
+#!/usr/bin/env python3
+
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QGridLayout, QFileDialog, QMessageBox
 from PyQt5.QtGui import QPixmap, QIcon, QPainter
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
