@@ -1,10 +1,12 @@
 obs-studio # Open source streaming/recording software
-obs-audio-spectralizer # OBS Studio Plugin: Audio visualizer
-obs-ndi # OBS Studio Plugin: Network Device Interface
-obs-qtwebkit # Browser source plugin for obs-studio
-obs-scrab # OBS Studio Plugin: Screenshot plugin
+# obs-audio-spectralizer # OBS Studio Plugin: Audio visualizer # Missing in 14.0 as of 11/2023
+# obs-ndi # OBS Studio Plugin: Network Device Interface # Missing in 14.0 as of 11/2023
+# obs-qtwebkit # Browser source plugin for obs-studio # Missing in 14.0 as of 11/2023
+# obs-scrab # OBS Studio Plugin: Screenshot plugin # Missing in 14.0 as of 11/2023
 obs-streamfx # OBS Studio Plugin: Modern effects
-obs-transition-matrix # OBS Studio Plugin: OBS Transition Matrix
-obs-v4l2sink # OBS Studio Plugin: Output as Video4Linux2 device
-obs-websocket # OBS Studio Plugin: WebSockets API
+# obs-transition-matrix # OBS Studio Plugin: OBS Transition Matrix
+# obs-v4l2sink # OBS Studio Plugin: Output as Video4Linux2 device # Missing in 14.0 as of 11/2023
+# obs-websocket # OBS Studio Plugin: WebSockets API # Missing in 14.0 as of 11/2023
 libndi # Cross-platform, open-source library done to interact with NDI streams
+# FIXME: As of 11/2023, getting
+# error: os_dlopen(libnvidia-encode.so.1->libnvidia-encode.so.1): Shared object "libnvidia-encode.so.1" not found, required by "obs"

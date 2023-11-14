@@ -449,11 +449,11 @@ class InspectProcess(QWidget, Ui_InspectProcess):
                 environment_model.appendRow([QStandardItem(f"{name}"), QStandardItem(f"{value}")])
             environment_model.setHorizontalHeaderLabels(["Name", "Value"])
 
-            self.treeViewEnvironement.setModel(environment_model)
+            self.treeViewEnvironment.setModel(environment_model)
 
-            for header_pos in range(len(self.treeViewEnvironement.header())):
-                self.treeViewEnvironement.resizeColumnToContents(header_pos)
-            self.treeViewEnvironement.sortByColumn(0, Qt.AscendingOrder)
+            for header_pos in range(len(self.treeViewEnvironment.header())):
+                self.treeViewEnvironment.resizeColumnToContents(header_pos)
+            self.treeViewEnvironment.sortByColumn(0, Qt.AscendingOrder)
 
 
 if __name__ == "__main__":

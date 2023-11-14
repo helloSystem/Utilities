@@ -1323,9 +1323,9 @@
          </item>
         </layout>
        </widget>
-       <widget class="QWidget" name="tab_Environement">
+       <widget class="QWidget" name="tab_Environment">
         <attribute name="title">
-         <string>Environement</string>
+         <string>Environment</string>
         </attribute>
         <layout class="QHBoxLayout" name="horizontalLayout_5">
          <property name="leftMargin">
@@ -1341,7 +1341,7 @@
           <number>20</number>
          </property>
          <item>
-          <widget class="QTreeView" name="treeViewEnvironement">
+          <widget class="QTreeView" name="treeViewEnvironment">
            <property name="uniformRowHeights">
             <bool>true</bool>
            </property>
