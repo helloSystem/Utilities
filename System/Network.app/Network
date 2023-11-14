@@ -26,9 +26,6 @@ class NetworkMenu(QObject):
 
         super().__init__()
 
-        # self.showTODO("It can show wireless networks but not connect to them. Do you know how to fix this?")
-        self.showTODO()
-
         # icon = QIcon(os.path.dirname(os.path.abspath(__file__)) + "/Resources/wireless.svg") # Does not seem to work
         # TODO: Change the icon depending on signal strength; see /usr/local/share/icons/elementary-xfce/status/symbolic/network-wireless-*
         self.tray = QSystemTrayIcon()
@@ -355,14 +352,6 @@ We don't know why this happened.")
         msg.setText(text)
         if detailed_text != "":
             msg.setDetailedText(detailed_text)
-        msg.exec()
-
-    def showTODO(self, detailed_text=""):
-        msg = QMessageBox()
-        msg.setIcon(QMessageBox.Information)
-        msg.setWindowTitle("Developer Preview")
-        msg.setText("This application is a preview for developers.<br>It is not fully functional yet.")
-        msg.setDetailedText("Please see https://github.com/helloSystem/Utilities if you would like to contribute.\n\n" + detailed_text)
         msg.exec()
 
 if __name__ == "__main__":

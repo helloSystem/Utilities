@@ -27,9 +27,21 @@ class Window(QMainWindow):
 		super().__init__()
 		self.setWindowTitle("Calendar")
 		c = Calendar()
+		self.c = c
 		self.setCentralWidget(c)
 		self._showMenu()
-		self.setMinimumSize(255, 225) # FIXME: Make this adjust to the widgets size automatically
+		self.setMinimumSize(255, 225)
+		self.resizeEvent = self._resizeEvent
+
+	def _resizeEvent(self, event):
+		# change the header format depending on the width of the window
+		if(event.size().width() < 350):
+			self.c.calendar.setHorizontalHeaderFormat(QCalendarWidget.SingleLetterDayNames)
+		else:
+			self.c.calendar.setHorizontalHeaderFormat(QCalendarWidget.ShortDayNames)
+		
+		# update calendar geometry
+		self.c.calendar.setGeometry(0, 0, event.size().width(), event.size().height())
 
 	def _showMenu(self):
 		exitAct = QAction('&Exit', self)
