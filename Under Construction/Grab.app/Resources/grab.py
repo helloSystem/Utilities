@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QGridLayout, QFileDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup
 from PyQt5.QtGui import QPixmap, QIcon, QPainter
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
@@ -10,6 +10,8 @@ import os
 
 # The Main Window
 from main_window_ui import Ui_MainWindow
+from dialog_timed_screen_grab import TimedScreenGrabDialog
+from dialog_screen_grab import ScreenGrabDialog
 
 
 class Window(QMainWindow, Ui_MainWindow):
@@ -18,37 +20,95 @@ class Window(QMainWindow, Ui_MainWindow):
         self.fileName = None
         self.printerObj = None
         self.timer_count = None
+        self.scale_factor = None
 
         self.setupUi(self)
-
         self.setupCustomUi()
+        self.setupCustomUiGroups()
         self.connectSignalsSlots()
+        self.initialState()
 
+    def initialState(self):
+
+        self.ActionMenuFilePrint.setEnabled(False)
+        self.ActionMenuFilePrintSetup.setEnabled(False)
+        self.ActionMenuViewFitToWindow.setEnabled(False)
+
+        # Image viewer
+        # Set viewer's aspect ratio mode.
+        self.img_preview.aspectRatioMode = Qt.AspectRatioMode.KeepAspectRatio
+        # Set the viewer's scroll bar behaviour.
+        self.img_preview.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.img_preview.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAsNeeded)
+        self.img_preview.regionZoomButton = Qt.MouseButton.LeftButton  # set to None to disable
+        # Pop end of zoom stack (double click clears zoom stack).
+        self.img_preview.zoomOutButton = Qt.MouseButton.RightButton  # set to None to disable
+        # Mouse wheel zooming.
+        self.img_preview.wheelZoomFactor = 1.25  # Set to None or 1 to disable
+        # Allow panning with the middle mouse button.
+        self.img_preview.panButton = Qt.MouseButton.MiddleButton  # set to None to disable
+
+        self.timer_count = 10000
+        self.setWindowTitle("Grab - new document[*]")
+        self.resize(370, 270)
         self.take_screenshot()
 
     def setupCustomUi(self):
         # creating an object of the QPrinter class
-        self.timer_count = 10000
+
         self.printerObj = QPrinter()
-        self.setWindowTitle("Grab - new document[*]")
-        self.resize(370, 270)
+
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
 
+    def setupCustomUiGroups(self):
+        menu_frequency_group = QActionGroup(self)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo1Sec)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo2Secs)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo3Secs)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo4Secs)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo5Secs)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo6Secs)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo7Secs)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo8Secs)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo9Secs)
+        menu_frequency_group.addAction(self.ActionUpdateTimerTo10Secs)
+
     def connectSignalsSlots(self):
-        # Menu
         # File
         self.ActionMenuFileClose.triggered.connect(self.close)
         self.ActionMenuFileSave.triggered.connect(self.save)
         self.ActionMenuFileSaveAs.triggered.connect(self.save_as)
         self.ActionMenuFilePrint.triggered.connect(self.print_image)
         self.ActionMenuFilePrintSetup.triggered.connect(self.print_preview_image)
+
         # Edit
         self.ActionMenuEditCopy.triggered.connect(self.copy_to_clipboard)
+
+        # View
+        self.ActionMenuViewZoomIn.triggered.connect(self.img_preview.zoomIn)
+        self.ActionMenuViewZoomOut.triggered.connect(self.img_preview.zoomOut)
+        self.ActionMenuViewZoomClear.triggered.connect(self.img_preview.clearZoom)
+
         # Capture
-        self.ActionMenuCaptureScreen.triggered.connect(self.new_screenshot)
-        self.ActionMenuCaptureTimedScreen.triggered.connect(self.new_timed_screenshot)
+        #self.ActionMenuCaptureScreen.triggered.connect(self.new_screenshot)
+        self.ActionMenuCaptureScreen.triggered.connect(self._showScreenGrabDialog)
+        self.ActionMenuCaptureTimedScreen.triggered.connect(self._showTimedScreenGrabDialog)
+
+        # Capture / Timer
+        self.ActionUpdateTimerTo1Sec.triggered.connect(self._timer_change_for_1_sec)
+        self.ActionUpdateTimerTo2Secs.triggered.connect(self._timer_change_for_2_secs)
+        self.ActionUpdateTimerTo3Secs.triggered.connect(self._timer_change_for_3_secs)
+        self.ActionUpdateTimerTo4Secs.triggered.connect(self._timer_change_for_4_secs)
+        self.ActionUpdateTimerTo5Secs.triggered.connect(self._timer_change_for_5_secs)
+        self.ActionUpdateTimerTo6Secs.triggered.connect(self._timer_change_for_6_secs)
+        self.ActionUpdateTimerTo7Secs.triggered.connect(self._timer_change_for_7_secs)
+        self.ActionUpdateTimerTo8Secs.triggered.connect(self._timer_change_for_8_secs)
+        self.ActionUpdateTimerTo9Secs.triggered.connect(self._timer_change_for_9_secs)
+        self.ActionUpdateTimerTo10Secs.triggered.connect(self._timer_change_for_10_secs)
         # About
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
+
+
 
     def closeEvent(self, evnt):
         super(Window, self).closeEvent(evnt)
@@ -67,8 +127,6 @@ class Window(QMainWindow, Ui_MainWindow):
             self.setWindowModified(False)
 
     def save_as(self):
-        # if not self.isWindowModified():
-        #     return
         options = QFileDialog.Options()
         # options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(
@@ -90,24 +148,74 @@ class Window(QMainWindow, Ui_MainWindow):
         QApplication.clipboard().setImage(qi)
 
     def new_screenshot(self):
-        self.hide()
+        if self.isVisible():
+            self.hide()
         QTimer.singleShot(1000, self.take_screenshot)
 
     def new_timed_screenshot(self):
-        self.hide()
+        if self.isVisible():
+            self.hide()
         QTimer.singleShot(self.timer_count, self.take_screenshot)
 
     def take_screenshot(self):
-        self.img_preview.setPixmap(QApplication.primaryScreen().grabWindow(0))
+        # Start by clean the last image
+        self.img_preview.setImage(None)
 
-        self.show()
+        # Take a screenshot in case the pixmap will stay to Null
+        self.img_preview.setImage(QApplication.primaryScreen().grabWindow(0))
+
+        # Inform the application about the contain change
         if self.fileName:
             self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
         else:
             self.setWindowTitle("Grab - new document[*]")
         self.setWindowModified(True)
 
-    # defining the method to print the image
+        self.update_actions()
+        self.show()
+
+    def normal_size(self):
+        self.img_preview.clearZoom()
+
+    def fit_to_window(self):
+        # retrieving the Boolean value from the "Fit To Window" action
+        self.ActionMenuViewFitToWindow.setEnabled(False)
+        fitToWindow = self.ActionMenuViewFitToWindow.isChecked()
+        # configuring the scroll area to resizable
+        # self.scroll_area.setWidgetResizable(fitToWindow)
+        # if the retrieved value is False, calling the user-defined normal_size() method
+        if not fitToWindow:
+            self.normal_size()
+            # calling the user-defined update_actions() method
+        # self.update_actions()
+
+    # defining the method to update the actions
+    def update_actions(self):
+        if self.img_preview.pixmap().isNull():
+
+            self.ActionMenuFileSave.setEnabled(False)
+            self.ActionMenuFileSaveAs.setEnabled(False)
+            self.ActionMenuFilePrint.setEnabled(False)
+            self.ActionMenuFilePrintSetup.setEnabled(False)
+
+            self.ActionMenuViewActualSize.setEnabled(False)
+            self.ActionMenuViewZoomToFit.setEnabled(False)
+            self.ActionMenuViewZoomIn.setEnabled(False)
+            self.ActionMenuViewZoomOut.setEnabled(False)
+            self.ActionMenuViewZoomToSelection.setEnabled(False)
+        else:
+
+            self.ActionMenuFileSave.setEnabled(True)
+            self.ActionMenuFileSaveAs.setEnabled(True)
+            self.ActionMenuFilePrint.setEnabled(True)
+            self.ActionMenuFilePrintSetup.setEnabled(True)
+
+            self.ActionMenuViewActualSize.setEnabled(True)
+            self.ActionMenuViewZoomToFit.setEnabled(True)
+            self.ActionMenuViewZoomIn.setEnabled(True)
+            self.ActionMenuViewZoomOut.setEnabled(True)
+            self.ActionMenuViewZoomToSelection.setEnabled(True)
+
     def print_image(self):
         # creating an object of the QPrintDialog class
         print_dialog = QPrintDialog(self.printerObj, self)
@@ -174,6 +282,71 @@ class Window(QMainWindow, Ui_MainWindow):
             "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
         )
         msg.exec()
+
+    def _showScreenGrabDialog(self):
+
+        if self.ActionMenuCaptureTimedScreen.isEnabled():
+            self.hide()
+            self.ScreenGrabDialog = ScreenGrabDialog()
+
+            self.ScreenGrabDialog.show()
+            self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._ScreenGrabQuit)
+
+    def _ScreenGrabQuit(self):
+        if self.ScreenGrabDialog.isVisible() and self.ScreenGrabDialog.isEnabled():
+            self.ScreenGrabDialog.close()
+        if not self.isVisible():
+            self.show()
+
+    def _showTimedScreenGrabDialog(self):
+
+        if self.ActionMenuCaptureTimedScreen.isEnabled():
+            self.hide()
+            self.TimedScreenGrabDialog = TimedScreenGrabDialog(timer=self.timer_count)
+
+            self.TimedScreenGrabDialog.show()
+            self.TimedScreenGrabDialog.timer_dialog_signal_start.connect(self._TimedScreenGrabStart)
+            self.TimedScreenGrabDialog.timer_dialog_signal_quit.connect(self._TimedScreenGrabQuit)
+
+    def _TimedScreenGrabStart(self):
+        self._TimedScreenGrabQuit()
+        self.new_timed_screenshot()
+
+    def _TimedScreenGrabQuit(self):
+        if self.TimedScreenGrabDialog.isVisible() and self.TimedScreenGrabDialog.isEnabled():
+            self.TimedScreenGrabDialog.close()
+        if not self.isVisible():
+            self.show()
+
+    def _timer_change_for_1_sec(self):
+        self.timer_count = 1000
+
+    def _timer_change_for_2_secs(self):
+        self.timer_count = 2000
+
+    def _timer_change_for_3_secs(self):
+        self.timer_count = 3000
+
+    def _timer_change_for_4_secs(self):
+        self.timer_count = 4000
+
+    def _timer_change_for_5_secs(self):
+        self.timer_count = 5000
+
+    def _timer_change_for_6_secs(self):
+        self.timer_count = 6000
+
+    def _timer_change_for_7_secs(self):
+        self.timer_count = 7000
+
+    def _timer_change_for_8_secs(self):
+        self.timer_count = 8000
+
+    def _timer_change_for_9_secs(self):
+        self.timer_count = 9000
+
+    def _timer_change_for_10_secs(self):
+        self.timer_count = 10000
 
 
 if __name__ == "__main__":
