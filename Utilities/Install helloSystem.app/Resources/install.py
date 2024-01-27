@@ -1035,7 +1035,8 @@ class UserPage(QtWidgets.QWizardPage, object):
         
         # Warning if passwords don't match
         self.user_label_comment = QtWidgets.QLabel()
-        self.user_label_comment.setText(tr("The passwords do not match"))  # TODO: make red
+        self.user_label_comment.setText(tr("The passwords do not match"))
+        self.user_label_comment.setStyleSheet("color: red")
         self.user_label_comment.setVisible(False)
         user_vlayout.addWidget(self.user_label_comment)
         self.computer_name = self.computerName()
