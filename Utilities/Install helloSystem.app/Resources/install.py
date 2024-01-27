@@ -753,8 +753,8 @@ class DiskPage(QtWidgets.QWizardPage, object):
         zfs_compression_factor = 7984/2499 
         wizard.required_mib_on_disk = wizard.required_mib_on_disk / zfs_compression_factor
 
-        print("Disk space required: %d MiB" % wizard.required_mib_on_disk)
-        self.label.setText(tr("Disk space required: %s MiB") % wizard.required_mib_on_disk)
+        print("Disk space required: %d MiB" % round(wizard.required_mib_on_disk, 1))
+        self.label.setText(tr("Disk space required: %s MiB") % round(wizard.required_mib_on_disk, 1))
 
     def cleanupPage(self):
         print("Leaving DiskPage")
