@@ -337,7 +337,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         self.setTitle('Complete')
         self.setSubTitle('The process has completed.')
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.svg').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/successful.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
@@ -388,7 +388,7 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.setTitle('Error')
         self.setSubTitle('The operation could not be performed.')
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/cross.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/failed.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 

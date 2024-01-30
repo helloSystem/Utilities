@@ -336,7 +336,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         self.setTitle(tr('Hardware Probe Uploaded'))
         self.setSubTitle(tr('Thank you for uploading your Hardware Probe.'))
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/successful.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
@@ -388,7 +388,7 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.setTitle(tr('Error'))
         self.setSubTitle(tr('Hardware Probe was not successful.'))
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/cross.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/failed.png').scaledToHeight(160, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 

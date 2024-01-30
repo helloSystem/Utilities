@@ -50,7 +50,7 @@ class Wizard(QtWidgets.QWizard, object):
         super().__init__()
 
         self.setWizardStyle(QtWidgets.QWizard.MacStyle)
-        # self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Welcome.png'))
+        self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/background.png'))
         self.setOption(QtWidgets.QWizard.ExtendedWatermarkPixmap, True) # Extend WatermarkPixmap all the way down to the window's edge; https://doc.qt.io/qt-5/qwizard.html#wizard-look-and-feel
 
         self.setWindowTitle("Welcome")
