@@ -17,7 +17,6 @@ class Ui_ScreenGrab(object):
         ScreenGrab.setWindowModality(QtCore.Qt.NonModal)
         ScreenGrab.resize(467, 213)
         ScreenGrab.setFocusPolicy(QtCore.Qt.NoFocus)
-        ScreenGrab.setModal(True)
         self.verticalLayout = QtWidgets.QVBoxLayout(ScreenGrab)
         self.verticalLayout.setObjectName("verticalLayout")
         self.MainVbox = QtWidgets.QVBoxLayout()

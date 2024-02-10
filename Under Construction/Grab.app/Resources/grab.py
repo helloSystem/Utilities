@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup
-from PyQt5.QtGui import QPixmap, QIcon, QPainter
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, QShortcut
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QImage
+from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
-
+from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 import sys
 import os
 
@@ -12,21 +12,35 @@ import os
 from main_window_ui import Ui_MainWindow
 from dialog_timed_screen_grab import TimedScreenGrabDialog
 from dialog_screen_grab import ScreenGrabDialog
+from dialog_help import HelpDialog
+from widget_transparent_window import TransWindow
+from widget_snapping import SnippingWidget
 
-
+QLoggingCategory.setFilterRules("*.debug=false\nqt.qpa.*=false")
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Window, self).__init__()
+        self.initialized = False
+        self.settings = None
         self.fileName = None
         self.printerObj = None
         self.timer_count = None
         self.scale_factor = None
+
+        self.snippingWidget = None
+        self._pixmap = None
+        self.sound = None
+
+        self.TimedScreenGrabDialog = None
+        self.ScreenGrabDialog = None
+        self.TransWindow = None
 
         self.setupUi(self)
         self.setupCustomUi()
         self.setupCustomUiGroups()
         self.connectSignalsSlots()
         self.initialState()
+        self.initialized = True
 
     def initialState(self):
 
@@ -51,6 +65,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.timer_count = 10000
         self.setWindowTitle("Grab - new document[*]")
         self.resize(370, 270)
+        self.settings = QSettings("helloSystem", "Grab.app")
+        self.read_settings()
         self.take_screenshot()
 
     def setupCustomUi(self):
@@ -59,6 +75,15 @@ class Window(QMainWindow, Ui_MainWindow):
         self.printerObj = QPrinter()
 
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
+
+        self.snippingWidget = SnippingWidget(app=QApplication.instance())
+        self.snippingWidget.onSnippingCompleted = self.onSnippingCompleted
+
+        self.sound = QMediaPlayer()
+        self.sound.setMedia(QMediaContent(QUrl.fromLocalFile(
+            os.path.join(os.path.dirname(__file__), "trigger_of_camera.wav")
+        )))
+
 
     def setupCustomUiGroups(self):
         menu_frequency_group = QActionGroup(self)
@@ -90,7 +115,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ActionMenuViewZoomClear.triggered.connect(self.img_preview.clearZoom)
 
         # Capture
-        #self.ActionMenuCaptureScreen.triggered.connect(self.new_screenshot)
         self.ActionMenuCaptureScreen.triggered.connect(self._showScreenGrabDialog)
         self.ActionMenuCaptureTimedScreen.triggered.connect(self._showTimedScreenGrabDialog)
 
@@ -105,13 +129,71 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ActionUpdateTimerTo8Secs.triggered.connect(self._timer_change_for_8_secs)
         self.ActionUpdateTimerTo9Secs.triggered.connect(self._timer_change_for_9_secs)
         self.ActionUpdateTimerTo10Secs.triggered.connect(self._timer_change_for_10_secs)
+
+        # Capture / Area
+        self.ActionMenuCaptureSelection.triggered.connect(self.snipArea)
+        # self.ui.pushButton_area.clicked.connect(self.snipArea)
+        # self.ui.pushButton_full.clicked.connect(self.snipFull)
+
         # About
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
+        self.ActionMenuHelpDocumentation.triggered.connect(self._showHelpDialog)
+
+    def onSnippingCompleted(self, frame):
+        self.setWindowState(Qt.WindowActive)
+        if frame is None:
+            return
+
+        # image = QImage(frame, frame.shape[1], frame.shape[0], frame.strides[0], QImage.Format_RGB888)
+        # pixmap = QPixmap.fromImage(image)
+
+        # Start by clean the last image
+        self.img_preview.setImage(None)
+
+        # Take a screenshot in case the pixmap will stay to Null
+        self.img_preview.setImage(frame)
+
+        # Inform the application about the contain change
+        if self.fileName:
+            self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
+        else:
+            self.setWindowTitle("Grab - new document[*]")
+
+        self.setWindowModified(True)
+
+        self.update_actions()
 
 
+    def snipArea(self):
+        self.setWindowState(Qt.WindowMinimized)
+        self.snippingWidget.start()
 
-    def closeEvent(self, evnt):
-        super(Window, self).closeEvent(evnt)
+    def snipFull(self):
+        self.setWindowState(Qt.WindowMinimized)
+        self.snippingWidget.fullscreen()
+
+    def write_settings(self):
+        self.settings.setValue("geometry", self.saveGeometry())
+        self.settings.setValue("windowState", self.saveState())
+
+    def read_settings(self):
+        self.restoreGeometry(self.settings.value("geometry", QByteArray()))
+        self.restoreState(self.settings.value("windowState", QByteArray()))
+
+    def closeEvent(self, event):
+        self.write_settings()
+        super(Window, self).closeEvent(event)
+        event.accept()
+
+    def dragEnterEvent(self, event):
+        event.acceptProposedAction()
+
+    def dropEvent(self, event):
+        urls = event.mimeData().urls()
+        filename = urls[0].toLocalFile()
+        self.loadFile(filename)
+        self.decodeFile(filename)
+        event.acceptProposedAction()
 
     def save(self):
         if not self.isWindowModified():
@@ -147,19 +229,18 @@ class Window(QMainWindow, Ui_MainWindow):
         qi = self.img_preview.pixmap().toImage()
         QApplication.clipboard().setImage(qi)
 
-    def new_screenshot(self):
-        if self.isVisible():
-            self.hide()
-        QTimer.singleShot(1000, self.take_screenshot)
-
     def new_timed_screenshot(self):
-        if self.isVisible():
-            self.hide()
         QTimer.singleShot(self.timer_count, self.take_screenshot)
 
     def take_screenshot(self):
+
+        self.hide()
+
         # Start by clean the last image
         self.img_preview.setImage(None)
+
+        if self.initialized:
+            self.sound.play()
 
         # Take a screenshot in case the pixmap will stay to Null
         self.img_preview.setImage(QApplication.primaryScreen().grabWindow(0))
@@ -169,9 +250,11 @@ class Window(QMainWindow, Ui_MainWindow):
             self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
         else:
             self.setWindowTitle("Grab - new document[*]")
+
         self.setWindowModified(True)
 
         self.update_actions()
+
         self.show()
 
     def normal_size(self):
@@ -287,36 +370,72 @@ class Window(QMainWindow, Ui_MainWindow):
 
         if self.ActionMenuCaptureTimedScreen.isEnabled():
             self.hide()
-            self.ScreenGrabDialog = ScreenGrabDialog()
 
+            # self.ScreenGrabDialog.setWindowFlags(self.ScreenGrabDialog.windowFlags() & Qt.WindowStaysOnTopHint)
+
+
+
+
+
+            self.ScreenGrabDialog = ScreenGrabDialog(self)
+            self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._CloseAllDialogs)
+            self.ScreenGrabDialog.screen_dialog_signal_start.connect(self._ScreenGrabStart)
+
+            self.TransWindow = TransWindow(self)
+            self.TransWindow.transparent_window_signal_release.connect(self._ScreenGrabStart)
+            self.TransWindow.transparent_window_signal_quit.connect(self._CloseAllDialogs)
+
+            self.ScreenGrabDialog.hide()
             self.ScreenGrabDialog.show()
-            self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._ScreenGrabQuit)
 
-    def _ScreenGrabQuit(self):
-        if self.ScreenGrabDialog.isVisible() and self.ScreenGrabDialog.isEnabled():
-            self.ScreenGrabDialog.close()
-        if not self.isVisible():
-            self.show()
+            self.TransWindow.hide()
+            self.TransWindow.show()
+
+
+            while not self.windowHandle():
+                QApplication.processEvents()
+
+
+
+    def _ScreenGrabStart(self):
+        self._CloseAllDialogs()
+
+        QApplication.processEvents()
+        self.take_screenshot()
 
     def _showTimedScreenGrabDialog(self):
-
         if self.ActionMenuCaptureTimedScreen.isEnabled():
             self.hide()
-            self.TimedScreenGrabDialog = TimedScreenGrabDialog(timer=self.timer_count)
-
-            self.TimedScreenGrabDialog.show()
-            self.TimedScreenGrabDialog.timer_dialog_signal_start.connect(self._TimedScreenGrabStart)
-            self.TimedScreenGrabDialog.timer_dialog_signal_quit.connect(self._TimedScreenGrabQuit)
+            if self.TimedScreenGrabDialog is None:
+                self.TimedScreenGrabDialog = TimedScreenGrabDialog(timer=self.timer_count)
+                self.TimedScreenGrabDialog.timer_dialog_signal_start.connect(self._TimedScreenGrabStart)
+                self.TimedScreenGrabDialog.timer_dialog_signal_quit.connect(self._CloseAllDialogs)
+                self.TimedScreenGrabDialog.exec_()
+            self.show()
 
     def _TimedScreenGrabStart(self):
-        self._TimedScreenGrabQuit()
+        self._CloseAllDialogs()
         self.new_timed_screenshot()
 
-    def _TimedScreenGrabQuit(self):
-        if self.TimedScreenGrabDialog.isVisible() and self.TimedScreenGrabDialog.isEnabled():
+    def _CloseAllDialogs(self):
+        if self.TimedScreenGrabDialog and isinstance(self.TimedScreenGrabDialog, TimedScreenGrabDialog):
             self.TimedScreenGrabDialog.close()
-        if not self.isVisible():
+            self.TimedScreenGrabDialog = None
+        if self.ScreenGrabDialog and isinstance(self.ScreenGrabDialog, ScreenGrabDialog):
+            self.ScreenGrabDialog.close()
+            self.ScreenGrabDialog = None
+        if self.TransWindow and isinstance(self.TransWindow, TransWindow):
+            self.TransWindow.close()
+            self.TransWindow = None
+
+        if self.isHidden():
             self.show()
+
+        while not self.windowHandle():
+            QApplication.processEvents()
+
+    def _timer_change_for(self, value):
+        self.timer_count = value
 
     def _timer_change_for_1_sec(self):
         self.timer_count = 1000
@@ -348,9 +467,18 @@ class Window(QMainWindow, Ui_MainWindow):
     def _timer_change_for_10_secs(self):
         self.timer_count = 10000
 
+    def _showHelpDialog(self):
+        if self.ActionMenuHelpAbout.isEnabled():
 
-if __name__ == "__main__":
+            self.HelpDialog = HelpDialog()
+            self.HelpDialog.show()
+
+def main():
     app = QApplication(sys.argv)
-    win = Window()
-    win.show()
-    sys.exit(app.exec())
+    window = Window()
+    window.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

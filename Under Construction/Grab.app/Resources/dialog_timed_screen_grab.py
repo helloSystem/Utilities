@@ -1,7 +1,7 @@
 import os
 
-from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtGui import QPixmap, QIcon, QKeySequence
+from PyQt5.QtWidgets import QDialog, QShortcut
 from PyQt5.QtCore import pyqtSignal, Qt
 from dialog_timed_screen_grab_ui import Ui_TimedScreenGrab
 
@@ -27,6 +27,8 @@ class TimedScreenGrabDialog(QDialog):
 
         self.ui.button_cancel.clicked.connect(self.cancel_dialog)
         self.ui.button_start_timer.clicked.connect(self.start_timer_dialog)
+        quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+        quitShortcut1.activated.connect(self.cancel_dialog)
 
     def cancel_dialog(self):
         self.timer_dialog_signal_quit.emit()

@@ -10,6 +10,9 @@
     <height>294</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>Grab</string>
   </property>
@@ -104,6 +107,7 @@
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="ActionMenuHelpDocumentation"/>
     <addaction name="ActionMenuHelpAbout"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -194,7 +198,7 @@
   </action>
   <action name="ActionMenuCaptureSelection">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Selection</string>
@@ -409,6 +413,11 @@
    </property>
    <property name="text">
     <string>10 secs</string>
+   </property>
+  </action>
+  <action name="ActionMenuHelpDocumentation">
+   <property name="text">
+    <string>Documentation</string>
    </property>
   </action>
  </widget>
