@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtGui import QPixmap, QIcon, QKeySequence
-from PyQt5.QtWidgets import QDialog, QShortcut, qApp
-from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot
+from PyQt5.QtGui import QPixmap, QIcon, QKeySequence, QCloseEvent
+from PyQt5.QtWidgets import QDialog, QShortcut, QApplication
+from PyQt5.QtCore import pyqtSignal, Qt
 from dialog_screen_grab_ui import Ui_ScreenGrab
 
 
@@ -43,9 +43,11 @@ class ScreenGrabDialog(QDialog):
     # def focusOutEvent(self, event):
     #     self.screen_dialog_signal_quit.emit()
 
-    def closeEvent(self, event):
+
+    def closeEvent(self, event: QCloseEvent) -> None:
+        super(ScreenGrabDialog, self).setWindowOpacity(0.0)
         super(ScreenGrabDialog, self).closeEvent(event)
-        self.screen_dialog_signal_quit.emit()
+        QApplication.processEvents()
         event.accept()
 
     def screen_dialog_quit(self):

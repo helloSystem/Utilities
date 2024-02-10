@@ -12,7 +12,7 @@ except ImportError:
 
 from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication, QShortcut
-from PyQt5.QtGui import QMouseEvent, QKeySequence
+from PyQt5.QtGui import QMouseEvent, QKeySequence, QCloseEvent
 import numpy
 
 
@@ -42,6 +42,11 @@ class TransWindow(QWidget):
         quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
         quitShortcut1.activated.connect(self.cancel_transparent_window)
 
+    def closeEvent(self, event: QCloseEvent) -> None:
+        super(TransWindow, self).setWindowOpacity(0.0)
+        super(TransWindow, self).closeEvent(event)
+        QApplication.processEvents()
+        event.accept()
 
     def mousePressEvent(self, event):
         event: QMouseEvent
@@ -55,6 +60,7 @@ class TransWindow(QWidget):
 
     def mouseReleaseEvent(self, event):
         self.transparent_window_signal_release.emit()
+        self.close()
 
     def cancel_transparent_window(self):
         self.transparent_window_signal_quit.emit()

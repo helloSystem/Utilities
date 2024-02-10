@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, QShortcut
-from PyQt5.QtGui import QPixmap, QIcon, QPainter, QImage
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QHideEvent, QShowEvent
 from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
@@ -234,7 +234,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def take_screenshot(self):
 
-        self.hide()
+        # self.hide()
+        self.setWindowOpacity(0.0)
 
         # Start by clean the last image
         self.img_preview.setImage(None)
@@ -255,7 +256,10 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.update_actions()
 
-        self.show()
+        # self.show()
+        self.setWindowOpacity(1.0)
+        # QApplication.processEvents()
+
 
     def normal_size(self):
         self.img_preview.clearZoom()
@@ -395,12 +399,18 @@ class Window(QMainWindow, Ui_MainWindow):
             while not self.windowHandle():
                 QApplication.processEvents()
 
+    def hideEvent(self, event: QShowEvent) -> None:
+        super(Window, self).setWindowOpacity(0.0)
+        super(Window, self).hideEvent(event)
+        event.accept()
 
+    def showEvent(self, event: QShowEvent) -> None:
+        super(Window, self).setWindowOpacity(1.0)
+        super(Window, self).showEvent(event)
+        event.accept()
 
     def _ScreenGrabStart(self):
         self._CloseAllDialogs()
-
-        QApplication.processEvents()
         self.take_screenshot()
 
     def _showTimedScreenGrabDialog(self):
@@ -433,6 +443,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
         while not self.windowHandle():
             QApplication.processEvents()
+
+        QApplication.flush()
 
     def _timer_change_for(self, value):
         self.timer_count = value
