@@ -753,8 +753,8 @@ class DiskPage(QtWidgets.QWizardPage, object):
         zfs_compression_factor = 7984/2499 
         wizard.required_mib_on_disk = wizard.required_mib_on_disk / zfs_compression_factor
 
-        print("Disk space required: %d MiB" % wizard.required_mib_on_disk)
-        self.label.setText(tr("Disk space required: %s MiB") % wizard.required_mib_on_disk)
+        print("Disk space required: %d MiB" % round(wizard.required_mib_on_disk, 1))
+        self.label.setText(tr("Disk space required: %s MiB") % round(wizard.required_mib_on_disk, 1))
 
     def cleanupPage(self):
         print("Leaving DiskPage")
@@ -1035,7 +1035,8 @@ class UserPage(QtWidgets.QWizardPage, object):
         
         # Warning if passwords don't match
         self.user_label_comment = QtWidgets.QLabel()
-        self.user_label_comment.setText(tr("The passwords do not match"))  # TODO: make red
+        self.user_label_comment.setText(tr("The passwords do not match"))
+        self.user_label_comment.setStyleSheet("color: red")
         self.user_label_comment.setVisible(False)
         user_vlayout.addWidget(self.user_label_comment)
         self.computer_name = self.computerName()
