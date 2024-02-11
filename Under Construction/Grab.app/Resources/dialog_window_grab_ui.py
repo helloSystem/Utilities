@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file './dialog_screen_grab.ui'
+# Form implementation generated from reading ui file './dialog_window_grab.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.9
 #
@@ -11,14 +11,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_ScreenGrabDialog(object):
-    def setupUi(self, ScreenGrabDialog):
-        ScreenGrabDialog.setObjectName("ScreenGrabDialog")
-        ScreenGrabDialog.setWindowModality(QtCore.Qt.WindowModal)
-        ScreenGrabDialog.resize(486, 178)
-        ScreenGrabDialog.setFocusPolicy(QtCore.Qt.NoFocus)
-        ScreenGrabDialog.setModal(True)
-        self.verticalLayout = QtWidgets.QVBoxLayout(ScreenGrabDialog)
+class Ui_WindowGrabDialog(object):
+    def setupUi(self, WindowGrabDialog):
+        WindowGrabDialog.setObjectName("WindowGrabDialog")
+        WindowGrabDialog.setWindowModality(QtCore.Qt.NonModal)
+        WindowGrabDialog.resize(486, 178)
+        WindowGrabDialog.setFocusPolicy(QtCore.Qt.NoFocus)
+        WindowGrabDialog.setModal(True)
+        self.verticalLayout = QtWidgets.QVBoxLayout(WindowGrabDialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.MainVbox = QtWidgets.QVBoxLayout()
         self.MainVbox.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
@@ -31,7 +31,7 @@ class Ui_ScreenGrabDialog(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem)
-        self.icon = QtWidgets.QLabel(ScreenGrabDialog)
+        self.icon = QtWidgets.QLabel(WindowGrabDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -40,7 +40,7 @@ class Ui_ScreenGrabDialog(object):
         self.icon.setMinimumSize(QtCore.QSize(64, 64))
         self.icon.setMaximumSize(QtCore.QSize(64, 64))
         self.icon.setText("")
-        self.icon.setPixmap(QtGui.QPixmap("./../../Processes.app/Resources/Processes.png"))
+        self.icon.setPixmap(QtGui.QPixmap("./../../../../../../Processes.app/Resources/Processes.png"))
         self.icon.setScaledContents(True)
         self.icon.setObjectName("icon")
         self.horizontalLayout_2.addWidget(self.icon, 0, QtCore.Qt.AlignLeft)
@@ -49,7 +49,7 @@ class Ui_ScreenGrabDialog(object):
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.Label = QtWidgets.QLabel(ScreenGrabDialog)
+        self.Label = QtWidgets.QLabel(WindowGrabDialog)
         font = QtGui.QFont()
         font.setFamily("Nimbus Sans")
         self.Label.setFont(font)
@@ -69,7 +69,7 @@ class Ui_ScreenGrabDialog(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem4)
-        self.button_cancel = QtWidgets.QPushButton(ScreenGrabDialog)
+        self.button_cancel = QtWidgets.QPushButton(WindowGrabDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -80,14 +80,18 @@ class Ui_ScreenGrabDialog(object):
         self.button_cancel.setFont(font)
         self.button_cancel.setObjectName("button_cancel")
         self.horizontalLayout.addWidget(self.button_cancel)
+        self.button_choose_window = QtWidgets.QPushButton(WindowGrabDialog)
+        self.button_choose_window.setObjectName("button_choose_window")
+        self.horizontalLayout.addWidget(self.button_choose_window)
         self.MainVbox.addLayout(self.horizontalLayout)
         self.verticalLayout.addLayout(self.MainVbox)
 
-        self.retranslateUi(ScreenGrabDialog)
-        QtCore.QMetaObject.connectSlotsByName(ScreenGrabDialog)
+        self.retranslateUi(WindowGrabDialog)
+        QtCore.QMetaObject.connectSlotsByName(WindowGrabDialog)
 
-    def retranslateUi(self, ScreenGrabDialog):
+    def retranslateUi(self, WindowGrabDialog):
         _translate = QtCore.QCoreApplication.translate
-        ScreenGrabDialog.setWindowTitle(_translate("ScreenGrabDialog", "Screen Grab"))
-        self.Label.setText(_translate("ScreenGrabDialog", "To capture the screen, click outside this window. (This window will not be included in the screen capture.) If you selected a pointer in Grab preferences, the pointer will be superimposed where you click."))
-        self.button_cancel.setText(_translate("ScreenGrabDialog", "Cancel"))
+        WindowGrabDialog.setWindowTitle(_translate("WindowGrabDialog", "Window Grab"))
+        self.Label.setText(_translate("WindowGrabDialog", "When the window you want is ready, click Choose Window, then click the window to capture it."))
+        self.button_cancel.setText(_translate("WindowGrabDialog", "Cancel"))
+        self.button_choose_window.setText(_translate("WindowGrabDialog", "Choose Window"))

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ScreenGrab</class>
- <widget class="QDialog" name="ScreenGrab">
+ <class>ScreenGrabDialog</class>
+ <widget class="QDialog" name="ScreenGrabDialog">
   <property name="windowModality">
-   <enum>Qt::NonModal</enum>
+   <enum>Qt::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>

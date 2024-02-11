@@ -3,7 +3,7 @@ import os
 from PyQt5.QtGui import QPixmap, QIcon, QKeySequence
 from PyQt5.QtWidgets import QDialog, QShortcut
 from PyQt5.QtCore import pyqtSignal, Qt
-from dialog_timed_screen_grab_ui import Ui_TimedScreenGrab
+from dialog_timed_screen_grab_ui import Ui_TimedScreenGrabDialog
 
 
 class TimedScreenGrabDialog(QDialog):
@@ -14,7 +14,7 @@ class TimedScreenGrabDialog(QDialog):
         super(TimedScreenGrabDialog, self).__init__(parent)
         self.setWindowFlags(Qt.Dialog)
         self.sec = int(timer / 1000)
-        self.ui = Ui_TimedScreenGrab()
+        self.ui = Ui_TimedScreenGrabDialog()
         self.ui.setupUi(self)
         self.ui.icon.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")))
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))

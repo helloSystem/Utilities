@@ -155,7 +155,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setWindowState(Qt.WindowActive)
         if frame is None:
             return
-
+        self.sound.play()
         self.img_preview.setImage(frame)
 
         # Inform the application about the contain change
@@ -238,9 +238,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def take_screenshot(self):
 
-        # self.hide()
-        self.setWindowOpacity(0.0)
-
+        self.setWindowState(Qt.WindowMinimized)
         # Start by clean the last image
         self.img_preview.setImage(None)
 
@@ -271,7 +269,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.update_actions()
 
         # self.show()
-        self.setWindowOpacity(1.0)
+        self.setWindowState(Qt.WindowActive)
         # QApplication.processEvents()
 
 

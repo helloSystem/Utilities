@@ -3,7 +3,7 @@ import os
 from PyQt5.QtGui import QPixmap, QIcon, QKeySequence, QCloseEvent
 from PyQt5.QtWidgets import QDialog, QShortcut, QApplication
 from PyQt5.QtCore import pyqtSignal, Qt
-from dialog_screen_grab_ui import Ui_ScreenGrab
+from dialog_screen_grab_ui import Ui_ScreenGrabDialog
 
 
 class ScreenGrabDialog(QDialog):
@@ -26,7 +26,7 @@ class ScreenGrabDialog(QDialog):
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
-        self.ui = Ui_ScreenGrab()
+        self.ui = Ui_ScreenGrabDialog()
         self.ui.setupUi(self)
         self.ui.icon.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")))
         self.setFixedSize(self.size())

@@ -11,14 +11,14 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_TimedScreenGrab(object):
-    def setupUi(self, TimedScreenGrab):
-        TimedScreenGrab.setObjectName("TimedScreenGrab")
-        TimedScreenGrab.setWindowModality(QtCore.Qt.NonModal)
-        TimedScreenGrab.resize(466, 212)
-        TimedScreenGrab.setFocusPolicy(QtCore.Qt.NoFocus)
-        TimedScreenGrab.setModal(True)
-        self.verticalLayout = QtWidgets.QVBoxLayout(TimedScreenGrab)
+class Ui_TimedScreenGrabDialog(object):
+    def setupUi(self, TimedScreenGrabDialog):
+        TimedScreenGrabDialog.setObjectName("TimedScreenGrabDialog")
+        TimedScreenGrabDialog.setWindowModality(QtCore.Qt.NonModal)
+        TimedScreenGrabDialog.resize(486, 178)
+        TimedScreenGrabDialog.setFocusPolicy(QtCore.Qt.NoFocus)
+        TimedScreenGrabDialog.setModal(True)
+        self.verticalLayout = QtWidgets.QVBoxLayout(TimedScreenGrabDialog)
         self.verticalLayout.setObjectName("verticalLayout")
         self.MainVbox = QtWidgets.QVBoxLayout()
         self.MainVbox.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
@@ -31,7 +31,7 @@ class Ui_TimedScreenGrab(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem)
-        self.icon = QtWidgets.QLabel(TimedScreenGrab)
+        self.icon = QtWidgets.QLabel(TimedScreenGrabDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -49,7 +49,7 @@ class Ui_TimedScreenGrab(object):
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
-        self.Label = QtWidgets.QLabel(TimedScreenGrab)
+        self.Label = QtWidgets.QLabel(TimedScreenGrabDialog)
         font = QtGui.QFont()
         font.setFamily("Nimbus Sans")
         self.Label.setFont(font)
@@ -69,7 +69,7 @@ class Ui_TimedScreenGrab(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         spacerItem4 = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout.addItem(spacerItem4)
-        self.button_cancel = QtWidgets.QPushButton(TimedScreenGrab)
+        self.button_cancel = QtWidgets.QPushButton(TimedScreenGrabDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -80,7 +80,7 @@ class Ui_TimedScreenGrab(object):
         self.button_cancel.setFont(font)
         self.button_cancel.setObjectName("button_cancel")
         self.horizontalLayout.addWidget(self.button_cancel)
-        self.button_start_timer = QtWidgets.QPushButton(TimedScreenGrab)
+        self.button_start_timer = QtWidgets.QPushButton(TimedScreenGrabDialog)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -95,12 +95,12 @@ class Ui_TimedScreenGrab(object):
         self.MainVbox.addLayout(self.horizontalLayout)
         self.verticalLayout.addLayout(self.MainVbox)
 
-        self.retranslateUi(TimedScreenGrab)
-        QtCore.QMetaObject.connectSlotsByName(TimedScreenGrab)
+        self.retranslateUi(TimedScreenGrabDialog)
+        QtCore.QMetaObject.connectSlotsByName(TimedScreenGrabDialog)
 
-    def retranslateUi(self, TimedScreenGrab):
+    def retranslateUi(self, TimedScreenGrabDialog):
         _translate = QtCore.QCoreApplication.translate
-        TimedScreenGrab.setWindowTitle(_translate("TimedScreenGrab", "Timed Screen Grab"))
-        self.Label.setText(_translate("TimedScreenGrab", "Grab will caputure the screen %s after you start the timer. (This window will not be included in the screen capture.)"))
-        self.button_cancel.setText(_translate("TimedScreenGrab", "Cancel"))
-        self.button_start_timer.setText(_translate("TimedScreenGrab", "Start Timer"))
+        TimedScreenGrabDialog.setWindowTitle(_translate("TimedScreenGrabDialog", "Timed Screen Grab"))
+        self.Label.setText(_translate("TimedScreenGrabDialog", "Grab will caputure the screen %s after you start the timer. (This window will not be included in the screen capture.)"))
+        self.button_cancel.setText(_translate("TimedScreenGrabDialog", "Cancel"))
+        self.button_start_timer.setText(_translate("TimedScreenGrabDialog", "Start Timer"))
