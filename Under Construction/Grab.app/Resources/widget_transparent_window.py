@@ -1,18 +1,36 @@
 try:
     from PyQt6.QtCore import Qt, QRectF, QPoint, QPointF, pyqtSignal, QEvent, QSize
-    from PyQt6.QtGui import QImage, QPixmap, QPainterPath, QMouseEvent, QPainter, QPen
-    from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication
+    from PyQt6.QtGui import (
+            QImage,
+            QPixmap,
+            QPainterPath,
+            QMouseEvent,
+            QPainter,
+            QPen,
+            QGuiApplication,
+            QKeySequence,
+            QCloseEvent
+        )
+    from PyQt6.QtWidgets import QWidget, QGridLayout, QApplication, QShortcut
 except ImportError:
     try:
         from PyQt5.QtCore import Qt, QRectF, QPoint, QPointF, pyqtSignal, QEvent, QSize
-        from PyQt5.QtGui import QImage, QPixmap, QPainterPath, QMouseEvent, QPainter, QPen, QGuiApplication
-        from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication
+        from PyQt5.QtGui import (
+            QImage,
+            QPixmap,
+            QPainterPath,
+            QMouseEvent,
+            QPainter,
+            QPen,
+            QGuiApplication,
+            QKeySequence,
+            QCloseEvent
+        )
+        from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication, QShortcut
     except ImportError:
         raise ImportError("Requires PyQt (version 5 or 6)")
 
-from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication, QShortcut
-from PyQt5.QtGui import QMouseEvent, QKeySequence, QCloseEvent
+
 import numpy
 
 

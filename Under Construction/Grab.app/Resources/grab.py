@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, QShortcut
-from PyQt5.QtGui import QPixmap, QIcon, QPainter, QHideEvent, QShowEvent
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, QShortcut, qApp
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QHideEvent, QShowEvent, QGuiApplication
 from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
@@ -20,7 +20,15 @@ QLoggingCategory.setFilterRules("*.debug=false\nqt.qpa.*=false")
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Window, self).__init__()
+        self.parent = parent
+        self.screen = qApp
         self.initialized = False
+        self.transparent_window_opacity = None
+        self.selection_color_background = None
+        self.selection_color_border = None
+        self.selection_color_opacity = None
+        self.selection_wight_border = None
+
         self.settings = None
         self.fileName = None
         self.printerObj = None
@@ -41,6 +49,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.connectSignalsSlots()
         self.initialState()
         self.initialized = True
+
+
 
     def initialState(self):
 
@@ -76,13 +86,15 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
 
-        self.snippingWidget = SnippingWidget(app=QApplication.instance())
+        self.snippingWidget = SnippingWidget()
         self.snippingWidget.onSnippingCompleted = self.onSnippingCompleted
 
         self.sound = QMediaPlayer()
         self.sound.setMedia(QMediaContent(QUrl.fromLocalFile(
             os.path.join(os.path.dirname(__file__), "trigger_of_camera.wav")
         )))
+
+        self.transparent_window_opacity = 1.0
 
 
     def setupCustomUiGroups(self):
@@ -144,13 +156,6 @@ class Window(QMainWindow, Ui_MainWindow):
         if frame is None:
             return
 
-        # image = QImage(frame, frame.shape[1], frame.shape[0], frame.strides[0], QImage.Format_RGB888)
-        # pixmap = QPixmap.fromImage(image)
-
-        # Start by clean the last image
-        self.img_preview.setImage(None)
-
-        # Take a screenshot in case the pixmap will stay to Null
         self.img_preview.setImage(frame)
 
         # Inform the application about the contain change
@@ -162,7 +167,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setWindowModified(True)
 
         self.update_actions()
-
 
     def snipArea(self):
         self.setWindowState(Qt.WindowMinimized)
@@ -244,7 +248,17 @@ class Window(QMainWindow, Ui_MainWindow):
             self.sound.play()
 
         # Take a screenshot in case the pixmap will stay to Null
-        self.img_preview.setImage(QApplication.primaryScreen().grabWindow(0))
+        screen = self.screen.primaryScreen()
+        win_id = QApplication.desktop().winId()
+        window = self.windowHandle()
+        if window:
+            screen = window.screen()
+        if not screen:
+            self.setWindowOpacity(1.0)
+            return
+
+        self.img_preview.setImage(screen.grabWindow(win_id))
+        self.fit_to_window()
 
         # Inform the application about the contain change
         if self.fileName:
