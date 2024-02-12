@@ -17,15 +17,18 @@
    <string>Grab</string>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">border: 0px;</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <property name="styleSheet">
-    <string notr="true">background-color: rgba(255,255,255, 3%)</string>
-   </property>
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>0</number>
+    </property>
+    <property name="sizeConstraint">
+     <enum>QLayout::SetDefaultConstraint</enum>
     </property>
     <property name="leftMargin">
      <number>0</number>
@@ -112,7 +115,7 @@
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>Window</string>
     </property>
     <addaction name="ActionMenuViewActualSize"/>
     <addaction name="ActionMenuViewZoomToFit"/>
@@ -123,8 +126,8 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuView"/>
    <addaction name="menuCapture"/>
+   <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="ActionMenuEditCopy">

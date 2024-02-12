@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, QShortcut, qApp
-from PyQt5.QtGui import QPixmap, QIcon, QPainter, QHideEvent, QShowEvent, QGuiApplication
-from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QHideEvent, QShowEvent, QPalette, QColor
+from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl, QMargins
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 import sys
@@ -17,6 +17,8 @@ from widget_transparent_window import TransWindow
 from widget_snapping import SnippingWidget
 
 QLoggingCategory.setFilterRules("*.debug=false\nqt.qpa.*=false")
+
+
 class Window(QMainWindow, Ui_MainWindow):
     def __init__(self, parent=None):
         super(Window, self).__init__()
@@ -50,10 +52,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.initialState()
         self.initialized = True
 
-
-
     def initialState(self):
-
         self.ActionMenuFilePrint.setEnabled(False)
         self.ActionMenuFilePrintSetup.setEnabled(False)
         self.ActionMenuViewFitToWindow.setEnabled(False)
@@ -73,11 +72,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.img_preview.panButton = Qt.MouseButton.MiddleButton  # set to None to disable
 
         self.timer_count = 10000
-        self.setWindowTitle("Grab - new document[*]")
+        self.setWindowTitle("Untitled[*]")
         self.resize(370, 270)
         self.settings = QSettings("helloSystem", "Grab.app")
         self.read_settings()
-        self.take_screenshot()
+        self.snipFull()
 
     def setupCustomUi(self):
         # creating an object of the QPrinter class
@@ -90,12 +89,11 @@ class Window(QMainWindow, Ui_MainWindow):
         self.snippingWidget.onSnippingCompleted = self.onSnippingCompleted
 
         self.sound = QMediaPlayer()
-        self.sound.setMedia(QMediaContent(QUrl.fromLocalFile(
-            os.path.join(os.path.dirname(__file__), "trigger_of_camera.wav")
-        )))
+        self.sound.setMedia(
+            QMediaContent(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "trigger_of_camera.wav")))
+        )
 
         self.transparent_window_opacity = 1.0
-
 
     def setupCustomUiGroups(self):
         menu_frequency_group = QActionGroup(self)
@@ -153,16 +151,17 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def onSnippingCompleted(self, frame):
         self.setWindowState(Qt.WindowActive)
+
         if frame is None:
             return
-        self.sound.play()
-        self.img_preview.setImage(frame)
 
-        # Inform the application about the contain change
-        if self.fileName:
-            self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
-        else:
-            self.setWindowTitle("Grab - new document[*]")
+        self.sound.play()
+
+        self.img_preview.setImage(frame)
+        self.img_preview.clearZoom()
+
+        self.fileName = None
+        self.setWindowTitle("Untitled[*]")
 
         self.setWindowModified(True)
 
@@ -209,7 +208,7 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.img_preview.pixmap().save(self.fileName, "png")
             elif self.fileName[-3:] == "jpg":
                 self.img_preview.pixmap().save(self.fileName, "jpg")
-            self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
+            self.setWindowTitle("%s[*]" % (os.path.basename(self.fileName)))
             self.setWindowModified(False)
 
     def save_as(self):
@@ -224,7 +223,7 @@ class Window(QMainWindow, Ui_MainWindow):
             elif fileName[-3:] == "jpg":
                 self.img_preview.pixmap().save(fileName, "jpg")
             self.fileName = fileName
-            self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
+            self.setWindowTitle("%s[*]" % (os.path.basename(self.fileName)))
             self.setWindowModified(False)
 
     def copy_to_clipboard(self):
@@ -234,44 +233,7 @@ class Window(QMainWindow, Ui_MainWindow):
         QApplication.clipboard().setImage(qi)
 
     def new_timed_screenshot(self):
-        QTimer.singleShot(self.timer_count, self.take_screenshot)
-
-    def take_screenshot(self):
-
-        self.setWindowState(Qt.WindowMinimized)
-        # Start by clean the last image
-        self.img_preview.setImage(None)
-
-        if self.initialized:
-            self.sound.play()
-
-        # Take a screenshot in case the pixmap will stay to Null
-        screen = self.screen.primaryScreen()
-        win_id = QApplication.desktop().winId()
-        window = self.windowHandle()
-        if window:
-            screen = window.screen()
-        if not screen:
-            self.setWindowOpacity(1.0)
-            return
-
-        self.img_preview.setImage(screen.grabWindow(win_id))
-        self.fit_to_window()
-
-        # Inform the application about the contain change
-        if self.fileName:
-            self.setWindowTitle("Grab - %s[*]" % (os.path.basename(self.fileName)))
-        else:
-            self.setWindowTitle("Grab - new document[*]")
-
-        self.setWindowModified(True)
-
-        self.update_actions()
-
-        # self.show()
-        self.setWindowState(Qt.WindowActive)
-        # QApplication.processEvents()
-
+        QTimer.singleShot(self.timer_count, self.snipFull)
 
     def normal_size(self):
         self.img_preview.clearZoom()
@@ -291,7 +253,6 @@ class Window(QMainWindow, Ui_MainWindow):
     # defining the method to update the actions
     def update_actions(self):
         if self.img_preview.pixmap().isNull():
-
             self.ActionMenuFileSave.setEnabled(False)
             self.ActionMenuFileSaveAs.setEnabled(False)
             self.ActionMenuFilePrint.setEnabled(False)
@@ -303,7 +264,6 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ActionMenuViewZoomOut.setEnabled(False)
             self.ActionMenuViewZoomToSelection.setEnabled(False)
         else:
-
             self.ActionMenuFileSave.setEnabled(True)
             self.ActionMenuFileSaveAs.setEnabled(True)
             self.ActionMenuFilePrint.setEnabled(True)
@@ -383,15 +343,10 @@ class Window(QMainWindow, Ui_MainWindow):
         msg.exec()
 
     def _showScreenGrabDialog(self):
-
         if self.ActionMenuCaptureTimedScreen.isEnabled():
             self.hide()
 
             # self.ScreenGrabDialog.setWindowFlags(self.ScreenGrabDialog.windowFlags() & Qt.WindowStaysOnTopHint)
-
-
-
-
 
             self.ScreenGrabDialog = ScreenGrabDialog(self)
             self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._CloseAllDialogs)
@@ -406,7 +361,6 @@ class Window(QMainWindow, Ui_MainWindow):
 
             self.TransWindow.hide()
             self.TransWindow.show()
-
 
             while not self.windowHandle():
                 QApplication.processEvents()
@@ -423,7 +377,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _ScreenGrabStart(self):
         self._CloseAllDialogs()
-        self.take_screenshot()
+        self.snipFull()
+        # self.take_screenshot()
 
     def _showTimedScreenGrabDialog(self):
         if self.ActionMenuCaptureTimedScreen.isEnabled():
@@ -493,16 +448,19 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _showHelpDialog(self):
         if self.ActionMenuHelpAbout.isEnabled():
-
             self.HelpDialog = HelpDialog()
             self.HelpDialog.show()
 
+
 def main():
     app = QApplication(sys.argv)
+    app.setApplicationName("Grab")
+    app.setApplicationDisplayName("Grab")
+    app.setApplicationVersion("0.1")
     window = Window()
     window.show()
     sys.exit(app.exec_())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
