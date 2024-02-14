@@ -142,6 +142,8 @@ class Ui_MainWindow(object):
         self.ActionUpdateTimerTo10Secs.setObjectName("ActionUpdateTimerTo10Secs")
         self.ActionMenuHelpDocumentation = QtWidgets.QAction(MainWindow)
         self.ActionMenuHelpDocumentation.setObjectName("ActionMenuHelpDocumentation")
+        self.ActionMenuEditPreference = QtWidgets.QAction(MainWindow)
+        self.ActionMenuEditPreference.setObjectName("ActionMenuEditPreference")
         self.menuFile.addAction(self.ActionMenuFileClose)
         self.menuFile.addAction(self.ActionMenuFileSave)
         self.menuFile.addAction(self.ActionMenuFileSaveAs)
@@ -152,6 +154,8 @@ class Ui_MainWindow(object):
         self.menuEdit.addAction(self.actionGrop)
         self.menuEdit.addAction(self.actionUndo)
         self.menuEdit.addAction(self.actionRedo)
+        self.menuEdit.addSeparator()
+        self.menuEdit.addAction(self.ActionMenuEditPreference)
         self.menuTimer.addAction(self.ActionUpdateTimerTo1Sec)
         self.menuTimer.addAction(self.ActionUpdateTimerTo2Secs)
         self.menuTimer.addAction(self.ActionUpdateTimerTo3Secs)
@@ -239,4 +243,5 @@ class Ui_MainWindow(object):
         self.ActionUpdateTimerTo9Secs.setText(_translate("MainWindow", "9 secs"))
         self.ActionUpdateTimerTo10Secs.setText(_translate("MainWindow", "10 secs"))
         self.ActionMenuHelpDocumentation.setText(_translate("MainWindow", "Documentation"))
+        self.ActionMenuEditPreference.setText(_translate("MainWindow", "Preferences"))
 from QtImageViewer import QtImageViewer

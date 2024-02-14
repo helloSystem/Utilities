@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, QShortcut, qApp
-from PyQt5.QtGui import QPixmap, QIcon, QPainter, QHideEvent, QShowEvent, QPalette, QColor
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QHideEvent, QShowEvent, QPalette, QCursor
 from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl, QMargins
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
@@ -15,6 +15,7 @@ from dialog_screen_grab import ScreenGrabDialog
 from dialog_help import HelpDialog
 from widget_transparent_window import TransWindow
 from widget_snapping import SnippingWidget
+from preference_window import PreferenceWindow
 
 QLoggingCategory.setFilterRules("*.debug=false\nqt.qpa.*=false")
 
@@ -44,6 +45,9 @@ class Window(QMainWindow, Ui_MainWindow):
         self.TimedScreenGrabDialog = None
         self.ScreenGrabDialog = None
         self.TransWindow = None
+        self.PreferenceWindow = None
+        self.preference_pointer = None
+        self.preference_enable_sound = None
 
         self.setupUi(self)
         self.setupCustomUi()
@@ -74,6 +78,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.timer_count = 10000
         self.setWindowTitle("Untitled[*]")
         self.resize(370, 270)
+
         self.settings = QSettings("helloSystem", "Grab.app")
         self.read_settings()
         self.snipFull()
@@ -118,6 +123,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Edit
         self.ActionMenuEditCopy.triggered.connect(self.copy_to_clipboard)
+        self.ActionMenuEditPreference.triggered.connect(self._showPreferenceWindow)
 
         # View
         self.ActionMenuViewZoomIn.triggered.connect(self.img_preview.zoomIn)
@@ -149,6 +155,10 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
         self.ActionMenuHelpDocumentation.triggered.connect(self._showHelpDialog)
 
+        # Preferences
+
+
+
     def onSnippingCompleted(self, frame):
         self.setWindowState(Qt.WindowActive)
 
@@ -178,10 +188,15 @@ class Window(QMainWindow, Ui_MainWindow):
     def write_settings(self):
         self.settings.setValue("geometry", self.saveGeometry())
         self.settings.setValue("windowState", self.saveState())
+        self.settings.setValue('preference_enable_sound', self.preference_enable_sound)
+        self.settings.setValue('preference_pointer', self.preference_pointer)
 
     def read_settings(self):
         self.restoreGeometry(self.settings.value("geometry", QByteArray()))
         self.restoreState(self.settings.value("windowState", QByteArray()))
+        self.preference_enable_sound = self.settings.value("preference_enable_sound", defaultValue=True, type=bool)
+        self.preference_pointer = self.settings.value("preference_pointer", defaultValue=10, type=int)
+
 
     def closeEvent(self, event):
         self.write_settings()
@@ -320,6 +335,21 @@ class Window(QMainWindow, Ui_MainWindow):
         dlg.paintRequested.connect(drawImage)
         dlg.exec_()
 
+    def _preference_enable_sound_changed(self, value: bool) -> None:
+        self.preference_enable_sound = value
+
+    def _preference_pointer_changed(self, value: int) -> None:
+        self.preference_pointer = value
+    def _showPreferenceWindow(self):
+        if self.ActionMenuEditPreference.isEnabled():
+            self.PreferenceWindow = PreferenceWindow(
+                play_sound=self.preference_enable_sound,
+                pointer=self.preference_pointer
+            )
+            self.PreferenceWindow.checkbox_enable_sound_changed.connect(self._preference_enable_sound_changed)
+            self.PreferenceWindow.buttongroup_changed.connect(self._preference_pointer_changed)
+            self.PreferenceWindow.show()
+
     @staticmethod
     def _showAboutDialog():
         msg = QMessageBox()
@@ -352,15 +382,15 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._CloseAllDialogs)
             self.ScreenGrabDialog.screen_dialog_signal_start.connect(self._ScreenGrabStart)
 
-            self.TransWindow = TransWindow(self)
-            self.TransWindow.transparent_window_signal_release.connect(self._ScreenGrabStart)
-            self.TransWindow.transparent_window_signal_quit.connect(self._CloseAllDialogs)
+            # self.TransWindow = TransWindow(self)
+            # self.TransWindow.transparent_window_signal_release.connect(self._ScreenGrabStart)
+            # self.TransWindow.transparent_window_signal_quit.connect(self._CloseAllDialogs)
 
             self.ScreenGrabDialog.hide()
             self.ScreenGrabDialog.show()
 
-            self.TransWindow.hide()
-            self.TransWindow.show()
+            # self.TransWindow.hide()
+            # self.TransWindow.show()
 
             while not self.windowHandle():
                 QApplication.processEvents()

@@ -79,6 +79,8 @@
     <addaction name="actionGrop"/>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
+    <addaction name="separator"/>
+    <addaction name="ActionMenuEditPreference"/>
    </widget>
    <widget class="QMenu" name="menuCapture">
     <property name="title">
@@ -421,6 +423,11 @@
   <action name="ActionMenuHelpDocumentation">
    <property name="text">
     <string>Documentation</string>
+   </property>
+  </action>
+  <action name="ActionMenuEditPreference">
+   <property name="text">
+    <string>Preferences</string>
    </property>
   </action>
  </widget>
