@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, QShortcut, qApp
-from PyQt5.QtGui import QPixmap, QIcon, QPainter, QHideEvent, QShowEvent, QPalette, QCursor
-from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl, QMargins
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, qApp
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QShowEvent
+from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 import sys
@@ -165,7 +165,8 @@ class Window(QMainWindow, Ui_MainWindow):
         if frame is None:
             return
 
-        self.sound.play()
+        if self.preference_enable_sound:
+            self.sound.play()
 
         self.img_preview.setImage(frame)
         self.img_preview.clearZoom()
@@ -337,6 +338,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _preference_enable_sound_changed(self, value: bool) -> None:
         self.preference_enable_sound = value
+        self.snippingWidget.enable_sound = self.preference_enable_sound
 
     def _preference_pointer_changed(self, value: int) -> None:
         self.preference_pointer = value

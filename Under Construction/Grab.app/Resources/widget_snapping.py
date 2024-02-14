@@ -21,6 +21,7 @@ class SnippingWidget(QWidget):
         self.win_id = None
         self.screen = None
         self.selection_pen_width = None
+        self.enable_sound = None
 
         self.initialState()
 
