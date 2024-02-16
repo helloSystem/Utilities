@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>486</width>
-    <height>178</height>
+    <width>488</width>
+    <height>203</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -187,17 +187,6 @@
        </item>
        <item>
         <widget class="QPushButton" name="button_cancel">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="font">
-          <font>
-           <family>Nimbus Sans</family>
-          </font>
-         </property>
          <property name="text">
           <string>Cancel</string>
          </property>

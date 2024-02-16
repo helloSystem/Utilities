@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, qApp
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, qApp, QPushButton
 from PyQt5.QtGui import QPixmap, QIcon, QPainter, QShowEvent
 from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
@@ -13,8 +13,9 @@ from main_window_ui import Ui_MainWindow
 from dialog_timed_screen_grab import TimedScreenGrabDialog
 from dialog_screen_grab import ScreenGrabDialog
 from dialog_help import HelpDialog
+from dialog_selection_screen_grab import SelectionGrabDialog
 from widget_transparent_window import TransWindow
-from widget_snapping import SnippingWidget
+from widget_snipping_tool import SnippingWidget
 from preference_window import PreferenceWindow
 
 QLoggingCategory.setFilterRules("*.debug=false\nqt.qpa.*=false")
@@ -44,6 +45,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.TimedScreenGrabDialog = None
         self.ScreenGrabDialog = None
+        self.SelectionGrabDialog = None
         self.TransWindow = None
         self.PreferenceWindow = None
         self.preference_pointer = None
@@ -53,8 +55,8 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setupCustomUi()
         self.setupCustomUiGroups()
         self.connectSignalsSlots()
+        self.initialized = False
         self.initialState()
-        self.initialized = True
 
     def initialState(self):
         self.ActionMenuFilePrint.setEnabled(False)
@@ -81,7 +83,9 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.settings = QSettings("helloSystem", "Grab.app")
         self.read_settings()
+
         self.snipFull()
+        self.initialized = True
 
     def setupCustomUi(self):
         # creating an object of the QPrinter class
@@ -97,8 +101,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.sound.setMedia(
             QMediaContent(QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "trigger_of_camera.wav")))
         )
-
-        self.transparent_window_opacity = 1.0
 
     def setupCustomUiGroups(self):
         menu_frequency_group = QActionGroup(self)
@@ -132,6 +134,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
         # Capture
         self.ActionMenuCaptureScreen.triggered.connect(self._showScreenGrabDialog)
+        self.ActionMenuCaptureSelection.triggered.connect(self._showSelectionGrabDialog)
         self.ActionMenuCaptureTimedScreen.triggered.connect(self._showTimedScreenGrabDialog)
 
         # Capture / Timer
@@ -147,7 +150,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ActionUpdateTimerTo10Secs.triggered.connect(self._timer_change_for_10_secs)
 
         # Capture / Area
-        self.ActionMenuCaptureSelection.triggered.connect(self.snipArea)
+
         # self.ui.pushButton_area.clicked.connect(self.snipArea)
         # self.ui.pushButton_full.clicked.connect(self.snipFull)
 
@@ -165,7 +168,7 @@ class Window(QMainWindow, Ui_MainWindow):
         if frame is None:
             return
 
-        if self.preference_enable_sound:
+        if self.preference_enable_sound and self.initialized:
             self.sound.play()
 
         self.img_preview.setImage(frame)
@@ -342,6 +345,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _preference_pointer_changed(self, value: int) -> None:
         self.preference_pointer = value
+        self.img_preview.cursor = self.preference_pointer
+
     def _showPreferenceWindow(self):
         if self.ActionMenuEditPreference.isEnabled():
             self.PreferenceWindow = PreferenceWindow(
@@ -361,15 +366,16 @@ class Window(QMainWindow, Ui_MainWindow):
                 48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation
             )
         )
+        msg.addButton(QPushButton("Ok"), QMessageBox.AcceptRole)
         candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
         for candidate in candidates:
             if os.path.exists(os.path.join(os.path.dirname(__file__), candidate)):
                 with open(os.path.join(os.path.dirname(__file__), candidate), "r") as file:
                     data = file.read()
                 msg.setDetailedText(data)
-        msg.setText("<h3>Grab</h3>")
+        msg.setText(f"<h3>{qApp.applicationName()}</h3>")
         msg.setInformativeText(
-            "Grab is an application write in pyQt5 that can capture screen shots.<br><br>"
+            f"{qApp.applicationName()} is an application write in pyQt5 that can capture screen shots.<br><br>"
             "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
         )
         msg.exec()
@@ -384,6 +390,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._CloseAllDialogs)
             self.ScreenGrabDialog.screen_dialog_signal_start.connect(self._ScreenGrabStart)
 
+
             # self.TransWindow = TransWindow(self)
             # self.TransWindow.transparent_window_signal_release.connect(self._ScreenGrabStart)
             # self.TransWindow.transparent_window_signal_quit.connect(self._CloseAllDialogs)
@@ -397,6 +404,21 @@ class Window(QMainWindow, Ui_MainWindow):
             while not self.windowHandle():
                 QApplication.processEvents()
 
+    def _showSelectionGrabDialog(self):
+        if self.ActionMenuCaptureSelection.isEnabled():
+            self.hide()
+
+            # self.ScreenGrabDialog.setWindowFlags(self.ScreenGrabDialog.windowFlags() & Qt.WindowStaysOnTopHint)
+
+            self.SelectionGrabDialog = SelectionGrabDialog(self)
+            self.SelectionGrabDialog.selection_dialog_signal_quit.connect(self._CloseAllDialogs)
+            self.SelectionGrabDialog.selection_dialog_signal_start.connect(self._SelectionGrabStart)
+
+
+
+            self.SelectionGrabDialog.show()
+
+
     def hideEvent(self, event: QShowEvent) -> None:
         super(Window, self).setWindowOpacity(0.0)
         super(Window, self).hideEvent(event)
@@ -406,6 +428,10 @@ class Window(QMainWindow, Ui_MainWindow):
         super(Window, self).setWindowOpacity(1.0)
         super(Window, self).showEvent(event)
         event.accept()
+
+    def _SelectionGrabStart(self):
+        self._CloseAllDialogs()
+        self.snipArea()
 
     def _ScreenGrabStart(self):
         self._CloseAllDialogs()
@@ -436,7 +462,9 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.TransWindow and isinstance(self.TransWindow, TransWindow):
             self.TransWindow.close()
             self.TransWindow = None
-
+        if self.SelectionGrabDialog and isinstance(self.SelectionGrabDialog, SelectionGrabDialog):
+            self.SelectionGrabDialog.close()
+            self.SelectionGrabDialog = None
         if self.isHidden():
             self.show()
 

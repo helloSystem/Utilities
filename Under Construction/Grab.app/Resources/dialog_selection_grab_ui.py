@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_SelectionGrabDialog(object):
     def setupUi(self, SelectionGrabDialog):
         SelectionGrabDialog.setObjectName("SelectionGrabDialog")
-        SelectionGrabDialog.setWindowModality(QtCore.Qt.NonModal)
+        SelectionGrabDialog.setWindowModality(QtCore.Qt.WindowModal)
         SelectionGrabDialog.resize(486, 178)
         SelectionGrabDialog.setFocusPolicy(QtCore.Qt.NoFocus)
         SelectionGrabDialog.setModal(True)
@@ -78,6 +78,8 @@ class Ui_SelectionGrabDialog(object):
         font = QtGui.QFont()
         font.setFamily("Nimbus Sans")
         self.button_cancel.setFont(font)
+        self.button_cancel.setDefault(True)
+        self.button_cancel.setFlat(False)
         self.button_cancel.setObjectName("button_cancel")
         self.horizontalLayout.addWidget(self.button_cancel)
         self.MainVbox.addLayout(self.horizontalLayout)

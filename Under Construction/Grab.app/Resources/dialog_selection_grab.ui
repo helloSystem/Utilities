@@ -3,7 +3,7 @@
  <class>SelectionGrabDialog</class>
  <widget class="QDialog" name="SelectionGrabDialog">
   <property name="windowModality">
-   <enum>Qt::NonModal</enum>
+   <enum>Qt::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -200,6 +200,12 @@
          </property>
          <property name="text">
           <string>Cancel</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
          </property>
         </widget>
        </item>

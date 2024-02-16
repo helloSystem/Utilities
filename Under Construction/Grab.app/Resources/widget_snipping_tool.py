@@ -22,14 +22,13 @@ class SnippingWidget(QWidget):
         self.screen = None
         self.selection_pen_width = None
         self.enable_sound = None
+        self.cursor = Qt.BlankCursor
 
         self.initialState()
 
     def initialState(self):
         self.setAttribute(Qt.WA_TranslucentBackground)
-        # self.setWindowFlags(Qt.WindowStaysOnTopHint)
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint | Qt.FramelessWindowHint)
-        # self.setWindowFlags(Qt.FramelessWindowHint)
 
         self.begin = QPoint()
         self.end = QPoint()
@@ -42,14 +41,11 @@ class SnippingWidget(QWidget):
         quitShortcut1.activated.connect(self.cancel_widget_snapping)
         self.selection_pen_width = 2
 
-    def get_screen_size(self):
-        return self.screen.grabWindow(self.win_id).size()
-
     def cancel_widget_snapping(self):
         self.is_snipping = False
         self.begin = QPoint()
         self.end = QPoint()
-        if self.onSnippingCompleted is not None:
+        if self.onSnippingCompleted:
             self.onSnippingCompleted(None)
         self.close()
 
@@ -84,30 +80,29 @@ class SnippingWidget(QWidget):
             )
 
     def UpdateScreen(self):
+        # Be sure the screen is the Parent of the Desktop
         self.screen = qApp.primaryScreen()
         self.win_id = QApplication.desktop().winId()
-        # screenRect = QApplication.desktop().screenGeometry()
-        # self.setGeometry(
-        #     screenRect
-        # )
-        # self.move(0, 0)
-        self.resize(self.get_screen_size())
 
-        window = self.windowHandle()
-        if window:
-            self.screen = window.screen()
+        # Impose the screen size of the snipping widget
+        self.resize(self.screen.grabWindow(self.win_id).size())
+
+        # Back to normal situation where screen is the parent of the MainWindow
+        if self.windowHandle():
+            self.screen = self.windowHandle().screen()
 
     def fullscreen(self):
         self.UpdateScreen()
         if not self.screen:
             return
-
+        QApplication.setOverrideCursor(self.cursor)
         try:
             img = self.screen.grabWindow(self.win_id)
         except (Exception, BaseException):
             img = None
 
-        if self.onSnippingCompleted is not None:
+        QApplication.restoreOverrideCursor()
+        if self.onSnippingCompleted:
             self.onSnippingCompleted(img)
 
     def start(self):
@@ -127,19 +122,30 @@ class SnippingWidget(QWidget):
 
         # self.setWindowOpacity(opacity)
 
+        # Draw the selection
         self.qp.setPen(self.SelectionPen)
         self.qp.setBrush(self.SelectionColorBackground)
-        rect = QRectF(self.begin, self.end)
-        self.qp.drawRect(rect)
-
-        font = QFont()
-        fm = QFontMetrics(font)
-        text = f"{int(abs(rect.width()))}, {int(abs(rect.height()))}"
-        pixelsWide = fm.width(text)
-        pixelsHigh = fm.height()
-        spacing = 5
 
 
+
+        selection_rect = QRectF(self.begin, self.end)
+        self.qp.drawRect(selection_rect)
+
+        # Draw text coordinate
+        coordinate_spacing = 5
+        coordinate_font = QFont()
+        coordinate_font_metrics = QFontMetrics(coordinate_font)
+        coordinate_x = max(self.end.x(), self.begin.x())
+        coordinate_y = max(self.end.y(), self.begin.y())
+        coordinate_text = f"{int(abs(selection_rect.width()))}, {int(abs(selection_rect.height()))}"
+        coordinate_text_height = coordinate_font_metrics.height()
+        coordinate_text_width = coordinate_font_metrics.width(coordinate_text)
+        coordinate_text_x = coordinate_x - coordinate_text_width - coordinate_spacing
+        coordinate_text_y = coordinate_y - coordinate_spacing + coordinate_text_height
+        coordinate_rect_x = coordinate_x - coordinate_text_width - (coordinate_spacing * 2)
+        coordinate_rect_y = coordinate_y + (coordinate_spacing / 2)
+        coordinate_rect_width = coordinate_text_width + (coordinate_spacing * 2)
+        coordinate_rect_height = coordinate_text_height - (self.selection_pen_width * 2)
 
         self.qp.setPen(QPen(
                 QColor(0, 0, 0, 255),
@@ -149,22 +155,22 @@ class SnippingWidget(QWidget):
                 Qt.RoundJoin
             ))
         self.qp.drawText(
-            self.end.x() - pixelsWide - spacing,
-            self.end.y() - spacing + pixelsHigh,
-            text
+            coordinate_text_x,
+            coordinate_text_y,
+            coordinate_text
         )
         self.qp.setBrush(Qt.NoBrush)
         self.qp.drawRect(
             QRectF(
-                self.end.x() - pixelsWide - (spacing * 2),
-                self.end.y() + ( spacing / 2),
-                pixelsWide + (spacing * 2),
-                pixelsHigh - ( self.selection_pen_width * 2)
+                coordinate_rect_x,
+                coordinate_rect_y,
+                coordinate_rect_width,
+                coordinate_rect_height
                    )
         )
-        if not rect.isNull():
-            self.selection_rect = rect
-            self.selection_info.setFromQRectF(rect)
+        if not selection_rect.isNull():
+            self.selection_info.setFromQRectF(selection_rect.normalized())
+
         self.qp.end()
 
     def mousePressEvent(self, event):
@@ -184,34 +190,22 @@ class SnippingWidget(QWidget):
         self.is_snipping = False
         QApplication.restoreOverrideCursor()
         self.repaint()
-
+        self.setWindowOpacity(0.0)
         QApplication.processEvents()
-        self.hide()
-        print(self.selection_rect)
+
         img = self.screen.grabWindow(
             self.win_id,
 
         ).copy(
-            self.selection_rect.x(),
-            self.selection_rect.y(),
+            self.selection_info.x,
+            self.selection_info.y,
             self.selection_info.width,
             self.selection_info.height,
         )
-        self.show()
-        # try:
-        #     self.hide()
-        #     img = self.screen.grabWindow(
-        #         self.win_id,
-        #         self.selection_info.x,
-        #         self.selection_info.y,
-        #         self.selection_info.width,
-        #         self.selection_info.height,
-        #     )
-        #     self.show()
-        # except (Exception, BaseException):
-        #     img = None
+        # self.setWindowOpacity(1.0)
 
-        if self.onSnippingCompleted is not None:
+        if self.onSnippingCompleted:
             self.onSnippingCompleted(img)
 
+        QApplication.restoreOverrideCursor()
         self.close()
