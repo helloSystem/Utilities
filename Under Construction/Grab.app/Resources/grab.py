@@ -418,7 +418,6 @@ class Window(QMainWindow, Ui_MainWindow):
 
             self.SelectionGrabDialog.show()
 
-
     def hideEvent(self, event: QShowEvent) -> None:
         super(Window, self).setWindowOpacity(0.0)
         super(Window, self).hideEvent(event)
