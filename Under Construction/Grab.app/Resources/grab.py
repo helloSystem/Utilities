@@ -95,7 +95,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
 
         self.snippingWidget = SnippingWidget()
-        self.snippingWidget.onSnippingCompleted = self.onSnippingCompleted
+        # self.snippingWidget.onSnippingCompleted = self.onSnippingCompleted
 
         self.sound = QMediaPlayer()
         self.sound.setMedia(
@@ -158,20 +158,21 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
         self.ActionMenuHelpDocumentation.triggered.connect(self._showHelpDialog)
 
-        # Preferences
+        # Snipping widget
+        self.snippingWidget.snipping_completed.connect(self.onSnippingCompleted)
 
 
 
-    def onSnippingCompleted(self, frame):
+    def onSnippingCompleted(self, img):
         self.setWindowState(Qt.WindowActive)
 
-        if frame is None:
+        if img is None:
             return
 
         if self.preference_enable_sound and self.initialized:
             self.sound.play()
 
-        self.img_preview.setImage(frame)
+        self.img_preview.setImage(img)
         self.img_preview.clearZoom()
 
         self.fileName = None

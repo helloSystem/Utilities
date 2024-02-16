@@ -1,4 +1,4 @@
-from PyQt5.QtCore import Qt, QPoint, QRectF
+from PyQt5.QtCore import Qt, QPoint, QRectF, pyqtSignal
 from PyQt5.QtGui import QPainter, QCursor, QKeySequence
 from PyQt5.QtWidgets import QApplication, QWidget, qApp, QShortcut
 
@@ -7,6 +7,7 @@ from property_selection_area import SelectionArea
 
 # Refer to https://github.com/harupy/snipping-tool
 class SnippingWidget(QWidget):
+    snipping_completed = pyqtSignal(object)
 
     def __init__(self, parent=None):
         super(SnippingWidget, self).__init__()
@@ -14,7 +15,7 @@ class SnippingWidget(QWidget):
 
         self.begin = None
         self.end = None
-        self.onSnippingCompleted = None
+        # self.onSnippingCompleted = None
 
         self.qp = None
         self.selection = None
@@ -45,8 +46,8 @@ class SnippingWidget(QWidget):
         self.selection.is_snipping = False
         self.begin = QPoint()
         self.end = QPoint()
-        if self.onSnippingCompleted:
-            self.onSnippingCompleted(None)
+        self.snipping_completed.emit(None)
+        QApplication.restoreOverrideCursor()
         self.close()
 
     def UpdateScreen(self):
@@ -72,8 +73,7 @@ class SnippingWidget(QWidget):
             img = None
 
         QApplication.restoreOverrideCursor()
-        if self.onSnippingCompleted:
-            self.onSnippingCompleted(img)
+        self.snipping_completed.emit(img)
 
     def start(self):
         self.UpdateScreen()
@@ -83,7 +83,6 @@ class SnippingWidget(QWidget):
         self.show()
 
     def paintEvent(self, event):
-
         if not self.selection.is_snipping:
             self.begin = QPoint()
             self.end = QPoint()
@@ -101,18 +100,16 @@ class SnippingWidget(QWidget):
 
             # Draw text coordinate
             self.qp.setPen(self.selection.coordinate_pen)
-            self.qp.drawText(
-                self.selection.coordinate_text_x,
-                self.selection.coordinate_text_y,
-                self.selection.coordinate_text
-            )
             self.qp.setBrush(Qt.NoBrush)
+            self.qp.drawText(
+                self.selection.coordinate_text_x, self.selection.coordinate_text_y, self.selection.coordinate_text
+            )
             self.qp.drawRect(
                 QRectF(
                     self.selection.coordinate_rect_x,
                     self.selection.coordinate_rect_y,
                     self.selection.coordinate_rect_width,
-                    self.selection.coordinate_rect_height
+                    self.selection.coordinate_rect_height,
                 )
             )
 
@@ -138,19 +135,18 @@ class SnippingWidget(QWidget):
         self.setWindowOpacity(0.0)
         QApplication.processEvents()
 
-        img = self.screen.grabWindow(
-            self.win_id,
-
-        ).copy(
-            self.selection.x,
-            self.selection.y,
-            self.selection.width,
-            self.selection.height,
-        )
+        try:
+            img = self.screen.grabWindow(
+                self.win_id,
+                self.selection.x,
+                self.selection.y,
+                self.selection.width,
+                self.selection.height,
+            )
+        except (Exception, BaseException):
+            img = None
         # self.setWindowOpacity(1.0)
 
-        if self.onSnippingCompleted:
-            self.onSnippingCompleted(img)
-
+        self.snipping_completed.emit(img)
         QApplication.restoreOverrideCursor()
         self.close()
