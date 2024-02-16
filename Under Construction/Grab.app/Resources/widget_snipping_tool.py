@@ -1,5 +1,7 @@
+import os
+
 from PyQt5.QtCore import Qt, QPoint, QRectF, pyqtSignal
-from PyQt5.QtGui import QPainter, QCursor, QKeySequence
+from PyQt5.QtGui import QPainter, QCursor, QKeySequence, QPixmap
 from PyQt5.QtWidgets import QApplication, QWidget, qApp, QShortcut
 
 from property_selection_area import SelectionArea
@@ -9,7 +11,7 @@ from property_selection_area import SelectionArea
 class SnippingWidget(QWidget):
     snipping_completed = pyqtSignal(object)
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, cursor=None):
         super(SnippingWidget, self).__init__()
         self.parent = parent
 
@@ -23,8 +25,17 @@ class SnippingWidget(QWidget):
         self.screen = None
         self.selection_pen_width = None
         self.enable_sound = None
-        self.cursor = Qt.BlankCursor
-
+        self.cursor = cursor
+        self.cursor_name = {
+            Qt.ArrowCursor: "ArrowCursor",
+            Qt.BlankCursor: "BlankCursor",
+            Qt.ForbiddenCursor: "ForbiddenCursor",
+            Qt.IBeamCursor: "IBeamCursor",
+            Qt.OpenHandCursor: "OpenHandCursor",
+            Qt.PointingHandCursor: "PointingHandCursor",
+            Qt.UpArrowCursor: "UpArrowCursor",
+            Qt.WhatsThisCursor: "WhatsThisCursor",
+        }
         self.initialState()
 
     def initialState(self):
@@ -63,15 +74,30 @@ class SnippingWidget(QWidget):
 
     def fullscreen(self):
         self.UpdateScreen()
+        self.show()
+
         if not self.screen:
             return
-        QApplication.setOverrideCursor(self.cursor)
         try:
             img = self.screen.grabWindow(self.win_id)
         except (Exception, BaseException):
             img = None
 
-        QApplication.restoreOverrideCursor()
+        if img and self.cursor != Qt.BlankCursor:
+            pm = QPixmap(self.width(), self.height())
+            cursor_pixmap = QPixmap(os.path.join(os.path.dirname(__file__), f"{self.cursor_name[self.cursor]}.png"))
+            painter = QPainter(pm)
+            painter.drawPixmap(0, 0, self.width(), self.height(), img)
+            painter.drawPixmap(
+                QCursor().pos().x() - (cursor_pixmap.width() / 2),
+                QCursor().pos().y() - (cursor_pixmap.height() / 2),
+                cursor_pixmap.width(),
+                cursor_pixmap.height(),
+                cursor_pixmap,
+            )
+            painter.end()
+            img = pm
+
         self.snipping_completed.emit(img)
 
     def start(self):

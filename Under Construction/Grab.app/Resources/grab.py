@@ -89,13 +89,11 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def setupCustomUi(self):
         # creating an object of the QPrinter class
-
         self.printerObj = QPrinter()
 
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
 
         self.snippingWidget = SnippingWidget()
-        # self.snippingWidget.onSnippingCompleted = self.onSnippingCompleted
 
         self.sound = QMediaPlayer()
         self.sound.setMedia(
@@ -161,8 +159,6 @@ class Window(QMainWindow, Ui_MainWindow):
         # Snipping widget
         self.snippingWidget.snipping_completed.connect(self.onSnippingCompleted)
 
-
-
     def onSnippingCompleted(self, img):
         self.setWindowState(Qt.WindowActive)
 
@@ -193,15 +189,15 @@ class Window(QMainWindow, Ui_MainWindow):
     def write_settings(self):
         self.settings.setValue("geometry", self.saveGeometry())
         self.settings.setValue("windowState", self.saveState())
-        self.settings.setValue('preference_enable_sound', self.preference_enable_sound)
-        self.settings.setValue('preference_pointer', self.preference_pointer)
+        self.settings.setValue("preference_enable_sound", self.preference_enable_sound)
+        self.settings.setValue("preference_pointer", self.preference_pointer)
 
     def read_settings(self):
         self.restoreGeometry(self.settings.value("geometry", QByteArray()))
         self.restoreState(self.settings.value("windowState", QByteArray()))
         self.preference_enable_sound = self.settings.value("preference_enable_sound", defaultValue=True, type=bool)
         self.preference_pointer = self.settings.value("preference_pointer", defaultValue=10, type=int)
-
+        self.snippingWidget.cursor = self.preference_pointer
 
     def closeEvent(self, event):
         self.write_settings()
@@ -347,12 +343,12 @@ class Window(QMainWindow, Ui_MainWindow):
     def _preference_pointer_changed(self, value: int) -> None:
         self.preference_pointer = value
         self.img_preview.cursor = self.preference_pointer
+        self.snippingWidget.cursor = self.preference_pointer
 
     def _showPreferenceWindow(self):
         if self.ActionMenuEditPreference.isEnabled():
             self.PreferenceWindow = PreferenceWindow(
-                play_sound=self.preference_enable_sound,
-                pointer=self.preference_pointer
+                play_sound=self.preference_enable_sound, pointer=self.preference_pointer
             )
             self.PreferenceWindow.checkbox_enable_sound_changed.connect(self._preference_enable_sound_changed)
             self.PreferenceWindow.buttongroup_changed.connect(self._preference_pointer_changed)
@@ -391,7 +387,6 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._CloseAllDialogs)
             self.ScreenGrabDialog.screen_dialog_signal_start.connect(self._ScreenGrabStart)
 
-
             # self.TransWindow = TransWindow(self)
             # self.TransWindow.transparent_window_signal_release.connect(self._ScreenGrabStart)
             # self.TransWindow.transparent_window_signal_quit.connect(self._CloseAllDialogs)
@@ -414,8 +409,6 @@ class Window(QMainWindow, Ui_MainWindow):
             self.SelectionGrabDialog = SelectionGrabDialog(self)
             self.SelectionGrabDialog.selection_dialog_signal_quit.connect(self._CloseAllDialogs)
             self.SelectionGrabDialog.selection_dialog_signal_start.connect(self._SelectionGrabStart)
-
-
 
             self.SelectionGrabDialog.show()
 

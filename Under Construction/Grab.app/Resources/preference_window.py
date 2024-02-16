@@ -72,8 +72,6 @@ class PreferenceWindow(QWidget):
 
     def pointer_changed(self):
         cursor_id = self.get_qt_cursor_id_by_name(self.ui.buttonGroup.checkedButton().objectName())
-        cursor_name = self.get_qt_cname_by_id(cursor_id)
-        print(f"id: {cursor_id}, name: {cursor_name}")
         self.buttongroup_changed.emit(cursor_id)
 
     def enable_sound_changed(self):
