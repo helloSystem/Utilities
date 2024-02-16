@@ -15,7 +15,6 @@ class SnippingWidget(QWidget):
 
         self.begin = None
         self.end = None
-        # self.onSnippingCompleted = None
 
         self.qp = None
         self.selection = None
@@ -98,12 +97,14 @@ class SnippingWidget(QWidget):
             self.qp.setBrush(self.selection.SelectionColorBackground)
             self.qp.drawRect(selection_rect)
 
-            # Draw text coordinate
+            # Draw coordinate
+            # Draw coordinate text
             self.qp.setPen(self.selection.coordinate_pen)
             self.qp.setBrush(Qt.NoBrush)
             self.qp.drawText(
                 self.selection.coordinate_text_x, self.selection.coordinate_text_y, self.selection.coordinate_text
             )
+            # Draw coordinate border
             self.qp.drawRect(
                 QRectF(
                     self.selection.coordinate_rect_x,
@@ -145,7 +146,8 @@ class SnippingWidget(QWidget):
             )
         except (Exception, BaseException):
             img = None
-        # self.setWindowOpacity(1.0)
+
+        self.setWindowOpacity(1.0)
 
         self.snipping_completed.emit(img)
         QApplication.restoreOverrideCursor()
