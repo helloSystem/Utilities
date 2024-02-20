@@ -26,7 +26,7 @@ except ImportError:
 
 # qimage2ndarray is optional: useful for displaying numpy 2d arrays as images.
 # !!! qimage2ndarray requires PyQt5.
-#     Some custom code in the viewer appears to handle the conversion from numpy 2d arrays,
+#     ./Some custom code in the viewer appears to handle the conversion from numpy 2d arrays,
 #     so qimage2ndarray probably is not needed anymore. I've left it here just in case.
 # try:
 #     import qimage2ndarray

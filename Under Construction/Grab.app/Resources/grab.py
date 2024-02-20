@@ -14,7 +14,6 @@ from dialog_timed_screen_grab import TimedScreenGrabDialog
 from dialog_screen_grab import ScreenGrabDialog
 from dialog_help import HelpDialog
 from dialog_selection_screen_grab import SelectionGrabDialog
-from widget_transparent_window import TransWindow
 from widget_snipping_tool import SnippingWidget
 from preference_window import PreferenceWindow
 
@@ -46,7 +45,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.TimedScreenGrabDialog = None
         self.ScreenGrabDialog = None
         self.SelectionGrabDialog = None
-        self.TransWindow = None
         self.PreferenceWindow = None
         self.preference_pointer = None
         self.preference_enable_sound = None
@@ -382,22 +380,12 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.ActionMenuCaptureScreen.isEnabled():
             self.hide()
 
-            # self.ScreenGrabDialog.setWindowFlags(self.ScreenGrabDialog.windowFlags() & Qt.WindowStaysOnTopHint)
-
             self.ScreenGrabDialog = ScreenGrabDialog(self)
             self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._CloseAllDialogs)
             self.ScreenGrabDialog.screen_dialog_signal_start.connect(self._ScreenGrabStart)
             self.ScreenGrabDialog.installEventFilter(self)
 
-            # self.TransWindow = TransWindow(self)
-            # self.TransWindow.transparent_window_signal_release.connect(self._ScreenGrabStart)
-            # self.TransWindow.transparent_window_signal_quit.connect(self._CloseAllDialogs)
-
-            self.ScreenGrabDialog.hide()
             self.ScreenGrabDialog.show()
-
-            # self.TransWindow.hide()
-            # self.TransWindow.show()
 
             while not self.windowHandle():
                 QApplication.processEvents()
@@ -424,12 +412,6 @@ class Window(QMainWindow, Ui_MainWindow):
         super(Window, self).setWindowOpacity(1.0)
         super(Window, self).showEvent(event)
         event.accept()
-
-    # def eventFilter(self, source, event):
-    #     if event.type() == QEvent.FocusOut and source is self.ScreenGrabDialog:
-    #         print('eventFilter: focus out')
-    #         # return true here to bypass default behaviour
-    #     return super(Window, self).eventFilter(source, event)
 
     def _SelectionGrabStart(self):
         self._CloseAllDialogs()
@@ -461,9 +443,6 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.ScreenGrabDialog and isinstance(self.ScreenGrabDialog, ScreenGrabDialog):
             self.ScreenGrabDialog.close()
             self.ScreenGrabDialog = None
-        if self.TransWindow and isinstance(self.TransWindow, TransWindow):
-            self.TransWindow.close()
-            self.TransWindow = None
         if self.SelectionGrabDialog and isinstance(self.SelectionGrabDialog, SelectionGrabDialog):
             self.SelectionGrabDialog.close()
             self.SelectionGrabDialog = None
