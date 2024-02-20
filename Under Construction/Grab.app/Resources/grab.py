@@ -446,6 +446,8 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.SelectionGrabDialog and isinstance(self.SelectionGrabDialog, SelectionGrabDialog):
             self.SelectionGrabDialog.close()
             self.SelectionGrabDialog = None
+        if self.snippingWidget and isinstance(self.snippingWidget, SnippingWidget):
+            self.snippingWidget.initialState()
         if self.isHidden():
             self.show()
 

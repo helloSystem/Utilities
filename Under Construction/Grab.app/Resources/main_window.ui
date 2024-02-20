@@ -76,9 +76,6 @@
      <string>Edit</string>
     </property>
     <addaction name="ActionMenuEditCopy"/>
-    <addaction name="actionGrop"/>
-    <addaction name="actionUndo"/>
-    <addaction name="actionRedo"/>
     <addaction name="separator"/>
     <addaction name="ActionMenuEditPreference"/>
    </widget>
@@ -173,7 +170,7 @@
    </property>
    <property name="icon">
     <iconset theme="document-print">
-     <normaloff>.</normaloff>.</iconset>
+     <normaloff>../../../../../../.designer/backup</normaloff>../../../../../../.designer/backup</iconset>
    </property>
    <property name="text">
     <string>Print</string>
