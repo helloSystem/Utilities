@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>488</width>
-    <height>203</height>
+    <width>493</width>
+    <height>206</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -22,7 +22,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout" stretch="0">
    <item>
     <layout class="QVBoxLayout" name="MainVbox" stretch="0,0,0">
      <property name="spacing">
@@ -88,7 +88,7 @@
           <string/>
          </property>
          <property name="pixmap">
-          <pixmap>../../Processes.app/Resources/Processes.png</pixmap>
+          <pixmap>../../../../../../Processes.app/Resources/Processes.png</pixmap>
          </property>
          <property name="scaledContents">
           <bool>true</bool>
@@ -177,6 +177,9 @@
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
          <property name="sizeHint" stdset="0">
           <size>
            <width>40</width>
@@ -189,6 +192,9 @@
         <widget class="QPushButton" name="button_cancel">
          <property name="text">
           <string>Cancel</string>
+         </property>
+         <property name="default">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

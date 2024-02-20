@@ -2,7 +2,7 @@
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, qApp, QPushButton
 from PyQt5.QtGui import QPixmap, QIcon, QPainter, QShowEvent
-from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl
+from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl, QEvent
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
 import sys
@@ -375,10 +375,11 @@ class Window(QMainWindow, Ui_MainWindow):
             f"{qApp.applicationName()} is an application write in pyQt5 that can capture screen shots.<br><br>"
             "<a href='https://github.com/helloSystem/Utilities'>https://github.com/helloSystem/Utilities</a>"
         )
+
         msg.exec()
 
     def _showScreenGrabDialog(self):
-        if self.ActionMenuCaptureTimedScreen.isEnabled():
+        if self.ActionMenuCaptureScreen.isEnabled():
             self.hide()
 
             # self.ScreenGrabDialog.setWindowFlags(self.ScreenGrabDialog.windowFlags() & Qt.WindowStaysOnTopHint)
@@ -386,6 +387,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ScreenGrabDialog = ScreenGrabDialog(self)
             self.ScreenGrabDialog.screen_dialog_signal_quit.connect(self._CloseAllDialogs)
             self.ScreenGrabDialog.screen_dialog_signal_start.connect(self._ScreenGrabStart)
+            self.ScreenGrabDialog.installEventFilter(self)
 
             # self.TransWindow = TransWindow(self)
             # self.TransWindow.transparent_window_signal_release.connect(self._ScreenGrabStart)
@@ -405,12 +407,13 @@ class Window(QMainWindow, Ui_MainWindow):
             self.hide()
 
             # self.ScreenGrabDialog.setWindowFlags(self.ScreenGrabDialog.windowFlags() & Qt.WindowStaysOnTopHint)
+            if self.SelectionGrabDialog is None:
+                self.SelectionGrabDialog = SelectionGrabDialog(self)
+                self.SelectionGrabDialog.selection_dialog_signal_quit.connect(self._CloseAllDialogs)
+                self.SelectionGrabDialog.selection_dialog_signal_start.connect(self._SelectionGrabStart)
 
-            self.SelectionGrabDialog = SelectionGrabDialog(self)
-            self.SelectionGrabDialog.selection_dialog_signal_quit.connect(self._CloseAllDialogs)
-            self.SelectionGrabDialog.selection_dialog_signal_start.connect(self._SelectionGrabStart)
-
-            self.SelectionGrabDialog.show()
+                self.SelectionGrabDialog.exec_()
+            self.show()
 
     def hideEvent(self, event: QShowEvent) -> None:
         super(Window, self).setWindowOpacity(0.0)
@@ -421,6 +424,12 @@ class Window(QMainWindow, Ui_MainWindow):
         super(Window, self).setWindowOpacity(1.0)
         super(Window, self).showEvent(event)
         event.accept()
+
+    # def eventFilter(self, source, event):
+    #     if event.type() == QEvent.FocusOut and source is self.ScreenGrabDialog:
+    #         print('eventFilter: focus out')
+    #         # return true here to bypass default behaviour
+    #     return super(Window, self).eventFilter(source, event)
 
     def _SelectionGrabStart(self):
         self._CloseAllDialogs()

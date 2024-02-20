@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>Grab.png</normaloff>Grab.png</iconset>
+    <normaloff>../../../../../../.designer/backup/Grab.png</normaloff>../../../../../../.designer/backup/Grab.png</iconset>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -26,6 +26,9 @@
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="0" column="0">
        <widget class="QToolButton" name="BlankCursor">
+        <property name="toolTip">
+         <string>No Cursor</string>
+        </property>
         <property name="text">
          <string>...</string>
         </property>

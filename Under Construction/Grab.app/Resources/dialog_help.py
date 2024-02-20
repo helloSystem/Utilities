@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtGui import QPixmap, QIcon, QKeySequence
-from PyQt5.QtWidgets import QDialog, QShortcut, qApp
-from PyQt5.QtCore import pyqtSignal, Qt, pyqtSlot
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QDialog
+from PyQt5.QtCore import pyqtSignal
 from dialog_help_ui import Ui_HelpDialog
 
 

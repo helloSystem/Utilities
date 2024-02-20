@@ -1,0 +1,385 @@
+/* https://doc.qt.io/qt-5/stylesheet-customizing.html */
+/* https://doc.qt.io/qt-5/stylesheet-examples.html */
+/* https://github.com/nphase/qt-ping-grapher/blob/master/resources/darkorange.stylesheet */
+
+/* --------------------------------------------------------------------------- */
+/* Dark Style - QDarkStyleSheet ------------------------------------------ */
+/*
+
+See Qt documentation:
+
+  - https://doc.qt.io/qt-5/stylesheet.html
+  - https://doc.qt.io/qt-5/stylesheet-reference.html
+  - https://doc.qt.io/qt-5/stylesheet-examples.html
+
+/* --------------------------------------------------------------------------- */
+/* Reset elements ------------------------------------------------------------
+
+Resetting everything helps to unify styles across different operating systems
+
+--------------------------------------------------------------------------- */
+* {
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+  border-style: none;
+  border-image: none;
+  outline: 0;
+}
+
+/* specific reset for elements inside QToolBar */
+QToolBar * {
+  margin: 0px;
+  padding: 0px;
+}
+
+/* QWidget ----------------------------------------------------------------
+
+--------------------------------------------------------------------------- */
+/* Works: Set selected items (e.g., selected text, selected list view items,...) to white text with intensive blue background */
+
+QWidget {
+  background-color: #eeeeee;
+  border: 0px solid #bebebe;
+  padding: 0px;
+  color: #010101;
+  show-decoration-selected: 1;
+  selection-color: white;
+  selection-background-color: #336fc9; /* Intensive blue */
+  alternate-background-color: #eef1f5;
+}
+
+QWidget:disabled {
+  background-color: #eeeeee;
+  color: #a2a2a2;
+  selection-background-color: #DAEDFF;
+  selection-color: #9DA9B5;
+}
+
+QWidget::item:selected {
+  background-color: #336fc9;
+}
+
+QWidget::item:hover:!selected {
+  background-color: #eef1f5;
+}
+
+
+/* QMainWindow ------------------------------------------------------------
+
+This adjusts the splitter in the dock widget, not qsplitter
+https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qmainwindow
+
+--------------------------------------------------------------------------- */
+QMainWindow::separator {
+  background-color: #8d8d8d;
+  border: 0px solid #eeeeee;
+  spacing: 0px;
+  padding: 2px;
+}
+
+QMainWindow::separator:hover {
+  background-color: #ACB1B6;
+  border: 0px solid #73C7FF;
+}
+
+QMainWindow::separator:horizontal {
+  width: 5px;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+QMainWindow::separator:vertical {
+  height: 5px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+/* QToolTip ---------------------------------------------------------------
+
+https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qtooltip
+
+--------------------------------------------------------------------------- */
+QToolTip {
+  background-color: #fffdc2;
+  color: #000000;
+  border: 1px solid;
+  border-color: QLinearGradient(
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: 1,
+    stop: 0 #c0c1be,
+    stop: 1 #7a7e68);
+  /* Remove padding, for fix combo box tooltip */
+  padding: 0px;
+
+}
+
+
+/* QStatusBar -------------------------------------------------------------
+
+https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qstatusbar
+
+--------------------------------------------------------------------------- */
+QStatusBar {
+  border: 1px solid #bebebe;
+  /* Fixes Spyder #9120, #9121 */
+  background: #ececec;
+  /* Fixes #205, white vertical borders separating items */
+}
+
+QStatusBar::item {
+  border: none;
+}
+
+QStatusBar QToolTip {
+  background-color: #fffdc2;
+  border: 1px solid;
+  color: #000000;
+  border-color: QLinearGradient(
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: 1,
+    stop: 0 #c0c1be,
+    stop: 1 #7a7e68);
+  /* Remove padding, for fix combo box tooltip */
+  padding: 0px;
+  /* Reducing transparency to read better */
+  opacity: 230;
+}
+
+QStatusBar QLabel {
+  /* Fixes Spyder #9120, #9121 */
+  background: transparent;
+}
+
+/* QCheckBox --------------------------------------------------------------
+
+https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qcheckbox
+
+--------------------------------------------------------------------------- */
+QCheckBox {
+  background-color: #eeeeee;
+  color: #010101;
+  spacing: 4px;
+  outline: none;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+QCheckBox QWidget:disabled {
+  background-color: #eeeeee;
+  color: #a2a2a2;
+}
+
+QCheckBox::indicator {
+  margin-left: 2px;
+  margin-bottom: 4px;
+  height: 16px;
+  width: 16px;
+}
+
+
+
+
+
+
+/* FIXME: Would like a gradient from #e7e8eb to #f7f7f7
+/* but running into a black background issue:
+/* https://forum.qt.io/topic/90348/setting-qlineargradient-with-stylesheet-always-shows-black/3 */
+QToolBar {
+  background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7c90ff, stop: 0.1 #6f84f1, stop: 0.9 #4655f0, stop: 1 #3b44ab);
+  background-color: #e7e8eb;
+}
+
+QStatusBar {
+  background-color: #e7e8eb;
+}
+
+QProgressBar {
+  height: 20px;
+  background-color: white;
+  text-align: center;
+  color: transparent; /* The percentage text */
+}
+
+/* FIXME: We end up with a black background for the QProgressBar and the text is no longer centered. Why? Probably because if we start customizing some aspects of a complex widget like QProgressBar, we need to customize ALL of them */
+
+/* Make default QPushButtons blue. Works */
+QPushButton[default="true"], QProgressBar::chunk {
+  color: white;
+  background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #9595d3, stop: 0.1 #b9cbf9, stop: 0.39 #69ace3, stop: 0.4 #4c95d9, stop: 1 #8dd2fb);
+}
+
+/* Make QPushButtons yellowish glowing when hovered over. Works */
+/* Note that the order matters, so if we want default buttons to have the hover effect we need to do the hover effect after the default button stuff */
+QPushButton:hover {
+  background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #fff, stop: 0.1 #ddd, stop: 0.39 #eef, stop: 0.4 #ddb, stop: 1 #fff);
+  color: black;
+}
+
+/* Seems to work but if we start customizing some aspects, we need to customize ALL of them */
+QPushButton {
+  font-size: 11.5pt;
+  height: 20px;
+  padding-top: 1px;
+  padding-bottom: 0px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-radius: 11px; /* If we make this too large, then we get no rounded corners at all... why? */
+  border-width: 1px;
+  border-style: solid;
+  border-color: #5b5b5b;
+  background-color: QLinearGradient( x1: 0,
+                                     y1: 0,
+                                     x2: 0,
+                                     y2: 1,
+                                     stop: 0 #fcfcfc,
+                                     stop: 0.1 #f1f1f1,
+                                     stop: 0.39 #e4e5e4,
+                                     stop: 0.4 #e7e7e6,
+                                     stop: 1 #ffffff);
+  shadow: #b0b0b0;
+}
+/* Make default QPushButtons blue. Works */
+QPushButton[default="true"] {
+  color: black;
+  background-color: QLinearGradient( x1: 0,
+                                     y1: 0,
+                                     x2: 0,
+                                     y2: 1,
+                                     stop: 0 #cde0f5,
+                                     stop: 0.33 #b2d6f5,
+                                     stop: 0.39 #a0cdf2,
+                                     stop: 0.66 #85beef,
+                                     stop: 1 #d1faff);
+  border-color: QLinearGradient(
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: 1,
+    stop: 0 #313399,
+    stop: 1 #5b5b5b);
+}
+
+QPushButton[default="true"]:hover {
+  color: black;
+  background-color: QLinearGradient( x1: 0,
+                                     y1: 0,
+                                     x2: 0,
+                                     y2: 1,
+                                     stop: 0 #cee0f5,
+                                     stop: 0.33 #b2d6f5,
+                                     stop: 0.39 #a0cdf2,
+                                     stop: 0.66 #85beef,
+                                     stop: 1 #d1faff);
+  border-color: QLinearGradient(
+    x1: 0,
+    y1: 0,
+    x2: 0,
+    y2: 1,
+    stop: 0 #313399,
+    stop: 1 #5b5b5b);
+}
+
+QPushButton:disabled{ background-color: QLinearGradient( x1: 0,
+                                                         y1: 0,
+                                                         x2: 0,
+                                                         y2: 1,
+                                                         stop: 0 #f3f3f3,
+                                                         stop: 0.1 #ddd,
+                                                         stop: 0.39 #eef,
+                                                         stop: 0.4 #ddb,
+                                                         stop: 1 #f2f2f2);
+}
+QPushButton:pressed{ background-color: orange; }
+
+QPushButton:hover{ background-color: QLinearGradient( x1: 0,
+                                                      y1: 0,
+                                                      x2: 0,
+                                                      y2: 1,
+                                                      stop: 0 #fff,
+                                                      stop: 0.1 #ddd,
+                                                      stop: 0.39 #eef,
+                                                      stop: 0.4 #ddb,
+                                                      stop: 1 #fff);
+}
+QPushButton:checked{ background-color: pink; }
+
+QDialog {
+    background-color: #ececec;
+}
+
+/* FIXME: Seems not to work yet. We want more space between the Cancel, OK,... buttons in dialog boxes and the text above them */
+QDialogButtonBox {
+  margin-top: 30px;
+  padding-top: 30px;
+}
+
+
+
+/* Menubar, menus, and menu items */
+/* https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qmenubar */
+
+QMenu::item:pressed, QMenuBar::item:pressed, QMenu::item:selected {
+	color: white;
+    background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7c90ff, stop: 0.1 #6f84f1, stop: 0.9 #4655f0, stop: 1 #3b44ab); /* Intensive blue */
+}
+
+QMenuBar, QMenuBar::item {
+	background: transparent; /* Otherwise it gets colored when hovering */
+}
+
+QMenu, QMenu::item {
+	background: #eee;
+}
+
+
+/* Filer left-hand pane, FIXME: Does not work (DOES work in qt-creator GUI editor!) */
+/* TODO: Check Filer with https://github.com/robertknight/Qt-Inspector or GammaRay on Linux */
+QObject[objectName="sidePane"] {
+	background-color: yellow;
+}
+
+/* 'searchLineEdit->setObjectName("actionSearch");' is used in source code (DOES work!) */
+/* FIXME: are we using setStyleSheet in the source code somewhere, ovveriding parts of this? */
+QLineEdit#actionSearch {
+	border-radius: 0px; /* FIXME: Does not work, why? */
+	background-color: transparent; /* Works */
+	padding-left: 10px; /* Works */
+    padding-right: 10px; /* Works */
+    height: 100%; /* Works */
+    border-width: 0px; /* Works */
+    border-style: solid;
+    border-color: grey;
+}
+
+QLineEdit#actionSearch:focus {
+	color: white; /* The text */
+	background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7c90ff, stop: 0.1 #6f84f1, stop: 0.9 #4655f0, stop: 1 #3b44ab); /* Like menu */
+    height: 100%; /* Works */
+}
+
+QListView#actionCompleterPopup {
+	background: #eee; /* Works */
+	selection-background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7c90ff, stop: 0.1 #6f84f1, stop: 0.9 #4655f0, stop: 1 #3b44ab); /* Works, Intensive blue */
+}
+
+/* FIXME: Works for other QListViews but not the one in Action Search. Why?
+QListView::item {
+    padding: 10px;
+}
+
+QListView::item:hover {
+    background: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #7c90ff, stop: 0.1 #6f84f1, stop: 0.9 #4655f0, stop: 1 #3b44ab);
+}
+*/
+
+MainWindow {
+    background-color: #ececec;
+}
+MainWindow#menuBar {
+    background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #fff, stop: 0.1 #eee, stop: 0.39 #eee, stop: 0.4 #ddd, stop: 0.954 #eee, stop: 1 #bbb);
+}

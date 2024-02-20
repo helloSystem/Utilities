@@ -1,4 +1,5 @@
 import os
+import sys
 
 from PyQt5.QtGui import QPixmap, QKeySequence, QCursor, QIcon
 from PyQt5.QtWidgets import QDialog, QShortcut, QWidget
@@ -46,7 +47,6 @@ class PreferenceWindow(QWidget):
         self.__play_sound = None
         self.play_sound = play_sound
         self.pointer = pointer
-
 
     def select_cursor(self, cursor_id):
         for button in self.ui.buttonGroup.buttons():

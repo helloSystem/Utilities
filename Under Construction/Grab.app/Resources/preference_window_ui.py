@@ -16,7 +16,7 @@ class Ui_PreferenceWindow(object):
         PreferenceWindow.setObjectName("PreferenceWindow")
         PreferenceWindow.resize(220, 187)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("./Grab.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap("./../../../../../../.designer/backup/Grab.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         PreferenceWindow.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(PreferenceWindow)
         self.verticalLayout.setObjectName("verticalLayout")
@@ -89,6 +89,7 @@ class Ui_PreferenceWindow(object):
         _translate = QtCore.QCoreApplication.translate
         PreferenceWindow.setWindowTitle(_translate("PreferenceWindow", "Preferences"))
         self.groupBox.setTitle(_translate("PreferenceWindow", "Pointer Type"))
+        self.BlankCursor.setToolTip(_translate("PreferenceWindow", "No Cursor"))
         self.BlankCursor.setText(_translate("PreferenceWindow", "..."))
         self.ArrowCursor.setText(_translate("PreferenceWindow", "..."))
         self.IBeamCursor.setText(_translate("PreferenceWindow", "..."))

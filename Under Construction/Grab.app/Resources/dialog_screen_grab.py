@@ -1,7 +1,8 @@
 import os
+import sys
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QPixmap, QIcon, QKeySequence
+from PyQt5.QtGui import QPixmap, QIcon, QKeySequence, QFocusEvent
 from PyQt5.QtWidgets import QDialog, QShortcut
 
 from dialog_screen_grab_ui import Ui_ScreenGrabDialog
@@ -29,10 +30,13 @@ class ScreenGrabDialog(QDialog):
 
         self.setFocus()
 
-    def focusOutEvent(self, event):
-        super(ScreenGrabDialog, self).close()
-        event.accept()
-        self.screen_dialog_signal_start.emit()
+    def focusOutEvent(self, event: QFocusEvent) -> None:
+        if self.hasFocus() or self.ui.button_cancel.hasFocus():
+            event.accept()
+        else:
+            event.accept()
+            self.screen_dialog_signal_start.emit()
+            self.close()
 
     def screen_dialog_quit(self):
         self.screen_dialog_signal_quit.emit()
