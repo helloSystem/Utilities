@@ -241,4 +241,4 @@ class Ui_MainWindow(object):
         self.ActionUpdateTimerTo10Secs.setText(_translate("MainWindow", "10 secs"))
         self.ActionMenuHelpDocumentation.setText(_translate("MainWindow", "Documentation"))
         self.ActionMenuEditPreference.setText(_translate("MainWindow", "Preferences"))
-from QtImageViewer import QtImageViewer
+from widget_QtImageViewer import QtImageViewer

@@ -55,8 +55,8 @@ class PreferenceWindow(QWidget):
 
     def setupCustomUI(self):
         for button in self.ui.buttonGroup.buttons():
-            if os.path.exists(os.path.join(os.path.dirname(__file__), f"{button.objectName()}.png")):
-                button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), f"{button.objectName()}.png")))
+            if os.path.exists(os.path.join(os.path.dirname(__file__), f"preference_{button.objectName()}.png")):
+                button.setIcon(QIcon(os.path.join(os.path.dirname(__file__), f"preference_{button.objectName()}.png")))
 
     def setup(self):
 
