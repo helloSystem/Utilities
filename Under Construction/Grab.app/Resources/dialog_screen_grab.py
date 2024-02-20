@@ -25,6 +25,8 @@ class ScreenGrabDialog(QDialog):
         self.setWindowFlags(
             Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowStaysOnTopHint
         )
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
+        self.setWindowModality(Qt.WindowModality.ApplicationModal)
         self.ui.icon.setPixmap(
             QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")).scaled(
                 48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation
