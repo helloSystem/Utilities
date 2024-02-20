@@ -19,19 +19,19 @@ except ImportError:
         raise ImportError("Requires PyQt (version 5 or 6)")
 
 # numpy is optional: only needed if you want to display numpy 2d arrays as images.
-try:
-    import numpy as np
-except ImportError:
-    np = None
+# try:
+#     import numpy as np
+# except ImportError:
+#     np = None
 
 # qimage2ndarray is optional: useful for displaying numpy 2d arrays as images.
 # !!! qimage2ndarray requires PyQt5.
 #     Some custom code in the viewer appears to handle the conversion from numpy 2d arrays,
 #     so qimage2ndarray probably is not needed anymore. I've left it here just in case.
-try:
-    import qimage2ndarray
-except ImportError:
-    qimage2ndarray = None
+# try:
+#     import qimage2ndarray
+# except ImportError:
+#     qimage2ndarray = None
 
 __author__ = ["Marcel Goldschen-Ohm <marcel.goldschen@gmail.com>",
               "Tuxa alias Hierosme"]
