@@ -28,7 +28,9 @@ class TimedScreenGrabDialog(QDialog):
         self.initialState()
 
     def setupCustomUi(self):
-        self.setWindowFlags(Qt.Dialog)
+        self.setWindowFlags(
+            Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowStaysOnTopHint
+        )
         self.ui.icon.setPixmap(
             QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")).scaled(
                 48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation
@@ -40,9 +42,6 @@ class TimedScreenGrabDialog(QDialog):
     def connectSignalsSlots(self):
         self.ui.button_cancel.clicked.connect(self.timed_dialog_quit)
         self.ui.button_start_timer.clicked.connect(self.timed_dialog_start)
-
-        quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-        quitShortcut1.activated.connect(self.timed_dialog_quit)
 
     def initialState(self):
         self.adjustSize()

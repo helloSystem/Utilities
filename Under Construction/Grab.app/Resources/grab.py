@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QMessageBox, QActionGroup, qApp, QPushButton
-from PyQt5.QtGui import QPixmap, QIcon, QPainter, QShowEvent
+from PyQt5.QtWidgets import (
+    QApplication,
+    QMainWindow,
+    QFileDialog,
+    QMessageBox,
+    QActionGroup,
+    qApp,
+    QPushButton,
+    QShortcut,
+)
+from PyQt5.QtGui import QPixmap, QIcon, QPainter, QShowEvent, QKeySequence
 from PyQt5.QtCore import Qt, QTimer, QLoggingCategory, QByteArray, QSettings, QUrl, QEvent
 from PyQt5.QtPrintSupport import QPrintDialog, QPrinter, QPrintPreviewDialog
 from PyQt5.QtMultimedia import QMediaContent, QMediaPlayer
@@ -381,6 +390,9 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ScreenGrabDialog.screen_dialog_signal_start.connect(self._ScreenGrabStart)
             self.ScreenGrabDialog.installEventFilter(self)
 
+            quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+            quitShortcut1.activated.connect(self._CloseAllDialogs)
+
             self.ScreenGrabDialog.show()
 
             while not self.windowHandle():
@@ -390,13 +402,14 @@ class Window(QMainWindow, Ui_MainWindow):
         if self.ActionMenuCaptureSelection.isEnabled():
             self.hide()
 
-            # self.ScreenGrabDialog.setWindowFlags(self.ScreenGrabDialog.windowFlags() & Qt.WindowStaysOnTopHint)
-            if self.SelectionGrabDialog is None:
-                self.SelectionGrabDialog = SelectionGrabDialog(self)
-                self.SelectionGrabDialog.selection_dialog_signal_quit.connect(self._CloseAllDialogs)
-                self.SelectionGrabDialog.selection_dialog_signal_start.connect(self._SelectionGrabStart)
+            self.SelectionGrabDialog = SelectionGrabDialog(self)
+            self.SelectionGrabDialog.selection_dialog_signal_quit.connect(self._CloseAllDialogs)
+            self.SelectionGrabDialog.selection_dialog_signal_start.connect(self._SelectionGrabStart)
 
-                self.SelectionGrabDialog.exec_()
+            quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+            quitShortcut1.activated.connect(self._CloseAllDialogs)
+
+            self.SelectionGrabDialog.exec_()
             self.show()
 
     def hideEvent(self, event: QShowEvent) -> None:
@@ -425,6 +438,10 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.TimedScreenGrabDialog = TimedScreenGrabDialog(timer=self.timer_count)
                 self.TimedScreenGrabDialog.timer_dialog_signal_start.connect(self._TimedScreenGrabStart)
                 self.TimedScreenGrabDialog.timer_dialog_signal_quit.connect(self._CloseAllDialogs)
+
+                quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+                quitShortcut1.activated.connect(self._CloseAllDialogs)
+
                 self.TimedScreenGrabDialog.exec_()
             self.show()
 

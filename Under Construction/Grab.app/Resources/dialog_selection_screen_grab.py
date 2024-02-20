@@ -13,9 +13,6 @@ class SelectionGrabDialog(QDialog):
 
     def __init__(self, parent=None):
         super(SelectionGrabDialog, self).__init__(parent)
-        self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.setWindowModality(Qt.WindowModality.ApplicationModal)
 
         self.ui = Ui_SelectionGrabDialog()
         self.ui.setupUi(self)
@@ -25,6 +22,9 @@ class SelectionGrabDialog(QDialog):
         self.initialState()
 
     def setupCustomUi(self):
+        self.setWindowFlags(
+            Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowStaysOnTopHint
+        )
         self.ui.icon.setPixmap(
             QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")).scaled(
                 48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation
@@ -44,11 +44,16 @@ class SelectionGrabDialog(QDialog):
 
         self.setFocus()
 
+    def closeEvent(self, event):
+        super(SelectionGrabDialog, self).closeEvent(event)
+        event.accept()
+
     def focusOutEvent(self, event: QFocusEvent) -> None:
         if self.hasFocus() or self.ui.button_cancel.hasFocus():
             event.accept()
         else:
             event.accept()
+
             self.selection_dialog_signal_start.emit()
             self.close()
 

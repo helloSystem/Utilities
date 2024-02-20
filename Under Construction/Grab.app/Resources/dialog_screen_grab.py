@@ -22,9 +22,9 @@ class ScreenGrabDialog(QDialog):
         self.initialState()
 
     def setupCustomUi(self):
-        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
-        self.setWindowModality(Qt.WindowModality.ApplicationModal)
-        self.setWindowFlags(Qt.Dialog)
+        self.setWindowFlags(
+            Qt.Dialog | Qt.CustomizeWindowHint | Qt.WindowTitleHint | Qt.WindowStaysOnTopHint
+        )
         self.ui.icon.setPixmap(
             QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")).scaled(
                 48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation
@@ -35,8 +35,6 @@ class ScreenGrabDialog(QDialog):
 
     def connectSignalsSlots(self):
         self.ui.button_cancel.clicked.connect(self.screen_dialog_quit)
-        quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-        quitShortcut1.activated.connect(self.screen_dialog_quit)
 
     def initialState(self):
         self.adjustSize()
@@ -53,5 +51,6 @@ class ScreenGrabDialog(QDialog):
             self.close()
 
     def screen_dialog_quit(self):
+        self.ui.button_cancel.setFocus(True)
         self.screen_dialog_signal_quit.emit()
         self.close()
