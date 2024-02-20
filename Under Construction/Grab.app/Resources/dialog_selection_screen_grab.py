@@ -1,5 +1,4 @@
 import os
-import sys
 
 from PyQt5.QtCore import pyqtSignal, Qt
 from PyQt5.QtGui import QPixmap, QIcon, QKeySequence, QFocusEvent
@@ -20,13 +19,26 @@ class SelectionGrabDialog(QDialog):
 
         self.ui = Ui_SelectionGrabDialog()
         self.ui.setupUi(self)
-        self.ui.icon.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")))
+
+        self.setupCustomUi()
+        self.connectSignalsSlots()
+        self.initialState()
+
+    def setupCustomUi(self):
+        self.ui.icon.setPixmap(
+            QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")).scaled(
+                48, 48, Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
+        )
+
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
 
+    def connectSignalsSlots(self):
         self.ui.button_cancel.clicked.connect(self.selection_dialog_quit)
         quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
         quitShortcut1.activated.connect(self.selection_dialog_quit)
 
+    def initialState(self):
         self.adjustSize()
         self.setFixedSize(self.size())
 

@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_WindowGrabDialog(object):
     def setupUi(self, WindowGrabDialog):
         WindowGrabDialog.setObjectName("WindowGrabDialog")
-        WindowGrabDialog.setWindowModality(QtCore.Qt.NonModal)
+        WindowGrabDialog.setWindowModality(QtCore.Qt.WindowModal)
         WindowGrabDialog.resize(493, 188)
         WindowGrabDialog.setFocusPolicy(QtCore.Qt.NoFocus)
         WindowGrabDialog.setModal(True)
@@ -23,11 +23,12 @@ class Ui_WindowGrabDialog(object):
         self.MainVbox = QtWidgets.QVBoxLayout()
         self.MainVbox.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
         self.MainVbox.setContentsMargins(0, 0, 0, 0)
-        self.MainVbox.setSpacing(6)
+        self.MainVbox.setSpacing(12)
         self.MainVbox.setObjectName("MainVbox")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_2.setSizeConstraint(QtWidgets.QLayout.SetDefaultConstraint)
         self.horizontalLayout_2.setContentsMargins(-1, 0, -1, -1)
+        self.horizontalLayout_2.setSpacing(12)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         spacerItem = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem)

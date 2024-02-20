@@ -36,11 +36,20 @@ class SnippingWidget(QWidget):
             Qt.UpArrowCursor: "UpArrowCursor",
             Qt.WhatsThisCursor: "WhatsThisCursor",
         }
+
+        self.setupCustomUi()
+        self.connectSignalsSlots()
         self.initialState()
 
-    def initialState(self):
+    def setupCustomUi(self):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.X11BypassWindowManagerHint | Qt.FramelessWindowHint)
+
+    def connectSignalsSlots(self):
+        quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+        quitShortcut1.activated.connect(self.cancel_widget_snapping)
+
+    def initialState(self):
 
         self.begin = QPoint()
         self.end = QPoint()
@@ -49,8 +58,6 @@ class SnippingWidget(QWidget):
 
         self.selection.is_snipping = False
         self.UpdateScreen()
-        quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-        quitShortcut1.activated.connect(self.cancel_widget_snapping)
 
     def cancel_widget_snapping(self):
         self.selection.is_snipping = False

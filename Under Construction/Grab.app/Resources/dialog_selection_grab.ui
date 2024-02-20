@@ -32,7 +32,7 @@
    <item>
     <layout class="QVBoxLayout" name="MainVbox" stretch="0,0,0">
      <property name="spacing">
-      <number>6</number>
+      <number>12</number>
      </property>
      <property name="sizeConstraint">
       <enum>QLayout::SetNoConstraint</enum>
@@ -51,6 +51,9 @@
      </property>
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,0,0,0,0">
+       <property name="spacing">
+        <number>12</number>
+       </property>
        <property name="sizeConstraint">
         <enum>QLayout::SetDefaultConstraint</enum>
        </property>
