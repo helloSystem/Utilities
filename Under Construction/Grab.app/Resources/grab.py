@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
 from PyQt5.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QFileDialog,
-    QMessageBox,
     QActionGroup,
     qApp,
+    QApplication,
+    QFileDialog,
+    QMainWindow,
+    QMessageBox,
     QPushButton,
     QShortcut,
 )
@@ -35,11 +35,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.parent = parent
         self.screen = qApp
         self.initialized = False
-        self.transparent_window_opacity = None
-        self.selection_color_background = None
-        self.selection_color_border = None
-        self.selection_color_opacity = None
-        self.selection_wight_border = None
 
         self.settings = None
         self.fileName = None
@@ -48,7 +43,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.scale_factor = None
 
         self.snippingWidget = None
-        self._pixmap = None
         self.sound = None
 
         self.TimedScreenGrabDialog = None
@@ -163,7 +157,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def onSnippingCompleted(self, img):
         self.setWindowState(Qt.WindowActive)
-
+        self.show()
         if img is None:
             return
 
@@ -179,7 +173,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setWindowModified(True)
 
         self.update_actions()
-        self.show()
+        # self.show()
 
     def snipArea(self):
         self.setWindowState(Qt.WindowMinimized)
@@ -351,7 +345,8 @@ class Window(QMainWindow, Ui_MainWindow):
     def _showPreferenceWindow(self):
         if self.ActionMenuEditPreference.isEnabled():
             self.PreferenceWindow = PreferenceWindow(
-                play_sound=self.preference_enable_sound, pointer=self.preference_pointer
+                play_sound=self.preference_enable_sound,
+                pointer=self.preference_pointer
             )
             self.PreferenceWindow.checkbox_enable_sound_changed.connect(self._preference_enable_sound_changed)
             self.PreferenceWindow.buttongroup_changed.connect(self._preference_pointer_changed)

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>446</width>
-    <height>180</height>
+    <width>490</width>
+    <height>163</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -103,9 +103,12 @@
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>0</width>
+           <width>12</width>
            <height>20</height>
           </size>
          </property>
@@ -162,7 +165,7 @@
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>0</height>
+         <height>20</height>
         </size>
        </property>
       </spacer>
