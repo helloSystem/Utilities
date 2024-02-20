@@ -157,7 +157,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def onSnippingCompleted(self, img):
         self.setWindowState(Qt.WindowActive)
-        self.show()
+
         if img is None:
             return
 
@@ -167,14 +167,13 @@ class Window(QMainWindow, Ui_MainWindow):
         self.img_preview.setImage(img)
         self.img_preview.clearZoom()
 
-
         self.fileName = None
         self.setWindowTitle("Untitled[*]")
 
         self.setWindowModified(True)
 
         self.update_actions()
-        # self.show()
+        self.show()
 
     def snipArea(self):
         self.setWindowState(Qt.WindowMinimized)

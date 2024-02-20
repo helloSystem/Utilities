@@ -46,9 +46,9 @@ class ScreenGrabDialog(QDialog):
         if self.hasFocus() or self.ui.button_cancel.hasFocus():
             event.accept()
         else:
+            super(ScreenGrabDialog, self).close()
             event.accept()
             self.screen_dialog_signal_start.emit()
-            self.close()
 
     def screen_dialog_quit(self):
         self.ui.button_cancel.setFocus(True)
