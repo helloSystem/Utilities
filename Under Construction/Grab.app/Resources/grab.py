@@ -245,9 +245,6 @@ class Window(QMainWindow, Ui_MainWindow):
         qi = self.img_preview.pixmap().toImage()
         QApplication.clipboard().setImage(qi)
 
-    def new_timed_screenshot(self):
-        QTimer.singleShot(self.timer_count, self.snipFull)
-
     def normal_size(self):
         self.img_preview.clearZoom()
 
@@ -423,8 +420,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _ScreenGrabStart(self):
         self._CloseAllDialogs()
-        self.snipFull()
-        # self.take_screenshot()
+        self.setWindowState(Qt.WindowMinimized)
+        QTimer.singleShot(1000, self.snipFull)
 
     def _showTimedScreenGrabDialog(self):
         if self.ActionMenuCaptureTimedScreen.isEnabled():
@@ -442,7 +439,8 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def _TimedScreenGrabStart(self):
         self._CloseAllDialogs()
-        self.new_timed_screenshot()
+        self.setWindowState(Qt.WindowMinimized)
+        QTimer.singleShot(self.timer_count, self.snipFull)
 
     def _CloseAllDialogs(self):
         if self.TimedScreenGrabDialog and isinstance(self.TimedScreenGrabDialog, TimedScreenGrabDialog):

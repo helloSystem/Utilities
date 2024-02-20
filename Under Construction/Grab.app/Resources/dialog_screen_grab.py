@@ -53,6 +53,5 @@ class ScreenGrabDialog(QDialog):
             self.screen_dialog_signal_start.emit()
 
     def screen_dialog_quit(self):
-        self.ui.button_cancel.setFocus(True)
         self.screen_dialog_signal_quit.emit()
         self.close()
