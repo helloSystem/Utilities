@@ -167,6 +167,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.img_preview.setImage(img)
         self.img_preview.clearZoom()
 
+
         self.fileName = None
         self.setWindowTitle("Untitled[*]")
 

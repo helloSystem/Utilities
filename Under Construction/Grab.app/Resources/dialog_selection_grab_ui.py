@@ -50,7 +50,7 @@ class Ui_SelectionGrabDialog(object):
         self.icon.setScaledContents(True)
         self.icon.setObjectName("icon")
         self.horizontalLayout_2.addWidget(self.icon, 0, QtCore.Qt.AlignLeft)
-        spacerItem1 = QtWidgets.QSpacerItem(0, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacerItem1 = QtWidgets.QSpacerItem(12, 20, QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontalLayout_2.addItem(spacerItem1)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setSpacing(0)
