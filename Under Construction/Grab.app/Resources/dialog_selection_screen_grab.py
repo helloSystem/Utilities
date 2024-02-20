@@ -27,6 +27,9 @@ class SelectionGrabDialog(QDialog):
         quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
         quitShortcut1.activated.connect(self.selection_dialog_quit)
 
+        self.adjustSize()
+        self.setFixedSize(self.size())
+
         self.setFocus()
 
     def focusOutEvent(self, event: QFocusEvent) -> None:

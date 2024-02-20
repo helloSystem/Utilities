@@ -145,11 +145,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.ActionUpdateTimerTo9Secs.triggered.connect(self._timer_change_for_9_secs)
         self.ActionUpdateTimerTo10Secs.triggered.connect(self._timer_change_for_10_secs)
 
-        # Capture / Area
-
-        # self.ui.pushButton_area.clicked.connect(self.snipArea)
-        # self.ui.pushButton_full.clicked.connect(self.snipFull)
-
         # About
         self.ActionMenuHelpAbout.triggered.connect(self._showAboutDialog)
         self.ActionMenuHelpDocumentation.triggered.connect(self._showHelpDialog)
@@ -175,6 +170,7 @@ class Window(QMainWindow, Ui_MainWindow):
         self.setWindowModified(True)
 
         self.update_actions()
+        self.show()
 
     def snipArea(self):
         self.setWindowState(Qt.WindowMinimized)

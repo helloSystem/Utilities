@@ -22,13 +22,16 @@ class ScreenGrabDialog(QDialog):
         self.ui.setupUi(self)
         self.ui.icon.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")))
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
-        self.setFixedSize(self.size())
 
         self.ui.button_cancel.clicked.connect(self.screen_dialog_quit)
         quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
         quitShortcut1.activated.connect(self.screen_dialog_quit)
 
+        self.adjustSize()
+        self.setFixedSize(self.size())
+
         self.setFocus()
+
 
     def focusOutEvent(self, event: QFocusEvent) -> None:
         if self.hasFocus() or self.ui.button_cancel.hasFocus():

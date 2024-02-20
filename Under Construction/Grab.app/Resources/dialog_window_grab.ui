@@ -3,14 +3,14 @@
  <class>WindowGrabDialog</class>
  <widget class="QDialog" name="WindowGrabDialog">
   <property name="windowModality">
-   <enum>Qt::NonModal</enum>
+   <enum>Qt::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>486</width>
-    <height>178</height>
+    <width>493</width>
+    <height>188</height>
    </rect>
   </property>
   <property name="focusPolicy">
@@ -58,7 +58,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
+           <width>0</width>
            <height>20</height>
           </size>
          </property>
@@ -102,7 +102,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
+           <width>0</width>
            <height>20</height>
           </size>
          </property>
@@ -140,7 +140,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
+           <width>0</width>
            <height>20</height>
           </size>
          </property>
@@ -159,7 +159,7 @@
        <property name="sizeHint" stdset="0">
         <size>
          <width>20</width>
-         <height>20</height>
+         <height>0</height>
         </size>
        </property>
       </spacer>
@@ -179,7 +179,7 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
+           <width>0</width>
            <height>20</height>
           </size>
          </property>

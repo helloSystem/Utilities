@@ -19,18 +19,6 @@ class TimedScreenGrabDialog(QDialog):
         self.ui.icon.setPixmap(QPixmap(os.path.join(os.path.dirname(__file__), "Grab.png")))
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "Grab.png")))
 
-        effect1 = QGraphicsDropShadowEffect()
-        effect1.setBlurRadius(2)
-        effect1.setOffset(0, 1)
-        effect1.setColor(QColor(69, 69, 69, 127))
-        self.ui.button_cancel.setGraphicsEffect(effect1)
-
-        effect2 = QGraphicsDropShadowEffect()
-        effect2.setBlurRadius(2)
-        effect2.setOffset(0, 1)
-        effect2.setColor(QColor(69, 69, 69, 127))
-        self.ui.button_start_timer.setGraphicsEffect(effect2)
-
         if self.sec > 1:
             self.ui.Label.setText(self.ui.Label.text() % f"{self.sec} seconds")
         else:
@@ -42,6 +30,9 @@ class TimedScreenGrabDialog(QDialog):
 
         quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
         quitShortcut1.activated.connect(self.timed_dialog_quit)
+
+        self.adjustSize()
+        self.setFixedSize(self.size())
 
     def timed_dialog_quit(self):
         self.timer_dialog_signal_quit.emit()
