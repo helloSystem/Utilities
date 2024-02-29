@@ -92,7 +92,7 @@ class SnippingWidget(QWidget):
 
         if img and self.cursor != Qt.BlankCursor:
             pm = QPixmap(self.width(), self.height())
-            cursor_pixmap = QPixmap(os.path.join(os.path.dirname(__file__), f"{self.cursor_name[self.cursor]}.png"))
+            cursor_pixmap = QPixmap(os.path.join(os.path.dirname(__file__), f"preference_{self.cursor_name[self.cursor]}.png"))
             painter = QPainter(pm)
             painter.drawPixmap(0, 0, self.width(), self.height(), img)
             painter.drawPixmap(
