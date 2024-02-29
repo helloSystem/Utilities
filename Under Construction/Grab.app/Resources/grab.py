@@ -383,7 +383,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ScreenGrabDialog.installEventFilter(self)
 
             quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-            quitShortcut1.activated.connect(self._CloseAllDialogs)
+            quitShortcut1.activated.connect(self.ScreenGrabDialog.screen_dialog_cancel)
 
             self.ScreenGrabDialog.show()
 

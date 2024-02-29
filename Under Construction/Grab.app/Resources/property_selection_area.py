@@ -19,8 +19,15 @@ class SelectionArea(object):
         self.coordinate_pen_color = QColor(0, 0, 0, 255)
 
         self.coordinate_spacing = 5
-        self.coordinate_font = QFont()
-        self.coordinate_font_metrics = QFontMetrics(QFont())
+
+
+
+        self.coordinate_font = QFont('Consolas', 11, QFont.Light)
+        # font metrics. assume font is monospaced
+        self.coordinate_font.setKerning(False)
+        self.coordinate_font.setFixedPitch(True)
+
+        self.coordinate_font_metrics = QFontMetrics(self.coordinate_font)
         self.coordinate_pen = QPen(
             self.coordinate_pen_color,
             self.coordinate_pen_width,
@@ -92,7 +99,7 @@ class SelectionArea(object):
 
     @property
     def coordinate_text_y(self) -> float:
-        return self.y + self.height - self.coordinate_spacing + self.coordinate_font_metrics.height()
+        return self.y + self.height + self.coordinate_font_metrics.height()
 
     @property
     def coordinate_rect_x(self) -> float:
@@ -104,11 +111,11 @@ class SelectionArea(object):
 
     @property
     def coordinate_rect_width(self) -> float:
-        return self.coordinate_text_width + (self.coordinate_spacing * 2)
+        return self.coordinate_text_width
 
     @property
     def coordinate_rect_height(self) -> float:
-        return self.coordinate_font_metrics.height() - (self.selection_pen_width * 2)
+        return self.coordinate_font_metrics.height() + (self.coordinate_spacing / 2)
 
     @property
     def SelectionColorBackground(self) -> QColor:
@@ -145,3 +152,6 @@ class SelectionArea(object):
         self.y = req.y()
         self.width = req.width()
         self.height = req.height()
+
+    def QRectF(self) -> QRectF:
+        return QRectF(self.x, self.y, self.width, self.height)

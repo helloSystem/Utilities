@@ -1,8 +1,8 @@
 import os
 
-from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QPixmap, QIcon, QKeySequence, QFocusEvent
-from PyQt5.QtWidgets import QDialog, QShortcut
+from PyQt5.QtCore import pyqtSignal, Qt, QEvent
+from PyQt5.QtGui import QPixmap, QIcon, QFocusEvent
+from PyQt5.QtWidgets import QDialog, QDesktopWidget
 
 from dialog_screen_grab_ui import Ui_ScreenGrabDialog
 
@@ -41,17 +41,43 @@ class ScreenGrabDialog(QDialog):
     def initialState(self):
         self.adjustSize()
         self.setFixedSize(self.size())
-
+        self.center()
         self.setFocus()
 
-    def focusOutEvent(self, event: QFocusEvent) -> None:
-        if self.hasFocus() or self.ui.button_cancel.hasFocus():
-            event.accept()
-        else:
-            super(ScreenGrabDialog, self).close()
-            event.accept()
-            self.screen_dialog_signal_start.emit()
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+
+    def eventFilter(self, source, event):
+        if event.type() == QEvent.Close and source is self:
+            self.close()
+
+        elif event.type() == QEvent.FocusOut:
+            print('eventFilter: focus out')
+            if self.hasFocus() or self.ui.button_cancel.hasFocus():
+                event.accept()
+
+            else:
+                super(ScreenGrabDialog, self).close()
+                event.accept()
+                self.screen_dialog_signal_start.emit()
+
+
+        return super(ScreenGrabDialog, self).eventFilter(source, event)
+
+    # def focusOutEvent(self, event: QFocusEvent) -> None:
+    #     if self.hasFocus() or self.ui.button_cancel.hasFocus():
+    #         event.accept()
+    #     else:
+    #         super(ScreenGrabDialog, self).close()
+    #         event.accept()
+    #         self.screen_dialog_signal_start.emit()
 
     def screen_dialog_quit(self):
         self.screen_dialog_signal_quit.emit()
+        self.close()
+
+    def screen_dialog_cancel(self):
         self.close()

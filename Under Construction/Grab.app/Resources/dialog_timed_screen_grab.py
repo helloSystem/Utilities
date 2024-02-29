@@ -1,8 +1,8 @@
 import os
 
 from PyQt5.QtCore import pyqtSignal, Qt
-from PyQt5.QtGui import QPixmap, QIcon, QKeySequence
-from PyQt5.QtWidgets import QDialog, QShortcut
+from PyQt5.QtGui import QPixmap, QIcon
+from PyQt5.QtWidgets import QDialog, QDesktopWidget
 
 from dialog_timed_screen_grab_ui import Ui_TimedScreenGrabDialog
 
@@ -46,8 +46,15 @@ class TimedScreenGrabDialog(QDialog):
     def initialState(self):
         self.adjustSize()
         self.setFixedSize(self.size())
+        self.center()
 
         self.setFocus()
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
     def timed_dialog_quit(self):
         self.timer_dialog_signal_quit.emit()
