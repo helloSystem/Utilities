@@ -1,5 +1,6 @@
 from PyQt5.QtCore import Qt, QRectF
 from PyQt5.QtGui import QFont, QFontMetrics, QColor, QPen, QPalette
+from PyQt5.QtWidgets import qApp
 
 
 class SelectionArea(object):
@@ -20,9 +21,7 @@ class SelectionArea(object):
 
         self.coordinate_spacing = 5
 
-
-
-        self.coordinate_font = QFont('Consolas', 11, QFont.Light)
+        self.coordinate_font = qApp.font()
         # font metrics. assume font is monospaced
         self.coordinate_font.setKerning(False)
         self.coordinate_font.setFixedPitch(True)
@@ -111,7 +110,7 @@ class SelectionArea(object):
 
     @property
     def coordinate_rect_width(self) -> float:
-        return self.coordinate_text_width
+        return self.coordinate_text_width + (self.coordinate_spacing * 2)
 
     @property
     def coordinate_rect_height(self) -> float:
