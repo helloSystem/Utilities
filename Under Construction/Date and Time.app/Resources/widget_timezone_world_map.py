@@ -215,10 +215,12 @@ class TimeZoneWorldMap(QWidget):
                 if self.TimeZoneSelection == f"{key}":
                     painter.setPen(QPen(QColor(0, 39, 60, 255), 1, Qt.SolidLine))
                     painter.setBrush(QColor(0, 39, 60, 127))
-                    painter.drawRect(self.zone_location[key]['left'] + 1,
-                                     self.north_location + 1,
-                                     int(timezone_grid_size - 2),
-                                     self.bg.height() - 1)
+                    painter.drawRect(
+                        int(self.zone_location[key]['left'] + 1),
+                        int(self.north_location + 1),
+                        int(timezone_grid_size - 2),
+                        int(self.bg.height() - 1),
+                    )
             except KeyError:
                 # YES it is correct,
                 # you should show me how you do with IF statement... are you sure of the performance ?
