@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
-        <translation>Isto irá transferir uma imagem &quot;Live&quot; e irá gravá-la num dispositivo de armazenamento anexado.</translation>
+        <translation>Isto irá descarregar uma imagem &quot;Live&quot; e irá gravá-la num aparelho de armazenamento anexado.</translation>
     </message>
     <message>
         <source>Other...</source>
@@ -73,11 +73,11 @@
     </message>
     <message>
         <source>Downloading and writing Live medium</source>
-        <translation>A transferir e a gravar o suporte &quot;Live&quot;</translation>
+        <translation>A descarregar e a gravar o suporte &quot;Live&quot;</translation>
     </message>
     <message>
         <source>The Live image is being downloaded and written to the medium.</source>
-        <translation>A imagem &quot;Live&quot; está a ser transferida e gravada para o suporte.</translation>
+        <translation>A imagem &quot;Live&quot; está a descarregar e a gravar para o suporte.</translation>
     </message>
     <message>
         <source>Could not unmount parititons.</source>
@@ -85,7 +85,7 @@
     </message>
     <message>
         <source>An error occurred while trying to write the image. Is the download URL accessible? Were all partitions unmounted? Do you have write permissions there?</source>
-        <translation>Ocorreu um erro ao tentar gravar a imagem. O URL de transferência está acessível? Todas as partições foram desmontadas? Tem permissões de gravação?</translation>
+        <translation>Ocorreu um erro ao tentar gravar a imagem. O URL de descarrega está acessível? Todas as partições foram desmontadas? Tem permissões de gravação?</translation>
     </message>
     <message>
         <source>Live Medium Complete</source>
