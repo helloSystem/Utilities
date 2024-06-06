@@ -51,7 +51,11 @@ class ColorButton(QAbstractButton):
 
         qp.setPen(QPen(Qt.gray, pen_size))
         qp.setBrush(QBrush(QColor(self._color), Qt.SolidPattern))
-        qp.drawRect(spacing / 2, spacing / 2, self._height - pen_size - spacing, self._height - pen_size - spacing)
+        qp.drawRect(int(spacing / 2),
+                    int(spacing / 2),
+                    int(self._height - pen_size - spacing),
+                    int(self._height - pen_size - spacing)
+                    )
 
     def setColor(self, color):
         if color != self._color:

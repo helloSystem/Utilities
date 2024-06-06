@@ -150,5 +150,11 @@ class ChartPie(QWidget):
             self.qp.setBrush(QBrush(QColor(item.color), Qt.SolidPattern))
             if total > 0:
                 angle = item.data * 5760 / total
-                self.qp.drawPie(x, y, w - off_set, h - off_set, set_angle, angle)
+                self.qp.drawPie(int(x),
+                                int(y),
+                                int(w - off_set),
+                                int(h - off_set),
+                                int(set_angle),
+                                int(angle)
+                                )
                 set_angle += angle
