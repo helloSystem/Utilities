@@ -48,8 +48,11 @@ class SelectionArea(object):
 
     # Position of the selection
     @property
-    def x(self) -> float:
-        return self.__x
+    def x(self) -> int or None:
+        try:
+            return int(self.__x)
+        except TypeError:
+            return None
 
     @x.setter
     def x(self, x: float):
@@ -57,8 +60,11 @@ class SelectionArea(object):
             self.__x = x
 
     @property
-    def y(self) -> float:
-        return self.__y
+    def y(self) -> int or None:
+        try:
+            return int(self.__y)
+        except TypeError:
+            return None
 
     @y.setter
     def y(self, y: float):
@@ -66,8 +72,11 @@ class SelectionArea(object):
             self.__y = y
 
     @property
-    def width(self) -> float:
-        return self.__width
+    def width(self) -> int or None:
+        try:
+            return int(self.__width)
+        except TypeError:
+            return None
 
     @width.setter
     def width(self, width: float):
@@ -75,8 +84,11 @@ class SelectionArea(object):
             self.__width = width
 
     @property
-    def height(self) -> float:
-        return self.__height
+    def height(self) -> int or None:
+        try:
+            return int(self.__height)
+        except TypeError:
+            return None
 
     @height.setter
     def height(self, height: float):
@@ -93,28 +105,28 @@ class SelectionArea(object):
         return self.coordinate_font_metrics.width(self.coordinate_text)
 
     @property
-    def coordinate_text_x(self) -> float:
-        return self.x + self.width - self.coordinate_text_width - self.coordinate_spacing
+    def coordinate_text_x(self) -> int:
+        return int(self.x + self.width - self.coordinate_text_width - self.coordinate_spacing)
 
     @property
-    def coordinate_text_y(self) -> float:
-        return self.y + self.height + self.coordinate_font_metrics.height()
+    def coordinate_text_y(self) -> int:
+        return int(self.y + self.height + self.coordinate_font_metrics.height())
 
     @property
-    def coordinate_rect_x(self) -> float:
-        return self.x + self.width - self.coordinate_text_width - (self.coordinate_spacing * 2)
+    def coordinate_rect_x(self) -> int:
+        return int(self.x + self.width - self.coordinate_text_width - (self.coordinate_spacing * 2))
 
     @property
-    def coordinate_rect_y(self) -> float:
-        return self.y + self.height + (self.coordinate_spacing / 2)
+    def coordinate_rect_y(self) -> int:
+        return int(self.y + self.height + (self.coordinate_spacing / 2))
 
     @property
-    def coordinate_rect_width(self) -> float:
-        return self.coordinate_text_width + (self.coordinate_spacing * 2)
+    def coordinate_rect_width(self) -> int:
+        return int(self.coordinate_text_width + (self.coordinate_spacing * 2))
 
     @property
-    def coordinate_rect_height(self) -> float:
-        return self.coordinate_font_metrics.height() + (self.coordinate_spacing / 2)
+    def coordinate_rect_height(self) -> int:
+        return int(self.coordinate_font_metrics.height() + (self.coordinate_spacing / 2))
 
     @property
     def SelectionColorBackground(self) -> QColor:

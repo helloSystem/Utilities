@@ -79,7 +79,7 @@ class SnippingWidget(QWidget):
         if self.windowHandle():
             self.screen = self.windowHandle().screen()
 
-    def fullscreen(self):
+    def full_screen(self):
         self.UpdateScreen()
         self.show()
 
@@ -96,8 +96,8 @@ class SnippingWidget(QWidget):
             painter = QPainter(pm)
             painter.drawPixmap(0, 0, self.width(), self.height(), img)
             painter.drawPixmap(
-                QCursor().pos().x() - (cursor_pixmap.width() / 2),
-                QCursor().pos().y() - (cursor_pixmap.height() / 2),
+                QCursor().pos().x() - int(cursor_pixmap.width() / 2),
+                QCursor().pos().y() - int(cursor_pixmap.height() / 2),
                 cursor_pixmap.width(),
                 cursor_pixmap.height(),
                 cursor_pixmap,

@@ -181,7 +181,7 @@ class Window(QMainWindow, Ui_MainWindow):
 
     def snipFull(self):
         self.setWindowState(Qt.WindowMinimized)
-        self.snippingWidget.fullscreen()
+        self.snippingWidget.full_screen()
 
     def write_settings(self):
         self.settings.setValue("geometry", self.saveGeometry())
@@ -382,8 +382,7 @@ class Window(QMainWindow, Ui_MainWindow):
             self.ScreenGrabDialog.screen_dialog_signal_start.connect(self._ScreenGrabStart)
             self.ScreenGrabDialog.installEventFilter(self)
 
-            quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-            quitShortcut1.activated.connect(self.ScreenGrabDialog.screen_dialog_cancel)
+
 
             self.ScreenGrabDialog.show()
 
@@ -398,8 +397,8 @@ class Window(QMainWindow, Ui_MainWindow):
             self.SelectionGrabDialog.selection_dialog_signal_quit.connect(self._CloseAllDialogs)
             self.SelectionGrabDialog.selection_dialog_signal_start.connect(self._SelectionGrabStart)
 
-            quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-            quitShortcut1.activated.connect(self._CloseAllDialogs)
+            # quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+            # quitShortcut1.activated.connect(self._CloseAllDialogs)
 
             self.SelectionGrabDialog.exec_()
             self.show()
@@ -431,8 +430,8 @@ class Window(QMainWindow, Ui_MainWindow):
                 self.TimedScreenGrabDialog.timer_dialog_signal_start.connect(self._TimedScreenGrabStart)
                 self.TimedScreenGrabDialog.timer_dialog_signal_quit.connect(self._CloseAllDialogs)
 
-                quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
-                quitShortcut1.activated.connect(self._CloseAllDialogs)
+                # quitShortcut1 = QShortcut(QKeySequence("Escape"), self)
+                # quitShortcut1.activated.connect(self._CloseAllDialogs)
 
                 self.TimedScreenGrabDialog.exec_()
             self.show()
