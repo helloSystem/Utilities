@@ -156,7 +156,6 @@ class Window(QMainWindow, Ui_MainWindow):
         self.snippingWidget.snipping_completed.connect(self.onSnippingCompleted)
 
     def onSnippingCompleted(self, img):
-        self.setWindowState(Qt.WindowActive)
 
         if img is None:
             return
@@ -174,6 +173,9 @@ class Window(QMainWindow, Ui_MainWindow):
 
         self.update_actions()
         self.show()
+        self.setWindowState(Qt.WindowActive)
+        self.img_preview.setFocus()
+        self.img_preview.update()
 
     def snipArea(self):
         self.setWindowState(Qt.WindowMinimized)
@@ -420,7 +422,7 @@ class Window(QMainWindow, Ui_MainWindow):
     def _ScreenGrabStart(self):
         self._CloseAllDialogs()
         self.setWindowState(Qt.WindowMinimized)
-        QTimer.singleShot(1000, self.snipFull)
+        QTimer.singleShot(100, self.snipFull)
 
     def _showTimedScreenGrabDialog(self):
         if self.ActionMenuCaptureTimedScreen.isEnabled():
