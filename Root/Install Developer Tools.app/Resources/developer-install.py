@@ -116,7 +116,7 @@ class InstallWizard(QtWidgets.QWizard, object):
         #     [QtWidgets.QWizard.CustomButton1, QtWidgets.QWizard.Stretch, QtWidgets.QWizard.NextButton])
 
         self.setWindowTitle(tr("Install Developer Tools"))
-        self.setFixedSize(800, 550)
+        self.setFixedSize(600, 400)
 
         # Remove window decorations, especially the close button
         self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
@@ -621,7 +621,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         self.setTitle(tr('Installation Complete'))
         self.setSubTitle(tr('The installation succeeded.'))
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/successful.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
@@ -658,7 +658,7 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.setTitle(tr('Error'))
         self.setSubTitle(tr('The installation could not be performed.'))
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/cross.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/failed.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 

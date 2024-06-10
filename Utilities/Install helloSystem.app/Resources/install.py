@@ -151,13 +151,13 @@ class InstallWizard(QtWidgets.QWizard, object):
         #     [QtWidgets.QWizard.CustomButton1, QtWidgets.QWizard.Stretch, QtWidgets.QWizard.NextButton])
 
         self.setWindowTitle(tr("Install helloSystem"))
-        self.setFixedSize(800, 550)
+        self.setFixedSize(600, 400)
 
         # Remove window decorations, especially the close button
         # self.setWindowFlags(QtCore.Qt.CustomizeWindowHint)
         # self.setWindowFlags(QtCore.Qt.FramelessWindowHint)
 
-        # self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Background.png'))
+        self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(os.path.dirname(__file__) + '/Background.png'))
 
         self.setOption(QtWidgets.QWizard.ExtendedWatermarkPixmap, True)
         # self.setPixmap(QtWidgets.QWizard.LogoPixmap, 'Logo.png')
@@ -1367,7 +1367,7 @@ class SuccessPage(QtWidgets.QWizardPage, object):
         wizard.closeEvent = wizard.original_closeEvent
         wizard.window().closeEvent = wizard.original_window_closeEvent
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/check.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/successful.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
@@ -1412,7 +1412,7 @@ class ErrorPage(QtWidgets.QWizardPage, object):
         self.setTitle(tr('Error'))
         self.setSubTitle(tr('The installation could not be performed.'))
 
-        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/cross.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
+        logo_pixmap = QtGui.QPixmap(os.path.dirname(__file__) + '/failed.png').scaledToHeight(256, QtCore.Qt.SmoothTransformation)
         logo_label = QtWidgets.QLabel()
         logo_label.setPixmap(logo_pixmap)
 
