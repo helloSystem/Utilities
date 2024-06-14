@@ -491,7 +491,7 @@
          </widget>
         </item>
         <item alignment="Qt::AlignHCenter">
-         <widget class="QCheckBox" name="set_time_zone_automatically_checkbox">
+         <widget class="QCheckBox" name="checkbox_set_time_zone_automatically_using_current_location">
           <property name="text">
            <string>Set time zone automatically using current location</string>
           </property>
@@ -591,7 +591,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab">
+      <widget class="QWidget" name="ClockTab">
        <attribute name="title">
         <string>Clock</string>
        </attribute>
@@ -609,7 +609,7 @@
          <number>23</number>
         </property>
         <item>
-         <widget class="QGroupBox" name="groupBox">
+         <widget class="QGroupBox" name="groupbox_show_the_date_and_time">
           <property name="autoFillBackground">
            <bool>false</bool>
           </property>
@@ -636,35 +636,35 @@
             <number>23</number>
            </property>
            <item>
-            <widget class="QCheckBox" name="checkBox_2">
+            <widget class="QCheckBox" name="checkbox_display_the_time_with_seconds">
              <property name="text">
               <string>Display the time with seconds</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_4">
+            <widget class="QCheckBox" name="checkbox_show_the_day_of_the_week">
              <property name="text">
               <string>Show the day of the week</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_3">
+            <widget class="QCheckBox" name="checkbox_show_am_pm">
              <property name="text">
               <string>Show AM/PM</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="checkBox_5">
+            <widget class="QCheckBox" name="checkbox_flash_time_separator">
              <property name="text">
               <string>Flash time separator</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QCheckBox" name="dt_use_24h_clock">
+            <widget class="QCheckBox" name="checkbox_use_24h_clock">
              <property name="font">
               <font>
                <family>Nimbus Sans</family>

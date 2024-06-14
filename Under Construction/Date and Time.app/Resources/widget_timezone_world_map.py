@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QApplication
+import os
+import sys
+
 from PyQt5.QtCore import pyqtSignal, pyqtProperty, Qt
 from PyQt5.QtGui import QPainter, QImage, QColor, QPen
-
-import sys
-import os
+from PyQt5.QtWidgets import QWidget, QApplication
 
 
 class TimeZoneWorldMap(QWidget):
@@ -84,7 +84,7 @@ class TimeZoneWorldMap(QWidget):
             # For each line, we create a list os elements split by TAB
             data = line.strip("\n").split("\t")
 
-            # it have deux formats, we just care about degree, and not use minutes coordonates
+            # it have 2 formats, we just care about degree, and not use minutes coordinates
             # ±DDMM±DDDMM or ±DDMMSS±DDDMMSS,
             if len(data[1]) == len("±DDMM±DDDMM"):
                 lat = int(f"{data[1][0]}{data[1][1]}{data[1][2]}")
@@ -109,7 +109,7 @@ class TimeZoneWorldMap(QWidget):
             except IndexError:
                 pass
 
-    @pyqtProperty(int)
+    @property
     def TimeZoneSelection(self):
         return self.__timezone_selection
 
@@ -204,13 +204,15 @@ class TimeZoneWorldMap(QWidget):
 
         # Trace the selection the MouseOver
         for key, value in self.state_over.items():
-            # if value is True:
-            #     painter.setPen(QPen(QColor(255, 255, 255, 255), 1, Qt.SolidLine))
-            #     painter.setBrush(QColor(255, 255, 255, 150))
-            #     painter.drawRect(self.zone_location[key]['left'] + 1,
-            #                      self.north_location + 1,
-            #                      int(timezone_grid_size - 2),
-            #                      self.bg.height() - 1)
+            if value is True:
+                painter.setPen(QPen(QColor(255, 255, 255, 255), 1, Qt.SolidLine))
+                painter.setBrush(QColor(255, 255, 255, 150))
+                painter.drawRect(
+                    int(self.zone_location[key]['left'] + 1),
+                    int(self.north_location + 1),
+                    32,
+                    32,
+                )
             try:
                 if self.TimeZoneSelection == f"{key}":
                     painter.setPen(QPen(QColor(0, 39, 60, 255), 1, Qt.SolidLine))
@@ -221,6 +223,7 @@ class TimeZoneWorldMap(QWidget):
                         int(timezone_grid_size - 2),
                         int(self.bg.height() - 1),
                     )
+
             except KeyError:
                 # YES it is correct,
                 # you should show me how you do with IF statement... are you sure of the performance ?
