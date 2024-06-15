@@ -71,7 +71,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.dat_calendar_widget.selectionChanged.connect(self.__dat_calendar_widget_changed)
         self.dat_dateedit_widget.dateTimeChanged.connect(self.__dat_dateedit_widget_changed)
         self.dat_timeedit_widget.dateTimeChanged.connect(self.__dat_timeedit_widget_changed)
-        self.ntp_servers_comboBox.currentIndexChanged.connect(self.__ntp_servers_comboBox_index_changed)
+
 
         # Time Zone
         self.tz_closest_city_combobox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
@@ -497,7 +497,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
                                self.date_and_time_auto_checkbox.isChecked()
                                )
 
-        self.settings.value("ntp_servers",
+        self.settings.setValue("ntp_servers",
                             self.ntp_servers_comboBox.currentIndex()
                             )
 
