@@ -552,6 +552,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
                                                                   )
                                               )
 
+        self.__checkbox_set_time_zone_automatically_using_current_location_changed()
+
         # Clock Tab
         self.groupbox_show_the_date_and_time.setChecked(
             self.settings.value("show_the_date_and_time", defaultValue=True, type=bool)
