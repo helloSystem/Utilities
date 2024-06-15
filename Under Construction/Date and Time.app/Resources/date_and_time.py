@@ -44,6 +44,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.setupUi(self)
         self.initial_state()
         self.signalsConnect()
+        self.read_settings()
 
     def initial_state(self):
         # self.timezone_file_path = "/etc/timezone"
@@ -58,7 +59,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.__timezone_closest_city_changed([self.get_timezone_file_content()])
 
         self.settings = QSettings("helloSystem", "Date and Time.app")
-        self.read_settings()
 
     def signalsConnect(self):
         self.timer.timeout.connect(self.refresh)
@@ -71,6 +71,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.dat_calendar_widget.selectionChanged.connect(self.__dat_calendar_widget_changed)
         self.dat_dateedit_widget.dateTimeChanged.connect(self.__dat_dateedit_widget_changed)
         self.dat_timeedit_widget.dateTimeChanged.connect(self.__dat_timeedit_widget_changed)
+        self.ntp_servers_comboBox.currentIndexChanged.connect(self.__ntp_servers_comboBox_index_changed)
 
         # Time Zone
         self.tz_closest_city_combobox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
@@ -332,7 +333,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             self.ntp_servers_comboBox.setEnabled(True)
 
             self.dat_timeedit_widget.setEnabled(False)
-            self.dt_use_24h_clock.setEnabled(False)
             self.dat_clock_widget.setEnabled(False)
 
             self.dat_dateedit_widget.setEnabled(False)
@@ -346,7 +346,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             self.ntp_servers_comboBox.setEnabled(False)
 
             self.dat_timeedit_widget.setEnabled(True)
-            self.dt_use_24h_clock.setEnabled(True)
             self.dat_clock_widget.setEnabled(True)
 
             self.dat_dateedit_widget.setEnabled(True)
@@ -450,6 +449,9 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         pass
         # self.dat_clock_widget.setTime(self.dat_timeedit_widget.time())
 
+    def __ntp_servers_comboBox_index_changed(self):
+        pass
+
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()
         self.tz_closest_city_combobox.addItems(sorted(value))
@@ -489,6 +491,15 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.settings.setValue("tabWidget",
                                self.tabWidget.currentIndex()
                                )
+
+        # Date and Time Tab
+        self.settings.setValue("date_and_time_auto",
+                               self.date_and_time_auto_checkbox.isChecked()
+                               )
+
+        self.settings.value("ntp_servers",
+                            self.ntp_servers_comboBox.currentIndex()
+                            )
 
         # Time Zone Tab
         self.settings.setValue("checkbox_set_time_zone_automatically_using_current_location",
@@ -531,6 +542,21 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.tabWidget.setCurrentIndex(
             self.settings.value("tabWidget", defaultValue=0, type=int)
         )
+        # Date and Time Tab
+        self.date_and_time_auto_checkbox.setChecked(
+            self.settings.value("date_and_time_auto",
+                                defaultValue=False,
+                                type=bool
+                                )
+        )
+
+        self.ntp_servers_comboBox.setCurrentIndex(
+            self.settings.value("ntp_servers",
+                                defaultValue=3,
+                                type=int
+                                )
+        )
+
         # Time Zone Tab
         self.checkbox_set_time_zone_automatically_using_current_location.setChecked(
             self.settings.value("checkbox_set_time_zone_automatically_using_current_location",
