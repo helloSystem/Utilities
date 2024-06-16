@@ -50,7 +50,7 @@ class NtpClientWorker(QObject):
                     imported_timestamp.second,
                 )
             )
-            self.error.emit("")
+            # self.error.emit("")
         except (gaierror, NTPException, NTPRolloverException) as error:
             self.error.emit(f"<html>"
                             f"<head/>"

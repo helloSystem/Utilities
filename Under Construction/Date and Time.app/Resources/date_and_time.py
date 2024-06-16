@@ -25,9 +25,13 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         DateTimeAutomatically.__init__(self)
         TimeZoneProperty.__init__(self)
 
+        self.initialized = False
         # Worker
         self.threads = []
         self.threadpool = QThreadPool()
+
+        self.ntp_client_request_count = 0
+        self.ntp_client_request_count_max = 3
 
         self.error_dialog = None
         self.timer = None
@@ -58,6 +62,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.initial_state()
         self.signalsConnect()
         self.read_settings()
+        self.initialized = True
 
     def initial_state(self):
         # self.timezone_file_path = "/etc/timezone"
@@ -132,13 +137,43 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         return thread
 
     def refresh_ntp_client(self):
-        if self.date_and_time_auto_checkbox.isChecked():
+        if self.date_and_time_auto_checkbox.isChecked() and self.ntp_client_request_count <= self.ntp_client_request_count_max:
+            self.error_message_label.setText(
+                f"<html>"
+                f"<head/>"
+                f"<body>"
+                f"<p>"
+                f"<span style=' font-size:14pt; vertical-align:sub;'>"
+                f"NTP request ({self.ntp_client_request_count}/{self.ntp_client_request_count_max}) "
+                f"{self.__ntp_servers[self.ntp_servers_comboBox.currentIndex()]} ..."
+                f"</span>"
+                f"</p>"
+                f"</body>"
+                f"</html>"
+            )
             self.threads.clear()
             self.threads = [
                 self.createNtpClientThread(),
             ]
             for thread in self.threads:
                 thread.start()
+
+
+        if self.ntp_client_request_count > self.ntp_client_request_count_max:
+            self.error_message_label.setText(
+                f"<html>"
+                f"<head/>"
+                f"<body>"
+                f"<p>"
+                f"<span style=' font-size:14pt; vertical-align:sub;'>"
+                f"NTP Sync with {self.__ntp_servers[self.ntp_servers_comboBox.currentIndex()]}"
+                f"</span>"
+                f"</p>"
+                f"</body>"
+                f"</html>"
+            )
+
+        self.ntp_client_request_count += 1
 
     def refresh(self):
         self.dat_timeedit_widget.setDateTime(self.dat_timeedit_widget.dateTime().addSecs(1))
@@ -386,6 +421,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             self.dat_dateedit_widget.setEnabled(False)
             self.dat_calendar_widget.setEnabled(False)
 
+            self.ntp_client_request_count = 1
+
             # Prevent loop with the action menu
             if not self.action_set_date_and_time_automatically.isChecked():
                 self.action_set_date_and_time_automatically.setChecked(True)
@@ -403,7 +440,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             if self.action_set_date_and_time_automatically.isChecked():
                 self.action_set_date_and_time_automatically.setChecked(False)
 
-        self.refresh_ntp_client()
 
     def __action_set_date_and_time_automatically_changed(self):
         if self.action_set_date_and_time_automatically.isChecked():
@@ -500,9 +536,10 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         # self.dat_clock_widget.setTime(self.dat_timeedit_widget.time())
 
     def __ntp_servers_comboBox_index_changed(self):
-        pass
-        # if self.date_and_time_auto_checkbox.isChecked():
-        #     self.set_date_time_auto()
+        self.ntp_client_request_count = 1
+        if self.initialized:
+            self.refresh_ntp_client()
+
 
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()
