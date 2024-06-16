@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
 # FIXME: The spinner is not shown; we need to fix this by using threading? Is there a better way?
-# TODO: Implement manual time zone setting in the time zone tab
-# TODO: Implement manual date and time setting in the date and time tab
 
 import subprocess
 import sys
 import os
-from time import ctime
+
 from PyQt5.QtCore import Qt, QDateTime, QTimer, QDate, QUrl, QEvent, QByteArray, QSettings, QThread, QThreadPool
 from PyQt5.QtWidgets import QApplication, QDateTimeEdit, QGridLayout, QGroupBox
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton, QVBoxLayout, QWidget
@@ -17,8 +15,8 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 from date_and_time_ui import Ui_MainWindow
 from property_date_time_auto import DateTimeAutomatically
 from property_timezone import TimeZoneProperty
-from ntplib import NTPClient
 from worker_ntp_client import NtpClientWorker
+
 
 class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZoneProperty):
 
@@ -168,8 +166,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         if not self.timer.isActive():
             self.timer.start()
 
-
-
     def send_shortcut(self, key_code, modifier):
         # Send shortcut to currently focused widget like Ctrl+C, Ctrl+V, etc.
         widget = self.focusWidget()
@@ -265,8 +261,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
     def get_current_date():
         return QDate.currentDate()
 
-
-
     def set_date_time_manual(self):
         self.spinner.show()
         # 202304151224.10 = Sa. 15 Apr. 2023 12:24:10 CEST
@@ -300,9 +294,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         #     self.timer.start()
         # self.spinner.hide()
         self.refresh()
-
-
-
 
     def set_time_zone_auto(self):
         # try:
