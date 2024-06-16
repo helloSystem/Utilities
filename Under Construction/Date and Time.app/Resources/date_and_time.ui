@@ -726,6 +726,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="error_message_label">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="textFormat">
+         <enum>Qt::RichText</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
@@ -737,18 +747,6 @@
          </size>
         </property>
        </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="pushButton">
-        <property name="font">
-         <font>
-          <family>Nimbus Sans</family>
-         </font>
-        </property>
-        <property name="text">
-         <string>Apply</string>
-        </property>
-       </widget>
       </item>
      </layout>
     </item>

@@ -7,8 +7,8 @@
 import subprocess
 import sys
 import os
-import time
-from PyQt5.QtCore import Qt, QDateTime, QTimer, QDate, QUrl, QEvent, QByteArray, QSettings
+from time import ctime
+from PyQt5.QtCore import Qt, QDateTime, QTimer, QDate, QUrl, QEvent, QByteArray, QSettings, QThread, QThreadPool
 from PyQt5.QtWidgets import QApplication, QDateTimeEdit, QGridLayout, QGroupBox
 from PyQt5.QtWidgets import QMainWindow, QMessageBox, QPushButton, QVBoxLayout, QWidget
 from PyQt5.QtGui import QKeyEvent, QPixmap
@@ -17,7 +17,8 @@ from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkRepl
 from date_and_time_ui import Ui_MainWindow
 from property_date_time_auto import DateTimeAutomatically
 from property_timezone import TimeZoneProperty
-
+from ntplib import NTPClient
+from worker_ntp_client import NtpClientWorker
 
 class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZoneProperty):
 
@@ -25,6 +26,10 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         super().__init__()
         DateTimeAutomatically.__init__(self)
         TimeZoneProperty.__init__(self)
+
+        # Worker
+        self.threads = []
+        self.threadpool = QThreadPool()
 
         self.error_dialog = None
         self.timer = None
@@ -41,6 +46,16 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
 
         self.settings = None
 
+        self.__ntp_servers = {
+            0: "africa.pool.ntp.org",
+            1: "antarctica.pool.ntp.org",
+            2: "asia.pool.ntp.org",
+            3: "europe.pool.ntp.org",
+            4: "north-america.pool.ntp.org",
+            5: "oceania.pool.ntp.org",
+            6: "south-america.pool.ntp.org",
+        }
+
         self.setupUi(self)
         self.initial_state()
         self.signalsConnect()
@@ -51,6 +66,9 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         # self.timezone_file = QFile(self.timezone_file_path)
         self.timer = QTimer()
         self.timer.start(1000)
+        self.timer_ntp_client = QTimer()
+        self.timer_ntp_client.start(5000)
+
         self.dat_timeedit_widget.setDateTime(self.get_current_datetime())
         self.dat_dateedit_widget.setDate(self.get_current_date())
 
@@ -62,6 +80,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
 
     def signalsConnect(self):
         self.timer.timeout.connect(self.refresh)
+        self.timer_ntp_client.timeout.connect(self.refresh_ntp_client)
 
         self.actionHelpAbout.triggered.connect(self.show_about)
         self.DateTimeAutomaticallyChanged.connect(self.__checkbox_set_date_and_time_automatically_changed)
@@ -71,7 +90,7 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.dat_calendar_widget.selectionChanged.connect(self.__dat_calendar_widget_changed)
         self.dat_dateedit_widget.dateTimeChanged.connect(self.__dat_dateedit_widget_changed)
         self.dat_timeedit_widget.dateTimeChanged.connect(self.__dat_timeedit_widget_changed)
-
+        self.ntp_servers_comboBox.currentIndexChanged.connect(self.__ntp_servers_comboBox_index_changed)
 
         # Time Zone
         self.tz_closest_city_combobox.currentIndexChanged.connect(self.__timezone_combobox_index_changed)
@@ -91,6 +110,37 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.action_set_date_and_time_automatically.changed.connect(
             self.__action_set_date_and_time_automatically_changed)
         self.action_set_time_zone_automatically.changed.connect(self.__action_set_time_zone_automatically_changed)
+
+    def createNtpClientThread(self):
+        thread = QThread()
+        worker = NtpClientWorker(
+            host=self.__ntp_servers[self.ntp_servers_comboBox.currentIndex()],
+            version=3,
+            port=123,
+            timeout=5,
+        )
+        worker.moveToThread(thread)
+        thread.started.connect(lambda: worker.refresh())
+
+        # Icons Cache
+        worker.updated_datetime.connect(self.__worker_ntp_client_send_updated_datetime)
+        worker.updated_date.connect(self.__worker_ntp_client_send_updated_date)
+        worker.error.connect(self.__worker_ntp_client_send_error)
+
+        worker.finished.connect(thread.quit)
+        worker.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+
+        return thread
+
+    def refresh_ntp_client(self):
+        if self.date_and_time_auto_checkbox.isChecked():
+            self.threads.clear()
+            self.threads = [
+                self.createNtpClientThread(),
+            ]
+            for thread in self.threads:
+                thread.start()
 
     def refresh(self):
         self.dat_timeedit_widget.setDateTime(self.dat_timeedit_widget.dateTime().addSecs(1))
@@ -117,6 +167,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         #     -20, self.height() - self.spinner.height() - 10)
         if not self.timer.isActive():
             self.timer.start()
+
+
 
     def send_shortcut(self, key_code, modifier):
         # Send shortcut to currently focused widget like Ctrl+C, Ctrl+V, etc.
@@ -213,12 +265,13 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
     def get_current_date():
         return QDate.currentDate()
 
+
+
     def set_date_time_manual(self):
         self.spinner.show()
         # 202304151224.10 = Sa. 15 Apr. 2023 12:24:10 CEST
         new_date_time = self.dt_set_date_time_manual.dateTime().toString(
             "yyyyMMddhhmm.ss")
-        print(new_date_time)
         try:
             # Set the new date and time
             subprocess.run(["sudo", "date", new_date_time], check=True)
@@ -230,22 +283,26 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.spinner.hide()
 
     def set_date_time_auto(self):
-        self.spinner.show()
-        # Wait one second before setting the date and time automatically
-        time.sleep(1)
-        try:
-            # Set the date and time automatically using NTP
-            subprocess.run(["sudo", "ntpdate", "-v", "-b",
-                            "-u", "pool.ntp.org"], check=True)
-            self.dt_set_date_time_manual.setDateTime(
-                self.get_current_datetime())
-        except subprocess.CalledProcessError as e:
-            self.show_error_dialog("Error setting Date and Time automatically",
-                                   f"An error occurred while setting the Date and Time automatically: {e.stderr}")
-        # Restart the timer if it is not running
-        if not self.timer.isActive():
-            self.timer.start()
-        self.spinner.hide()
+        # self.spinner.show()
+        # # Wait one second before setting the date and time automatically
+        # time.sleep(1)
+        # try:
+        #     # Set the date and time automatically using NTP
+        #     subprocess.run(["sudo", "ntpdate", "-v", "-b",
+        #                     "-u", "pool.ntp.org"], check=True)
+        #     self.dt_set_date_time_manual.setDateTime(
+        #         self.get_current_datetime())
+        # except subprocess.CalledProcessError as e:
+        #     self.show_error_dialog("Error setting Date and Time automatically",
+        #                            f"An error occurred while setting the Date and Time automatically: {e.stderr}")
+        # # Restart the timer if it is not running
+        # if not self.timer.isActive():
+        #     self.timer.start()
+        # self.spinner.hide()
+        self.refresh()
+
+
+
 
     def set_time_zone_auto(self):
         # try:
@@ -355,6 +412,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             if self.action_set_date_and_time_automatically.isChecked():
                 self.action_set_date_and_time_automatically.setChecked(False)
 
+        self.refresh_ntp_client()
+
     def __action_set_date_and_time_automatically_changed(self):
         if self.action_set_date_and_time_automatically.isChecked():
 
@@ -451,6 +510,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
 
     def __ntp_servers_comboBox_index_changed(self):
         pass
+        # if self.date_and_time_auto_checkbox.isChecked():
+        #     self.set_date_time_auto()
 
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()
@@ -472,6 +533,17 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
                 self.tz_time_zone_value.setText(f"{code} - {comments}")
             else:
                 self.tz_time_zone_value.setText(f"{code}")
+
+    def __worker_ntp_client_send_updated_date(self, qdate):
+        if isinstance(qdate, QDate):
+            self.dat_dateedit_widget.setDate(qdate)
+
+    def __worker_ntp_client_send_updated_datetime(self, qdatetime):
+        if isinstance(qdatetime, QDateTime):
+            self.dat_timeedit_widget.setDateTime(qdatetime)
+
+    def __worker_ntp_client_send_error(self, error):
+        self.error_message_label.setText(error)
 
     def closeEvent(self, event):
         self.write_settings()
@@ -498,8 +570,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
                                )
 
         self.settings.setValue("ntp_servers",
-                            self.ntp_servers_comboBox.currentIndex()
-                            )
+                               self.ntp_servers_comboBox.currentIndex()
+                               )
 
         # Time Zone Tab
         self.settings.setValue("checkbox_set_time_zone_automatically_using_current_location",
