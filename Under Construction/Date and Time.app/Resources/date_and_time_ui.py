@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(756, 574)
+        MainWindow.resize(756, 573)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
@@ -382,7 +382,7 @@ class Ui_MainWindow(object):
         self.checkbox_use_24h_clock.setText(_translate("MainWindow", "Use 24-hour clock"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.ClockTab), _translate("MainWindow", "Clock"))
         self.sudo_toolbutton.setText(_translate("MainWindow", "🔒"))
-        self.error_message_label.setText(_translate("MainWindow", "<html><head/><body><p><br/></p></body></html>"))
+        self.error_message_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:14pt; vertical-align:sub;\"/></p></body></html>"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuEdit.setTitle(_translate("MainWindow", "Edit"))
         self.menuHelp.setTitle(_translate("MainWindow", "Help"))

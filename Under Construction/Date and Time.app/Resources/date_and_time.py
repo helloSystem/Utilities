@@ -137,20 +137,36 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         return thread
 
     def refresh_ntp_client(self):
-        if self.date_and_time_auto_checkbox.isChecked() and self.ntp_client_request_count <= self.ntp_client_request_count_max:
-            self.error_message_label.setText(
-                f"<html>"
-                f"<head/>"
-                f"<body>"
-                f"<p>"
-                f"<span style=' font-size:14pt; vertical-align:sub;'>"
-                f"NTP request ({self.ntp_client_request_count}/{self.ntp_client_request_count_max}) "
-                f"{self.__ntp_servers[self.ntp_servers_comboBox.currentIndex()]} ..."
-                f"</span>"
-                f"</p>"
-                f"</body>"
-                f"</html>"
-            )
+        # if self.ntp_client_request_count > self.ntp_client_request_count_max:
+        #     self.error_message_label.setText("")
+        if self.date_and_time_auto_checkbox.isChecked():
+            if self.ntp_client_request_count <= self.ntp_client_request_count_max:
+                self.error_message_label.setText(
+                    f"<html>"
+                    f"<head/>"
+                    f"<body>"
+                    f"<p>"
+                    f"<span style=' font-size:14pt; vertical-align:sub;'>"
+                    f"NTP request ({self.ntp_client_request_count}/{self.ntp_client_request_count_max}) "
+                    f"{self.__ntp_servers[self.ntp_servers_comboBox.currentIndex()]} ..."
+                    f"</span>"
+                    f"</p>"
+                    f"</body>"
+                    f"</html>"
+                )
+            elif self.ntp_client_request_count > self.ntp_client_request_count_max:
+                self.error_message_label.setText(
+                    f"<html>"
+                    f"<head/>"
+                    f"<body>"
+                    f"<p>"
+                    f"<span style=' font-size:14pt; vertical-align:sub;'>"
+                    f" "
+                    f"</span>"
+                    f"</p>"
+                    f"</body>"
+                    f"</html>"
+                )
             self.threads.clear()
             self.threads = [
                 self.createNtpClientThread(),
@@ -159,21 +175,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
                 thread.start()
 
 
-        if self.ntp_client_request_count > self.ntp_client_request_count_max:
-            self.error_message_label.setText(
-                f"<html>"
-                f"<head/>"
-                f"<body>"
-                f"<p>"
-                f"<span style=' font-size:14pt; vertical-align:sub;'>"
-                f"NTP Sync with {self.__ntp_servers[self.ntp_servers_comboBox.currentIndex()]}"
-                f"</span>"
-                f"</p>"
-                f"</body>"
-                f"</html>"
-            )
-
-        self.ntp_client_request_count += 1
+        if not self.ntp_client_request_count > self.ntp_client_request_count_max:
+            self.ntp_client_request_count += 1
 
     def refresh(self):
         self.dat_timeedit_widget.setDateTime(self.dat_timeedit_widget.dateTime().addSecs(1))
