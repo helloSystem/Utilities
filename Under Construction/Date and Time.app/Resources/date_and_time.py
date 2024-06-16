@@ -58,6 +58,9 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             6: "south-america.pool.ntp.org",
         }
 
+        self.timer = QTimer()
+        self.timer_ntp_client = QTimer()
+
         self.setupUi(self)
         self.initial_state()
         self.signalsConnect()
@@ -65,18 +68,12 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.initialized = True
 
     def initial_state(self):
-        # self.timezone_file_path = "/etc/timezone"
-        # self.timezone_file = QFile(self.timezone_file_path)
-        self.timer = QTimer()
         self.timer.start(1000)
-        self.timer_ntp_client = QTimer()
         self.timer_ntp_client.start(5000)
 
         self.dat_timeedit_widget.setDateTime(self.get_current_datetime())
         self.dat_dateedit_widget.setDate(self.get_current_date())
 
-        # self.setDateTimeAutomatically(False)
-        # self.tz_time_zone_label.setText(self.get_current_time_zone())
         self.__timezone_closest_city_changed([self.get_timezone_file_content()])
 
         self.settings = QSettings("helloSystem", "Date and Time.app")
@@ -101,7 +98,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.checkbox_set_time_zone_automatically_using_current_location.toggled.connect(
             self.__checkbox_set_time_zone_automatically_using_current_location_changed
         )
-        self.TimeZoneChanged.connect(self.__time_zone_changed)
 
         # Undo, cut, copy, paste, and delete actions. Undo is disabled.
         # They have the default shortcuts. When invoked, the corresponding
@@ -111,7 +107,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.action_paste.triggered.connect(lambda: self.send_shortcut(Qt.Key_V, Qt.ControlModifier))
         self.action_delete.triggered.connect(lambda: self.send_shortcut(Qt.Key_Delete, Qt.NoModifier))
         self.action_set_date_and_time_automatically.changed.connect(
-            self.__action_set_date_and_time_automatically_changed)
+            self.__action_set_date_and_time_automatically_changed
+        )
         self.action_set_time_zone_automatically.changed.connect(self.__action_set_time_zone_automatically_changed)
 
     def createNtpClientThread(self):
@@ -174,7 +171,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             for thread in self.threads:
                 thread.start()
 
-
         if not self.ntp_client_request_count > self.ntp_client_request_count_max:
             self.ntp_client_request_count += 1
 
@@ -214,85 +210,8 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
         self.dt_set_date_manual.setDateTime(self.get_current_date())
 
-    def create_date_time_tab(self):
-        # Create widgets
-        self.dt_set_date_time_manual = QDateTimeEdit(self)
-        self.dt_set_date_time_manual.setDisplayFormat("MMM d yyyy  hh:mm:ss")
-        self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.update_date_time)
-        self.timer.start(1000)
-        # When the QDateTimeEdit is manually changed, stop the timer; but do not stop the timer if it was changed by the timer
-        self.dt_set_date_time_manual.dateTimeChanged.connect(
-            lambda: self.timer.stop() if self.dt_set_date_time_manual.dateTime().toString(
-                'yyyy-MM-dd hh:mm:ss') != self.get_current_datetime().toString('yyyy-MM-dd hh:mm:ss') else None)
-
-        self.btn_set_date_time_manual = QPushButton("Set Date and Time", self)
-
-        self.grp_set_date_time = QGroupBox("Set Date and Time", self)
-        self.vbox_set_date_time = QVBoxLayout()
-        self.vbox_set_date_time.addWidget(self.dt_set_date_time_manual)
-        self.vbox_set_date_time.addWidget(self.btn_set_date_time_manual)
-        self.grp_set_date_time.setLayout(self.vbox_set_date_time)
-
-        self.btn_set_date_time_auto = QPushButton(
-            "Set Date and Time automatically", self)
-
-        self.grp_set_date_time_auto = QGroupBox("Date and Time options", self)
-        self.vbox_set_date_time_auto = QVBoxLayout()
-        self.vbox_set_date_time_auto.addWidget(self.btn_set_date_time_auto)
-        self.grp_set_date_time_auto.setLayout(self.vbox_set_date_time_auto)
-
-        # Connect signals to slots
-        self.btn_set_date_time_manual.clicked.connect(
-            self.set_date_time_manual)
-        self.btn_set_date_time_auto.clicked.connect(self.set_date_time_auto)
-
-        # Create grid layout for date/time tab
-        self.grid_layout_date_time = QGridLayout()
-
-        self.grid_layout_date_time.addWidget(
-            self.grp_set_date_time, 2, 0, 1, 2)
-        self.grid_layout_date_time.addWidget(
-            self.grp_set_date_time_auto, 3, 0, 1, 2)
-        self.grid_layout_date_time.setRowStretch(4, 1)
-
-        # Create date/time tab and set layout
-        self.date_time_tab = QWidget(self)
-        self.date_time_tab.setLayout(self.grid_layout_date_time)
-
-    def create_time_zone_tab(self):
-        # Create widgets
-        self.btn_set_time_zone_auto = QPushButton(
-            "Set time zone automatically", self)
-
-        self.grp_set_time_zone = QGroupBox("Set time zone", self)
-        self.vbox_set_time_zone = QVBoxLayout()
-        self.vbox_set_time_zone.addWidget(self.btn_set_time_zone_auto)
-        self.grp_set_time_zone.setLayout(self.vbox_set_time_zone)
-
-        # Connect signals to slots
-        self.btn_set_time_zone_auto.clicked.connect(self.set_time_zone_auto)
-
-        # Create grid layout for time zone tab
-        self.grid_layout_time_zone = QGridLayout()
-        self.grid_layout_time_zone.addWidget(self.grp_set_time_zone, 1, 0)
-        self.grid_layout_time_zone.setRowStretch(2, 1)
-
-        # Create time zone tab and set layout
-        self.time_zone_tab = QWidget(self)
-        self.time_zone_tab.setLayout(self.grid_layout_time_zone)
-
     @staticmethod
     def get_current_datetime():
-        # try:
-        #     # Get the current date and time
-        #     result = subprocess.run(["date", "+%Y-%m-%d %H:%M:%S"],
-        #                             capture_output=True, text=True, check=True)
-        #     return QDateTime.fromString(result.stdout.strip(), "yyyy-MM-dd hh:mm:ss")
-        # except subprocess.CalledProcessError as e:
-        #     self.show_error_dialog("Error getting current Date and Time",
-        #                            f"An error occurred while getting the current Date and Time: {e.stderr}")
         return QDateTime.currentDateTime()
 
     @staticmethod
@@ -302,50 +221,23 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
     def set_date_time_manual(self):
         self.spinner.show()
         # 202304151224.10 = Sa. 15 Apr. 2023 12:24:10 CEST
-        new_date_time = self.dt_set_date_time_manual.dateTime().toString(
-            "yyyyMMddhhmm.ss")
+        new_date_time = self.dt_set_date_time_manual.dateTime().toString("yyyyMMddhhmm.ss")
         try:
             # Set the new date and time
             subprocess.run(["sudo", "date", new_date_time], check=True)
-            self.dt_set_date_time_manual.setDateTime(
-                self.get_current_datetime())
+            self.dt_set_date_time_manual.setDateTime(self.get_current_datetime())
         except subprocess.CalledProcessError as e:
-            self.show_error_dialog("Error setting Date and Time",
-                                   f"An error occurred while setting the Date and Time: {e.stderr}")
+            self.show_error_dialog(
+                f"Error setting Date and Time "
+                f"An error occurred while setting the Date and Time: {e.stderr}"
+            )
         self.spinner.hide()
 
-    def set_date_time_auto(self):
-        # self.spinner.show()
-        # # Wait one second before setting the date and time automatically
-        # time.sleep(1)
-        # try:
-        #     # Set the date and time automatically using NTP
-        #     subprocess.run(["sudo", "ntpdate", "-v", "-b",
-        #                     "-u", "pool.ntp.org"], check=True)
-        #     self.dt_set_date_time_manual.setDateTime(
-        #         self.get_current_datetime())
-        # except subprocess.CalledProcessError as e:
-        #     self.show_error_dialog("Error setting Date and Time automatically",
-        #                            f"An error occurred while setting the Date and Time automatically: {e.stderr}")
-        # # Restart the timer if it is not running
-        # if not self.timer.isActive():
-        #     self.timer.start()
-        # self.spinner.hide()
-        self.refresh()
-
     def set_time_zone_auto(self):
-        # try:
-        #     # Set the time zone automatically using NTP
-        #     subprocess.run(["sudo", "ntpdate", "-v", "-b",
-        #                     "-u", "pool.ntp.org"], check=True)
-        # except subprocess.CalledProcessError as e:
-        #     self.show_error_dialog("Error setting time zone automatically",
-        #                            f"An error occurred while setting the time zone automatically: {e.stderr}")
         def handleResponse(reply):
             er = reply.error()
 
             if er == QNetworkReply.NoError:
-                # tz = bytes(reply.readAll()).decode("utf-8").strip("\n")
                 self.setTimeZone(bytes(reply.readAll()).decode("utf-8").strip("\n"))
 
                 self.tz_closest_city_combobox.clear()
@@ -386,31 +278,26 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         msg = QMessageBox()
         msg.setWindowTitle("About")
         msg.setIconPixmap(
-            QPixmap(
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "Date and Time.png"
-                )
-            ).scaled(128, 128, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            QPixmap(os.path.join(os.path.dirname(__file__), "Date and Time.png")).scaled(
+                64, 64, Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
         )
 
         candidates = ["COPYRIGHT", "COPYING", "LICENSE"]
         for candidate in candidates:
             if os.path.exists(os.path.join(os.path.dirname(__file__), candidate)):
-                with open(os.path.join(os.path.dirname(__file__), candidate), 'r') as file:
+                with open(os.path.join(os.path.dirname(__file__), candidate), "r") as file:
                     data = file.read()
                 msg.setDetailedText(data)
         msg.setText("<h3>Date and Time</h3>")
         msg.setInformativeText(
             "A simple preferences application to set date and time using "
-            "<a href='https://www.freebsd.org/cgi/man.cgi?ntpdate'>ntpdate</a> "
+            "<a href='https://github.com/cf-natali/ntplib'>ntplib</a> "
             "and <a href='https://www.freebsd.org/cgi/man.cgi?date'>date</a><br><br>"
             "Visit <a href='https://github.com/helloSystem/Utilities/'>"
             "<span style=' text-decoration: underline; color:#0000ff;'>"
             "https://github.com/helloSystem/Utilities/</span></a> "
             "for more information or to report bug and/or suggest a new feature."
-            "<p align='center'><span style=' font-size:14pt; vertical-align:sub;'>"
-            "Make for you with love by helloSystem team.<br/></span></p>"
         )
         msg.exec()
 
@@ -442,7 +329,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             # Prevent loop with the action menu
             if self.action_set_date_and_time_automatically.isChecked():
                 self.action_set_date_and_time_automatically.setChecked(False)
-
 
     def __action_set_date_and_time_automatically_changed(self):
         if self.action_set_date_and_time_automatically.isChecked():
@@ -494,8 +380,10 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
                     closest = []
                     while not found:
                         for key, item in self.tz_time_zone_world_map_widget.zone1970_db.items():
-                            if lng - tol <= item["longitude"] <= lng + tol and \
-                                    lat - tol <= item["latitude"] <= lat + tol:
+                            if (
+                                lng - tol <= item["longitude"] <= lng + tol
+                                and lat - tol <= item["latitude"] <= lat + tol
+                            ):
                                 if key not in closest and not len(closest) > 15:
                                     closest.append(key)
 
@@ -519,14 +407,10 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
                 self.set_time_zone_automatically_checkbox.setChecked(False)
 
         # Store the setting
-        self.settings.setValue("checkbox_set_time_zone_automatically_using_current_location",
-                               self.checkbox_set_time_zone_automatically_using_current_location.isChecked()
-                               )
-
-    def __time_zone_changed(self):
-        self.tz_closest_city_combobox.clear()
-        self.tz_closest_city_combobox.addItem(self.TimeZone)
-        print("TineZone change")
+        self.settings.setValue(
+            "checkbox_set_time_zone_automatically_using_current_location",
+            self.checkbox_set_time_zone_automatically_using_current_location.isChecked(),
+        )
 
     def __dat_calendar_widget_changed(self):
         self.dat_dateedit_widget.setDate(self.dat_calendar_widget.selectedDate())
@@ -543,7 +427,6 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         if self.initialized:
             self.refresh_ntp_client()
 
-
     def __timezone_closest_city_changed(self, value):
         self.tz_closest_city_combobox.clear()
         self.tz_closest_city_combobox.addItems(sorted(value))
@@ -555,12 +438,16 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
     def __timezone_combobox_index_changed(self):
         if self.tz_closest_city_combobox.currentText():
             code = ", ".join(
-                self.tz_time_zone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()]["code"])
+                self.tz_time_zone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()]["code"]
+            )
 
-            if "comments" in self.tz_time_zone_world_map_widget.zone1970_db[
-                self.tz_closest_city_combobox.currentText()]:
+            if (
+                "comments"
+                in self.tz_time_zone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()]
+            ):
                 comments = self.tz_time_zone_world_map_widget.zone1970_db[self.tz_closest_city_combobox.currentText()][
-                    "comments"]
+                    "comments"
+                ]
                 self.tz_time_zone_value.setText(f"{code} - {comments}")
             else:
                 self.tz_time_zone_value.setText(f"{code}")
@@ -583,58 +470,33 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
 
     def write_settings(self):
         # Entire Application Window
-        self.settings.setValue("geometry",
-                               self.saveGeometry()
-                               )
-        self.settings.setValue("windowState",
-                               self.saveState()
-                               )
+        self.settings.setValue("geometry", self.saveGeometry())
+        self.settings.setValue("windowState", self.saveState())
 
         # Tab
-        self.settings.setValue("tabWidget",
-                               self.tabWidget.currentIndex()
-                               )
+        self.settings.setValue("tabWidget", self.tabWidget.currentIndex())
 
         # Date and Time Tab
-        self.settings.setValue("date_and_time_auto",
-                               self.date_and_time_auto_checkbox.isChecked()
-                               )
+        self.settings.setValue("date_and_time_auto", self.date_and_time_auto_checkbox.isChecked())
 
-        self.settings.setValue("ntp_servers",
-                               self.ntp_servers_comboBox.currentIndex()
-                               )
+        self.settings.setValue("ntp_servers", self.ntp_servers_comboBox.currentIndex())
 
         # Time Zone Tab
-        self.settings.setValue("checkbox_set_time_zone_automatically_using_current_location",
-                               self.checkbox_set_time_zone_automatically_using_current_location.isChecked()
-                               )
+        self.settings.setValue(
+            "checkbox_set_time_zone_automatically_using_current_location",
+            self.checkbox_set_time_zone_automatically_using_current_location.isChecked(),
+        )
 
-        self.settings.setValue("tz_closest_city",
-                               self.tz_closest_city_combobox.currentText()
-                               )
+        self.settings.setValue("tz_closest_city", self.tz_closest_city_combobox.currentText())
 
         # Clock Tab
-        self.settings.setValue("show_the_date_and_time",
-                               self.groupbox_show_the_date_and_time.isChecked()
-                               )
-        self.settings.setValue("display_the_time_with_seconds",
-                               self.checkbox_display_the_time_with_seconds.isChecked()
-                               )
-        self.settings.setValue("show_the_day_of_the_week",
-                               self.checkbox_show_the_day_of_the_week.isChecked()
-                               )
-        self.settings.setValue("show_am_pm",
-                               self.checkbox_show_am_pm.isChecked()
-                               )
-        self.settings.setValue("show_am_pm",
-                               self.checkbox_show_am_pm.isChecked()
-                               )
-        self.settings.setValue("flash_time_separator",
-                               self.checkbox_flash_time_separator.isChecked()
-                               )
-        self.settings.setValue("use_24h_clock",
-                               self.checkbox_use_24h_clock.isChecked()
-                               )
+        self.settings.setValue("show_the_date_and_time", self.groupbox_show_the_date_and_time.isChecked())
+        self.settings.setValue("display_the_time_with_seconds", self.checkbox_display_the_time_with_seconds.isChecked())
+        self.settings.setValue("show_the_day_of_the_week", self.checkbox_show_the_day_of_the_week.isChecked())
+        self.settings.setValue("show_am_pm", self.checkbox_show_am_pm.isChecked())
+        self.settings.setValue("show_am_pm", self.checkbox_show_am_pm.isChecked())
+        self.settings.setValue("flash_time_separator", self.checkbox_flash_time_separator.isChecked())
+        self.settings.setValue("use_24h_clock", self.checkbox_use_24h_clock.isChecked())
 
     def read_settings(self):
         # Entire Application Window
@@ -642,44 +504,28 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.restoreState(self.settings.value("windowState", QByteArray()))
 
         # Tab
-        self.tabWidget.setCurrentIndex(
-            self.settings.value("tabWidget", defaultValue=0, type=int)
-        )
+        self.tabWidget.setCurrentIndex(self.settings.value("tabWidget", defaultValue=0, type=int))
         # Date and Time Tab
         self.date_and_time_auto_checkbox.setChecked(
-            self.settings.value("date_and_time_auto",
-                                defaultValue=False,
-                                type=bool
-                                )
+            self.settings.value("date_and_time_auto", defaultValue=False, type=bool)
         )
 
-        self.ntp_servers_comboBox.setCurrentIndex(
-            self.settings.value("ntp_servers",
-                                defaultValue=3,
-                                type=int
-                                )
-        )
+        self.ntp_servers_comboBox.setCurrentIndex(self.settings.value("ntp_servers", defaultValue=3, type=int))
 
         # Time Zone Tab
         self.checkbox_set_time_zone_automatically_using_current_location.setChecked(
-            self.settings.value("checkbox_set_time_zone_automatically_using_current_location",
-                                defaultValue=False,
-                                type=bool
-                                )
+            self.settings.value(
+                "checkbox_set_time_zone_automatically_using_current_location", defaultValue=False, type=bool
+            )
         )
 
         self.checkbox_set_time_zone_automatically_using_current_location.setChecked(
-            self.settings.value("checkbox_set_time_zone_automatically_using_current_location",
-                                defaultValue=False,
-                                type=bool
-                                )
+            self.settings.value(
+                "checkbox_set_time_zone_automatically_using_current_location", defaultValue=False, type=bool
+            )
         )
         self.tz_closest_city_combobox.clear()
-        self.tz_closest_city_combobox.addItem(self.settings.value("tz_closest_city",
-                                                                  defaultValue="",
-                                                                  type=str
-                                                                  )
-                                              )
+        self.tz_closest_city_combobox.addItem(self.settings.value("tz_closest_city", defaultValue="", type=str))
 
         self.__checkbox_set_time_zone_automatically_using_current_location_changed()
 
@@ -693,15 +539,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.checkbox_show_the_day_of_the_week.setChecked(
             self.settings.value("show_the_day_of_the_week", defaultValue=True, type=bool)
         )
-        self.checkbox_show_am_pm.setChecked(
-            self.settings.value("show_am_pm", defaultValue=True, type=bool)
-        )
+        self.checkbox_show_am_pm.setChecked(self.settings.value("show_am_pm", defaultValue=True, type=bool))
         self.checkbox_flash_time_separator.setChecked(
             self.settings.value("flash_time_separator", defaultValue=False, type=bool)
         )
-        self.checkbox_use_24h_clock.setChecked(
-            self.settings.value("use_24h_clock", defaultValue=False, type=bool)
-        )
+        self.checkbox_use_24h_clock.setChecked(self.settings.value("use_24h_clock", defaultValue=False, type=bool))
 
 
 if __name__ == "__main__":
