@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>Create Live Media</source>
-        <translation>Criar um suporte &quot;Live&quot;</translation>
+        <translation>Criar imagem de boot</translation>
     </message>
     <message>
         <source>This will download a Live image and will write it to an attached storage device.</source>
