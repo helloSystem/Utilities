@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Uploading a Hardware Probe is subject to the following Pricacy Terms.</source>
-        <translation>O envio de um Teste de Hardware está sujeito aos seguintes Termos de Privacidade.</translation>
+        <translation>O envio de um teste de hardware está sujeito aos seguintes termos de privacidade.</translation>
     </message>
     <message>
         <source>Please see %s for more information.</source>
