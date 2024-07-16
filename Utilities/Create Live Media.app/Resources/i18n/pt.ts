@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>Local ISO file...</source>
-        <translation>Ficheiro ISO local...</translation>
+        <translation>Arquivo de imagem ISO local...</translation>
     </message>
     <message>
         <source>Please choose an image:</source>
