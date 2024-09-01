@@ -28,7 +28,7 @@
         &lt;p&gt;This can help users and operating system developers to collaboratively debug hardware related issues, check for operating system compatibility and find drivers.&lt;/p&gt;
         &lt;p&gt;You will get a permanent probe URL to view and share collected information.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</source>
         <translation>&lt;p&gt;Dette verktøyet samler maskinvaredata om din datamaskin og kan anonymt laste den opp til en offentlig database.&lt;/p&gt;
-        &lt;p&gt;Dette kan hjelpe brukere og operativsystemsutviklere å avluse maskinvarerelaterte problemer sammen, sjekke OS-kompabilitet, samt å finne drivere.&lt;/p&gt;
+        &lt;p&gt;Dette kan hjelpe brukere og operativsystemsutviklere å avluse maskinvarerelaterte problemer sammen, sjekke operativsystemskompatibilitet, samt å finne drivere.&lt;/p&gt;
         &lt;p&gt;Du får en permanent probe-nettadresse for å vise og dele innsamlet info.&lt;/p&gt;&lt;br&gt;&lt;br&gt;&lt;br&gt;</translation>
     </message>
     <message>
