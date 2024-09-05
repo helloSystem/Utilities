@@ -6,17 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>353</width>
+    <width>601</width>
     <height>294</height>
    </rect>
   </property>
+  <property name="acceptDrops">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>Grab</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">border: 0px;</string>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <property name="spacing">
      <number>0</number>
+    </property>
+    <property name="sizeConstraint">
+     <enum>QLayout::SetDefaultConstraint</enum>
     </property>
     <property name="leftMargin">
      <number>0</number>
@@ -31,12 +43,9 @@
      <number>0</number>
     </property>
     <item>
-     <widget class="ScreenShotPreview" name="img_preview" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
+     <widget class="QtImageViewer" name="img_preview" native="true">
+      <property name="styleSheet">
+       <string notr="true">background-color: rgba(255,255,255, 3%)</string>
       </property>
      </widget>
     </item>
@@ -47,7 +56,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>353</width>
+     <width>601</width>
      <height>28</height>
     </rect>
    </property>
@@ -67,25 +76,57 @@
      <string>Edit</string>
     </property>
     <addaction name="ActionMenuEditCopy"/>
+    <addaction name="separator"/>
+    <addaction name="ActionMenuEditPreference"/>
    </widget>
    <widget class="QMenu" name="menuCapture">
     <property name="title">
      <string>Capture</string>
     </property>
+    <widget class="QMenu" name="menuTimer">
+     <property name="title">
+      <string>Timer</string>
+     </property>
+     <addaction name="ActionUpdateTimerTo1Sec"/>
+     <addaction name="ActionUpdateTimerTo2Secs"/>
+     <addaction name="ActionUpdateTimerTo3Secs"/>
+     <addaction name="ActionUpdateTimerTo4Secs"/>
+     <addaction name="ActionUpdateTimerTo5Secs"/>
+     <addaction name="ActionUpdateTimerTo6Secs"/>
+     <addaction name="ActionUpdateTimerTo7Secs"/>
+     <addaction name="ActionUpdateTimerTo8Secs"/>
+     <addaction name="ActionUpdateTimerTo9Secs"/>
+     <addaction name="ActionUpdateTimerTo10Secs"/>
+    </widget>
     <addaction name="ActionMenuCaptureSelection"/>
     <addaction name="ActionMenuCaptureWindow"/>
     <addaction name="ActionMenuCaptureScreen"/>
     <addaction name="ActionMenuCaptureTimedScreen"/>
+    <addaction name="separator"/>
+    <addaction name="menuTimer"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="ActionMenuHelpDocumentation"/>
     <addaction name="ActionMenuHelpAbout"/>
+   </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>Window</string>
+    </property>
+    <addaction name="ActionMenuViewActualSize"/>
+    <addaction name="ActionMenuViewZoomToFit"/>
+    <addaction name="ActionMenuViewZoomIn"/>
+    <addaction name="ActionMenuViewZoomOut"/>
+    <addaction name="ActionMenuViewZoomClear"/>
+    <addaction name="ActionMenuViewZoomToSelection"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
    <addaction name="menuCapture"/>
+   <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
   <action name="ActionMenuEditCopy">
@@ -102,6 +143,9 @@
    </property>
   </action>
   <action name="ActionMenuFileSave">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
@@ -110,6 +154,9 @@
    </property>
   </action>
   <action name="ActionMenuFileSaveAs">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Save As</string>
    </property>
@@ -118,6 +165,13 @@
    </property>
   </action>
   <action name="ActionMenuFilePrint">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset theme="document-print">
+     <normaloff>../../../../../../.designer/backup</normaloff>../../../../../../.designer/backup</iconset>
+   </property>
    <property name="text">
     <string>Print</string>
    </property>
@@ -126,6 +180,9 @@
    </property>
   </action>
   <action name="ActionMenuFilePrintSetup">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Print Setup</string>
    </property>
@@ -143,7 +200,7 @@
   </action>
   <action name="ActionMenuCaptureSelection">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="text">
     <string>Selection</string>
@@ -182,12 +239,200 @@
     <string>Ctrl+Shift+Z</string>
    </property>
   </action>
+  <action name="ActionMenuViewFitToWindow">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Fit to Window</string>
+   </property>
+  </action>
+  <action name="ActionMenuViewZoomIn">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Zoom In</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl++</string>
+   </property>
+  </action>
+  <action name="ActionMenuViewZoomOut">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+-</string>
+   </property>
+  </action>
+  <action name="actionGrop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Grop</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Redo</string>
+   </property>
+  </action>
+  <action name="ActionMenuViewZoomClear">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Zoom Clear</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+0</string>
+   </property>
+  </action>
+  <action name="ActionMenuViewActualSize">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Actual Size</string>
+   </property>
+  </action>
+  <action name="ActionMenuViewZoomToFit">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Zoom To Fit</string>
+   </property>
+  </action>
+  <action name="ActionMenuViewZoomToSelection">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Zoom To Selection</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo1Sec">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>1 sec</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo2Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>2 secs</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo3Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>3 secs</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo4Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>4 secs</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo5Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>5 secs</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo6Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>6 secs</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo7Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>7 secs</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo8Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>8 secs</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo9Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>9 secs</string>
+   </property>
+  </action>
+  <action name="ActionUpdateTimerTo10Secs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>10 secs</string>
+   </property>
+  </action>
+  <action name="ActionMenuHelpDocumentation">
+   <property name="text">
+    <string>Documentation</string>
+   </property>
+  </action>
+  <action name="ActionMenuEditPreference">
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>ScreenShotPreview</class>
+   <class>QtImageViewer</class>
    <extends>QWidget</extends>
-   <header>widget_screenshot_preview</header>
+   <header>QtImageViewer</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
