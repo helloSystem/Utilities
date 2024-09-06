@@ -16,6 +16,7 @@ from date_and_time_ui import Ui_MainWindow
 from property_date_time_auto import DateTimeAutomatically
 from property_timezone import TimeZoneProperty
 from worker_ntp_client import NtpClientWorker
+from worker_ip_api import IpApiWorker
 
 
 class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZoneProperty):
@@ -27,11 +28,12 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
 
         self.initialized = False
         # Worker
-        self.threads = []
+        self.threads_worker_ntp_client = []
+        self.threads_ip_api = []
         self.threadpool = QThreadPool()
 
         self.ntp_client_request_count = 0
-        self.ntp_client_request_count_max = 3
+        self.ntp_client_request_count_max = 1
 
         self.error_dialog = None
         self.timer = None
@@ -133,6 +135,22 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
 
         return thread
 
+    def createIpApiThread(self):
+        thread = QThread()
+        worker = IpApiWorker()
+        worker.moveToThread(thread)
+        thread.started.connect(lambda: worker.refresh())
+
+        # Icons Cache
+        worker.updated_timezone.connect(self.__worker_ip_api_send_updated_timezone)
+        worker.error.connect(self.__worker_ip_api_send_error)
+
+        worker.finished.connect(thread.quit)
+        worker.finished.connect(worker.deleteLater)
+        thread.finished.connect(thread.deleteLater)
+
+        return thread
+
     def refresh_ntp_client(self):
         # if self.ntp_client_request_count > self.ntp_client_request_count_max:
         #     self.error_message_label.setText("")
@@ -164,11 +182,11 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
                     f"</body>"
                     f"</html>"
                 )
-            self.threads.clear()
-            self.threads = [
+            self.threads_worker_ntp_client.clear()
+            self.threads_worker_ntp_client = [
                 self.createNtpClientThread(),
             ]
-            for thread in self.threads:
+            for thread in self.threads_worker_ntp_client:
                 thread.start()
 
         if not self.ntp_client_request_count > self.ntp_client_request_count_max:
@@ -234,28 +252,35 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
         self.spinner.hide()
 
     def set_time_zone_auto(self):
-        def handleResponse(reply):
-            er = reply.error()
+        self.threads_ip_api.clear()
+        self.threads_ip_api = [
+            self.createIpApiThread(),
+        ]
+        for thread in self.threads_ip_api:
+            thread.start()
 
-            if er == QNetworkReply.NoError:
-                self.setTimeZone(bytes(reply.readAll()).decode("utf-8").strip("\n"))
-
-                self.tz_closest_city_combobox.clear()
-                self.tz_closest_city_combobox.addItem(self.TimeZone)
-                self.__timezone_combobox_index_changed()
-
-            else:
-                self.show_error_dialog(
-                    message=f"Error occurred: {er}<br>{'<br>'.join(reply.errorString().split(' - '))}"
-                )
-                self.set_time_zone_automatically_checkbox.setChecked(False)
-
-        if self.checkbox_set_time_zone_automatically_using_current_location.isChecked():
-            req = QNetworkRequest(QUrl("http://ip-api.com/line?fields=timezone"))
-
-            self.nam = QNetworkAccessManager()
-            self.nam.finished.connect(handleResponse)
-            self.nam.get(req)
+        # def handleResponse(reply):
+        #     er = reply.error()
+        #
+        #     if er == QNetworkReply.NoError:
+        #         self.setTimeZone(bytes(reply.readAll()).decode("utf-8").strip("\n"))
+        #
+        #         self.tz_closest_city_combobox.clear()
+        #         self.tz_closest_city_combobox.addItem(self.TimeZone)
+        #         self.__timezone_combobox_index_changed()
+        #
+        #     else:
+        #         self.show_error_dialog(
+        #             message=f"Error occurred: {er}<br>{'<br>'.join(reply.errorString().split(' - '))}"
+        #         )
+        #         self.checkbox_set_time_zone_automatically_using_current_location.setChecked(False)
+        #
+        # if self.checkbox_set_time_zone_automatically_using_current_location.isChecked():
+        #     req = QNetworkRequest(QUrl("http://ip-api.com/line?fields=timezone"))
+        #
+        #     self.nam = QNetworkAccessManager()
+        #     self.nam.finished.connect(handleResponse)
+        #     self.nam.get(req)
 
             # TODO: Set language, keyboard,, etc. automatically based on geolocation if user allows
 
@@ -461,6 +486,16 @@ class DateTimeWindow(QMainWindow, Ui_MainWindow, DateTimeAutomatically, TimeZone
             self.dat_timeedit_widget.setDateTime(qdatetime)
 
     def __worker_ntp_client_send_error(self, error):
+        self.error_message_label.setText(error)
+
+    def __worker_ip_api_send_updated_timezone(self, timezone):
+        self.setTimeZone(timezone)
+        self.tz_closest_city_combobox.clear()
+        self.tz_closest_city_combobox.addItem(self.TimeZone)
+        self.__timezone_combobox_index_changed()
+        self.checkbox_set_time_zone_automatically_using_current_location.setChecked(False)
+
+    def __worker_ip_api_send_error(self, error):
         self.error_message_label.setText(error)
 
     def closeEvent(self, event):
